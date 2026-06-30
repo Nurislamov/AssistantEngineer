@@ -17,6 +17,8 @@ public sealed class TelegramManualLibraryService
     public const string DiagnosticManualButton = "📄 Мануал";
     public const string DiagnosticManualCallbackData = "dm:open";
     private const string DiagnosticManualFilePrefix = "dm:file:";
+    private const int TelegramCallbackDataMaxBytes = 64;
+    private const int TelegramInlineButtonTextMaxBytes = 64;
     public const string LibraryButton = "📚 Библиотека";
     public const string DiagnosticGuideButton = "📘 Руководство";
     private const string LibraryCommand = "/library";
@@ -1429,7 +1431,7 @@ public sealed class TelegramManualLibraryService
     }
 
     private async Task<TelegramManualLibraryResult> SendDiagnosticOwnerManualFileAsync(
-        string manualId,
+        string fileToken,
         TelegramUserAccessResult access,
         CancellationToken cancellationToken)
     {
@@ -1455,13 +1457,9 @@ public sealed class TelegramManualLibraryService
             return MissingDiagnosticContext();
         }
 
-        var binding = await _bindingStore.GetAsync(manualId, cancellationToken);
-        if (binding is null ||
-            !binding.IsActive ||
-            !binding.CanUseForDiagnostics ||
-            binding.DocumentType != TelegramLibraryDocumentType.OwnerManual ||
-            !string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) ||
-            !string.Equals(binding.Series, series, StringComparison.OrdinalIgnoreCase))
+        var bindings = await ListDiagnosticOwnerManualsAsync(series, cancellationToken);
+        var binding = ResolveDiagnosticOwnerManualSelection(fileToken, bindings);
+        if (binding is null)
         {
             return Html(
                 $"{TelegramHtml.Bold("Руководство недоступно")}\n\n" +
@@ -1508,7 +1506,8 @@ public sealed class TelegramManualLibraryService
             binding.DocumentType == TelegramLibraryDocumentType.OwnerManual &&
             string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) &&
             string.Equals(binding.Series, series, StringComparison.OrdinalIgnoreCase))
-        .OrderBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
+        .OrderBy(binding => DiagnosticOwnerManualSortNumber(binding) ?? int.MaxValue)
+        .ThenBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
         .ToArray();
 
     private static TelegramManualLibraryResult BuildDiagnosticOwnerManualSelection(
@@ -1518,20 +1517,164 @@ public sealed class TelegramManualLibraryService
     {
         var equipment = $"{last.Manufacturer} {series}";
         var rows = bindings
-            .Select(binding => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
-                [new EquipmentDiagnosticTelegramInlineKeyboardButton(DisplayBindingTitle(binding), DiagnosticManualFilePrefix + binding.ManualId)])
+            .Select((binding, index) => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+                [
+                    new EquipmentDiagnosticTelegramInlineKeyboardButton(
+                        DiagnosticOwnerManualButtonLabel(binding, index + 1),
+                        DiagnosticOwnerManualCallbackData(binding))
+                ])
             .Append([new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", DiagnosticManualCallbackData)])
             .ToArray();
+        var fileList = string.Join(
+            "\n",
+            bindings.Select((binding, index) =>
+                $"{index + 1}. {TelegramHtml.Escape(DisplayBindingTitle(binding))}"));
         var text =
             $"{TelegramHtml.Bold("Выберите руководство")}\n\n" +
             $"{TelegramHtml.Bold("Оборудование:")} {TelegramHtml.Escape(equipment)}\n" +
             $"{TelegramHtml.Bold("Код:")} {TelegramHtml.Escape(last.Code)}\n\n" +
             "Для этой серии доступно несколько Owner/User руководств.";
 
+        text = $"{text}\n\n{fileList}";
+
         return Html(
             text,
             callbackAnswerText: "Выберите файл",
             replyMarkup: new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows));
+    }
+
+    private static TelegramManualFileBinding? ResolveDiagnosticOwnerManualSelection(
+        string fileToken,
+        IReadOnlyList<TelegramManualFileBinding> bindings) =>
+        bindings.FirstOrDefault(binding =>
+            string.Equals(DiagnosticOwnerManualToken(binding), fileToken, StringComparison.Ordinal)) ??
+        bindings.FirstOrDefault(binding =>
+            string.Equals(binding.ManualId, fileToken, StringComparison.OrdinalIgnoreCase));
+
+    private static string DiagnosticOwnerManualCallbackData(TelegramManualFileBinding binding)
+    {
+        var callbackData = DiagnosticManualFilePrefix + DiagnosticOwnerManualToken(binding);
+        return Encoding.UTF8.GetByteCount(callbackData) <= TelegramCallbackDataMaxBytes
+            ? callbackData
+            : throw new InvalidOperationException("Diagnostic manual callback_data exceeds Telegram limit.");
+    }
+
+    private static string DiagnosticOwnerManualToken(TelegramManualFileBinding binding) =>
+        Base36(Fnv1A64(binding.ManualId));
+
+    private static string DiagnosticOwnerManualButtonLabel(
+        TelegramManualFileBinding binding,
+        int number) =>
+        TrimUtf8($"{number}) {ShortOwnerManualTitle(DisplayBindingTitle(binding))}", TelegramInlineButtonTextMaxBytes);
+
+    private static int? DiagnosticOwnerManualSortNumber(TelegramManualFileBinding binding)
+    {
+        var title = ShortOwnerManualTitle(DisplayBindingTitle(binding));
+        var start = -1;
+        for (var i = 0; i < title.Length; i++)
+        {
+            if (!char.IsDigit(title[i]))
+            {
+                continue;
+            }
+
+            start = i;
+            break;
+        }
+
+        if (start < 0)
+        {
+            return null;
+        }
+
+        var end = start;
+        while (end < title.Length && char.IsDigit(title[end]))
+        {
+            end++;
+        }
+
+        return int.TryParse(title[start..end], out var value)
+            ? value
+            : null;
+    }
+
+    private static string ShortOwnerManualTitle(string title)
+    {
+        var name = Path.GetFileNameWithoutExtension(title).Trim();
+        foreach (var marker in new[]
+        {
+            "Owner Manual EN ",
+            "Owner/User Manual EN ",
+            "User Manual EN ",
+            "Owner Manual ",
+            "User Manual "
+        })
+        {
+            var index = name.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+            if (index >= 0)
+            {
+                return name[(index + marker.Length)..].Trim();
+            }
+        }
+
+        return string.IsNullOrWhiteSpace(name)
+            ? title.Trim()
+            : name;
+    }
+
+    private static string TrimUtf8(string value, int maxBytes)
+    {
+        if (Encoding.UTF8.GetByteCount(value) <= maxBytes)
+        {
+            return value;
+        }
+
+        const string suffix = "...";
+        var suffixBytes = Encoding.UTF8.GetByteCount(suffix);
+        var builder = new StringBuilder();
+        var byteCount = 0;
+        foreach (var ch in value)
+        {
+            var chBytes = Encoding.UTF8.GetByteCount(ch.ToString());
+            if (byteCount + chBytes + suffixBytes > maxBytes)
+            {
+                break;
+            }
+
+            builder.Append(ch);
+            byteCount += chBytes;
+        }
+
+        return builder.Append(suffix).ToString();
+    }
+
+    private static ulong Fnv1A64(string value)
+    {
+        const ulong offsetBasis = 14695981039346656037UL;
+        const ulong prime = 1099511628211UL;
+        var hash = offsetBasis;
+        foreach (var b in Encoding.UTF8.GetBytes(value.Trim().ToUpperInvariant()))
+        {
+            hash ^= b;
+            hash *= prime;
+        }
+
+        return hash;
+    }
+
+    private static string Base36(ulong value)
+    {
+        const string alphabet = "0123456789abcdefghijklmnopqrstuvwxyz";
+        Span<char> buffer = stackalloc char[13];
+        var position = buffer.Length;
+        do
+        {
+            buffer[--position] = alphabet[(int)(value % 36)];
+            value /= 36;
+        }
+        while (value > 0);
+
+        return new string(buffer[position..]);
     }
 
     private async Task<TelegramManualFileBinding?> FindExistingManualBindingAsync(

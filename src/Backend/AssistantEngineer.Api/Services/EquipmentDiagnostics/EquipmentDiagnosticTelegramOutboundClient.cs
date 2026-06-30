@@ -91,7 +91,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                     await ReadMessageIdAsync(response, cancellationToken));
             }
 
-            _logger.LogWarning("Telegram outbound send failed with non-success status code.");
+            await LogTelegramApiFailureAsync(response, "send message", cancellationToken);
             return Failed();
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -160,7 +160,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                 return new EquipmentDiagnosticTelegramSetCommandsResult(true, "Telegram command menu synchronized.");
             }
 
-            _logger.LogWarning("Telegram command menu synchronization failed with non-success status code.");
+            await LogTelegramApiFailureAsync(response, "set commands", cancellationToken);
             return SetCommandsFailed();
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -241,7 +241,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                     await ReadMessageIdAsync(response, cancellationToken));
             }
 
-            _logger.LogWarning("Telegram document send failed with non-success status code.");
+            await LogTelegramApiFailureAsync(response, "send document", cancellationToken);
             return Failed();
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -308,7 +308,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                     await ReadMessageIdAsync(response, cancellationToken));
             }
 
-            _logger.LogWarning("Telegram copyMessage failed with non-success status code.");
+            await LogTelegramApiFailureAsync(response, "copy message", cancellationToken);
             return Failed();
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -371,7 +371,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                 return new EquipmentDiagnosticTelegramOutboundResult(true, "Telegram callback query answered.");
             }
 
-            _logger.LogWarning("Telegram callback query answer failed with non-success status code.");
+            await LogTelegramApiFailureAsync(response, "answer callback query", cancellationToken);
             return Failed();
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -446,7 +446,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                     messageId);
             }
 
-            _logger.LogWarning("Telegram message edit failed with non-success status code.");
+            await LogTelegramApiFailureAsync(response, "edit message", cancellationToken);
             return Failed();
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -461,6 +461,79 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
                 exception.GetType().Name);
             return Failed();
         }
+    }
+
+    private async Task LogTelegramApiFailureAsync(
+        HttpResponseMessage response,
+        string operation,
+        CancellationToken cancellationToken)
+    {
+        var error = await ReadTelegramApiErrorAsync(response, cancellationToken);
+        _logger.LogWarning(
+            "Telegram {Operation} failed with non-success status code. StatusCode: {StatusCode}. ErrorDescription: {ErrorDescription}. ErrorBody: {ErrorBody}.",
+            operation,
+            (int)response.StatusCode,
+            error.Description,
+            error.Body);
+    }
+
+    private async Task<TelegramApiErrorLog> ReadTelegramApiErrorAsync(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken)
+    {
+        var body = string.Empty;
+        try
+        {
+            body = await response.Content.ReadAsStringAsync(cancellationToken);
+        }
+        catch (HttpRequestException)
+        {
+            return new TelegramApiErrorLog("unavailable", "unavailable");
+        }
+
+        var description = "none";
+        if (!string.IsNullOrWhiteSpace(body))
+        {
+            try
+            {
+                using var document = JsonDocument.Parse(body);
+                if (document.RootElement.TryGetProperty("description", out var value) &&
+                    value.ValueKind == JsonValueKind.String &&
+                    !string.IsNullOrWhiteSpace(value.GetString()))
+                {
+                    description = value.GetString()!;
+                }
+            }
+            catch (JsonException)
+            {
+                description = "unparseable";
+            }
+        }
+
+        return new TelegramApiErrorLog(
+            SanitizeTelegramApiErrorText(description),
+            SanitizeTelegramApiErrorText(body));
+    }
+
+    private string SanitizeTelegramApiErrorText(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return "empty";
+        }
+
+        var sanitized = value;
+        if (!string.IsNullOrWhiteSpace(BotToken))
+        {
+            sanitized = sanitized.Replace(BotToken, "[redacted]", StringComparison.Ordinal);
+        }
+
+        sanitized = sanitized.Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal);
+        const int maxLength = 512;
+        return sanitized.Length <= maxLength
+            ? sanitized
+            : sanitized[..maxLength] + "...";
     }
 
     private static EquipmentDiagnosticTelegramOutboundResult Failed() =>
@@ -551,4 +624,8 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
 
         return payload;
     }
+
+    private sealed record TelegramApiErrorLog(
+        string Description,
+        string Body);
 }

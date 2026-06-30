@@ -1,3 +1,4 @@
+using System.Text;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
@@ -922,13 +923,36 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
 
         await adapter.HandleAsync(Update("Gree GMV Mini n2"));
         var selection = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticGuideButton));
-        var sent = await adapter.HandleAsync(DiagnosticManualFileCallback("dm:file:" + selected.ManualId));
+        var manualButtons = InlineButtonsWithCallbacks(selection)
+            .Where(button => button.CallbackData.StartsWith("dm:file:", StringComparison.Ordinal))
+            .ToArray();
+        var selectedButton = Assert.Single(manualButtons, button => button.Text.Contains("12-18kW", StringComparison.Ordinal));
+        var sent = await adapter.HandleAsync(DiagnosticManualFileCallback(selectedButton.CallbackData));
         var flexMissing = await adapter.HandleAsync(Update("Gree GMV9 Flex E0"));
         flexMissing = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticGuideButton));
 
         Assert.Contains("<b>Руководство пока не добавлено</b>", serviceOnly.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(serviceOnly.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
         Assert.Contains("<b>Выберите руководство</b>", selection.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV Mini Slim Owner Manual EN 8-16kW A-T C-T C-X.pdf", selection.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV Mini Slim Owner Manual EN 12-18kW C1-S.pdf", selection.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV Mini Slim Owner Manual EN 22-35kW H C-X C1-X.pdf", selection.Text, StringComparison.Ordinal);
+        Assert.Equal(3, manualButtons.Length);
+        Assert.Collection(
+            manualButtons,
+            button => Assert.Contains("1) 8-16kW A-T C-T C-X", button.Text, StringComparison.Ordinal),
+            button => Assert.Contains("2) 12-18kW C1-S", button.Text, StringComparison.Ordinal),
+            button => Assert.Contains("3) 22-35kW H C-X C1-X", button.Text, StringComparison.Ordinal));
+        Assert.All(manualButtons, button =>
+        {
+            Assert.True(Encoding.UTF8.GetByteCount(button.CallbackData) <= 64, button.CallbackData);
+            Assert.True(Encoding.UTF8.GetByteCount(button.Text) <= 64, button.Text);
+            Assert.DoesNotContain("Gree GMV Mini", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(".pdf", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("telegram-file-id", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("sourceReferences", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+        });
+        Assert.DoesNotContain(selected.ManualId, selectedButton.CallbackData, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(InlineButtons(selection), button => button.Contains("8-16kW", StringComparison.Ordinal));
         Assert.Contains(InlineButtons(selection), button => button.Contains("12-18kW", StringComparison.Ordinal));
         Assert.Contains(InlineButtons(selection), button => button.Contains("22-35kW", StringComparison.Ordinal));
@@ -1192,6 +1216,13 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             .SelectMany(message => message.ReplyMarkup?.InlineKeyboard ?? [])
             .SelectMany(row => row)
             .Select(button => button.Text)
+            .ToArray();
+
+    private static (string Text, string CallbackData)[] InlineButtonsWithCallbacks(EquipmentDiagnosticTelegramResponse response) =>
+        response.OutboundMessages
+            .SelectMany(message => message.ReplyMarkup?.InlineKeyboard ?? [])
+            .SelectMany(row => row)
+            .Select(button => (button.Text, button.CallbackData))
             .ToArray();
 
     private static int TextSendCount(EquipmentDiagnosticTelegramResponse response) =>

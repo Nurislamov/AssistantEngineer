@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24MAN.2a - CLOSED / pushed.
+ED-24MAN.2b - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Run production VPS deployment/live-check for ED-24MAN.2a when ready, including three GMV Mini / Slim OwnerManual files if approved PDFs are available outside Git.
+1. Run production VPS deployment/live-check for ED-24MAN.2b when ready; do not mark production PASS until the live-check is done.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Keep ED-24MAN.3 exact model-family matching, GMV9 Flex OwnerManual acquisition, and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
 
@@ -15,6 +15,34 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24MAN.2b fixed diagnostic multi OwnerManual selection for GMV Mini / Slim so long OwnerManual filenames no longer break Telegram inline keyboard payload limits; the stage is local validation PASS and pushed, with production live-check still pending.
+
+Implementation commit: current commit (`ED-24MAN.2b Fix OwnerManual selection buttons`).
+
+ED-24MAN.2b local implementation notes:
+
+- Diagnostic `📘 Руководство` multiple OwnerManual selection now uses Telegram-safe short button labels such as `1) 8-16kW A-T C-T C-X`, `2) 12-18kW C1-S`, and `3) 22-35kW H C-X C1-X`.
+- Long OwnerManual filenames remain visible in the selection message body as a numbered list, so users can distinguish files without oversized button text.
+- New diagnostic OwnerManual `callback_data` is short opaque token data (`dm:file:<token>`), stays within 64 bytes, and does not include filename, Telegram `file_id`, `file_unique_id`, sourceReferences, or raw manual id.
+- Selected OwnerManual callbacks re-check the latest completed Gree diagnostic context and active OwnerManual diagnostic bindings before protected `sendDocument` delivery.
+- Selected OwnerManual protected delivery works for each GMV Mini / Slim OwnerManual option.
+- ServiceManual remains library-only and is not diagnostic-visible.
+- InstallationManual remains library-only and is not diagnostic-visible.
+- Diagnostic guide policy remains OwnerManual-only.
+- Existing production Mini OwnerManual bindings from IDs 9/10/11 do not need re-upload.
+- No migration was added.
+- Runtime remains 922 total Gree cards / 136 GMV Mini cards.
+- JSON/cards/codes/sourceReferences/routing are unchanged.
+- Manual source data and deploy scripts are unchanged.
+- No PDF files were committed.
+- Telegram outbound non-success logging now includes sanitized Telegram API status, description, and response body without logging bot token, authorization header, request text, chat id, or full file ids.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused Telegram manual/library/user/webhook/outbound tests: 173/173 passed.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution suite: 5009/5009 passed.
+- `git diff --check`: PASS.
 
 ED-24MAN.2a added multiple active GMV Mini / Slim OwnerManual support in the Telegram manual library; the stage is local validation PASS and pushed, with production live-check still pending.
 
@@ -89,6 +117,7 @@ ED-24MAN.2 production live-check notes:
 - ED-24SRC.2 - CLOSED / pushed.
 - ED-24MAN.2 - CLOSED / production PASS.
 - ED-24MAN.2a - CLOSED / pushed.
+- ED-24MAN.2b - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 

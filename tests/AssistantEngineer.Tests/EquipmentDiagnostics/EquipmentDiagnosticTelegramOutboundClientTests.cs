@@ -228,6 +228,28 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
     }
 
     [Fact]
+    public async Task SendMessageLogsSanitizedTelegramApiErrorDescription()
+    {
+        var logger = new CapturingLogger<EquipmentDiagnosticTelegramOutboundClient>();
+        var client = CreateClient(
+            new CapturingHandler(
+                HttpStatusCode.BadRequest,
+                """{"ok":false,"error_code":400,"description":"Bad Request: BUTTON_DATA_INVALID test-token-value"}"""),
+            EnabledOptions(),
+            logger);
+
+        await client.SendMessageAsync(42, "Sensitive message text", null, true);
+
+        var logged = string.Join(Environment.NewLine, logger.Messages.Concat(logger.Scopes));
+        Assert.Contains("StatusCode: 400", logged, StringComparison.Ordinal);
+        Assert.Contains("BUTTON_DATA_INVALID", logged, StringComparison.Ordinal);
+        Assert.Contains("[redacted]", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("test-token-value", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("Sensitive message text", logged, StringComparison.Ordinal);
+        Assert.DoesNotContain("sendMessage", logged, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task NonSuccessAndMissingTokenReturnSafeFailure()
     {
         var failed = await CreateClient(new CapturingHandler(HttpStatusCode.BadRequest), EnabledOptions())
