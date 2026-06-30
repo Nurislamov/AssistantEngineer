@@ -93,7 +93,8 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     long? ReplyToMessageId = null,
     bool HasPhoto = false,
     bool HasVideo = false,
-    bool HasVoice = false);
+    bool HasVoice = false,
+    bool HasVideoNote = false);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,

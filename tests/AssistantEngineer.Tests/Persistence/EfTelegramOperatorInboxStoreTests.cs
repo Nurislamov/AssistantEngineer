@@ -45,6 +45,25 @@ public sealed class EfTelegramOperatorInboxStoreTests
     }
 
     [Fact]
+    public async Task EfTelegramOperatorInboxStorePersistsVideoNoteMessageKindWithoutNewSchema()
+    {
+        await using var connection = await OpenConnectionAsync();
+        await using var provider = await BuildProviderAsync(connection);
+        var store = provider.GetRequiredService<ITelegramOperatorInboxStore>();
+
+        var userMessage = await store.AddUserMessageAsync(
+            Access(),
+            Update(text: null) with { HasVideoNote = true },
+            TelegramOperatorInboxMessageKind.VideoNote,
+            text: null);
+        await store.SetOperatorMessageAsync(userMessage.Message.Id, -100500, 703);
+        var linked = await store.GetByOperatorMessageAsync(-100500, 703);
+
+        Assert.NotNull(linked);
+        Assert.Equal(TelegramOperatorInboxMessageKind.VideoNote, linked.MessageKind);
+    }
+
+    [Fact]
     public async Task EfTelegramOperatorInboxModelAndMigrationContainPersistentState()
     {
         await using var connection = await OpenConnectionAsync();
@@ -107,7 +126,7 @@ public sealed class EfTelegramOperatorInboxStoreTests
         return new TelegramUserAccessResult(true, user, TelegramUserRole.Consumer);
     }
 
-    private static EquipmentDiagnosticTelegramUpdate Update(string text) =>
+    private static EquipmentDiagnosticTelegramUpdate Update(string? text) =>
         new(
             UpdateId: 1,
             ChatId: 20,

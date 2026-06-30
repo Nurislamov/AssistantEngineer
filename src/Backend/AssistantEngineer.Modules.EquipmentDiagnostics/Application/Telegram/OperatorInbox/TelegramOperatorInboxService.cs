@@ -131,7 +131,7 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
         return true;
     }
 
-    public async Task MirrorUserMessageAsync(
+    public async Task<bool> MirrorUserMessageAsync(
         EquipmentDiagnosticTelegramUpdate update,
         TelegramUserAccessResult access,
         CancellationToken cancellationToken = default)
@@ -141,7 +141,7 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
             !IsPrivate(update.ChatType) ||
             access.User is null)
         {
-            return;
+            return false;
         }
 
         var kind = MessageKind(update);
@@ -172,7 +172,7 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
         if (kind is TelegramOperatorInboxMessageKind.Text or TelegramOperatorInboxMessageKind.Unknown ||
             update.MessageId is null)
         {
-            return;
+            return sent.Succeeded;
         }
 
         var copied = await _outboundClient.CopyMessageAsync(
@@ -191,16 +191,17 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
                 kind,
                 "Вложение скопировано в operator group.",
                 cancellationToken);
-            return;
+            return true;
         }
 
-        await _outboundClient.SendMessageAsync(
+        var copyFailureNotice = await _outboundClient.SendMessageAsync(
             _options.OperatorInbox.ChatId.Value,
             BuildCard(userMessage.Thread, update, access, kind, attachmentCopyFailed: true),
             parseMode: null,
             disableWebPagePreview: true,
             replyMarkup: null,
             cancellationToken: cancellationToken);
+        return sent.Succeeded || copyFailureNotice.Succeeded;
     }
 
     private async Task<bool> IsOwnerAsync(
@@ -245,7 +246,7 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
         builder.AppendLine($"Время: {FormatTime(update.ReceivedAt ?? DateTimeOffset.UtcNow)}");
         builder.AppendLine();
         builder.AppendLine("Сообщение:");
-        builder.AppendLine(string.IsNullOrWhiteSpace(update.Text) ? $"[{kind}]" : Truncate(update.Text.Trim(), 1800));
+        builder.AppendLine(string.IsNullOrWhiteSpace(update.Text) ? $"[{MessageKindLabel(kind)}]" : Truncate(update.Text.Trim(), 1800));
         if (attachmentCopyFailed)
         {
             builder.AppendLine();
@@ -260,6 +261,11 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
         if (update.HasPhoto)
         {
             return TelegramOperatorInboxMessageKind.Photo;
+        }
+
+        if (update.HasVideoNote)
+        {
+            return TelegramOperatorInboxMessageKind.VideoNote;
         }
 
         if (update.HasVideo)
@@ -281,6 +287,11 @@ public sealed class TelegramOperatorInboxService : ITelegramOperatorInboxService
             ? TelegramOperatorInboxMessageKind.Unknown
             : TelegramOperatorInboxMessageKind.Text;
     }
+
+    private static string MessageKindLabel(TelegramOperatorInboxMessageKind kind) =>
+        kind == TelegramOperatorInboxMessageKind.VideoNote
+            ? "Видео-кружок"
+            : kind.ToString();
 
     private static bool IsOperatorChatIdCommand(string? text)
     {

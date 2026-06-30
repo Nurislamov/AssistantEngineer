@@ -71,6 +71,52 @@ public sealed class EquipmentDiagnosticTelegramOperatorInboxTests
     }
 
     [Fact]
+    public async Task VideoNoteMirrorUsesSafeCardAndCanBeAnsweredByCardOrCopiedMedia()
+    {
+        var outbound = new FakeOutbound();
+        using var provider = CreateProvider(outbound);
+        await CreateUserAsync(provider, chatId: 7, userId: 777, TelegramUserRole.Owner);
+        var access = await ResolveAccessAsync(provider, VideoNoteUpdate());
+        var service = provider.GetRequiredService<ITelegramOperatorInboxService>();
+
+        var mirrored = await service.MirrorUserMessageAsync(VideoNoteUpdate(), access);
+        var storedCard = await provider.GetRequiredService<ITelegramOperatorInboxStore>()
+            .GetByOperatorMessageAsync(-100500, 101);
+        var cardReplyHandled = await service.TryHandleOperatorReplyAsync(
+            GroupUpdate("Ответ по кружочку.", userId: 777, messageId: 501, replyToMessageId: 101));
+        var copiedReplyHandled = await service.TryHandleOperatorReplyAsync(
+            GroupUpdate("Еще ответ по кружочку.", userId: 777, messageId: 502, replyToMessageId: 102));
+
+        Assert.True(mirrored);
+        Assert.NotNull(storedCard);
+        Assert.Equal(TelegramOperatorInboxMessageKind.VideoNote, storedCard.MessageKind);
+        Assert.Single(outbound.CopyMessages);
+        Assert.Equal((-100500, 20, 55), outbound.CopyMessages[0]);
+        Assert.Contains("[Видео-кружок]", outbound.Messages[0].Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("file_id", outbound.Messages[0].Text, StringComparison.OrdinalIgnoreCase);
+        Assert.True(cardReplyHandled);
+        Assert.True(copiedReplyHandled);
+        Assert.Contains("Ответ по кружочку.", outbound.Messages[1].Text, StringComparison.Ordinal);
+        Assert.Contains("Еще ответ по кружочку.", outbound.Messages[3].Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AdapterReturnsTransferredResponseForMirroredVideoNote()
+    {
+        var outbound = new FakeOutbound();
+        using var provider = CreateProvider(outbound);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(VideoNoteUpdate());
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Equal("Сообщение передано специалисту.", response.Text);
+        Assert.Single(outbound.CopyMessages);
+        Assert.Equal((-100500, 20, 55), outbound.CopyMessages[0]);
+        Assert.Contains("[Видео-кружок]", outbound.Messages.Single().Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task UnknownOperatorReplyTargetDoesNotCallAdapterOrUserChat()
     {
         var outbound = new FakeOutbound();
@@ -190,6 +236,13 @@ public sealed class EquipmentDiagnosticTelegramOperatorInboxTests
             Text = "Документ во вложении",
             DocumentFileId = fileId,
             DocumentFileName = "photo.pdf"
+        };
+
+    private static EquipmentDiagnosticTelegramUpdate VideoNoteUpdate() =>
+        UserUpdate("video note placeholder") with
+        {
+            Text = null,
+            HasVideoNote = true
         };
 
     private static EquipmentDiagnosticTelegramUpdate GroupUpdate(

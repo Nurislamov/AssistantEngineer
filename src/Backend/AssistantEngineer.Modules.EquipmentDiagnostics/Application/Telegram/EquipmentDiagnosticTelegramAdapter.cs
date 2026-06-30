@@ -260,6 +260,19 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             return manualResponse;
         }
 
+        if (update.HasVideoNote && string.IsNullOrWhiteSpace(update.Text))
+        {
+            var mirrored = await MirrorUnsupportedUserMessageAsync(update, access, cancellationToken);
+            if (mirrored)
+            {
+                return Response(
+                    update.ChatId,
+                    "Сообщение передано специалисту.",
+                    EquipmentDiagnosticTelegramResponseKind.Reply,
+                    replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
+            }
+        }
+
         var parseResult = _parser.Parse(update.Text, _options);
         if (_options.EnableChatIdDiscovery &&
             parseResult.Command == EquipmentDiagnosticTelegramCommand.Identity)
@@ -415,7 +428,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                     replyMarkup: TelegramDiagnosticConversationService.MainKeyboard(access));
     }
 
-    private async Task MirrorUnsupportedUserMessageAsync(
+    private async Task<bool> MirrorUnsupportedUserMessageAsync(
         EquipmentDiagnosticTelegramUpdate update,
         TelegramUserAccessResult access,
         CancellationToken cancellationToken)
@@ -424,10 +437,10 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
             access.User is null ||
             IsCommandText(update.Text))
         {
-            return;
+            return false;
         }
 
-        await _operatorInboxService.MirrorUserMessageAsync(update, access, cancellationToken);
+        return await _operatorInboxService.MirrorUserMessageAsync(update, access, cancellationToken);
     }
 
     private static bool IsCommandText(string? text) =>

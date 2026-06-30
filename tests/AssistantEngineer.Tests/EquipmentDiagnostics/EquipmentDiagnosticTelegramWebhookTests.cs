@@ -418,6 +418,24 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
     }
 
     [Fact]
+    public async Task VideoNoteUpdateIsAcceptedAndMappedSeparatelyFromVideo()
+    {
+        var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Reply, "Safe deterministic reply");
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+
+        var result = await handler.HandleAsync(VideoNoteUpdate(), "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.NotNull(adapter.LastUpdate);
+        Assert.True(adapter.LastUpdate.HasVideoNote);
+        Assert.False(adapter.LastUpdate.HasVideo);
+        Assert.Null(adapter.LastUpdate.Text);
+        Assert.DoesNotContain("video-note-file-id-secret", outbound.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("video-note-unique-id-secret", outbound.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task MissingTextIsInvalidAndDoesNotCallAdapter()
     {
         var adapter = new FakeAdapter(EquipmentDiagnosticTelegramResponseKind.Reply, "unused");
@@ -438,6 +456,22 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
 
     private static TelegramWebhookUpdateDto Update(string? text) =>
         new(1, new TelegramWebhookMessageDto(2, text, new TelegramWebhookChatDto(3, "operator"), null, 1_700_000_000));
+
+    private static TelegramWebhookUpdateDto VideoNoteUpdate() =>
+        new(
+            11,
+            new TelegramWebhookMessageDto(
+                MessageId: 12,
+                Text: null,
+                Chat: new TelegramWebhookChatDto(3, "operator", "private"),
+                From: new TelegramWebhookUserDto(4, "operator"),
+                Date: 1_700_000_000,
+                VideoNote: new TelegramWebhookVideoNoteDto(
+                    "video-note-file-id-secret",
+                    "video-note-unique-id-secret",
+                    Duration: 4,
+                    Length: 240,
+                    FileSize: 1024)));
 
     private static TelegramWebhookUpdateDto CallbackUpdate(string callbackId, string data) =>
         new(

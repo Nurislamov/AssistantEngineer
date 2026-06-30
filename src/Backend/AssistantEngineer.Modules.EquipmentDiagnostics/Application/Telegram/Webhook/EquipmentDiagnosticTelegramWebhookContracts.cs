@@ -76,6 +76,7 @@ public sealed record TelegramWebhookMessageDto(
     [property: JsonPropertyName("photo")] IReadOnlyList<TelegramWebhookPhotoSizeDto>? Photo = null,
     [property: JsonPropertyName("video")] TelegramWebhookVideoDto? Video = null,
     [property: JsonPropertyName("voice")] TelegramWebhookVoiceDto? Voice = null,
+    [property: JsonPropertyName("video_note")] TelegramWebhookVideoNoteDto? VideoNote = null,
     [property: JsonPropertyName("reply_to_message")] TelegramWebhookMessageDto? ReplyToMessage = null);
 
 public sealed record TelegramWebhookChatDto(
@@ -118,6 +119,13 @@ public sealed record TelegramWebhookVoiceDto(
     [property: JsonPropertyName("file_id")] string FileId,
     [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
     [property: JsonPropertyName("mime_type")] string? MimeType = null,
+    [property: JsonPropertyName("file_size")] long? FileSize = null);
+
+public sealed record TelegramWebhookVideoNoteDto(
+    [property: JsonPropertyName("file_id")] string FileId,
+    [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
+    [property: JsonPropertyName("duration")] int? Duration = null,
+    [property: JsonPropertyName("length")] int? Length = null,
     [property: JsonPropertyName("file_size")] long? FileSize = null);
 
 public sealed record TelegramWebhookCallbackQueryDto(

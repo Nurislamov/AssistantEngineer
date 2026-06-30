@@ -46,6 +46,10 @@ diagnostic answers, and manual metadata. Photo, video, document, and voice messa
 group with Telegram `copyMessage` only from the user's private chat to the configured operator group. `forwardMessage`
 is not used. If copy fails, the group receives a short `Вложение не удалось скопировать.` note.
 
+Video notes (`video_note`, Telegram "circle") are treated as operator-inbox media as well: the operator card uses the
+safe `[Видео-кружок]` label, the media copy uses the same internal `copyMessage` path, and a successfully mirrored
+video note returns `Сообщение передано специалисту.` to the user instead of the generic unsupported-message fallback.
+
 ## Owner Reply Bridge
 
 Owner replies in the configured operator group by using Telegram reply on the operator card or copied mirrored

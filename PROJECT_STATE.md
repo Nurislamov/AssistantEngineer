@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24OPS.2 - CLOSED / pushed.
+ED-24OPS.2a - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Deploy ED-24OPS.2 when ready and set `TELEGRAM_OPERATOR_INBOX_ENABLED=true` plus `TELEGRAM_OPERATOR_CHAT_ID` from `/operator_chat_id` in the owner group.
+1. Deploy ED-24OPS.2a when ready to enable Telegram video note support in the production operator inbox.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -16,9 +16,9 @@ master
 
 ## Last completed work
 
-ED-24OPS.2 adds the Telegram operator inbox and reply bridge for owner-operated support, with persisted inbox threads/messages, operator group chat id discovery, media copy mirroring, environment/deployment wiring, documentation, tests, and a small library Back button fix.
+ED-24OPS.2a adds Telegram `video_note` / "circle" support to the operator inbox, including webhook parsing, `VideoNote` message kind persistence, safe `[Видео-кружок]` operator cards, internal `copyMessage` mirroring, and Owner text replies to both the card and copied media.
 
-Previous implementation commit: `44060e65` (ED-24LIB.1c).
+Previous implementation commit: `ec553a8a` (ED-24OPS.2).
 
 ## Current working point
 
@@ -38,6 +38,7 @@ Previous implementation commit: `44060e65` (ED-24LIB.1c).
 - ED-24LIB.1a - CLOSED / pushed.
 - ED-24LIB.1c - CLOSED / pushed.
 - ED-24OPS.2 - CLOSED / pushed.
+- ED-24OPS.2a - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -102,6 +103,25 @@ Latest validation after ED-24OPS.2:
 - Validation: `dotnet restore .\AssistantEngineer.sln` passed; `dotnet build .\AssistantEngineer.sln` passed with 0 warnings/errors; focused Telegram/operator/library/persistence tests passed 787/787; operator-only tests passed 8/8; deployment scaffold validator passed; production-env placeholder validator passed; local Gree diagnostics smoke passed 9/9; full solution test suite passed 4982/4982; `git diff --check` passed.
 - Runtime total: 922 confirmed by counting `data/equipment-diagnostics/error-knowledge/gree/**/*.json`.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
+
+Latest validation after ED-24OPS.2a:
+
+- Telegram `video_note` is accepted by webhook/polling contracts with Telegram API metadata fields parsed but not logged or exposed.
+- Operator inbox classifies the attachment as `VideoNote`; no migration was added because `MessageKind` is stored as a string.
+- Private user video notes create/reuse inbox threads, send a safe operator card with `[Видео-кружок]`, and mirror the media to the configured operator group through the existing internal `copyMessage` path.
+- Successfully mirrored video notes return `Сообщение передано специалисту.` to the user instead of the old unsupported text/contact fallback.
+- Owner text reply bridge works when replying to either the video-note operator card or the copied video-note media message; owner media replies remain unsupported.
+- `forwardMessage` remains unused; `copyMessage` remains internal operator media mirroring only; library/manual delivery to users still uses protected `sendDocument(file_id)`.
+- Service manuals remain library-only, and the diagnostic Owner/User manual-only policy is unchanged.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused Operator/Inbox/Webhook/Telegram/Library/Manual/Persistence tests: 843/843 passed.
+- Local Gree diagnostics smoke: 9/9 passed.
+- Full solution suite: 4986/4986 passed.
+- `git diff --check`: PASS.
+- No migration added.
+- Runtime total: 922 confirmed by counting `data/equipment-diagnostics/error-knowledge/gree/**/*.json`.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
 
 Latest validation after ED-24UX.4:
 

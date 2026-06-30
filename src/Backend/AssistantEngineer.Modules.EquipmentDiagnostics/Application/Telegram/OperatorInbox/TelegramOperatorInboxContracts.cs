@@ -20,6 +20,7 @@ public enum TelegramOperatorInboxMessageKind
     Text,
     Photo,
     Video,
+    VideoNote,
     Document,
     Voice,
     Unknown
@@ -139,7 +140,7 @@ public interface ITelegramOperatorInboxService
         EquipmentDiagnosticTelegramUpdate update,
         CancellationToken cancellationToken = default);
 
-    Task MirrorUserMessageAsync(
+    Task<bool> MirrorUserMessageAsync(
         EquipmentDiagnosticTelegramUpdate update,
         TelegramUserAccessResult access,
         CancellationToken cancellationToken = default);
