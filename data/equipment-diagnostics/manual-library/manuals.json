@@ -2431,6 +2431,108 @@
         ],
         "reason": "Runtime diagnostic cards were imported; manual file delivery is a separate access-controlled workflow."
       }
+    },
+    {
+      "manualId": "gree-gmv6-hr-service-manual-2025-07",
+      "fileName": "Gree GMV6 HR Service Manual EN.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/Gree GMV6 HR Service Manual EN.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "VRF",
+      "equipmentType": "VRFSystem",
+      "series": "GMV6 HR",
+      "modelScope": "GMV6 HR heat recovery DC inverter VRF units from local service manual.",
+      "documentTitle": "Gree GMV6 HR DC Inverter VRF Units Service Manual",
+      "documentCode": "Not stated",
+      "sourceLanguage": "en",
+      "sourceKind": "ServiceManual",
+      "fileFormat": "PDF",
+      "importStatus": "Imported",
+      "coverageStatus": "DiagnosticScopeImported",
+      "diagnosticUsefulness": "High",
+      "importedPackageIds": [
+        "gree-gmv6-hr-indoor-fault-codes",
+        "gree-gmv6-hr-outdoor-fault-protection-codes",
+        "gree-gmv6-hr-debugging-codes",
+        "gree-gmv6-hr-status-codes"
+      ],
+      "entriesImported": 262,
+      "categoriesImported": [
+        "indoor",
+        "outdoor",
+        "debugging",
+        "status"
+      ],
+      "knownSmokeCodes": [
+        "E0",
+        "U4",
+        "C2",
+        "n2",
+        "A9"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "NotImported",
+      "recommendedNext": false,
+      "notes": "Imported in ED-24E.3 from local GMV6 HR service manual. Scope is GMV6 HR only; do not mix with plain GMV6, GMV X, GMV9 Flex, or GMV Mini. Includes n2 from troubleshooting section 2.135 outside the Error Indication table.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Runtime diagnostic cards were imported; ServiceManual file delivery remains a separate library-only access-controlled workflow and is not used for diagnostic guide delivery."
+      }
+    },
+    {
+      "manualId": "gree-gmv6-hr-owner-manual-2024-12",
+      "fileName": "Gree GMV6 HR Owner Manual EN.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/Gree GMV6 HR Owner Manual EN.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "VRF",
+      "equipmentType": "VRFSystem",
+      "series": "GMV6 HR",
+      "modelScope": "GMV6 HR heat recovery DC inverter VRF units from local owner manual.",
+      "documentTitle": "GMV Heat Recovery DC Inverter VRF Owner Manual",
+      "documentCode": "Not stated",
+      "sourceLanguage": "en",
+      "sourceKind": "OwnerManual",
+      "fileFormat": "PDF",
+      "importStatus": "Analyzed",
+      "coverageStatus": "DiagnosticSectionsIdentified",
+      "diagnosticUsefulness": "Medium",
+      "importedPackageIds": [],
+      "entriesImported": 0,
+      "categoriesImported": [],
+      "knownSmokeCodes": [
+        "E0",
+        "U4",
+        "C2",
+        "n2",
+        "A9"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "NotImported",
+      "recommendedNext": false,
+      "notes": "Reviewed in ED-24E.3 for owner-facing troubleshooting and Error Indication cross-check only. Diagnostic guide delivery requires an OwnerManual Telegram binding; no binding is added by this stage.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "OwnerManual can be used for diagnostic guide delivery only after explicit access-controlled Telegram binding."
+      }
     }
   ]
 }

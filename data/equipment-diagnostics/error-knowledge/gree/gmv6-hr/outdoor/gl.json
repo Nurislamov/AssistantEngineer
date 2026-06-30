@@ -1,0 +1,126 @@
+{
+  "id": "gree-gmv6-hr-outdoor-gl",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV6 HR",
+  "models": [
+    "GMV6 HR heat recovery VRF units"
+  ],
+  "code": "GL",
+  "signalType": "Protection",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "PowerSupply",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv6-hr-outdoor-fault-protection-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree GMV6 HR DC Inverter VRF Units Service Manual",
+  "sourceMeaning": "Grid side hardware overcurrent protection",
+  "sourceReference": "Chapter 3 Faults / Error Indication / Outdoor GL / PDF page 91",
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-30T00:00:00Z",
+  "updatedAt": "2026-06-30T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
+        "Код относится к наружному блоку; точную причину проверяют по сервисной процедуре для этой серии."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-30T00:00:00Z",
+      "updatedAt": "2026-06-30T00:00:00Z",
+      "id": "gree-gmv6-hr-outdoor-gl-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV6 HR GL — защитное состояние электропитания",
+      "summary": "Код GL для Gree GMV6 HR относится к событию: защитное состояние электропитания. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
+      "safetyNote": "Не выполняйте работы внутри оборудования и не сбрасывайте защитные сообщения многократно без проверки причины.",
+      "checkSteps": [
+        "Подтвердите код GL, серию GMV6 HR и место индикации.",
+        "Передайте код и модель оборудования специалисту сервиса Gree GMV6 HR."
+      ],
+      "doNotAdvise": [
+        "Не выполняйте самостоятельный ремонт по одному коду.",
+        "Не меняйте компоненты без диагностики квалифицированным специалистом.",
+        "Не обходите защитные сообщения и не запускайте оборудование в обход защит."
+      ],
+      "recommendedAction": "Запишите код GL, модель и условия появления; обратитесь к квалифицированному специалисту по Gree GMV6 HR.",
+      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
+        "Код относится к наружному блоку; точную причину проверяют по сервисной процедуре для этой серии."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-30T00:00:00Z",
+      "updatedAt": "2026-06-30T00:00:00Z",
+      "id": "gree-gmv6-hr-outdoor-gl-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV6 HR GL — защитное состояние электропитания",
+      "summary": "Код GL для Gree GMV6 HR относится к событию: защитное состояние электропитания. Проверку выполняют в границах установленной модели и фактических условий работы.",
+      "safetyNote": "Проверки внутри оборудования выполняет квалифицированный специалист с соблюдением сервисной процедуры и мер электробезопасности.",
+      "checkSteps": [
+        "Подтвердите код GL, серию GMV6 HR и место индикации.",
+        "Сверьте модель, место индикации, условия появления и сопутствующие коды.",
+        "Проверьте сопутствующие коды и фактическое состояние системы перед выводом о причине."
+      ],
+      "doNotAdvise": [
+        "Не назначайте замену платы, датчика, компрессора или двигателя только по одному коду.",
+        "Не обходите защитные устройства и не выполняйте запуск в обход защитных сообщений.",
+        "Не выполняйте работы с холодильным контуром без подтвержденной сервисной процедуры."
+      ],
+      "recommendedAction": "Сверьте код GL, модель GMV6 HR, место индикации и сопутствующие сообщения; дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
+      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
+        "Код относится к наружному блоку; точную причину проверяют по сервисной процедуре для этой серии."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-30T00:00:00Z",
+      "updatedAt": "2026-06-30T00:00:00Z",
+      "id": "gree-gmv6-hr-outdoor-gl-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV6 HR GL — защитное состояние электропитания",
+      "summary": "Код GL для Gree GMV6 HR относится к событию: защитное состояние электропитания. Проверку выполняют в границах установленной модели и фактических условий работы.",
+      "safetyNote": "Работы с силовыми цепями, холодильным контуром и защитными устройствами выполняют только квалифицированные специалисты по процедуре производителя.",
+      "checkSteps": [
+        "Подтвердите код GL, серию GMV6 HR и место индикации.",
+        "Сверьте модель, место индикации, условия появления и сопутствующие коды.",
+        "Проверьте сопутствующие коды и фактическое состояние системы перед выводом о причине."
+      ],
+      "doNotAdvise": [
+        "Не назначайте замену платы, датчика, компрессора или двигателя только по одному коду.",
+        "Не обходите защитные устройства и не выполняйте запуск в обход защитных сообщений.",
+        "Не выполняйте работы с холодильным контуром без подтвержденной сервисной процедуры."
+      ],
+      "recommendedAction": "Сверьте код GL, модель GMV6 HR, место индикации и сопутствующие сообщения; дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
+      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Gree GMV6 HR DC Inverter VRF Units Service Manual",
+      "documentCode": "Not stated",
+      "sourceReference": "Chapter 3 Faults / Error Indication / Outdoor GL / PDF page 91",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv6-hr-service-manual-2025-07",
+      "packageId": "gree-gmv6-hr-outdoor-fault-protection-codes",
+      "notes": "Imported in ED-24E.3 from local GMV6 HR service manual. Scope is GMV6 HR heat recovery only; do not mix with plain GMV6, GMV X, GMV9 Flex, or GMV Mini."
+    }
+  ]
+}

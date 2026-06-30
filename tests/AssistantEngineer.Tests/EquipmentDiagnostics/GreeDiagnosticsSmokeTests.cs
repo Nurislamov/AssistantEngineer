@@ -80,6 +80,7 @@ public sealed class GreeDiagnosticsSmokeTests
         Assert.DoesNotContain("Ограничения вывода:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Дальше:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV6 n2", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Gree GMV6 HR n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV9 Flex n2", response.Text, StringComparison.OrdinalIgnoreCase);
         AssertSafeVisibleText(response.Text);
@@ -101,6 +102,7 @@ public sealed class GreeDiagnosticsSmokeTests
         Assert.Contains("<b>Проверьте:</b>", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("укажите бренд", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV6 n2", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Gree GMV6 HR n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV X n2", response.Text, StringComparison.OrdinalIgnoreCase);
         AssertSafeVisibleText(response.Text);
@@ -111,6 +113,11 @@ public sealed class GreeDiagnosticsSmokeTests
     [InlineData("Gree GMV9 H5", "Gree GMV9 Flex — H5", "GMV9 Flex")]
     [InlineData("Gree 9 series Flex C0", "Gree GMV9 Flex — C0", "GMV9 Flex")]
     [InlineData("Gree 9-Flex A0", "Gree GMV9 Flex — A0", "GMV9 Flex")]
+    [InlineData("Gree GMV6 HR E0", "Gree GMV6 HR — E0", "GMV6 HR")]
+    [InlineData("Gree GMV6 HR U4", "Gree GMV6 HR — U4", "GMV6 HR")]
+    [InlineData("Gree GMV6 HR C2", "Gree GMV6 HR — C2", "GMV6 HR")]
+    [InlineData("Gree GMV6 HR n2", "Gree GMV6 HR — n2", "GMV6 HR")]
+    [InlineData("Gree GMV6 HR A9", "Gree GMV6 HR — A9", "GMV6 HR")]
     [InlineData("Gree GMV6 A9", "Gree GMV6 — A9", "GMV6")]
     [InlineData("Gree GMV6 Uy", "Gree GMV6 — Uy", "GMV6")]
     public async Task KnownManualBackedCodesResolveWithSafeVisibleText(
@@ -143,7 +150,8 @@ public sealed class GreeDiagnosticsSmokeTests
             "место индикации и сопутствующие сообщения; дальнейшие действия",
             response.Text,
             StringComparison.OrdinalIgnoreCase);
-        if (query.EndsWith(" E0", StringComparison.OrdinalIgnoreCase))
+        if (query.EndsWith(" E0", StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(expectedSeries, "GMV9 Flex", StringComparison.Ordinal))
         {
             Assert.Contains(
                 "Подтвердите код E0, серию GMV9 Flex и место индикации.",

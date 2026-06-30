@@ -97,7 +97,7 @@ public sealed partial class GreeGmv9FlexImport15Tests
         Assert.Equal(136, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-mini"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(263, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-x"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(260, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv9-flex"), "*.json", SearchOption.AllDirectories).Length);
-        Assert.Equal(922, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1184, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
 
         AssertPackageCount("gree-gmv9-flex-indoor-fault-codes.json", 60);
         AssertPackageCount("gree-gmv9-flex-outdoor-fault-protection-codes.json", 120);
@@ -160,6 +160,7 @@ public sealed partial class GreeGmv9FlexImport15Tests
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV6", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV X", response.Text, StringComparison.Ordinal);
     }
@@ -174,6 +175,7 @@ public sealed partial class GreeGmv9FlexImport15Tests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.DoesNotContain("Gree GMV6 n2", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Gree GMV6 HR n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV X n2", response.Text, StringComparison.OrdinalIgnoreCase);
     }

@@ -1,0 +1,28 @@
+{
+  "packageId": "gree-gmv6-hr-debugging-codes",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "series": "GMV6 HR",
+  "title": "Gree GMV6 HR debugging and commissioning codes",
+  "description": "Manual-bound Chapter 3 Error Indication catalog for GMV6 HR debugging codes.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree GMV6 HR DC Inverter VRF Units Service Manual",
+  "sourceReference": "Chapter 3 Faults / Error Indication",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Debug",
+    "Communication"
+  ],
+  "intendedEquipmentTypes": [
+    "OutdoorUnit"
+  ],
+  "intendedDisplaySources": [
+    "OutdoorBoard"
+  ],
+  "entryCountExpected": 38,
+  "notes": "GMV6 HR service manual import scope for ED-24E.3. Do not mix with plain GMV6, GMV X, GMV9 Flex, or GMV Mini packages.",
+  "createdAt": "2026-06-30T00:00:00Z",
+  "updatedAt": "2026-06-30T00:00:00Z"
+}

@@ -2,19 +2,47 @@
 
 ## Current stage
 
-ED-24MAN.2b - CLOSED / pushed.
+ED-24E.3 - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Run production VPS deployment/live-check for ED-24MAN.2b when ready; do not mark production PASS until the live-check is done.
+1. Run production VPS deployment/live-check for ED-24E.3 when ready; do not mark production PASS until the live-check is done.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-3. Keep ED-24MAN.3 exact model-family matching, GMV9 Flex OwnerManual acquisition, and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
+3. Keep ED-24MAN.3 exact model-family matching, GMV9 Flex/GMV6 HR OwnerManual acquisition, and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24E.3 added GMV6 HR diagnostic runtime coverage from local GMV6 HR Service/Owner manuals; the stage is local validation PASS and pushed, with production live-check still pending.
+
+Implementation commit: current commit (`ED-24E.3 Add Gree GMV6 HR diagnostics`).
+
+ED-24E.3 local implementation notes:
+
+- Local sources audited: `Gree GMV6 HR Service Manual EN.pdf` and `Gree GMV6 HR Owner Manual EN.pdf`.
+- Service SHA256: `CABDC29423A28E846EBC7A9F7DA1EC69002033E8550AFB89D540A3342A49411E`; 22,232,816 bytes; 427 pages.
+- Owner SHA256: `2B516736DF5ED4AB0AF4F7407C53F35031122688CA1662BD6ED42BB9675347C5`; 22,595,872 bytes; 76 pages.
+- Added separate runtime series `GMV6 HR` under `data/equipment-diagnostics/error-knowledge/gree/gmv6-hr`.
+- Added 262 GMV6 HR cards: 60 indoor, 120 outdoor, 38 debugging, 44 status.
+- `n2` is sourced from Service Manual troubleshooting section `2.135 "n2"` because it is not present in the Error Indication table.
+- New total Gree runtime: 1184 cards.
+- Existing counts unchanged: GMV Mini 136, GMV6 263, GMV X 263, GMV9 Flex 260.
+- Key HR queries resolve: `Gree GMV6 HR E0`, `U4`, `C2`, `n2`, and `A9`.
+- Plain `Gree GMV6 E0` remains ambiguity-safe when HR is applicable and does not return an HR-only answer.
+- `docs/equipment-diagnostics/gree-gmv6-hr-manual-coverage.md` records source hashes, section/page coverage, extraction counts, comparison, runtime import summary, key checks, and decision.
+- ServiceManual remains library-only and is not diagnostic-visible.
+- Diagnostic guide policy remains OwnerManual-only.
+- GMV6 HR OwnerManual binding is pending unless production DB already has one; no Telegram upload or `/manual_bind` was performed.
+- No migration was added.
+- JSON/cards/sourceReferences changed only for the new HR runtime series plus HR manual registry metadata.
+- Routing changed only to recognize explicit `GMV6 HR` hints and preserve GMV6/HR separation.
+- Deploy scripts are unchanged.
+- No PDF files were committed.
+- Restore/build/focused validation/smoke/full suite/diff-check: PASS locally for ED-24E.3; full solution suite 5027/5027 passed.
+- Production PASS is not marked for ED-24E.3.
 
 ED-24MAN.2b fixed diagnostic multi OwnerManual selection for GMV Mini / Slim so long OwnerManual filenames no longer break Telegram inline keyboard payload limits; the stage is local validation PASS and pushed, with production live-check still pending.
 
@@ -118,6 +146,7 @@ ED-24MAN.2 production live-check notes:
 - ED-24MAN.2 - CLOSED / production PASS.
 - ED-24MAN.2a - CLOSED / pushed.
 - ED-24MAN.2b - CLOSED / pushed.
+- ED-24E.3 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -126,6 +155,13 @@ ED-24MAN.2 production live-check notes:
 - Runtime: 263 cards.
 - Fresh delta from GMV6 manual GC202203-IV was imported earlier.
 - Production smoke passed.
+
+### GMV6 HR
+
+- Runtime: 262 cards.
+- Imported from local GMV6 HR service manual in ED-24E.3.
+- OwnerManual source audited; diagnostic OwnerManual binding remains pending unless present in production DB.
+- Production smoke not marked PASS for ED-24E.3.
 
 ### GMV Mini
 
@@ -151,10 +187,11 @@ ED-24MAN.2 production live-check notes:
 ## Current runtime counts
 
 - GMV6: 263
+- GMV6 HR: 262
 - GMV Mini: 136
 - GMV X: 263
 - GMV9 Flex: 260
-- Total Gree runtime: 922
+- Total Gree runtime: 1184
 
 ## Validation status
 

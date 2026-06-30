@@ -599,6 +599,7 @@ public sealed class EquipmentDiagnosticBotService : IEquipmentDiagnosticBotServi
 
     private static bool IsNextGenerationGmvSeries(string? series) =>
         string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(series, "GMV6 HR", StringComparison.OrdinalIgnoreCase) ||
         string.Equals(series, "GMV9 Flex", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsRuntimeFaultSignal(ErrorKnowledgeSignalType signalType) =>

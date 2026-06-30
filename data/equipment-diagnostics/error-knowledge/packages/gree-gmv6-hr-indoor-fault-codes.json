@@ -1,0 +1,30 @@
+{
+  "packageId": "gree-gmv6-hr-indoor-fault-codes",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "series": "GMV6 HR",
+  "title": "Gree GMV6 HR indoor fault codes",
+  "description": "Manual-bound Chapter 3 Error Indication catalog for GMV6 HR indoor codes.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree GMV6 HR DC Inverter VRF Units Service Manual",
+  "sourceReference": "Chapter 3 Faults / Error Indication",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Fault",
+    "Protection",
+    "Warning",
+    "Communication"
+  ],
+  "intendedEquipmentTypes": [
+    "IndoorUnit"
+  ],
+  "intendedDisplaySources": [
+    "IndoorUnit"
+  ],
+  "entryCountExpected": 60,
+  "notes": "GMV6 HR service manual import scope for ED-24E.3. Do not mix with plain GMV6, GMV X, GMV9 Flex, or GMV Mini packages.",
+  "createdAt": "2026-06-30T00:00:00Z",
+  "updatedAt": "2026-06-30T00:00:00Z"
+}

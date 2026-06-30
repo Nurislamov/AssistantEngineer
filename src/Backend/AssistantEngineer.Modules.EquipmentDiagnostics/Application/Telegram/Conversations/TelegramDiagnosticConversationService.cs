@@ -383,7 +383,11 @@ public sealed class TelegramDiagnosticConversationService
         CancellationToken cancellationToken)
     {
         var parsedRequest = _parser.Parse(update.Text, _options).DiagnosticRequest;
-        var requestedSeries = parsedRequest?.Series ?? DiagnosticRoutingHintExtractor.ExtractSeries(update.Text);
+        var extractedSeries = DiagnosticRoutingHintExtractor.ExtractSeries(update.Text);
+        var requestedSeries = string.Equals(parsedRequest?.Series, "GMV", StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(extractedSeries)
+                ? extractedSeries
+                : parsedRequest?.Series ?? extractedSeries;
         var lookupCode = CanonicalizeVisualLookupCode(code);
         var candidates = await FindCandidatesByCodeAsync(lookupCode, requestedSeries, cancellationToken);
         if (!string.IsNullOrWhiteSpace(requestedSeries))

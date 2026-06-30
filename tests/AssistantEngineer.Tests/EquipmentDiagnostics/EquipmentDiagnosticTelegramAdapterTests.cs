@@ -338,6 +338,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("GMV9 Flex", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.All(ForbiddenFragments(), fragment =>
             Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
@@ -368,6 +369,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("Gree GMV X — n2", selected.Text, StringComparison.Ordinal);
         Assert.Contains("настройка предела коэффициента соответствия внутренних и наружных блоков", selected.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV6 n2", selected.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Gree GMV6 HR n2", selected.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", selected.Text, StringComparison.OrdinalIgnoreCase);
     }
 

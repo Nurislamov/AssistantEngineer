@@ -45,9 +45,10 @@ public sealed class GreeDiagnosticsQualityBaselineTests
                 StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.Count(), StringComparer.Ordinal);
 
-        Assert.Equal(922, entries.Count);
-        Assert.Equal(4, countsBySeries.Count);
+        Assert.Equal(1184, entries.Count);
+        Assert.Equal(5, countsBySeries.Count);
         Assert.Equal(263, countsBySeries["GMV6"]);
+        Assert.Equal(262, countsBySeries["GMV6 HR"]);
         Assert.Equal(136, countsBySeries["GMV Mini"]);
         Assert.Equal(263, countsBySeries["GMV X"]);
         Assert.Equal(260, countsBySeries["GMV9 Flex"]);
@@ -88,6 +89,7 @@ public sealed class GreeDiagnosticsQualityBaselineTests
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("GMV9 Flex", response.Text, StringComparison.OrdinalIgnoreCase);
 
         var seriesButtons = response.OutboundMessages
@@ -115,6 +117,7 @@ public sealed class GreeDiagnosticsQualityBaselineTests
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains("Gree GMV X — n2", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV6 n2", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Gree GMV6 HR n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV Mini n2", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Gree GMV9 Flex n2", response.Text, StringComparison.OrdinalIgnoreCase);
     }

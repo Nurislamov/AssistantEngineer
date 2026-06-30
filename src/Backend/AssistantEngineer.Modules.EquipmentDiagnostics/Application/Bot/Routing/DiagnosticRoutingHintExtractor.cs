@@ -12,6 +12,17 @@ public static partial class DiagnosticRoutingHintExtractor
             return null;
         }
 
+        if (normalized.Contains("GMV6HR", StringComparison.Ordinal) ||
+            normalized.Contains("GMVHR", StringComparison.Ordinal) ||
+            normalized.Contains("HEATRECOVERY", StringComparison.Ordinal) ||
+            HasTokenPair(text, "GMV6", "HR") ||
+            HasTokenPair(text, "GMV", "HR") ||
+            HasTokenPair(text, "GMV6", "HEAT") ||
+            HasTokenPair(text, "GMV6", "RECOVERY"))
+        {
+            return "GMV6 HR";
+        }
+
         if (normalized.Contains("GMV9FLEX", StringComparison.Ordinal) ||
             normalized.Contains("9SERIESFLEX", StringComparison.Ordinal) ||
             normalized.Contains("9FLEX", StringComparison.Ordinal) ||
@@ -62,6 +73,9 @@ public static partial class DiagnosticRoutingHintExtractor
         token.Equals("GMV", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV5", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV6", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("HR", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("HEAT", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("RECOVERY", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV9", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("9", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("SERIES", StringComparison.OrdinalIgnoreCase) ||
@@ -74,6 +88,8 @@ public static partial class DiagnosticRoutingHintExtractor
         token.Equals("9-FLEX", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("9-SERIES-FLEX", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV9-FLEX", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("GMV6-HR", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("HEAT-RECOVERY", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("X-SERIES", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV-MINI", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV5-MINI", StringComparison.OrdinalIgnoreCase) ||

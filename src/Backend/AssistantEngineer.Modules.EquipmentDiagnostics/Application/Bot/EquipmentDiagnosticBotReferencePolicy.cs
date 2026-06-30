@@ -53,6 +53,7 @@ public static class EquipmentDiagnosticBotReferencePolicy
         QualityApprovedLocalizedEntryIds.Contains(entry.Id) ||
         IsManualVerifiedGmvMiniRuntimeEntry(entry) ||
         IsManualVerifiedGmvXRuntimeEntry(entry) ||
+        IsManualVerifiedGmv6HrRuntimeEntry(entry) ||
         IsManualVerifiedGmv9FlexRuntimeEntry(entry);
 
     private static bool IsManualVerifiedGmvMiniRuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
@@ -64,6 +65,12 @@ public static class EquipmentDiagnosticBotReferencePolicy
     private static bool IsManualVerifiedGmvXRuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
         string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
         string.Equals(entry.Series, "GMV X", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.SourceType, "Manual", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.VerificationStatus, "ManualVerified", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsManualVerifiedGmv6HrRuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
+        string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.Series, "GMV6 HR", StringComparison.OrdinalIgnoreCase) &&
         string.Equals(entry.SourceType, "Manual", StringComparison.OrdinalIgnoreCase) &&
         string.Equals(entry.VerificationStatus, "ManualVerified", StringComparison.OrdinalIgnoreCase);
 
