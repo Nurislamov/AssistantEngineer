@@ -63,8 +63,7 @@ public sealed class EfTelegramManualFileBindingStore : ITelegramManualFileBindin
             .Where(item =>
                 item.IsActive &&
                 item.CanUseForDiagnostics &&
-                (item.DocumentType == TelegramLibraryDocumentType.OwnerManual ||
-                 item.DocumentType == TelegramLibraryDocumentType.UserGuide) &&
+                item.DocumentType == TelegramLibraryDocumentType.OwnerManual &&
                 item.Brand != null &&
                 item.Series != null &&
                 item.Brand.ToLower() == normalizedBrand &&
@@ -115,6 +114,7 @@ public sealed class EfTelegramManualFileBindingStore : ITelegramManualFileBindin
             .FirstOrDefaultAsync(
                 item =>
                     item.IsActive &&
+                    item.DocumentType == binding.DocumentType &&
                     item.Brand != null &&
                     item.Series != null &&
                     item.Brand.ToLower() == normalizedBrand &&

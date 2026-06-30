@@ -182,5 +182,5 @@ public sealed class FileTelegramManualFileBindingStore : ITelegramManualFileBind
         IReadOnlyList<TelegramManualFileBinding> Bindings);
 
     private static bool IsDiagnosticDocument(TelegramLibraryDocumentType documentType) =>
-        documentType is TelegramLibraryDocumentType.OwnerManual or TelegramLibraryDocumentType.UserGuide;
+        documentType == TelegramLibraryDocumentType.OwnerManual;
 }

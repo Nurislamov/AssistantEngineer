@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24SRC.2 - CLOSED / pushed.
+ED-24MAN.2 - CLOSED / pushed.
 
 Next recommended steps:
 
 1. If desired, run a future production `/manual_bind` for `Gree GMV Mini` using the audited Mini/Slim broad side-outlet manual.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
-3. Keep ED-24MAN.3 manual variants by model family / exact model matching and ED-24EF.1 EF enum sentinel warning cleanup as future candidates.
+3. Keep ED-24MAN.3 manual variants by model family / exact model matching and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
 
 ## Current branch
 
@@ -16,11 +16,26 @@ master
 
 ## Last completed work
 
-ED-24SRC.2 audited the local Gree GMV Mini/Slim side-outlet service manual PDF against the current GMV Mini runtime diagnostics and produced a coverage report.
+ED-24MAN.2 added the structured Telegram manual library tree and minimum manual taxonomy for Gree.
 
-Latest implementation commit before this audit: `c44eb2db` (`ED-24OPS.2b Support operator media replies`).
+Implementation commit: `ED-24MAN.2 Add library tree and manual taxonomy` (this commit).
 
-Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), and ED-24OPS.2b (`c44eb2db`) are production PASS. ED-24SRC.2 is a local audit-only stage; no production action or `/manual_bind` was performed.
+Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), and ED-24OPS.2b (`c44eb2db`) are production PASS. ED-24MAN.2 is local validation only at this point; do not mark production PASS until a VPS live-check is performed.
+
+ED-24MAN.2 local implementation notes:
+
+- Telegram library root now shows `Gree`, Owner-only `➕ Добавить файл`, access requests, access management, and cancel.
+- `Gree` now contains `Наружные`, `Внутренние`, `Пульты / Controllers`, and `Аксессуары и прочее`; root `Пульты` moved under `Gree`.
+- Outdoor product lines are fixed to GMV6, GMV6 HR, GMV Mini / Slim, GMV X, and GMV9 Flex.
+- Outdoor product lines expose `📕 Service Manual`, `📘 Owner Manual`, and `🛠 Installation Manual` buckets; empty buckets show `Пока файлов нет.`
+- Free sections list uploaded files directly by safe display title/filename with pagination and no nested model tree.
+- Minimum taxonomy now includes `ServiceManual`, `OwnerManual`, `InstallationManual`, and `ControllerGuide`.
+- Diagnostic guide delivery is `OwnerManual` only; service, installation, and controller documents remain library-only.
+- Existing ServiceManual bindings for GMV9 Flex, GMV X, GMV6, and GMV Mini stay visible under their outdoor Service Manual buckets.
+- Owner-only upload flow supports brand, section, outdoor product line, document type, PDF validation, confirmation, same-key replacement confirmation, and cancel-preserves-old-binding behavior.
+- Protected library `sendDocument` delivery, access re-checks, `protect_content`, no `forwardMessage`, JSON/cards/codes/sourceReferences/routing/manual bindings, and deploy scripts remain unchanged.
+- No migration was added for ED-24MAN.2.
+- Runtime Gree diagnostics remains 922; GMV Mini runtime remains 136.
 
 ## Current working point
 
@@ -43,6 +58,7 @@ Production live-check point: ED-24OPS.2 (`ec553a8a`), ED-24OPS.2a (`4cf00444`), 
 - ED-24OPS.2a - CLOSED / production PASS.
 - ED-24OPS.2b - CLOSED / production PASS.
 - ED-24SRC.2 - CLOSED / pushed.
+- ED-24MAN.2 - CLOSED / pushed.
 
 ## Gree diagnostics runtime status
 
@@ -623,15 +639,14 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 ## Future candidates
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
-- ED-24MAN.2 - Manual taxonomy / owner vs service access levels.
 - ED-24MAN.3 - Manual variants by model family / exact model matching.
-- ED-24EF.1 - Fix EF enum default/sentinel warnings for Telegram library/manual entities.
+- ED-24EF.1 - Fix remaining EF enum default/sentinel warnings for Telegram library/manual entities.
 
 ## Current blocker
 
-No active blocker after ED-24SRC.2 local audit PASS WITH NOTES.
+No active blocker after ED-24MAN.2 local validation.
 
 ## Next step
 
-Discuss one of the next possible small follow-ups: bind the audited Gree GMV Mini/Slim broad manual in production, ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24EF.1 EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
+Discuss one of the next possible small follow-ups: bind the audited Gree GMV Mini/Slim broad manual in production, ED-24MAN.3 manual variants by model family / exact model matching, ED-24EF.1 remaining EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 

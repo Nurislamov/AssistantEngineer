@@ -125,14 +125,14 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
 
         var home = await adapter.HandleAsync(LibraryCallback("lib:open"));
         var gree = await adapter.HandleAsync(LibraryCallback("lib:brand:gree"));
-        var remotes = await adapter.HandleAsync(LibraryCallback("lib:brand:remotes"));
+        var remotes = await adapter.HandleAsync(LibraryCallback("lib:gree:section:controllers"));
         var access = await adapter.HandleAsync(LibraryCallback("lib:access"));
         var requests = await adapter.HandleAsync(LibraryCallback("lib:reqs"));
         var cancel = await adapter.HandleAsync(LibraryCallback("lib:cancel"));
 
         Assert.Contains("Gree", InlineButtons(home), StringComparer.Ordinal);
-        Assert.Contains("нет", gree.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Пульты", remotes.Text, StringComparison.Ordinal);
+        Assert.Contains("Наружные", InlineButtons(gree), StringComparer.Ordinal);
+        Assert.Contains("Пульты / Controllers", remotes.Text, StringComparison.Ordinal);
         Assert.Contains("нет", remotes.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Управление доступом", access.Text, StringComparison.Ordinal);
         Assert.Contains("Запросов нет", requests.CallbackAnswerText, StringComparison.Ordinal);
@@ -174,7 +174,10 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         {
             await adapter.HandleAsync(LibraryCallback("lib:open", messageId: 7001)),
             await adapter.HandleAsync(LibraryCallback("lib:brand:gree", messageId: 7001)),
-            await adapter.HandleAsync(LibraryCallback("lib:brand:remotes", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:gree:outdoor", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:gree:outdoor:gmv6", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:gree:outdoor:gmv6:service", messageId: 7001)),
+            await adapter.HandleAsync(LibraryCallback("lib:gree:section:controllers", messageId: 7001)),
             await adapter.HandleAsync(LibraryCallback("lib:reqs", messageId: 7001)),
             await adapter.HandleAsync(LibraryCallback("lib:access", messageId: 7001)),
             await adapter.HandleAsync(LibraryCallback("lib:cancel", messageId: 7001)),
@@ -625,13 +628,19 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
         var start = await adapter.HandleAsync(Update("/manual_bind"));
-        var selected = await adapter.HandleAsync(ManualBindCallback("mb:s:gmv9-flex"));
+        var brand = await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        var section = await adapter.HandleAsync(ManualBindCallback("mb:sec:outdoor"));
+        var series = await adapter.HandleAsync(ManualBindCallback("mb:s:gmv9-flex"));
+        var selected = await adapter.HandleAsync(ManualBindCallback("mb:dt:service"));
         var nonDocument = await adapter.HandleAsync(Update("hello"));
         var badName = await adapter.HandleAsync(DocumentUpdate("telegram-file-id-bad", "Gree Manual.txt"));
 
-        Assert.Contains("Gree GMV9 Flex", InlineButtons(start), StringComparer.Ordinal);
+        Assert.Contains("Gree", InlineButtons(start), StringComparer.Ordinal);
+        Assert.Contains("Наружные", InlineButtons(brand), StringComparer.Ordinal);
+        Assert.Contains("GMV9 Flex", InlineButtons(section), StringComparer.Ordinal);
+        Assert.Contains("Service Manual", string.Join(" ", InlineButtons(series)), StringComparison.Ordinal);
         Assert.Contains("Gree GMV9 Flex Service Manual EN Rev B.pdf", selected.Text, StringComparison.Ordinal);
-        Assert.Contains("Ожидаю PDF-файл мануала", nonDocument.Text, StringComparison.Ordinal);
+        Assert.Contains("Ожидаю PDF-файл", nonDocument.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV9 Flex Service Manual EN Rev B.pdf", badName.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("telegram-file-id-bad", badName.Text, StringComparison.OrdinalIgnoreCase);
     }
@@ -646,7 +655,10 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
 
         await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        await adapter.HandleAsync(ManualBindCallback("mb:sec:outdoor"));
         await adapter.HandleAsync(ManualBindCallback("mb:s:gmv9-flex"));
+        await adapter.HandleAsync(ManualBindCallback("mb:dt:service"));
         var candidate = await adapter.HandleAsync(DocumentUpdate(
             "telegram-file-id-gmv9-flex",
             "Gree GMV9 Flex Service Manual EN Rev B.pdf",
@@ -660,8 +672,9 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             .ToArray();
         var stored = await bindingStore.GetBySeriesAsync("Gree", "GMV9 Flex");
 
-        Assert.Contains("Подтвердите привязку", candidate.Text, StringComparison.Ordinal);
-        Assert.Contains("Мануал привязан", confirmed.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV9 Flex", candidate.Text, StringComparison.Ordinal);
+        Assert.Contains("Service Manual", candidate.Text, StringComparison.Ordinal);
+        Assert.Contains("Файл", confirmed.Text, StringComparison.Ordinal);
         Assert.NotNull(stored);
         Assert.Equal("telegram-file-id-gmv9-flex", stored.TelegramFileId);
         Assert.Equal("telegram-unique-gmv9-flex", stored.TelegramFileUniqueId);
@@ -690,6 +703,32 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
+    public async Task OwnerCanBindControllerGuideIntoFreeSectionList()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        await adapter.HandleAsync(ManualBindCallback("mb:sec:controllers"));
+        await adapter.HandleAsync(ManualBindCallback("mb:dt:controller"));
+        await adapter.HandleAsync(DocumentUpdate(
+            "telegram-file-id-controller",
+            "Gree wired controller guide.pdf"));
+        await adapter.HandleAsync(ManualBindCallback("mb:c:bind"));
+
+        var section = await adapter.HandleAsync(LibraryCallback("lib:gree:section:controllers"));
+        var file = await adapter.HandleAsync(LibraryCallback("lib:file:gree-controllers-controller-guide-greewiredcontrollerguide"));
+        var fileDocument = Assert.Single(file.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+
+        Assert.Contains(InlineButtons(section), button => button.Contains("Gree wired controller guide.pdf", StringComparison.Ordinal));
+        Assert.DoesNotContain("GMV6", InlineButtons(section), StringComparer.Ordinal);
+        Assert.Equal("telegram-file-id-controller", fileDocument.DocumentFileId);
+        Assert.True(fileDocument.ProtectContent);
+    }
+
+    [Fact]
     public async Task ManualBindReplaceRequiresConfirmationAndCancelKeepsExistingBinding()
     {
         using var provider = CreateProvider(TempBindingPath());
@@ -708,13 +747,19 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             Series: "GMV6"));
 
         await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        await adapter.HandleAsync(ManualBindCallback("mb:sec:outdoor"));
         await adapter.HandleAsync(ManualBindCallback("mb:s:gmv6"));
+        await adapter.HandleAsync(ManualBindCallback("mb:dt:service"));
         var replacePrompt = await adapter.HandleAsync(DocumentUpdate("telegram-file-id-new", "Gree GMV6 Service Manual EN Rev C.pdf"));
         await adapter.HandleAsync(ManualBindCallback("mb:c:cancel"));
         var afterCancel = await bindingStore.GetBySeriesAsync("Gree", "GMV6");
 
         await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        await adapter.HandleAsync(ManualBindCallback("mb:sec:outdoor"));
         await adapter.HandleAsync(ManualBindCallback("mb:s:gmv6"));
+        await adapter.HandleAsync(ManualBindCallback("mb:dt:service"));
         await adapter.HandleAsync(DocumentUpdate("telegram-file-id-new", "Gree GMV6 Service Manual EN Rev C.pdf"));
         await adapter.HandleAsync(ManualBindCallback("mb:c:replace"));
         var afterReplace = await bindingStore.GetBySeriesAsync("Gree", "GMV6");

@@ -60,7 +60,7 @@ public sealed class EfTelegramManualFileBindingStoreTests
     }
 
     [Fact]
-    public async Task EfTelegramManualFileBindingStoreDiagnosticLookupOnlyReturnsOwnerOrUserGuideBindings()
+    public async Task EfTelegramManualFileBindingStoreDiagnosticLookupOnlyReturnsOwnerManualBindings()
     {
         await using var connection = await OpenConnectionAsync();
         await using var provider = await BuildProviderAsync(connection);
@@ -100,6 +100,46 @@ public sealed class EfTelegramManualFileBindingStoreTests
         Assert.Equal("telegram-file-id-owner", diagnostic.TelegramFileId);
         Assert.Equal(TelegramLibraryDocumentType.OwnerManual, diagnostic.DocumentType);
         Assert.True(diagnostic.CanUseForDiagnostics);
+    }
+
+    [Fact]
+    public async Task EfTelegramManualFileBindingStoreKeepsSeriesDocumentTypesIndependent()
+    {
+        await using var connection = await OpenConnectionAsync();
+        await using var provider = await BuildProviderAsync(connection);
+        var store = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await store.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv6-service-manual",
+            "telegram-file-id-service",
+            "Gree GMV6 Service Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            "Owner",
+            Brand: "Gree",
+            Series: "GMV6"));
+        await store.UpsertSeriesAsync(new TelegramManualFileBinding(
+            "gree-gmv6-owner-manual",
+            "telegram-file-id-owner",
+            "Gree GMV6 Owner Manual.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            "Owner",
+            Brand: "Gree",
+            Series: "GMV6",
+            DocumentType: TelegramLibraryDocumentType.OwnerManual,
+            MinRole: TelegramUserRole.Consumer,
+            CanUseForDiagnostics: true));
+
+        var all = await store.ListAsync();
+
+        Assert.Contains(all, item => item.DocumentType == TelegramLibraryDocumentType.ServiceManual);
+        Assert.Contains(all, item => item.DocumentType == TelegramLibraryDocumentType.OwnerManual);
+        Assert.Equal(2, all.Count(item =>
+            string.Equals(item.Brand, "Gree", StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(item.Series, "GMV6", StringComparison.OrdinalIgnoreCase)));
     }
 
     [Fact]

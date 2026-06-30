@@ -1,19 +1,20 @@
 # Telegram file library
 
-Status: ED-24LIB.1a has the protected Telegram file library foundation plus callback/UX fixes. It extends existing
-`TelegramManualBindings` instead of creating a parallel file-id system, adds persistent library access grants and
-requests, and changes diagnostic document delivery to Owner/User manuals only.
+Status: ED-24MAN.2 has the protected Telegram file library foundation, callback/UX fixes, and the first Gree manual
+taxonomy. It extends existing `TelegramManualBindings` instead of creating a parallel file-id system, keeps persistent
+library access grants and requests, and allows diagnostic document delivery only from `OwnerManual` bindings.
 
 ## Current rules
 
-- Diagnostic code flow can deliver only `OwnerManual` or `UserGuide` files with `CanUseForDiagnostics = true`.
-- `ServiceManual`, `EngineeringManual`, debugging/internal/source documents, and error-code tables are library-only.
+- Diagnostic code flow can deliver only `OwnerManual` files with `CanUseForDiagnostics = true`.
+- `ServiceManual`, `InstallationManual`, `ControllerGuide`, debugging/internal/source documents, and error-code tables
+  are library-only.
 - Existing production service manual bindings default to `DocumentType = ServiceManual`, `MinRole = Engineer`,
   `IsLibraryVisible = true`, and `CanUseForDiagnostics = false`.
-- If no Owner/User manual is bound for a diagnostic series, the diagnostic button returns
+- If no Owner manual is bound for a diagnostic series, the diagnostic button returns
   `Руководство пока не добавлено` and never falls back to a service manual.
 - Files are sent with Telegram `sendDocument(file_id)` and `protect_content=true`.
-- `forwardMessage` and `copyMessage` are not used.
+- `forwardMessage` and `copyMessage` are not used for library/manual delivery.
 - Raw `TelegramFileId`, `FileUniqueId`, DB ids, chat ids, local paths, package ids, and source references are not shown
   to users.
 
@@ -27,8 +28,8 @@ Library access is separate from Telegram role.
 - `Consumer`, disabled, blocked, and unknown users cannot open or fetch library files.
 - Every library command, callback, access request, grant/revoke action, and file-fetch callback re-checks role,
   enabled/blocked state, and active grant.
-- Normal library navigation uses stable callback routes for home, Gree, remotes, access requests, access management,
-  back, and cancel, so fresh inline buttons do not return the stale-action response.
+- Normal library navigation uses stable callback routes for home, Gree, access requests, access management, back, and
+  cancel, so fresh inline buttons do not return the stale-action response.
 - Old callbacks after revoke fail safely.
 
 The main keyboard shows `📚 Библиотека` only when:
@@ -47,7 +48,7 @@ Owner can:
 - approve or reject requests;
 - grant access with `/library_grant <chatId>`;
 - revoke access with `/library_revoke <chatId>`;
-- bind/rebind protected files through the existing `/manual_bind` workflow.
+- bind/rebind protected files through `/manual_bind` or the Owner-only `➕ Добавить файл` library action.
 
 Access request lists show the requester's display name, username when available, role, and chat id. Approve/reject
 actions notify the requester in private chat through bot `sendMessage`; approve includes a refreshed main keyboard with
@@ -58,35 +59,56 @@ Admin cannot approve/reject requests, grant/revoke access, or bind/rebind files 
 
 ## File catalog
 
-ED-24LIB.1 exposes a minimal protected catalog:
+ED-24MAN.2 exposes the first structured Gree catalog:
 
-- `Gree` section lists active `TelegramManualBindings` visible to the current role.
+- Root shows `Gree`, Owner-only `➕ Добавить файл`, `Запросы доступа`, `Управление доступом`, and `Отмена`.
+- `Gree` shows `Наружные`, `Внутренние`, `Пульты / Controllers`, `Аксессуары и прочее`, and `Назад`.
+- `Пульты / Controllers` moved under `Gree`.
+- `Gree -> Наружные` shows fixed product lines: `GMV6`, `GMV6 HR`, `GMV Mini / Slim`, `GMV X`, `GMV9 Flex`.
+- Each outdoor product line shows document buckets: `📕 Service Manual`, `📘 Owner Manual`,
+  `🛠 Installation Manual`.
+- Empty buckets show `Пока файлов нет.`
+- Free sections (`Внутренние`, `Пульты / Controllers`, `Аксессуары и прочее`) list files directly as safe
+  title/filename buttons without a nested model tree and paginate when the list is long.
 - File visibility requires `IsLibraryVisible = true`.
 - File fetch requires active library access and `role >= MinRole`.
 - Owner sees all active visible files.
 - Engineer with grant can fetch `MinRole = Engineer` files.
 - Installer with grant cannot fetch `MinRole = Engineer` service manuals.
 
-Existing Gree service bindings for GMV9 Flex, GMV X, and GMV6 are service/library files. GMV Mini remains pending until a
-binding is added.
+Existing Gree service bindings for GMV9 Flex, GMV X, GMV6, and GMV Mini remain visible under
+`Gree -> Наружные -> <product> -> 📕 Service Manual`.
 
 ## Bind workflow
 
-`/manual_bind` remains the protected upload path but is Owner-only in ED-24LIB.1.
+`/manual_bind` remains protected and Owner-only. ED-24MAN.2 also exposes the same flow through `➕ Добавить файл`.
 
-The current MVP keeps the existing series/PDF/confirmation workflow and stores the binding as:
+The flow is:
 
-- `DocumentType = ServiceManual`
-- `MinRole = Engineer`
-- `CanUseForDiagnostics = false`
-- `IsLibraryVisible = true`
+- Brand: `Gree`.
+- Section: `Outdoor`, `Indoor`, `Controllers`, or `Accessories`.
+- Outdoor: choose product line, then `ServiceManual`, `OwnerManual`, or `InstallationManual`.
+- Free sections: choose the section-appropriate document type, send a PDF document, confirm, and save into the flat
+  section list.
+- Re-uploading the same outdoor `Brand + ProductLine + DocumentType` or the same free-section key asks for replacement
+  confirmation.
+- Cancel preserves the old binding.
 
-Future work can add document-type selection for Owner/User, Installation, and Service manuals.
+PDF validation requires a Telegram document, `.pdf`, `file_id`, non-empty safe filename, and a PDF-compatible content
+type. Outdoor prompts recommend a `Gree + product + document type` filename without relying on raw production ids or
+Telegram file ids.
+
+Stored document policy:
+
+- `ServiceManual`: `MinRole = Engineer`, library-only, `CanUseForDiagnostics = false`.
+- `OwnerManual`: `MinRole = Consumer`, can be used by diagnostics only for outdoor product lines.
+- `InstallationManual`: `MinRole = Installer`, library-only.
+- `ControllerGuide`: `MinRole = Installer`, library-only.
 
 ## Future work
 
 - Richer model matching and exact model-family variants.
 - Mini / Mini Star / Slim handling.
-- Remote controller categories.
-- Owner/service taxonomy polish and document-type selection in bind flow.
 - Optional file request workflow.
+- EF enum default/sentinel cleanup can continue under ED-24EF.1 for remaining warnings outside the fixed
+  `TelegramLibraryDocumentType.OwnerManual` storage path.

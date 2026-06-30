@@ -15,12 +15,14 @@ public sealed record TelegramManualRegistryEntry(
 
 public enum TelegramLibraryDocumentType
 {
+    Unknown,
     OwnerManual,
     UserGuide,
     InstallationManual,
     CommissioningGuide,
     WiringDiagram,
     ServiceManual,
+    ControllerGuide,
     ErrorCodeTable,
     InternalNote
 }
