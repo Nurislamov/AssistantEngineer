@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24OPS.2a - CLOSED / pushed.
+ED-24OPS.2a - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Deploy ED-24OPS.2a when ready to enable Telegram video note support in the production operator inbox.
+1. Discuss whether the next small follow-up should be ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Use `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1` before deploy or after Gree diagnostics changes.
 
@@ -18,7 +18,9 @@ master
 
 ED-24OPS.2a adds Telegram `video_note` / "circle" support to the operator inbox, including webhook parsing, `VideoNote` message kind persistence, safe `[Видео-кружок]` operator cards, internal `copyMessage` mirroring, and Owner text replies to both the card and copied media.
 
-Previous implementation commit: `ec553a8a` (ED-24OPS.2).
+Previous implementation commit: `4cf00444` (ED-24OPS.2a).
+
+Production live-check point: ED-24OPS.2 (`ec553a8a`) and ED-24OPS.2a (`4cf00444`) are both production PASS; the configured operator group is active and Telegram `video_note` / "circle" messages mirror as safe `[Видео-кружок]` operator cards.
 
 ## Current working point
 
@@ -37,8 +39,8 @@ Previous implementation commit: `ec553a8a` (ED-24OPS.2).
 - ED-24LIB.1 - CLOSED / pushed.
 - ED-24LIB.1a - CLOSED / pushed.
 - ED-24LIB.1c - CLOSED / pushed.
-- ED-24OPS.2 - CLOSED / pushed.
-- ED-24OPS.2a - CLOSED / pushed.
+- ED-24OPS.2 - CLOSED / production PASS.
+- ED-24OPS.2a - CLOSED / production PASS.
 
 ## Gree diagnostics runtime status
 
@@ -104,6 +106,31 @@ Latest validation after ED-24OPS.2:
 - Runtime total: 922 confirmed by counting `data/equipment-diagnostics/error-knowledge/gree/**/*.json`.
 - Runtime JSON cards, diagnostic codes, source references, and routing unchanged.
 
+Latest production validation after ED-24OPS.2:
+
+- Implementation commit: `ec553a8a` (`ED-24OPS.2 Add Telegram operator inbox`).
+- VPS deploy: PASS.
+- Production migration apply: PASS; `20260629193430_AddTelegramOperatorInbox` was applied on production.
+- Operator env configured:
+  - `TELEGRAM_OPERATOR_INBOX_ENABLED=true`
+  - `TELEGRAM_OPERATOR_CHAT_ID=-5382766285`
+  - `TELEGRAM_OPERATOR_LOG_DIAGNOSTICS=false`
+- Operator inbox live-check: PASS.
+- User free text mirrored to the operator group.
+- Operator card shows display name, username, role, chat id, library access, and message.
+- Owner reply bridge: PASS; reply in operator group was delivered to the user as `Ответ специалиста`.
+- Operator group confirmation: PASS; bot confirms `Ответ отправлен пользователю`.
+- Photo/video/document/voice media mirroring: PASS.
+- Library empty access request Back fix: PASS.
+- Security preserved: only the configured operator group is used; only Owner can reply through the bridge; Admin does not get operator power by default.
+- `forwardMessage` remains unused.
+- `copyMessage` remains internal operator media mirroring only.
+- Protected library `sendDocument` remains unchanged.
+- Service manuals remain library-only.
+- Diagnostic Owner/User manual-only policy unchanged.
+- Runtime total: 922.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
 Latest validation after ED-24OPS.2a:
 
 - Telegram `video_note` is accepted by webhook/polling contracts with Telegram API metadata fields parsed but not logged or exposed.
@@ -121,6 +148,27 @@ Latest validation after ED-24OPS.2a:
 - `git diff --check`: PASS.
 - No migration added.
 - Runtime total: 922 confirmed by counting `data/equipment-diagnostics/error-knowledge/gree/**/*.json`.
+- Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
+
+Latest production validation after ED-24OPS.2a:
+
+- Implementation commit: `4cf00444` (`ED-24OPS.2a Support Telegram video notes`).
+- VPS deploy: PASS.
+- No migration was added or required for ED-24OPS.2a.
+- Telegram `video_note` / "кружочек" production live-check: PASS.
+- User `video_note` mirrored to the operator group.
+- Operator card shows safe label `[Видео-кружок]`.
+- `video_note` copied via the internal `copyMessage` operator-inbox path.
+- User receives `Сообщение передано специалисту.`.
+- Owner reply to the `video_note` card/media was delivered to the user as `Ответ специалиста`.
+- Security preserved: only the configured operator group is used; only Owner can reply through the bridge; Admin does not get operator power by default.
+- `forwardMessage` remains unused.
+- `copyMessage` remains internal operator media mirroring only.
+- Protected library `sendDocument` remains unchanged.
+- Service manuals remain library-only.
+- Diagnostic Owner/User manual-only policy unchanged.
+- Logs clean except known non-blocking EF enum sentinel warnings.
+- Runtime total: 922.
 - Runtime JSON cards, diagnostic cards, diagnostic codes, sourceReferences, and routing unchanged.
 
 Latest validation after ED-24UX.4:
@@ -434,12 +482,16 @@ Latest production validation after ED-24MAN.1:
 
 Latest stable production point:
 
+- ED-24OPS.2a - production PASS.
+- ED-24OPS.2 - production PASS.
 - ED-24MAN.1 - production PASS.
 - ED-24USR.3 - production PASS.
 - ED-24SRC.1a - production PASS.
 
 Latest pushed local point:
 
+- ED-24OPS.2a - Telegram video notes in operator inbox validated locally, pushed, and production-confirmed.
+- ED-24OPS.2 - Telegram operator inbox validated locally, pushed, and production-confirmed.
 - ED-24LIB.1c - Telegram library callback navigation edits the current inline message, validated locally and pushed.
 - ED-24LIB.1a - Telegram library callback freshness and access UX validated locally and pushed.
 - ED-24LIB.1 - protected Telegram file library foundation validated locally and pushed.
@@ -460,6 +512,8 @@ Gree GMV6 Uy -> OK, no GC/manual code in visible text
 
 ## Important commits
 
+4cf00444 ED-24OPS.2a Support Telegram video notes
+ec553a8a ED-24OPS.2 Add Telegram operator inbox
 e7577c46 ED-24LIB.1 Add protected Telegram file library
 8a3edb6a ED-24MAN.1 Bind protected Telegram manuals
 6fbf2685 Update project state after ED-24MAN.1
@@ -500,9 +554,9 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No active blocker after ED-24LIB.1c pushed.
+No active blocker after ED-24OPS.2a production PASS.
 
 ## Next step
 
-Discuss one of the next possible small follow-ups: ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF enum sentinel warning hygiene, EF warning hygiene for HourlySchedule.Factors, or the next Gree diagnostics direction.
+Discuss one of the next possible small follow-ups: ED-24MAN.2 manual taxonomy / owner vs service access levels, ED-24MAN.3 manual variants by model family / exact model matching, ED-24SRC.2 Mini manual comparison, EF enum sentinel warning hygiene, EF warning hygiene for `HourlySchedule.Factors`, or the next Gree diagnostics direction.
 
