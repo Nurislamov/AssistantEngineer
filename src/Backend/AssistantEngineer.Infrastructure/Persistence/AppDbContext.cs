@@ -12,6 +12,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Histor
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.OperatorInbox;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -84,6 +85,10 @@ public class AppDbContext : DbContext, IUnitOfWork
     public DbSet<TelegramOperatorInboxThreadEntity> TelegramOperatorInboxThreads { get; set; } = null!;
 
     public DbSet<TelegramOperatorInboxMessageEntity> TelegramOperatorInboxMessages { get; set; } = null!;
+
+    public DbSet<TelegramBroadcastCampaignEntity> TelegramBroadcastCampaigns { get; set; } = null!;
+
+    public DbSet<TelegramBroadcastRecipientEntity> TelegramBroadcastRecipients { get; set; } = null!;
 
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)

@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Public;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
@@ -25,6 +26,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly TelegramServiceRequestQueueService? _serviceRequestQueueService;
     private readonly TelegramAdminUserManagementService? _adminUserManagementService;
     private readonly TelegramUserOverviewService? _userOverviewService;
+    private readonly TelegramBroadcastService? _broadcastService;
     private readonly TelegramManualLibraryService? _manualLibraryService;
     private readonly ITelegramOperatorInboxService? _operatorInboxService;
 
@@ -41,6 +43,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         TelegramServiceRequestQueueService? serviceRequestQueueService = null,
         TelegramAdminUserManagementService? adminUserManagementService = null,
         TelegramUserOverviewService? userOverviewService = null,
+        TelegramBroadcastService? broadcastService = null,
         TelegramManualLibraryService? manualLibraryService = null,
         ITelegramOperatorInboxService? operatorInboxService = null)
     {
@@ -56,6 +59,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _serviceRequestQueueService = serviceRequestQueueService;
         _adminUserManagementService = adminUserManagementService;
         _userOverviewService = userOverviewService;
+        _broadcastService = broadcastService;
         _manualLibraryService = manualLibraryService;
         _operatorInboxService = operatorInboxService;
     }
@@ -179,6 +183,26 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                     editMessageId: update.MessageId);
             }
 
+            if (TelegramBroadcastService.IsCallback(update.CallbackData))
+            {
+                var callbackAccess = await _accessService.ResolveAccessAsync(update, cancellationToken);
+                if (!callbackAccess.IsAllowed)
+                {
+                    return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
+                }
+
+                var broadcastResult = _broadcastService is null
+                    ? new TelegramBroadcastResult("Рассылка сейчас недоступна.", CallbackAnswerText: "Недоступно")
+                    : await _broadcastService.HandleCallbackAsync(update, callbackAccess, cancellationToken);
+                return Response(
+                    update.ChatId,
+                    broadcastResult.Text,
+                    EquipmentDiagnosticTelegramResponseKind.Reply,
+                    replyMarkup: broadcastResult.ReplyMarkup,
+                    callbackAnswerText: broadcastResult.CallbackAnswerText,
+                    editMessageId: update.MessageId);
+            }
+
             var result = _serviceRequestQueueService is null
                 ? new TelegramServiceQueueCommandResult("Действие недоступно или устарело.")
                 : await _serviceRequestQueueService.HandleCallbackAsync(update, cancellationToken);
@@ -218,7 +242,20 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 update.ChatId,
                 result.Text,
                 EquipmentDiagnosticTelegramResponseKind.Reply,
-                replyMarkup: result.ReplyMarkup);
+                    replyMarkup: result.ReplyMarkup);
+        }
+
+        var broadcastTextResult = _broadcastService is null
+            ? null
+            : await _broadcastService.TryHandleTextAsync(update, access, cancellationToken);
+        if (broadcastTextResult is not null)
+        {
+            return Response(
+                update.ChatId,
+                broadcastTextResult.Text,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: broadcastTextResult.ReplyMarkup,
+                callbackAnswerText: broadcastTextResult.CallbackAnswerText);
         }
 
         if (!string.IsNullOrWhiteSpace(update.ContactPhoneNumber))

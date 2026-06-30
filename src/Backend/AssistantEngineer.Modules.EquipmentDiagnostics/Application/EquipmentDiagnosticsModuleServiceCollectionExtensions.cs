@@ -5,6 +5,7 @@ using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Local
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
@@ -38,6 +39,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<ITelegramManualFileBindingStore, FileTelegramManualFileBindingStore>();
         services.AddSingleton<ITelegramLibraryAccessStore, InMemoryTelegramLibraryAccessStore>();
         services.AddSingleton<ITelegramOperatorInboxStore, InMemoryTelegramOperatorInboxStore>();
+        services.AddSingleton<ITelegramBroadcastStore, InMemoryTelegramBroadcastStore>();
         services.AddSingleton<TelegramDisplayTimeFormatter>();
         services.AddSingleton<TelegramDiagnosticHistoryService>();
         services.AddSingleton<TelegramManualLibraryService>();
@@ -49,6 +51,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<TelegramUserAuditEventService>();
         services.AddSingleton<TelegramAdminUserManagementService>();
         services.AddSingleton<TelegramUserOverviewService>();
+        services.AddSingleton<TelegramBroadcastService>();
         services.AddSingleton<ITelegramUserAccessService, TelegramUserAccessService>();
         services.AddSingleton<EquipmentDiagnosticTelegramMessageParser>();
         services.AddSingleton<EquipmentDiagnosticTelegramResponseFormatter>();

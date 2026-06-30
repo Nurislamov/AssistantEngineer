@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24USR.4 - CLOSED / pushed; production live-check is still pending.
+ED-24BCAST.1 - CLOSED / pushed; production live-check is still pending.
 
 Next recommended steps:
 
-1. Continue with ED-24BCAST.1 Owner text broadcast foundation.
+1. Complete ED-24BCAST.1 production live-check on `assistantengineer-beta-01`.
 2. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 3. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
 
@@ -15,6 +15,40 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24BCAST.1 adds the Owner-only Telegram text broadcast foundation; the stage is CLOSED / pushed. Production PASS is not
+marked yet because the VPS live-check is still pending.
+
+ED-24BCAST.1 implementation notes:
+
+- Owner-only `📣 Рассылка` was added to the Telegram file-library/admin home menu.
+- Broadcast callbacks are Owner-only; Admin, Engineer, Installer, and Consumer cannot open broadcast menus or start a
+  broadcast.
+- Supported audiences are all active reachable users or a single role: Owner, Admin, Engineer, Installer, Consumer.
+- The flow is text-only: select audience, enter text, preview, optionally send a test message to self, then confirm send.
+- Unsupported media, empty text, command-like text, and overlong text are rejected before a broadcast can be confirmed.
+- Recipients are persisted with per-recipient status: Pending, Sent, Skipped, or Failed.
+- Skipped recipients cover unavailable private messaging cases such as inactive users, blocked users, missing private chat
+  id, or duplicate private chat id.
+- Send failures mark only that recipient as Failed, sanitize the error message, and continue with remaining recipients.
+- Broadcast text is not placed in callback data, recipient error messages, or diagnostic identifiers.
+- New EF migration: `20260630195828_AddTelegramBroadcasts`.
+- No PDFs, generated artifacts, certificates, passwords, or secrets were committed.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policies are unchanged: ServiceManual library-only, InstallationManual hidden from visible library/upload menus,
+  diagnostic guide OwnerManual-only.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Deploy scripts are unchanged.
+- Restore: PASS.
+- Build: PASS, 0 errors; the known `TD-BUILD-001` nullable warnings in test architecture guard files remain
+  non-blocking.
+- Focused Broadcast tests: 6/6 passed.
+- Focused Telegram/UserOverview/UserAccess/EquipmentDiagnostics/ManualLibrary/Gree tests: 1083/1083 passed.
+- Local Gree diagnostics smoke: 14/14 passed.
+- Full solution suite: 5055/5055 passed.
+- EF migration/model validation: PASS; no pending model changes after `20260630195828_AddTelegramBroadcasts`.
+- `git diff --check`: PASS.
+- Production PASS remains pending until the ED-24BCAST.1 VPS live-check is completed.
 
 ED-24USR.4 adds an Owner-only Telegram user overview; the stage is CLOSED / pushed. Production PASS is not marked yet
 because the VPS live-check is still pending.

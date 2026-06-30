@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
@@ -1225,6 +1226,7 @@ public sealed class TelegramManualLibraryService
             rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Запросы доступа", LibraryRequestsCallback)]);
             rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Управление доступом", LibraryAccessCallback)]);
             rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton(TelegramUserOverviewService.UsersButton, TelegramUserOverviewService.UsersOverviewCallback)]);
+            rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton(TelegramBroadcastService.BroadcastButton, TelegramBroadcastService.BroadcastMenuCallback)]);
         }
 
         rows.Add([new EquipmentDiagnosticTelegramInlineKeyboardButton("Отмена", LibraryCancelCallback)]);

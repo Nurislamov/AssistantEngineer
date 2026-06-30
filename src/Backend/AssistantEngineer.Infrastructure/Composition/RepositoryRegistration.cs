@@ -3,6 +3,7 @@ using AssistantEngineer.Modules.Buildings.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.Calculations.Application.Abstractions.Heating;
 using AssistantEngineer.Modules.Equipment.Application.Abstractions.Repositories;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.OperatorInbox;
@@ -46,6 +47,8 @@ internal static class RepositoryRegistration
         services.AddSingleton<ITelegramLibraryAccessStore, EfTelegramLibraryAccessStore>();
         services.RemoveAll<ITelegramOperatorInboxStore>();
         services.AddSingleton<ITelegramOperatorInboxStore, EfTelegramOperatorInboxStore>();
+        services.RemoveAll<ITelegramBroadcastStore>();
+        services.AddSingleton<ITelegramBroadcastStore, EfTelegramBroadcastStore>();
 
         return services;
     }
