@@ -88,8 +88,8 @@ public sealed class GreeDiagnosticsQualityBaselineTests
         Assert.Contains("Код n2 найден в нескольких сериях Gree.", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("GMV9 Flex", response.Text, StringComparison.OrdinalIgnoreCase);
 
         var seriesButtons = response.OutboundMessages
@@ -102,7 +102,7 @@ public sealed class GreeDiagnosticsQualityBaselineTests
             .ToArray();
 
         Assert.Equal(
-            ["GMV Mini", "GMV X", "GMV6"],
+            ["GMV Mini", "GMV X", "GMV6", "GMV6 HR"],
             seriesButtons.Order(StringComparer.Ordinal).ToArray());
     }
 

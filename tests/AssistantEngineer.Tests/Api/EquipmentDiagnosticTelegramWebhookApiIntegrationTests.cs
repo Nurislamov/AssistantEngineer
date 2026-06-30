@@ -76,7 +76,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
     {
         await using var factory = new WebhookApiFactory(enabled: true, allowedChatId: 999);
 
-        var response = await PostAsync(factory.CreateClient(), Update("Gree H5"), "test_webhook_secret");
+        var response = await PostAsync(factory.CreateClient(), Update("Gree GMV6 H5"), "test_webhook_secret");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(1, factory.Outbound.CallCount);

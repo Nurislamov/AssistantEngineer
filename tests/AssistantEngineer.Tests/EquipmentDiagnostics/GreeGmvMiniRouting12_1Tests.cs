@@ -51,7 +51,7 @@ public sealed class GreeGmvMiniRouting12_1Tests
     }
 
     [Fact]
-    public async Task UnqualifiedN2StillAsksForGmv6OrGmvMini()
+    public async Task UnqualifiedN2AsksForEveryRuntimeSeriesThatContainsIt()
     {
         using var provider = CreateProvider();
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
@@ -60,23 +60,17 @@ public sealed class GreeGmvMiniRouting12_1Tests
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
         Assert.Contains("Выберите серию:", response.Text, StringComparison.Ordinal);
     }
 
     [Theory]
-    [InlineData("Gree H0", "Gree GMV6 — H0")]
-    [InlineData("Gree Ho", "Gree GMV6 — H0")]
-    [InlineData("Gree HO", "Gree GMV6 — H0")]
     [InlineData("Gree GMV6 C0", "Gree GMV6 — C0")]
-    [InlineData("Gree H5", "Gree GMV6 — H5")]
-    [InlineData("Gree U3", "Gree GMV6 — U3")]
-    [InlineData("Gree o1", "Gree GMV6 — o1")]
-    [InlineData("Gree L1", "Gree GMV6 — L1")]
     [InlineData("Gree GMV6 E1", "Gree GMV6 — E1")]
     [InlineData("Gree GMV6 P0", "Gree GMV6 — P0")]
-    [InlineData("Gree FH", "Gree GMV6 — FH")]
-    public async Task ExistingGmv6AndGeneralPriorityQueriesRemainStable(
+    public async Task ExplicitGmv6QueriesRemainDirect(
         string query,
         string expectedTitle)
     {

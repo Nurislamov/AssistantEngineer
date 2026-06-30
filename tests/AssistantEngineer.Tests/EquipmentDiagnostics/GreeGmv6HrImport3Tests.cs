@@ -74,7 +74,7 @@ public sealed class GreeGmv6HrImport3Tests
     }
 
     [Fact]
-    public async Task PlainGmv6QueryDoesNotReturnGmv6HrOnlyCard()
+    public async Task PlainGmv6QueryResolvesGmv6WithoutReturningHrCard()
     {
         using var provider = CreateProvider();
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
@@ -82,8 +82,8 @@ public sealed class GreeGmv6HrImport3Tests
         var response = await adapter.HandleAsync(Update("Gree GMV6 E0"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
-        Assert.Contains("GMV6 HR", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — E0", response.Text, StringComparison.Ordinal);
+        Assert.Contains("<b>Серия:</b> GMV6", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV6 HR — E0", response.Text, StringComparison.Ordinal);
     }
 

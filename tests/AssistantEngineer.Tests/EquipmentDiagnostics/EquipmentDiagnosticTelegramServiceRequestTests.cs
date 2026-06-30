@@ -98,7 +98,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             diagnosticSummaries: [Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)],
             notificationChatId: -1001234567890);
 
-        await harness.Adapter.HandleAsync(Update("Gree H5"));
+        await harness.Adapter.HandleAsync(Update("Gree GMV6 H5"));
         await harness.Adapter.HandleAsync(Update("/request"));
         var response = await harness.Adapter.HandleAsync(
             Update(null, contactPhone: FullPhone, contactUserId: 107));

@@ -51,10 +51,17 @@ public static class EquipmentDiagnosticBotReferencePolicy
         entry.PackageId.Contains("debugging", StringComparison.OrdinalIgnoreCase) ||
         entry.PackageId.Contains("status", StringComparison.OrdinalIgnoreCase) ||
         QualityApprovedLocalizedEntryIds.Contains(entry.Id) ||
+        IsManualVerifiedGmv6RuntimeEntry(entry) ||
         IsManualVerifiedGmvMiniRuntimeEntry(entry) ||
         IsManualVerifiedGmvXRuntimeEntry(entry) ||
         IsManualVerifiedGmv6HrRuntimeEntry(entry) ||
         IsManualVerifiedGmv9FlexRuntimeEntry(entry);
+
+    private static bool IsManualVerifiedGmv6RuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
+        string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.Series, "GMV6", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.SourceType, "Manual", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.VerificationStatus, "ManualVerified", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsManualVerifiedGmvMiniRuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
         string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&

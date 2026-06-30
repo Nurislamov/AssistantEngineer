@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24E.3 - CLOSED / pushed.
+ED-24UX.7 - CLOSED / pushed.
 
 Next recommended steps:
 
-1. Run production VPS deployment/live-check for ED-24E.3 when ready; do not mark production PASS until the live-check is done.
+1. Run production VPS deployment/live-check for ED-24UX.7 when ready; do not mark production PASS until the live-check is done.
 2. Keep the ED-24QA.1 quality baseline and ED-24OPS.1 local smoke runner green.
 3. Keep ED-24MAN.3 exact model-family matching, GMV9 Flex/GMV6 HR OwnerManual acquisition, and ED-24EF.1 remaining EF enum sentinel warning cleanup as future candidates.
 
@@ -15,6 +15,39 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24UX.7 fixed Gree series refinement coverage and keyboard layout; the stage is local validation PASS and pushed,
+with production live-check still pending.
+
+Implementation commit: current commit (`ED-24UX.7 Fix Gree series refinement layout`).
+
+ED-24UX.7 local implementation notes:
+
+- Generic Gree ambiguity/refinement now uses actual searchable runtime candidates and includes GMV6 HR whenever the
+  requested code exists in that series.
+- The stable series order is GMV6 HR, GMV6, GMV Mini, GMV X, GMV9 Flex; only matching series are shown.
+- The refinement keyboard uses at most two series buttons per row and keeps `Не знаю` available.
+- `Gree GMV6 HR n2` and `Gree GMV6 n2` remain separate direct routes; generic `n2` offers both plus GMV Mini and GMV X.
+- `docs/equipment-diagnostics/gree-series-code-overlap-audit.md` records 275 unique codes, 263 overlap codes, the
+  complete grouped matrix, and representative checks.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- No diagnostic cards were added or removed; JSON cards and sourceReferences are unchanged.
+- Existing multi OwnerManual selection remains readable, uses callback data below 64 bytes, keeps full filenames in the
+  message body, and maps the selected short token to the selected OwnerManual.
+- Manual policy is unchanged: ServiceManual and InstallationManual remain library-only; diagnostics remain
+  OwnerManual-only.
+- No migration was added.
+- Deploy scripts and production DB are unchanged.
+- No PDF files were committed.
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused Gree tests: 211/211 passed.
+- ED-24UX.7 refinement tests: 16/16 passed.
+- Required focused diagnostics/Telegram filter: 1102/1102 passed.
+- Local Gree diagnostics smoke: 14/14 passed.
+- Full solution suite: 5028/5028 passed.
+- `git diff --check`: PASS.
+- Production PASS is not marked for ED-24UX.7.
 
 ED-24E.3 added GMV6 HR diagnostic runtime coverage from local GMV6 HR Service/Owner manuals; the stage is local validation PASS and pushed, with production live-check still pending.
 

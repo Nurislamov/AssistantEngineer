@@ -52,7 +52,7 @@ public sealed class GreeDiagnosticsSmokeTests
             .Order(StringComparer.Ordinal)
             .ToArray();
 
-        Assert.Equal(["GMV Mini", "GMV X", "GMV6"], seriesButtons);
+        Assert.Equal(["GMV Mini", "GMV X", "GMV6", "GMV6 HR"], seriesButtons);
         Assert.DoesNotContain("GMV9 Flex", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 

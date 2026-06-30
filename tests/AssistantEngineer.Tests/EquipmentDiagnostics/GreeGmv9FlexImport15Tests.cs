@@ -181,12 +181,9 @@ public sealed partial class GreeGmv9FlexImport15Tests
     }
 
     [Theory]
-    [InlineData("Gree H5", "Gree GMV6 — H5")]
-    [InlineData("Gree U3", "Gree GMV6 — U3")]
-    [InlineData("Gree o1", "Gree GMV6 — o1")]
     [InlineData("Gree GMV6 A9", "Gree GMV6 — A9")]
     [InlineData("Gree GMV Mini n2", "Gree GMV Mini — n2")]
-    public async Task ExistingGmv6AndMiniPriorityQueriesRemainStable(string query, string expectedTitle)
+    public async Task ExplicitGmv6AndMiniQueriesRemainStable(string query, string expectedTitle)
     {
         using var provider = CreateProvider();
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();

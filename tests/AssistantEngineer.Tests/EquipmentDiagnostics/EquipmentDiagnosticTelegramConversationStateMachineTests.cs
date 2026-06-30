@@ -45,7 +45,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     {
         var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
 
-        var response = await harness.Adapter.HandleAsync(Update("H5"));
+        var response = await harness.Adapter.HandleAsync(Update("Gree GMV6 H5"));
         var user = await harness.UserStore.GetByChatIdAsync(7);
         var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
 
@@ -151,7 +151,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     {
         var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
 
-        var response = await harness.Adapter.HandleAsync(Update("ошибка H5"));
+        var response = await harness.Adapter.HandleAsync(Update("ошибка Gree GMV6 H5"));
 
         Assert.Contains("Что можно сделать безопасно", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("где отображается код", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -287,7 +287,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         ]);
 
         await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.ManualPhoneButton));
-        var response = await harness.Adapter.HandleAsync(Update("H5"));
+        var response = await harness.Adapter.HandleAsync(Update("Gree GMV6 H5"));
 
         Assert.Contains("Что можно сделать безопасно", response.Text, StringComparison.Ordinal);
     }
@@ -315,7 +315,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
         await harness.UserStore.AllowAsync(7, TelegramUserRole.Engineer);
 
-        var response = await harness.Adapter.HandleAsync(Update("H5"));
+        var response = await harness.Adapter.HandleAsync(Update("Gree GMV6 H5"));
         var user = await harness.UserStore.GetByChatIdAsync(7);
         var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
 
@@ -334,7 +334,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
         await harness.UserStore.AllowAsync(7, TelegramUserRole.Installer);
 
-        var response = await harness.Adapter.HandleAsync(Update("H5"));
+        var response = await harness.Adapter.HandleAsync(Update("Gree GMV6 H5"));
         var last = await harness.Adapter.HandleAsync(Update("/last"));
         var user = await harness.UserStore.GetByChatIdAsync(7);
         var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
@@ -396,10 +396,12 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
             text: null,
             contactPhone: "+998901234567",
             contactUserId: 11));
-        var afterContact = await harness.Adapter.HandleAsync(Update("Gree"));
+        var seriesPrompt = await harness.Adapter.HandleAsync(Update("Gree"));
+        var afterContact = await harness.Adapter.HandleAsync(Update("GMV6"));
 
         Assert.Contains("номер сохранен", contact.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Выберите бренд", contact.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("несколько вариантов в сериях Gree", seriesPrompt.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Что можно сделать безопасно", afterContact.Text, StringComparison.Ordinal);
     }
 
@@ -414,13 +416,15 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
 
         var phonePrompt = await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.ManualPhoneButton));
         var saved = await harness.Adapter.HandleAsync(Update("998901234567"));
-        var afterPhone = await harness.Adapter.HandleAsync(Update("Gree"));
+        var seriesPrompt = await harness.Adapter.HandleAsync(Update("Gree"));
+        var afterPhone = await harness.Adapter.HandleAsync(Update("GMV6"));
         var user = await harness.UserStore.GetByChatIdAsync(7);
         var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
 
         Assert.Contains("Введите номер телефона", phonePrompt.Text, StringComparison.Ordinal);
         Assert.Contains("Продолжим диагностику", saved.Text, StringComparison.Ordinal);
         Assert.Contains("Выберите бренд", saved.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("несколько вариантов в сериях Gree", seriesPrompt.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Что можно сделать безопасно", afterPhone.Text, StringComparison.Ordinal);
         Assert.Equal(TelegramConversationState.ShowingResult, session?.State);
     }
@@ -448,7 +452,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
         await harness.UserStore.SavePhoneAsync(7, "+998901234567", verified: false, TelegramUserPhoneNumberSource.Manual, DateTimeOffset.UtcNow);
 
-        await harness.Adapter.HandleAsync(Update("H5"));
+        await harness.Adapter.HandleAsync(Update("Gree GMV6 H5"));
         var user = await harness.UserStore.GetByChatIdAsync(7);
         var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
         var stored = string.Join(" ", diagnosticCase!.Code, diagnosticCase.Manufacturer, diagnosticCase.ResultSummary, diagnosticCase.NormalizedRequestJson, diagnosticCase.PhoneNumberSource);
@@ -467,7 +471,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
         await harness.UserStore.SavePhoneAsync(7, "+998901234567", verified: true, TelegramUserPhoneNumberSource.TelegramContact, DateTimeOffset.UtcNow);
 
-        await harness.Adapter.HandleAsync(Update("H5"));
+        await harness.Adapter.HandleAsync(Update("Gree GMV6 H5"));
         var user = await harness.UserStore.GetByChatIdAsync(7);
         var diagnosticCase = await harness.HistoryStore.GetLastForTelegramUserAsync(user!.Id);
         var stored = string.Join(" ", diagnosticCase!.Code, diagnosticCase.Manufacturer, diagnosticCase.ResultSummary, diagnosticCase.NormalizedRequestJson, diagnosticCase.PhoneNumberSource);
@@ -656,7 +660,7 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     public async Task HistoryButtonBehavesLikeHistoryCommand()
     {
         var harness = CreateHarness([Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit)]);
-        await harness.Adapter.HandleAsync(Update("H5"));
+        await harness.Adapter.HandleAsync(Update("Gree GMV6 H5"));
 
         var response = await harness.Adapter.HandleAsync(Update(TelegramDiagnosticConversationService.HistoryButton));
 
@@ -679,8 +683,10 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var second = CreateAdapter(userStore, sessionStore, historyStore, diagnostics, facade, Options());
 
         await first.HandleAsync(Update("H5"));
-        var response = await second.HandleAsync(Update("Gree"));
+        var seriesPrompt = await second.HandleAsync(Update("Gree"));
+        var response = await second.HandleAsync(Update("GMV6"));
 
+        Assert.Contains("несколько вариантов в сериях Gree", seriesPrompt.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Что можно сделать безопасно", response.Text, StringComparison.Ordinal);
         Assert.Equal(1, facade.CallCount);
     }

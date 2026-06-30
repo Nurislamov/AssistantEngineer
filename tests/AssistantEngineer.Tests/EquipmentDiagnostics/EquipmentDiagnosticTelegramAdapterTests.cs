@@ -32,7 +32,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         using var provider = CreateProvider(EnabledOptions());
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
-        var response = await adapter.HandleAsync(Update("Gree H5"));
+        var response = await adapter.HandleAsync(Update("Gree GMV6 H5"));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
         Assert.DoesNotContain("Черновик / непроверено", response.Text, StringComparison.Ordinal);
@@ -58,7 +58,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Fact]
-    public async Task AmbiguousCodeFormatsDeterministicClarificationOptions()
+    public async Task AmbiguousCodeFormatsDeterministicSeriesOptions()
     {
         using var provider = CreateProvider(EnabledOptions());
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
@@ -67,15 +67,15 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var second = await adapter.HandleAsync(Update("Gree E1"));
 
         Assert.Equal(first.Text, second.Text);
-        Assert.Contains("тип оборудования", first.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Наружный блок", first.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text));
+        Assert.Contains("несколько вариантов в сериях Gree", first.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("GMV6", first.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text));
 
-        var outdoor = await adapter.HandleAsync(Update("Наружный блок"));
+        var gmv6 = await adapter.HandleAsync(Update("GMV6"));
 
-        Assert.Contains("Gree GMV6 — E1", outdoor.Text, StringComparison.Ordinal);
-        Assert.Contains("высокому давлению", outdoor.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("<b>Суть:</b>", outdoor.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("Категория:", outdoor.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — E1", gmv6.Text, StringComparison.Ordinal);
+        Assert.Contains("высокому давлению", gmv6.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("<b>Суть:</b>", gmv6.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Категория:", gmv6.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -95,9 +95,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree U0")]
     [InlineData("Gree GMV6 U0")]
-    [InlineData("Gree debugging U0")]
+    [InlineData("Gree GMV6 debugging U0")]
     public async Task Gmv6DebuggingU0IsDiscoverable(string query)
     {
         using var provider = CreateProvider(EnabledOptions());
@@ -159,7 +158,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     [Theory]
     [InlineData("C0")]
     [InlineData("Gree C0")]
-    public async Task UnqualifiedC0UsesNeutralSameMeaningGroupOutput(string query)
+    public async Task UnqualifiedC0AsksForSeries(string query)
     {
         using var provider = CreateProvider(EnabledOptions());
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
@@ -167,18 +166,16 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         var response = await adapter.HandleAsync(Update(query));
 
         Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
-        Assert.Contains("Gree GMV — C0", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Нарушение связи", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Применимо:", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Gree GMV6", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Gree GMV Mini", response.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("Gree GMV6 C0", response.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("руководства GMV6", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("руководства применимой серии", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("meaningGroupId", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("gree-vrf-gmv-communication-c0", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("packageId", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("file_id", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("несколько вариантов в сериях Gree", response.Text, StringComparison.OrdinalIgnoreCase);
+        var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!
+            .SelectMany(row => row)
+            .Select(button => button.Text)
+            .ToArray();
+        Assert.Contains("GMV6 HR", buttons);
+        Assert.Contains("GMV6", buttons);
+        Assert.Contains("GMV Mini", buttons);
+        Assert.Contains("GMV X", buttons);
+        Assert.Contains("GMV9 Flex", buttons);
     }
 
     [Fact]
@@ -225,10 +222,10 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree d1", "ошибка платы управления внутреннего блока")]
-    [InlineData("Gree D1", "ошибка платы управления внутреннего блока")]
-    [InlineData("Gree o1", "низкое напряжение шины внутреннего блока")]
-    [InlineData("Gree O1", "низкое напряжение шины внутреннего блока")]
+    [InlineData("Gree GMV6 d1", "ошибка платы управления внутреннего блока")]
+    [InlineData("Gree GMV6 D1", "ошибка платы управления внутреннего блока")]
+    [InlineData("Gree GMV6 o1", "низкое напряжение шины внутреннего блока")]
+    [InlineData("Gree GMV6 O1", "низкое напряжение шины внутреннего блока")]
     public async Task MixedCaseIndoorCodesUseImprovedManualMeaning(string query, string expectedMeaning)
     {
         using var provider = CreateProvider(EnabledOptions());
@@ -245,11 +242,11 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree d1", "Gree GMV6 — d1")]
-    [InlineData("Gree D1", "Gree GMV6 — d1")]
-    [InlineData("Gree o1", "Gree GMV6 — o1")]
-    [InlineData("Gree O1", "Gree GMV6 — o1")]
-    [InlineData("Gree l1", "Gree GMV6 — L1")]
+    [InlineData("Gree GMV6 d1", "Gree GMV6 — d1")]
+    [InlineData("Gree GMV6 D1", "Gree GMV6 — d1")]
+    [InlineData("Gree GMV6 o1", "Gree GMV6 — o1")]
+    [InlineData("Gree GMV6 O1", "Gree GMV6 — o1")]
+    [InlineData("Gree GMV6 l1", "Gree GMV6 — L1")]
     public async Task IndoorManualCodesDisplayCanonicalJsonCasing(string query, string expectedTitle)
     {
         using var provider = CreateProvider(EnabledOptions());
@@ -267,7 +264,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         using var provider = CreateProvider(EnabledOptions());
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
-        await adapter.HandleAsync(Update("Gree O1"));
+        await adapter.HandleAsync(Update("Gree GMV6 O1"));
         var last = await adapter.HandleAsync(Update("/last"));
 
         Assert.Contains("Gree o1", last.Text, StringComparison.Ordinal);
@@ -291,9 +288,9 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree o1", "Gree GMV6 — o1", "Код: o1 — буква O + цифра 1.")]
-    [InlineData("Gree O1", "Gree GMV6 — o1", "Код: o1 — буква O + цифра 1.")]
-    [InlineData("Gree L1", "Gree GMV6 — L1", "Код: L1 — буква L + цифра 1.")]
+    [InlineData("Gree GMV6 o1", "Gree GMV6 — o1", "Код: o1 — буква O + цифра 1.")]
+    [InlineData("Gree GMV6 O1", "Gree GMV6 — o1", "Код: o1 — буква O + цифра 1.")]
+    [InlineData("Gree GMV6 L1", "Gree GMV6 — L1", "Код: L1 — буква L + цифра 1.")]
     public async Task ConfusableCanonicalCodesIncludeCompactClarification(
         string query,
         string expectedTitle,
@@ -309,8 +306,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree Ho")]
-    [InlineData("Gree HO")]
+    [InlineData("Gree GMV6 Ho")]
+    [InlineData("Gree GMV6 HO")]
     public async Task HoVisualInputRoutesToCanonicalGmv6H0WithClarification(string query)
     {
         using var provider = CreateProvider(EnabledOptions());
@@ -336,15 +333,16 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.Contains("Код n2 найден в нескольких сериях Gree.", response.Text, StringComparison.Ordinal);
         Assert.Contains("Выберите серию:", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV6", response.Text, StringComparison.Ordinal);
+        Assert.Contains("GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.Contains("GMV X", response.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("GMV9 Flex", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.All(ForbiddenFragments(), fragment =>
             Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
         var buttons = response.OutboundMessages.Single().ReplyMarkup!.Keyboard!.SelectMany(row => row).Select(button => button.Text);
         Assert.Contains("GMV Mini", buttons);
         Assert.Contains("GMV6", buttons);
+        Assert.Contains("GMV6 HR", buttons);
         Assert.Contains("GMV X", buttons);
         Assert.Contains("Не знаю", buttons);
         Assert.Contains("🔎 Новый код", buttons);
@@ -418,8 +416,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
     }
 
     [Theory]
-    [InlineData("Gree FH")]
     [InlineData("Gree GMV6 FH")]
+    [InlineData("GMV6 FH")]
     public async Task ManualConfirmedFhResolvesToGmv6Answer(string query)
     {
         using var provider = CreateProvider(EnabledOptions());

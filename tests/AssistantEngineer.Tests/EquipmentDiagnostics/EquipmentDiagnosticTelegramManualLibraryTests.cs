@@ -416,7 +416,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         await AllowAsync(provider, role);
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
-        await adapter.HandleAsync(Update("Gree d1"));
+        await adapter.HandleAsync(Update("Gree GMV6 d1"));
         var response = await adapter.HandleAsync(Update("/manuals"));
 
         Assert.Contains("файлы пока не подключены", response.Text, StringComparison.OrdinalIgnoreCase);
@@ -456,7 +456,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("подключен", firstRegistration.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("подключен", secondRegistration.Text, StringComparison.OrdinalIgnoreCase);
         Assert.True(File.Exists(bindingPath), $"{firstRegistration.Text} | {secondRegistration.Text}");
-        await adapter.HandleAsync(Update("Gree d1"));
+        await adapter.HandleAsync(Update("Gree GMV6 d1"));
 
         var response = await adapter.HandleAsync(Update("/manuals"));
         var documents = response.OutboundMessages
@@ -481,7 +481,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             "/manual_register gree-gmv6-service-manual-2020-09",
             "telegram-file-id-gmv6",
             "Service Manual for GMV6 v_2020.09.pdf"));
-        await adapter.HandleAsync(Update("Gree d1"));
+        await adapter.HandleAsync(Update("Gree GMV6 d1"));
 
         var response = await adapter.HandleAsync(Update("/manuals"));
         var documents = response.OutboundMessages
@@ -1003,16 +1003,16 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         await AllowAsync(provider, TelegramUserRole.Engineer);
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
 
-        var d1 = await adapter.HandleAsync(Update("Gree d1"));
-        var c0 = await adapter.HandleAsync(Update("Gree C0"));
-        var o1 = await adapter.HandleAsync(Update("Gree o1"));
+        var d1 = await adapter.HandleAsync(Update("Gree GMV6 d1"));
+        var c0 = await adapter.HandleAsync(Update("Gree GMV6 C0"));
+        var o1 = await adapter.HandleAsync(Update("Gree GMV6 o1"));
 
         Assert.DoesNotContain("indoor PCB", d1.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("плата управления внутреннего блока", d1.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(" IDU", c0.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(" ODU", c0.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(" IDU", o1.Text, StringComparison.Ordinal);
-        Assert.Contains("Подтвердите код C0, серию GMV и место индикации.", c0.Text, StringComparison.Ordinal);
+        Assert.Contains("Подтвердите код C0, серию GMV6 и место индикации.", c0.Text, StringComparison.Ordinal);
         Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", c0.Text, StringComparison.Ordinal);
         Assert.Contains("Подтвердите код o1", o1.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", o1.Text, StringComparison.Ordinal);

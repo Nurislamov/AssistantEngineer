@@ -611,6 +611,29 @@ public sealed class TelegramDiagnosticConversationService
             return NotFound(access, code);
         }
 
+        if (string.Equals(selectedManufacturer, "Gree", StringComparison.OrdinalIgnoreCase))
+        {
+            var greeSeriesOptions = candidates
+                .Select(candidate => candidate.Series)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Select(value => value!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            if (greeSeriesOptions.Length > 1)
+            {
+                await SaveAsync(
+                    telegramUserId,
+                    TelegramConversationState.WaitingForSeries,
+                    code,
+                    candidates,
+                    selectedManufacturer,
+                    selectedEquipmentType,
+                    selectedDisplayContext,
+                    cancellationToken);
+                return PromptSeries(code, candidates, access);
+            }
+        }
+
         var resolveAsMeaningGroup = false;
         if (TrySelectSameMeaningCandidate(candidates, out var groupedCandidate))
         {
@@ -775,8 +798,6 @@ public sealed class TelegramDiagnosticConversationService
             .ThenBy(candidate => candidate.EquipmentType, StringComparer.Ordinal)
             .ThenBy(candidate => DisplayContextLabel(candidate.DisplayContext), StringComparer.Ordinal)
             .ToArray();
-        localizedCandidates = ApplyUnqualifiedMiniPriority(requestedSeries, localizedCandidates);
-
         TelegramDiagnosticCandidate[] exactSeriesLocalizedCandidates = string.IsNullOrWhiteSpace(requestedSeries) ||
             string.Equals(requestedSeries, "GMV", StringComparison.OrdinalIgnoreCase)
                 ? []
@@ -789,9 +810,20 @@ public sealed class TelegramDiagnosticConversationService
             return PreferExactCodeMatches(code, exactSeriesLocalizedCandidates);
         }
 
-        if (HasSameMeaningGroupCollision(localizedCandidates))
+        if (localizedCandidates.Any(candidate =>
+                string.Equals(candidate.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase)))
         {
-            return PreferExactCodeMatches(code, localizedCandidates);
+            var combinedCandidates = runtimeCandidates
+                .Where(candidate =>
+                    !string.Equals(candidate.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase))
+                .Concat(localizedCandidates)
+                .Distinct()
+                .OrderBy(candidate => candidate.Manufacturer, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.Series ?? string.Empty, StringComparer.Ordinal)
+                .ThenBy(candidate => candidate.EquipmentType, StringComparer.Ordinal)
+                .ThenBy(candidate => DisplayContextLabel(candidate.DisplayContext), StringComparer.Ordinal)
+                .ToArray();
+            return PreferExactCodeMatches(code, combinedCandidates);
         }
 
         if (runtimeCandidates.Length > 0)
@@ -799,44 +831,12 @@ public sealed class TelegramDiagnosticConversationService
             return PreferExactCodeMatches(code, runtimeCandidates);
         }
 
+        if (HasSameMeaningGroupCollision(localizedCandidates))
+        {
+            return PreferExactCodeMatches(code, localizedCandidates);
+        }
+
         return PreferExactCodeMatches(code, localizedCandidates);
-    }
-
-    private static TelegramDiagnosticCandidate[] ApplyUnqualifiedMiniPriority(
-        string? requestedSeries,
-        TelegramDiagnosticCandidate[] candidates)
-    {
-        if (!string.IsNullOrWhiteSpace(requestedSeries) &&
-            !string.Equals(requestedSeries, "GMV", StringComparison.OrdinalIgnoreCase))
-        {
-            return candidates;
-        }
-
-        if (HasSameMeaningGroupCollision(candidates))
-        {
-            return candidates;
-        }
-
-        if (candidates.Any(candidate => string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase)))
-        {
-            var establishedN2 = candidates
-                .Where(candidate => IsKnownN2Series(candidate.Series))
-                .ToArray();
-            return establishedN2.Length >= 2 ? establishedN2 : candidates;
-        }
-
-        var nonMini = candidates
-            .Where(candidate => !string.Equals(candidate.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
-            .ToArray();
-        var gmv6 = nonMini
-            .Where(candidate => string.Equals(candidate.Series, "GMV6", StringComparison.OrdinalIgnoreCase))
-            .ToArray();
-        if (gmv6.Length > 0)
-        {
-            return gmv6;
-        }
-
-        return nonMini.Length > 0 ? nonMini : candidates;
     }
 
     private static string CanonicalizeVisualLookupCode(string code) =>
@@ -1163,8 +1163,9 @@ public sealed class TelegramDiagnosticConversationService
             .ToArray();
 
         var builder = new System.Text.StringBuilder();
-        if (string.Equals(code, "n2", StringComparison.OrdinalIgnoreCase) &&
-            series.All(IsKnownN2Series))
+        var isN2Refinement = string.Equals(code, "n2", StringComparison.OrdinalIgnoreCase) &&
+            series.Length > 1;
+        if (isN2Refinement)
         {
             builder.AppendLine(TelegramHtml.Bold("Код n2 найден в нескольких сериях Gree."));
             builder.AppendLine();
@@ -1192,17 +1193,13 @@ public sealed class TelegramDiagnosticConversationService
             EquipmentDiagnosticTelegramResponseKind.Reply,
             builder.ToString().Trim(),
             [],
-            ChoiceKeyboard(series, access),
-            ParseMode: string.Equals(code, "n2", StringComparison.OrdinalIgnoreCase) &&
-                series.All(IsKnownN2Series)
-                    ? TelegramHtml.ParseMode
-                    : null);
+            SeriesChoiceKeyboard(series),
+            ParseMode: isN2Refinement ? TelegramHtml.ParseMode : null);
     }
 
     private string SeriesMeaning(TelegramDiagnosticCandidate candidate)
     {
-        if (string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase) &&
-            IsKnownN2Series(candidate.Series))
+        if (string.Equals(candidate.Code, "n2", StringComparison.OrdinalIgnoreCase))
         {
             return "настройка предела коэффициента соответствия внутренних и наружных блоков.";
         }
@@ -1227,14 +1224,9 @@ public sealed class TelegramDiagnosticConversationService
         return "уточните точную серию оборудования.";
     }
 
-    private static bool IsKnownN2Series(string? series) =>
-        string.Equals(series, "GMV Mini", StringComparison.OrdinalIgnoreCase) ||
-        string.Equals(series, "GMV6", StringComparison.OrdinalIgnoreCase) ||
-        string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase);
-
     private static int SeriesSortKey(string series)
     {
-        if (string.Equals(series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(series, "GMV6 HR", StringComparison.OrdinalIgnoreCase))
         {
             return 0;
         }
@@ -1244,14 +1236,19 @@ public sealed class TelegramDiagnosticConversationService
             return 1;
         }
 
-        if (string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
         {
             return 2;
         }
 
-        if (string.Equals(series, "GMV9 Flex", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(series, "GMV X", StringComparison.OrdinalIgnoreCase))
         {
             return 3;
+        }
+
+        if (string.Equals(series, "GMV9 Flex", StringComparison.OrdinalIgnoreCase))
+        {
+            return 4;
         }
 
         return 100;
@@ -1395,6 +1392,36 @@ public sealed class TelegramDiagnosticConversationService
         rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(UnknownButton)]);
         rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton)]);
 
+        return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
+    }
+
+    private static EquipmentDiagnosticTelegramReplyMarkup SeriesChoiceKeyboard(
+        IReadOnlyList<string> options)
+    {
+        var buttons = options
+            .Where(option => !string.IsNullOrWhiteSpace(option))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(SeriesSortKey)
+            .ThenBy(option => option, StringComparer.Ordinal)
+            .Select(option => new EquipmentDiagnosticTelegramKeyboardButton(option))
+            .ToArray();
+        var rows = buttons
+            .Chunk(2)
+            .Select(row => (IReadOnlyList<EquipmentDiagnosticTelegramKeyboardButton>)row)
+            .ToList();
+
+        if (buttons.Length % 2 == 0)
+        {
+            rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(UnknownButton)]);
+        }
+        else
+        {
+            var lastRow = rows[^1].ToList();
+            lastRow.Add(new EquipmentDiagnosticTelegramKeyboardButton(UnknownButton));
+            rows[^1] = lastRow;
+        }
+
+        rows.Add([new EquipmentDiagnosticTelegramKeyboardButton(NewCodeButton)]);
         return new EquipmentDiagnosticTelegramReplyMarkup(rows, ResizeKeyboard: true, OneTimeKeyboard: false);
     }
 
