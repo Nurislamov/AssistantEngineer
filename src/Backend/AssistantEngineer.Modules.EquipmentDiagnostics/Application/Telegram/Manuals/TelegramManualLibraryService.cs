@@ -2742,9 +2742,14 @@ public sealed class TelegramManualLibraryService
             DocumentType: session.DocumentType.DocumentType,
             MinRole: MinRoleForDocumentType(session.DocumentType.DocumentType),
             IsLibraryVisible: true,
-            CanUseForDiagnostics: session.Section.IsOutdoor &&
+            CanUseForDiagnostics: IsDiagnosticGuideSeries(session.Section) &&
                 session.DocumentType.DocumentType == TelegramLibraryDocumentType.OwnerManual);
     }
+
+    private static bool IsDiagnosticGuideSeries(ManualLibrarySectionOption section) =>
+        section.IsOutdoor ||
+        section.Slug.Equals(UMatchSectionSlug, StringComparison.Ordinal) ||
+        section.Slug.Equals(ErvSectionSlug, StringComparison.Ordinal);
 
     private static string SeriesManualId(
         ManualSeriesOption series,

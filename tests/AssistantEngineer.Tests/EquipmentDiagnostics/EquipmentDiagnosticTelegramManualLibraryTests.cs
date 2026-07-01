@@ -1281,6 +1281,148 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
+    public async Task DiagnosticGuideUsesOnlyUMatchAndErvOwnerManualBindings()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await bindingStore.UpsertAsync(Binding(
+            "gree-umatch-service",
+            "umatch-service-file",
+            "Gree U-Match R32 Service Manual EN 3.5-16kW.pdf",
+            "U-Match R32",
+            TelegramLibraryDocumentType.ServiceManual,
+            canUseForDiagnostics: false));
+        await bindingStore.UpsertAsync(Binding(
+            "gree-umatch-installation",
+            "umatch-installation-file",
+            "Gree U-Match R32 Installation Manual EN.pdf",
+            "U-Match R32",
+            TelegramLibraryDocumentType.InstallationManual,
+            canUseForDiagnostics: false));
+        await bindingStore.UpsertAsync(Binding(
+            "gree-umatch-owner-cassette",
+            "umatch-owner-cassette-file",
+            "Gree U-Match R32 Cassette Type Owner Manual EN 3.5-16kW.pdf",
+            "U-Match R32",
+            TelegramLibraryDocumentType.OwnerManual,
+            canUseForDiagnostics: true));
+        await bindingStore.UpsertAsync(Binding(
+            "gree-umatch-owner-duct",
+            "umatch-owner-duct-file",
+            "Gree U-Match R32 Duct Type Owner Manual EN 3.5-16kW.pdf",
+            "U-Match R32",
+            TelegramLibraryDocumentType.OwnerManual,
+            canUseForDiagnostics: true));
+        await bindingStore.UpsertAsync(Binding(
+            "gree-erv-owner",
+            "erv-owner-file",
+            "Gree ERV Wired Controller Owner Manual EN.pdf",
+            "ERV B Series",
+            TelegramLibraryDocumentType.OwnerManual,
+            canUseForDiagnostics: true));
+
+        await adapter.HandleAsync(Update("Gree U-Match E0"));
+        var selection = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticGuideButton));
+        var manualButtons = InlineButtonsWithCallbacks(selection)
+            .Where(button => button.CallbackData.StartsWith("dm:file:", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Contains("Gree U-Match R32 Cassette Type Owner Manual EN 3.5-16kW.pdf", selection.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree U-Match R32 Duct Type Owner Manual EN 3.5-16kW.pdf", selection.Text, StringComparison.Ordinal);
+        Assert.Equal(2, manualButtons.Length);
+        Assert.DoesNotContain("Service Manual", selection.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Installation Manual", selection.Text, StringComparison.OrdinalIgnoreCase);
+
+        var sentUMatchFileIds = new List<string>();
+        foreach (var button in manualButtons)
+        {
+            Assert.True(Encoding.UTF8.GetByteCount(button.CallbackData) <= 64, button.CallbackData);
+            Assert.DoesNotContain(".pdf", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("file", button.CallbackData[8..], StringComparison.OrdinalIgnoreCase);
+
+            var sent = await adapter.HandleAsync(DiagnosticManualFileCallback(button.CallbackData));
+            var document = Assert.Single(
+                sent.OutboundMessages,
+                message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+            Assert.True(document.ProtectContent);
+            sentUMatchFileIds.Add(document.DocumentFileId!);
+        }
+
+        Assert.Equal(
+            ["umatch-owner-cassette-file", "umatch-owner-duct-file"],
+            sentUMatchFileIds.Order(StringComparer.Ordinal).ToArray());
+        Assert.DoesNotContain("umatch-service-file", sentUMatchFileIds);
+        Assert.DoesNotContain("umatch-installation-file", sentUMatchFileIds);
+
+        await adapter.HandleAsync(Update("Gree ERV E6"));
+        var erv = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticGuideButton));
+        var ervDocument = Assert.Single(
+            erv.OutboundMessages,
+            message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+
+        Assert.Equal("erv-owner-file", ervDocument.DocumentFileId);
+        Assert.True(ervDocument.ProtectContent);
+    }
+
+    [Theory]
+    [InlineData("umatch", "U-Match R32", "Gree U-Match R32 Cassette Type Owner Manual EN 3.5-16kW.pdf")]
+    [InlineData("erv", "ERV B Series", "Gree ERV Wired Controller Owner Manual EN.pdf")]
+    public async Task OwnerManualUploadMarksUMatchAndErvAsDiagnosticGuideEligible(
+        string sectionSlug,
+        string expectedSeries,
+        string fileName)
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await adapter.HandleAsync(Update("/manual_bind"));
+        await adapter.HandleAsync(ManualBindCallback("mb:b:gree"));
+        await adapter.HandleAsync(ManualBindCallback($"mb:sec:{sectionSlug}"));
+        await adapter.HandleAsync(ManualBindCallback("mb:dt:owner"));
+        await adapter.HandleAsync(DocumentUpdate($"file-{sectionSlug}", fileName));
+        await adapter.HandleAsync(ManualBindCallback("mb:c:bind"));
+
+        var binding = Assert.Single(
+            await bindingStore.ListAsync(),
+            item => string.Equals(item.Series, expectedSeries, StringComparison.Ordinal));
+        Assert.Equal(TelegramLibraryDocumentType.OwnerManual, binding.DocumentType);
+        Assert.Equal(TelegramUserRole.Consumer, binding.MinRole);
+        Assert.True(binding.CanUseForDiagnostics);
+        Assert.True(binding.IsLibraryVisible);
+        Assert.True(binding.IsActive);
+    }
+
+    private static TelegramManualFileBinding Binding(
+        string manualId,
+        string fileId,
+        string fileName,
+        string series,
+        TelegramLibraryDocumentType documentType,
+        bool canUseForDiagnostics) =>
+        new(
+            manualId,
+            fileId,
+            fileName,
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: series,
+            Title: fileName,
+            DocumentType: documentType,
+            MinRole: documentType == TelegramLibraryDocumentType.ServiceManual
+                ? TelegramUserRole.Engineer
+                : TelegramUserRole.Consumer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: canUseForDiagnostics);
+
+    [Fact]
     public async Task RegistrationRejectsUnknownManualId()
     {
         using var provider = CreateProvider(TempBindingPath());

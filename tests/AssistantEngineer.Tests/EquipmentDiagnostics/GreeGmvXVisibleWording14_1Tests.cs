@@ -66,7 +66,7 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         Assert.Equal(263, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv6"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(136, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-mini"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(263, Directory.GetFiles(GmvXRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
-        Assert.Equal(1293, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1296, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
     }
 
     [Fact]

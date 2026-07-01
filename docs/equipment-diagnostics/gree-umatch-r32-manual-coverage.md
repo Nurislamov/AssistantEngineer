@@ -1,6 +1,7 @@
 # Gree U-Match R32 Manual Coverage
 
-Status: ED-24E.4 imported the confirmed runtime error-code table from the local intake PDF. The source PDF is not committed.
+Status: ED-24E.4 imported 107 runtime codes. ED-24UX.8 keeps source evidence internal and publishes authoritative,
+user-facing Telegram wording. The source PDF is not committed.
 
 ## Source
 
@@ -20,6 +21,8 @@ Status: ED-24E.4 imported the confirmed runtime error-code table from the local 
 - Series: `U-Match R32`
 - Equipment family: `SemiIndustrial`
 - Source references: metadata only; visible Telegram text does not expose `GC202209-I`, raw paths, package ids, or `sourceMeaning`
+- Public cards do not describe codes as confirmed by a table, section, or manual.
+- U-Match E0 is shown as a fan fault with direct power, connection, wiring, and free-rotation checks.
 
 ## Detail Split
 
@@ -32,6 +35,9 @@ Status: ED-24E.4 imported the confirmed runtime error-code table from the local 
 ## Guardrails
 
 - PDF binaries remain intake-only and are not committed.
-- User-visible card text is Russian, conservative, and manual-bound.
+- User-visible card text is Russian, conservative, and does not expose internal evidence wording.
 - Source meanings remain English metadata from the source table.
 - Routing recognizes `U-Match`, `UMatch`, `U Match`, `GUD`, and Russian semi-industrial wording as `U-Match R32`.
+- Diagnostic guide accepts only active `OwnerManual` bindings with `CanUseForDiagnostics = true`.
+- The cassette and duct OwnerManual files are shown as a two-file selection with full filenames in the message body and
+  short callback tokens.

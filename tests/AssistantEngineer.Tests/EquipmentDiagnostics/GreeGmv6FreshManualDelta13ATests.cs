@@ -110,7 +110,7 @@ public sealed class GreeGmv6FreshManualDelta13ATests
         Assert.Equal(38, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv6", "debugging"), "*.json").Length);
         Assert.Equal(263, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv6"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(136, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-mini"), "*.json", SearchOption.AllDirectories).Length);
-        Assert.Equal(1293, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1296, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
 
         AssertPackageCount("gree-gmv6-status-codes.json", 44);
         AssertPackageCount("gree-gmv6-debugging-codes.json", 38);

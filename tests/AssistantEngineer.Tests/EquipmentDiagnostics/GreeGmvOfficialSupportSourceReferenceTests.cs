@@ -35,7 +35,7 @@ public sealed class GreeGmvOfficialSupportSourceReferenceTests
 
         var entries = source.GetEntries();
 
-        Assert.Equal(1293, entries.Count);
+        Assert.Equal(1296, entries.Count);
 
         var officialSupportEntries = entries
             .Where(entry => entry.SourceReferences.Any(reference =>

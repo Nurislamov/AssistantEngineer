@@ -1,0 +1,139 @@
+{
+  "id": "gree-erv-b-series-l9",
+  "manufacturer": "Gree",
+  "equipmentFamily": "SemiIndustrial",
+  "equipmentType": "Unknown",
+  "series": "ERV B Series",
+  "models": [
+    "FHBQG-D3.5B-K",
+    "FHBQG-D5B-K",
+    "FHBQG-D6.5B-K",
+    "FHBQG-D8B-K",
+    "FHBQG-D10B-K",
+    "FHBQG-D13B-K",
+    "FHBQG-D15B-K",
+    "FHBQG-D20B-K",
+    "FHBQG-D25B-M",
+    "FHBQG-D30B-M",
+    "FHBQG-D40B-M",
+    "FHBQG-D50B-M",
+    "FHBQG-D60B-M"
+  ],
+  "code": "L9",
+  "signalType": "Fault",
+  "displaySource": "WiredRemote",
+  "systemPart": "Controller",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-erv-b-series-diagnostics",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree ERV Wired Controller Owner Manual EN",
+  "sourceMeaning": "неправильное количество блоков в групповом управлении",
+  "sourceReference": "Controller error code list",
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-07-01T00:00:00Z",
+  "updatedAt": "2026-07-01T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-l9-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree ERV B Series — L9 — неправильное количество блоков в групповом управлении",
+      "summary": "Код L9 для Gree ERV B Series означает неправильное количество блоков в групповом управлении.",
+      "safetyNote": "Не делайте вывод о неисправном компоненте только по одному коду. Не обходите защиты. Работы с силовыми цепями и холодильным контуром выполняют квалифицированные специалисты.",
+      "possibleCauses": [
+        "настройка количества блоков не соответствует фактическому подключению;",
+        "часть блоков не подключена или не получает питание;",
+        "нарушена линия группового управления."
+      ],
+      "checkSteps": [
+        "подтвердите код L9, серию ERV B Series и место индикации;",
+        "сверьте количество подключенных блоков с настройкой группового управления;",
+        "проверьте питание, адресацию и соединения блоков."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы других серий Gree без проверки применимости.",
+        "Не обходить защиты и не заменять платы только по одному коду."
+      ],
+      "recommendedAction": "Сохраните код L9, модель ERV и условия появления сигнала; при повторении обратитесь к квалифицированному специалисту.",
+      "sourceNote": "Карточка применима к серии ERV B Series с учетом схемы подключения и настроек контроллера."
+    },
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-l9-ru-installer",
+      "audience": "Installer",
+      "title": "Gree ERV B Series — L9 — неправильное количество блоков в групповом управлении",
+      "summary": "Код L9 для Gree ERV B Series означает неправильное количество блоков в групповом управлении.",
+      "safetyNote": "Не делайте вывод о неисправном компоненте только по одному коду. Не обходите защиты. Работы с силовыми цепями и холодильным контуром выполняют квалифицированные специалисты.",
+      "possibleCauses": [
+        "настройка количества блоков не соответствует фактическому подключению;",
+        "часть блоков не подключена или не получает питание;",
+        "нарушена линия группового управления."
+      ],
+      "checkSteps": [
+        "подтвердите код L9, серию ERV B Series и место индикации;",
+        "сверьте количество подключенных блоков с настройкой группового управления;",
+        "проверьте питание, адресацию и соединения блоков."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы других серий Gree без проверки применимости.",
+        "Не обходить защиты и не заменять платы только по одному коду."
+      ],
+      "recommendedAction": "Сохраните код L9, модель ERV и условия появления сигнала; при повторении обратитесь к квалифицированному специалисту.",
+      "sourceNote": "Карточка применима к серии ERV B Series с учетом схемы подключения и настроек контроллера."
+    },
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-l9-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree ERV B Series — L9 — неправильное количество блоков в групповом управлении",
+      "summary": "Код L9 для Gree ERV B Series означает неправильное количество блоков в групповом управлении.",
+      "safetyNote": "Не делайте вывод о неисправном компоненте только по одному коду. Не обходите защиты. Работы с силовыми цепями и холодильным контуром выполняют квалифицированные специалисты.",
+      "possibleCauses": [
+        "настройка количества блоков не соответствует фактическому подключению;",
+        "часть блоков не подключена или не получает питание;",
+        "нарушена линия группового управления."
+      ],
+      "checkSteps": [
+        "подтвердите код L9, серию ERV B Series и место индикации;",
+        "сверьте количество подключенных блоков с настройкой группового управления;",
+        "проверьте питание, адресацию и соединения блоков."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы других серий Gree без проверки применимости.",
+        "Не обходить защиты и не заменять платы только по одному коду."
+      ],
+      "recommendedAction": "Сохраните код L9, модель ERV и условия появления сигнала; при повторении обратитесь к квалифицированному специалисту.",
+      "sourceNote": "Карточка применима к серии ERV B Series с учетом схемы подключения и настроек контроллера."
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Gree ERV Wired Controller Owner Manual EN",
+      "documentCode": "Not stated",
+      "sourceReference": "Owner manual controller error code list",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-erv-wired-controller-owner-manual",
+      "packageId": "gree-erv-b-series-diagnostics",
+      "notes": "Owner manual evidence is retained in metadata and is not rendered in Telegram diagnostic text."
+    }
+  ]
+}

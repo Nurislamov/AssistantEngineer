@@ -62,7 +62,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var entries = source.GetEntries();
         var entry = Assert.Single(entries, item => item.Id == "gree-gmv6-outdoor-h5");
 
-        Assert.Equal(1293, entries.Count);
+        Assert.Equal(1296, entries.Count);
         Assert.Equal("Gree", entry.Manufacturer);
         Assert.Equal(ErrorKnowledgeEquipmentFamily.VRF, entry.EquipmentFamily);
         Assert.Equal(ErrorKnowledgeEquipmentType.OutdoorUnit, entry.EquipmentType);
@@ -101,7 +101,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
             "error-knowledge",
             "gree");
         var files = Directory.GetFiles(runtimeDirectory, "*.json", SearchOption.AllDirectories);
-        Assert.Equal(1293, files.Length);
+        Assert.Equal(1296, files.Length);
 
         var entriesWithDocumentMetadata = 0;
         foreach (var file in files)
@@ -241,7 +241,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 !string.Equals(entry.Series, "GMV Mini", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(1293, entries.Count);
+        Assert.Equal(1296, entries.Count);
         Assert.Single(entries, entry => entry.Id == "gree-gmv6-outdoor-h5");
         Assert.Equal(38, referencedEntries.Length);
         var referencedCodes = referencedEntries
@@ -1194,7 +1194,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
                 .Cast<object>()
                 .ToArray();
 
-            Assert.Equal(1293, entries.Length);
+            Assert.Equal(1296, entries.Length);
             Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-outdoor-h5"));
             Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-debugging-u0"));
             Assert.Contains(entries, entry => HasEntryId(entry, "gree-gmv6-hr-status-n2"));

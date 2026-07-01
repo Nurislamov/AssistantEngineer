@@ -23,11 +23,11 @@ public sealed class GreeUMatchErvImport24Tests
         Assert.Equal(263, Count("gmv-x"));
         Assert.Equal(260, Count("gmv9-flex"));
         Assert.Equal(107, Count("umatch-r32"));
-        Assert.Equal(2, Count("erv-b-series"));
-        Assert.Equal(1293, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(5, Count("erv-b-series"));
+        Assert.Equal(1296, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
 
         AssertPackageCount("gree-umatch-r32-error-codes.json", 107);
-        AssertPackageCount("gree-erv-b-series-diagnostics.json", 2);
+        AssertPackageCount("gree-erv-b-series-diagnostics.json", 5);
     }
 
     [Theory]
@@ -48,6 +48,9 @@ public sealed class GreeUMatchErvImport24Tests
     [Theory]
     [InlineData("e6", "E6")]
     [InlineData("l0", "L0")]
+    [InlineData("l9", "L9")]
+    [InlineData("df", "dF")]
+    [InlineData("dh", "dH")]
     public void ErvCardsAreManualVerifiedAndSourceBound(string fileCode, string code)
     {
         var entry = ReadObject(Path.Combine(GreeRuntimeDirectory, "erv-b-series", "system", $"{fileCode}.json"));
@@ -55,7 +58,7 @@ public sealed class GreeUMatchErvImport24Tests
         Assert.Equal("ERV B Series", RequiredString(entry, "series"));
         Assert.Equal(code, RequiredString(entry, "code"));
         Assert.Equal("ManualVerified", RequiredString(entry, "verificationStatus"));
-        Assert.Equal("Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B", RequiredString(entry, "sourceReferences", 0, "sourceName"));
+        Assert.StartsWith("Gree ERV", RequiredString(entry, "sourceReferences", 0, "sourceName"), StringComparison.Ordinal);
         AssertVisibleTextDoesNotLeakInternalTerms(entry);
     }
 
@@ -82,6 +85,9 @@ public sealed class GreeUMatchErvImport24Tests
     [InlineData("Gree ERV E6", "Gree ERV B Series — E6")]
     [InlineData("Gree вентиляция L0", "Gree ERV B Series — L0")]
     [InlineData("FHBQG E6", "Gree ERV B Series — E6")]
+    [InlineData("Gree ERV L9", "Gree ERV B Series — L9")]
+    [InlineData("Gree ERV dF", "Gree ERV B Series — dF")]
+    [InlineData("Gree ERV dH", "Gree ERV B Series — dH")]
     public async Task ExplicitErvQueriesResolveErvOnly(string query, string expectedTitle)
     {
         using var provider = CreateProvider();
@@ -90,9 +96,37 @@ public sealed class GreeUMatchErvImport24Tests
         var response = await adapter.HandleAsync(Update(query));
 
         Assert.Contains("Gree ERV B Series", response.Text, StringComparison.Ordinal);
-        Assert.Contains(query.Contains("L0", StringComparison.Ordinal) ? "L0" : "E6", response.Text, StringComparison.Ordinal);
+        Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree U-Match", response.Text.Replace(expectedTitle, string.Empty, StringComparison.Ordinal), StringComparison.Ordinal);
+        AssertVisibleTelegramTextDoesNotLeakEvidence(response.Text);
+    }
+
+    [Fact]
+    public async Task UMatchE0ReturnsUsefulPublicCardWithoutEvidenceWording()
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree U-Match E0"));
+
+        Assert.Contains("Gree U-Match R32 — E0 — неисправность вентилятора", response.Text, StringComparison.Ordinal);
+        Assert.Contains("питание", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("вентилятор", response.Text, StringComparison.OrdinalIgnoreCase);
+        AssertVisibleTelegramTextDoesNotLeakEvidence(response.Text);
+    }
+
+    [Fact]
+    public async Task ErvE6ReturnsControllerCommunicationCardWithoutEvidenceWording()
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("Gree ERV E6"));
+
+        Assert.Contains("Gree ERV B Series — E6 — нарушение связи", response.Text, StringComparison.Ordinal);
+        Assert.Contains("между проводным контроллером и блоком ERV", response.Text, StringComparison.OrdinalIgnoreCase);
+        AssertVisibleTelegramTextDoesNotLeakEvidence(response.Text);
     }
 
     [Theory]
@@ -107,6 +141,42 @@ public sealed class GreeUMatchErvImport24Tests
 
         Assert.Contains("Уточните серию оборудования", response.Text, StringComparison.Ordinal);
         Assert.Contains(expectedSeries, response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ManualBindingRepairScriptsUseProductionColumnsAndExpectedFileNames()
+    {
+        var scripts = new Dictionary<string, string[]>
+        {
+            ["fix-gree-umatch-r32-service-manual-binding.sql"] =
+                ["Gree U-Match R32 Service Manual EN 3.5-16kW.pdf"],
+            ["fix-gree-umatch-r32-owner-manual-bindings.sql"] =
+            [
+                "Gree U-Match R32 Cassette Type Owner Manual EN 3.5-16kW.pdf",
+                "Gree U-Match R32 Duct Type Owner Manual EN 3.5-16kW.pdf"
+            ],
+            ["fix-gree-erv-b-series-service-manual-binding.sql"] =
+                ["Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B.pdf"],
+            ["fix-gree-erv-b-series-owner-manual-bindings.sql"] =
+                ["Gree ERV Wired Controller Owner Manual EN.pdf"]
+        };
+
+        foreach (var (fileName, expectedNames) in scripts)
+        {
+            var sql = File.ReadAllText(Path.Combine(
+                TestPaths.RepoRoot,
+                "scripts",
+                "deployment",
+                "manual-library",
+                fileName));
+
+            Assert.DoesNotContain("OriginalFileName", sql, StringComparison.Ordinal);
+            Assert.DoesNotContain("UpdatedAtUtc", sql, StringComparison.Ordinal);
+            Assert.Contains("\"FileName\"", sql, StringComparison.Ordinal);
+            Assert.Contains("\"UpdatedAt\"", sql, StringComparison.Ordinal);
+            Assert.Contains("is distinct from", sql, StringComparison.OrdinalIgnoreCase);
+            Assert.All(expectedNames, expected => Assert.Contains(expected, sql, StringComparison.Ordinal));
+        }
     }
 
     private static int Count(string seriesDirectory) =>
@@ -146,10 +216,32 @@ public sealed class GreeUMatchErvImport24Tests
         foreach (var text in RequiredArray(entry, "texts").OfType<JsonObject>())
         {
             var combined = string.Join(" ", VisibleValues(text));
-            foreach (var forbidden in new[] { "runtime", "staging", "raw", "sourceMeaning", "machine translated", "GC202209-I" })
+            AssertVisibleTelegramTextDoesNotLeakEvidence(combined);
+            foreach (var forbidden in new[] { "runtime", "staging", "raw", "sourceMeaning", "machine translated" })
             {
                 Assert.DoesNotContain(forbidden, combined, StringComparison.OrdinalIgnoreCase);
             }
+        }
+    }
+
+    private static void AssertVisibleTelegramTextDoesNotLeakEvidence(string text)
+    {
+        foreach (var forbidden in new[]
+        {
+            "подтвержден",
+            "подтверждён",
+            "таблиц",
+            "раздел",
+            "сервисном руководстве",
+            "диагностическая карта",
+            "GC202209-I",
+            "source",
+            "manual",
+            "section",
+            "table"
+        })
+        {
+            Assert.DoesNotContain(forbidden, text, StringComparison.OrdinalIgnoreCase);
         }
     }
 

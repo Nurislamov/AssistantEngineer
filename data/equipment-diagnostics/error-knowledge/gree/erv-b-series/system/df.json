@@ -1,0 +1,139 @@
+{
+  "id": "gree-erv-b-series-df",
+  "manufacturer": "Gree",
+  "equipmentFamily": "SemiIndustrial",
+  "equipmentType": "Unknown",
+  "series": "ERV B Series",
+  "models": [
+    "FHBQG-D3.5B-K",
+    "FHBQG-D5B-K",
+    "FHBQG-D6.5B-K",
+    "FHBQG-D8B-K",
+    "FHBQG-D10B-K",
+    "FHBQG-D13B-K",
+    "FHBQG-D15B-K",
+    "FHBQG-D20B-K",
+    "FHBQG-D25B-M",
+    "FHBQG-D30B-M",
+    "FHBQG-D40B-M",
+    "FHBQG-D50B-M",
+    "FHBQG-D60B-M"
+  ],
+  "code": "dF",
+  "signalType": "Fault",
+  "displaySource": "WiredRemote",
+  "systemPart": "Sensor",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-erv-b-series-diagnostics",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree ERV Wired Controller Owner Manual EN",
+  "sourceMeaning": "ошибка температурного датчика проводного контроллера",
+  "sourceReference": "Controller error code list",
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-07-01T00:00:00Z",
+  "updatedAt": "2026-07-01T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-df-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree ERV B Series — dF — ошибка температурного датчика проводного контроллера",
+      "summary": "Код dF для Gree ERV B Series означает ошибку температурного датчика проводного контроллера.",
+      "safetyNote": "Не делайте вывод о неисправном компоненте только по одному коду. Не обходите защиты. Работы с силовыми цепями и холодильным контуром выполняют квалифицированные специалисты.",
+      "possibleCauses": [
+        "обрыв или короткое замыкание цепи датчика;",
+        "повреждение проводки или разъема контроллера;",
+        "неисправность датчика проводного контроллера."
+      ],
+      "checkSteps": [
+        "подтвердите код dF, серию ERV B Series и место индикации;",
+        "проверьте питание и подключение проводного контроллера;",
+        "осмотрите кабель и разъемы датчика без разборки силовых частей."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы других серий Gree без проверки применимости.",
+        "Не обходить защиты и не заменять платы только по одному коду."
+      ],
+      "recommendedAction": "Сохраните код dF, модель ERV и условия появления сигнала; при повторении обратитесь к квалифицированному специалисту.",
+      "sourceNote": "Карточка применима к серии ERV B Series с учетом схемы подключения и настроек контроллера."
+    },
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-df-ru-installer",
+      "audience": "Installer",
+      "title": "Gree ERV B Series — dF — ошибка температурного датчика проводного контроллера",
+      "summary": "Код dF для Gree ERV B Series означает ошибку температурного датчика проводного контроллера.",
+      "safetyNote": "Не делайте вывод о неисправном компоненте только по одному коду. Не обходите защиты. Работы с силовыми цепями и холодильным контуром выполняют квалифицированные специалисты.",
+      "possibleCauses": [
+        "обрыв или короткое замыкание цепи датчика;",
+        "повреждение проводки или разъема контроллера;",
+        "неисправность датчика проводного контроллера."
+      ],
+      "checkSteps": [
+        "подтвердите код dF, серию ERV B Series и место индикации;",
+        "проверьте питание и подключение проводного контроллера;",
+        "осмотрите кабель и разъемы датчика без разборки силовых частей."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы других серий Gree без проверки применимости.",
+        "Не обходить защиты и не заменять платы только по одному коду."
+      ],
+      "recommendedAction": "Сохраните код dF, модель ERV и условия появления сигнала; при повторении обратитесь к квалифицированному специалисту.",
+      "sourceNote": "Карточка применима к серии ERV B Series с учетом схемы подключения и настроек контроллера."
+    },
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-df-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree ERV B Series — dF — ошибка температурного датчика проводного контроллера",
+      "summary": "Код dF для Gree ERV B Series означает ошибку температурного датчика проводного контроллера.",
+      "safetyNote": "Не делайте вывод о неисправном компоненте только по одному коду. Не обходите защиты. Работы с силовыми цепями и холодильным контуром выполняют квалифицированные специалисты.",
+      "possibleCauses": [
+        "обрыв или короткое замыкание цепи датчика;",
+        "повреждение проводки или разъема контроллера;",
+        "неисправность датчика проводного контроллера."
+      ],
+      "checkSteps": [
+        "подтвердите код dF, серию ERV B Series и место индикации;",
+        "проверьте питание и подключение проводного контроллера;",
+        "осмотрите кабель и разъемы датчика без разборки силовых частей."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы других серий Gree без проверки применимости.",
+        "Не обходить защиты и не заменять платы только по одному коду."
+      ],
+      "recommendedAction": "Сохраните код dF, модель ERV и условия появления сигнала; при повторении обратитесь к квалифицированному специалисту.",
+      "sourceNote": "Карточка применима к серии ERV B Series с учетом схемы подключения и настроек контроллера."
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Gree ERV Wired Controller Owner Manual EN",
+      "documentCode": "Not stated",
+      "sourceReference": "Owner manual controller error code list",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-erv-wired-controller-owner-manual",
+      "packageId": "gree-erv-b-series-diagnostics",
+      "notes": "Owner manual evidence is retained in metadata and is not rendered in Telegram diagnostic text."
+    }
+  ]
+}

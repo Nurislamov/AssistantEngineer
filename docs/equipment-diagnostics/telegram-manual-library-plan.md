@@ -183,6 +183,27 @@ ED-24MAN.4 also adds idempotent production metadata correction scripts for the e
 The scripts normalize only manual-library metadata. They do not add Telegram file ids, PDF binaries, secrets, or runtime
 diagnostic cards.
 
+## ED-24MAN.4a diagnostic guide bindings
+
+ED-24MAN.4a fixes OwnerManual upload and production metadata handling for U-Match R32 and ERV B Series:
+
+- OwnerManual uploads in the `Полупром / U-Match` and `Вентиляция ERV` sections now set
+  `CanUseForDiagnostics = true`.
+- U-Match R32 supports the cassette and duct OwnerManual files as a safe selection list.
+- ERV B Series sends its single wired-controller OwnerManual directly.
+- ServiceManual remains library-only and InstallationManual remains hidden and ineligible for diagnostic delivery.
+- Callback data contains only a short derived token and remains within Telegram's 64-byte limit.
+
+Production metadata scripts:
+
+- `scripts/deployment/manual-library/fix-gree-umatch-r32-service-manual-binding.sql`
+- `scripts/deployment/manual-library/fix-gree-umatch-r32-owner-manual-bindings.sql`
+- `scripts/deployment/manual-library/fix-gree-erv-b-series-service-manual-binding.sql`
+- `scripts/deployment/manual-library/fix-gree-erv-b-series-owner-manual-bindings.sql`
+
+The scripts use the real `TelegramManualBindings` columns `FileName` and `UpdatedAt`, are idempotent, do not insert rows,
+and print the final matching metadata.
+
 ## Future work
 
 - Richer model matching and exact model-family variants.
