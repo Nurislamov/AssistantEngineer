@@ -2,18 +2,21 @@
 
 ## Last updated
 
-ED-24USR.5 / ED-24MAN.4b / ED-24UX.8a
+ED-24CI.1 / ED-24MAN.4c
 
 ## Current stable point
 
-- Production baseline: `4b0f6b10` with ED-24USR.4 and ED-24BCAST.1 production PASS; ED-24OPS.4 and the current
-  user-management and ERV/U-Match guide corrections still require VPS live-check before production PASS.
+- Production baseline: `4b0f6b10` with ED-24USR.4 and ED-24BCAST.1 production PASS; ED-24OPS.4, user-management,
+  OpenAPI dependency repair, and ERV/U-Match guide corrections still require GitHub Actions green plus VPS live-check
+  before production PASS.
 - ED-24OPS.4 adds an explicit PostgreSQL EF migration runner for the main `AppDbContext`.
 - Runtime counts: Gree 1296; GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260; U-Match R32 107;
   ERV B Series 5.
 - Manual policy: ServiceManual is library-only; InstallationManual remains hidden from generic visible menus; diagnostic
   guide delivery is OwnerManual-only, including the explicitly classified ERV-specific Installation/Startup/Maintenance
   upload.
+- Dependency policy: `Microsoft.OpenApi` is pinned through the API project at patched 2.x (`2.7.5`) so the
+  `Microsoft.AspNetCore.OpenApi` transitive graph does not restore vulnerable `Microsoft.OpenApi 2.0.0`.
 
 ## P0 / blocking
 

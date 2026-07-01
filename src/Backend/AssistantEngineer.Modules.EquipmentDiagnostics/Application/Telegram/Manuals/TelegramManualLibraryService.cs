@@ -1828,10 +1828,24 @@ public sealed class TelegramManualLibraryService
             binding.CanUseForDiagnostics &&
             binding.DocumentType == TelegramLibraryDocumentType.OwnerManual &&
             string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) &&
-            string.Equals(binding.Series, series, StringComparison.OrdinalIgnoreCase))
+            string.Equals(binding.Series, series, StringComparison.OrdinalIgnoreCase) &&
+            IsAllowedDiagnosticOwnerManual(series, binding))
         .OrderBy(binding => DiagnosticOwnerManualSortNumber(binding) ?? int.MaxValue)
         .ThenBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
         .ToArray();
+
+    private static bool IsAllowedDiagnosticOwnerManual(
+        string series,
+        TelegramManualFileBinding binding) =>
+        !string.Equals(series, "ERV B Series", StringComparison.OrdinalIgnoreCase) ||
+        IsExactErvDiagnosticOwnerManual(binding);
+
+    private static bool IsExactErvDiagnosticOwnerManual(TelegramManualFileBinding binding)
+    {
+        var token = NormalizeFileToken(BindingSearchText(binding));
+        return token.Contains("installationstartupmaintenance", StringComparison.Ordinal) &&
+            token.Contains("fhbqgd35bd60b", StringComparison.Ordinal);
+    }
 
     private static TelegramManualLibraryResult BuildDiagnosticOwnerManualSelection(
         TelegramDiagnosticCaseSnapshot last,
@@ -2240,7 +2254,8 @@ public sealed class TelegramManualLibraryService
             return "ir";
         }
 
-        if (binding.DocumentType == TelegramLibraryDocumentType.ControllerGuide &&
+        if ((binding.DocumentType == TelegramLibraryDocumentType.ControllerGuide ||
+             IsOwnerLikeDocument(binding.DocumentType)) &&
             ContainsAny(text, "Wired Controller", "XK", "XE7A"))
         {
             return "wall";
@@ -2353,6 +2368,11 @@ public sealed class TelegramManualLibraryService
             return "Файл";
         }
 
+        if (string.Equals(binding.Series, "Controllers", StringComparison.OrdinalIgnoreCase))
+        {
+            return ShortControllerFileTitle(binding, title);
+        }
+
         var replacements = new[]
         {
             "Gree GMV ",
@@ -2386,6 +2406,42 @@ public sealed class TelegramManualLibraryService
         }
 
         return string.IsNullOrWhiteSpace(title) ? "Файл" : title;
+    }
+
+    private static string ShortControllerFileTitle(
+        TelegramManualFileBinding binding,
+        string fallbackTitle)
+    {
+        var text = BindingSearchText(binding);
+        if (ContainsAny(text, "ERV Wired Controller"))
+        {
+            return "ERV Wired Controller";
+        }
+
+        if (ContainsAny(text, "YAP1F", "YV1L1"))
+        {
+            return "YAP1F / YV1L1";
+        }
+
+        if (ContainsAny(text, "XE7A-23H", "XE7A 23H", "XE7A-23HC", "XE7A 23HC"))
+        {
+            return "XE7A-23H / XE7A-23HC";
+        }
+
+        if (ContainsAny(text, "XE7A-24H", "XE7A 24H", "XE7A-24HC", "XE7A 24HC"))
+        {
+            return "XE7A-24H / XE7A-24HC";
+        }
+
+        if (ContainsAny(text, "XK46"))
+        {
+            return "XK46";
+        }
+
+        return ShortOwnerManualTitle(fallbackTitle)
+            .Replace("Wired Controller ", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("Remote Controller ", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Trim();
     }
 
     private static string SeriesSlug(string? value) =>

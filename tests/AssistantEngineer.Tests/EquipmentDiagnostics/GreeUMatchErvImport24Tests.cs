@@ -198,6 +198,19 @@ public sealed class GreeUMatchErvImport24Tests
             Assert.Contains("is distinct from", sql, StringComparison.OrdinalIgnoreCase);
             Assert.All(expectedNames, expected => Assert.Contains(expected, sql, StringComparison.Ordinal));
         }
+
+        var ervOwnerSql = File.ReadAllText(Path.Combine(
+            TestPaths.RepoRoot,
+            "scripts",
+            "deployment",
+            "manual-library",
+            "fix-gree-erv-b-series-owner-manual-bindings.sql"));
+        Assert.DoesNotContain("%controller%", ervOwnerSql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("%xk46%", ervOwnerSql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("%xe7a%", ervOwnerSql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("%yap1f%", ervOwnerSql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("%yv1l1%", ervOwnerSql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("%erv wired controller%", ervOwnerSql, StringComparison.OrdinalIgnoreCase);
     }
 
     private static int Count(string seriesDirectory) =>

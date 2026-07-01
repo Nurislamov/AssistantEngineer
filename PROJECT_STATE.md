@@ -2,20 +2,75 @@
 
 ## Current stage
 
-ED-24USR.5 / ED-24MAN.4b / ED-24UX.8a - CLOSED / pushed. Production PASS is pending the VPS live-check.
+ED-24CI.1 / ED-24MAN.4c - CLOSED / pushed. Production PASS is pending GitHub Actions green and the VPS live-check.
 
 Next recommended steps:
 
 1. Pull `origin/master` on `assistantengineer-beta-01`.
-2. Run the four ED-24MAN metadata repair scripts against the production PostgreSQL database.
-3. Rebuild/restart `assistantengineer-api` and complete the user-management, U-Match/ERV diagnostics, and guide live-check.
-4. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
+2. Run the four ED-24MAN metadata repair scripts against the production PostgreSQL database, including the hardened
+   `fix-gree-erv-b-series-owner-manual-bindings.sql`.
+3. Rebuild/restart `assistantengineer-api` and complete the OpenAPI restore, Controllers labels, U-Match/ERV diagnostics,
+   and guide live-check.
+4. Watch GitHub Actions for the Engineering Core V1 checks and mark production PASS only after Actions are green and the
+   VPS live-check passes.
+5. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24CI.1 and ED-24MAN.4c fix the GitHub restore failure from `Microsoft.OpenApi 2.0.0`, harden the ERV owner repair
+script against controller misclassification, and make Gree Controllers file buttons readable. The stage is CLOSED /
+pushed; production PASS remains pending until GitHub Actions are green and the VPS live-check passes.
+
+Implementation commit: current commit (`ED-24CI.1 Fix OpenAPI vulnerability and controller labels`).
+
+Package implementation notes:
+
+- Root cause: `Microsoft.AspNetCore.OpenApi 10.0.5` resolved transitive `Microsoft.OpenApi 2.0.0`; with NU1903 treated as
+  an error, `dotnet restore .\AssistantEngineer.sln` failed in GitHub Actions, including the OwnershipBackfill tool graph.
+- Fix: `AssistantEngineer.Api.csproj` now has a direct `Microsoft.OpenApi 2.7.5` package override. A dependency security
+  guard verifies the patched 2.x pin and restored assets reject `Microsoft.OpenApi/2.0.0`.
+- `dotnet list .\AssistantEngineer.sln package --include-transitive` resolves `Microsoft.OpenApi 2.7.5`; `2.0.0` is gone.
+- ED-24MAN.4c hardens `fix-gree-erv-b-series-owner-manual-bindings.sql`: it still uses production `FileName`/`UpdatedAt`
+  columns, avoids broad `%Controller%` matching, corrects
+  `Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf` as the ERV diagnostic OwnerManual,
+  and reclassifies XK46, XE7A, YAP1F/YV1L1, and ERV Wired Controller rows back to Controllers / ControllerGuide.
+- Controllers buttons now show readable short labels: `ERV Wired Controller`, `YAP1F / YV1L1`,
+  `XE7A-23H / XE7A-23HC`, `XE7A-24H / XE7A-24HC`, and `XK46`; callback payloads remain short id-based values without
+  filenames, Telegram file ids, file_unique_id, or sourceReferences.
+- ERV diagnostic guide delivery now accepts only the exact ERV B Series Installation Startup Maintenance OwnerManual
+  binding and does not offer secondary controller manuals as diagnostic guides.
+- U-Match guide buttons still show Cassette/Duct labels, and full filenames remain in message bodies.
+- Runtime counts remain unchanged: Gree 1296, U-Match R32 107, ERV B Series 5.
+- Manual policies remain unchanged: ServiceManual is library-only, InstallationManual remains hidden from generic visible
+  installation menus, and diagnostic guide delivery uses only safe OwnerManual guide bindings.
+- GitHub CI-equivalent commands run locally for the failed workflows: `dotnet restore .\AssistantEngineer.sln`,
+  `npm --version`, `npm ci --prefix .\src\Frontend`,
+  `.\scripts\engineering-core\verify-engineering-core-v1-smoke.ps1`,
+  `.\scripts\engineering-core\verify-engineering-core-v1.ps1`, and
+  `.\scripts\engineering-core\verify-engineering-core-v1-validation.ps1`.
+- EF model validation: no migration was added; no model changes are expected.
+- No PDF binaries, manual intake artifacts, certificates, passwords, secrets, `.env` backups, or unrelated files were
+  committed.
+
+Package local validation:
+
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with the known TD-BUILD-001 nullable warnings in architecture
+  guard tests only.
+- Focused EngineeringCore/Validation/Telegram/ManualLibrary/Gree/UMatch/ERV/User tests: PASS.
+- Gree diagnostics smoke: PASS.
+- Full solution suite: PASS.
+- Engineering Core V1 Smoke CI-equivalent: PASS.
+- Engineering Core V1 CI-equivalent: PASS.
+- Engineering Core V1 Validation CI-equivalent: PASS.
+- `git diff --check`: PASS.
+- Production PASS remains pending until GitHub Actions are green and the VPS live-check is completed.
+
+Previous completed work:
 
 ED-24USR.5, ED-24MAN.4b, and ED-24UX.8a add Owner-only Telegram user management, correct the ERV/U-Match
 diagnostic-guide UX, and remove duplicated codes from rendered Gree diagnostic titles. The stage is CLOSED / pushed;

@@ -87,6 +87,9 @@ reclassified_controllers as (
       and (
           lower(coalesce(binding."FileName", '') || ' ' || coalesce(binding."Title", '')) like '%xk46%'
           or lower(coalesce(binding."FileName", '') || ' ' || coalesce(binding."Title", '')) like '%xe7a%'
+          or lower(coalesce(binding."FileName", '') || ' ' || coalesce(binding."Title", '')) like '%yap1f%'
+          or lower(coalesce(binding."FileName", '') || ' ' || coalesce(binding."Title", '')) like '%yv1l1%'
+          or lower(coalesce(binding."FileName", '') || ' ' || coalesce(binding."Title", '')) like '%erv wired controller%'
       )
       and (
           binding."Series" is distinct from 'Controllers'

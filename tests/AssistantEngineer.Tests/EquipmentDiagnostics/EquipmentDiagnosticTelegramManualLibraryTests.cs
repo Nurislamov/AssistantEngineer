@@ -971,6 +971,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         await SeedControllerBindingAsync(bindingStore, "xe7a-23", "telegram-file-id-xe7a-23", "Gree Wired Controller XE7A-23H XE7A-23HC Owner Manual EN.pdf");
         await SeedControllerBindingAsync(bindingStore, "xe7a-24", "telegram-file-id-xe7a-24", "Gree Wired Controller XE7A-24H XE7A-24HC Owner Manual EN.pdf");
         await SeedControllerBindingAsync(bindingStore, "yap", "telegram-file-id-yap", "Gree Remote Controller YAP1F YV1L1 Owner Manual EN.pdf");
+        await SeedControllerBindingAsync(bindingStore, "erv-wired", "telegram-file-id-erv-wired", "Gree ERV Wired Controller Owner Manual EN.pdf");
         await SeedControllerBindingAsync(bindingStore, "unknown", "telegram-file-id-unknown-controller", "Gree Controller Unknown Owner Manual EN.pdf");
 
         var root = await adapter.HandleAsync(LibraryCallback("lib:gree:section:controllers"));
@@ -982,8 +983,15 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Gree Wired Controller XK46 Owner Manual EN.pdf", wall.Text, StringComparison.Ordinal);
         Assert.Contains("Gree Wired Controller XE7A-23H XE7A-23HC Owner Manual EN.pdf", wall.Text, StringComparison.Ordinal);
         Assert.Contains("Gree Wired Controller XE7A-24H XE7A-24HC Owner Manual EN.pdf", wall.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree ERV Wired Controller Owner Manual EN.pdf", wall.Text, StringComparison.Ordinal);
         Assert.Contains("Gree Remote Controller YAP1F YV1L1 Owner Manual EN.pdf", ir.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Unknown", wall.Text + ir.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(InlineButtons(wall), button => button.Contains("ERV Wired Controller", StringComparison.Ordinal));
+        Assert.Contains(InlineButtons(wall), button => button.Contains("XE7A-23H / XE7A-23HC", StringComparison.Ordinal));
+        Assert.Contains(InlineButtons(wall), button => button.Contains("XE7A-24H / XE7A-24HC", StringComparison.Ordinal));
+        Assert.Contains(InlineButtons(wall), button => button.Contains("XK46", StringComparison.Ordinal));
+        Assert.Contains(InlineButtons(ir), button => button.Contains("YAP1F / YV1L1", StringComparison.Ordinal));
+        Assert.DoesNotContain(InlineButtons(wall).Concat(InlineButtons(ir)), button => button.Contains("ERV Owner Manual EN", StringComparison.Ordinal));
         AssertSafeLibraryFileButtons(wall);
         AssertSafeLibraryFileButtons(ir);
     }
@@ -1317,9 +1325,9 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             TelegramLibraryDocumentType.OwnerManual,
             canUseForDiagnostics: true));
         await bindingStore.UpsertAsync(Binding(
-            "gree-erv-owner",
-            "erv-owner-file",
-            "Gree ERV Wired Controller Owner Manual EN.pdf",
+            "gree-erv-installation-owner",
+            "erv-installation-owner-file",
+            "Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf",
             "ERV B Series",
             TelegramLibraryDocumentType.OwnerManual,
             canUseForDiagnostics: true));
@@ -1365,7 +1373,10 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             erv.OutboundMessages,
             message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
 
-        Assert.Equal("erv-owner-file", ervDocument.DocumentFileId);
+        Assert.Equal("erv-installation-owner-file", ervDocument.DocumentFileId);
+        Assert.Equal(
+            "Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf",
+            ervDocument.DocumentFileName);
         Assert.True(ervDocument.ProtectContent);
     }
 
@@ -1412,9 +1423,8 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             .Where(button => button.CallbackData.StartsWith("dm:file:", StringComparison.Ordinal))
             .ToArray();
 
-        Assert.Equal(2, buttons.Length);
-        Assert.Contains("Installation Startup Maintenance", selection.Text, StringComparison.Ordinal);
-        Assert.Contains("ERV Wired Controller", selection.Text, StringComparison.Ordinal);
+        Assert.Empty(buttons);
+        Assert.DoesNotContain("ERV Wired Controller", selection.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("XK46", selection.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("XE7A", selection.Text, StringComparison.OrdinalIgnoreCase);
         Assert.All(buttons, button =>
@@ -1423,6 +1433,13 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             Assert.DoesNotContain(".pdf", button.CallbackData, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("file-id", button.CallbackData, StringComparison.OrdinalIgnoreCase);
         });
+        var document = Assert.Single(
+            selection.OutboundMessages,
+            message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        Assert.Equal("erv-installation-owner-file", document.DocumentFileId);
+        Assert.Equal(
+            "Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf",
+            document.DocumentFileName);
     }
 
     [Theory]
