@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24BCAST.1 - CLOSED / pushed; production live-check is still pending.
+ED-24BCAST.1 - CLOSED / production PASS.
 
 Next recommended steps:
 
-1. Complete ED-24BCAST.1 production live-check on `assistantengineer-beta-01`.
-2. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
-3. Consider ED-24MAN.4 for exact model-family matching and ED-24QA.2 for nullable warning cleanup.
+1. ED-24OPS.4 Add controlled PostgreSQL EF migration runner.
+2. ED-24BCAST.2 Broadcast history/retry.
+3. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 
 ## Current branch
 
@@ -16,8 +16,9 @@ master
 
 ## Last completed work
 
-ED-24BCAST.1 adds the Owner-only Telegram text broadcast foundation; the stage is CLOSED / pushed. Production PASS is not
-marked yet because the VPS live-check is still pending.
+ED-24BCAST.1 adds the Owner-only Telegram text broadcast foundation; the stage is CLOSED / production PASS.
+
+Implementation commit: `2682440f` (`ED-24BCAST.1 Add owner text broadcasts`).
 
 ED-24BCAST.1 implementation notes:
 
@@ -48,10 +49,36 @@ ED-24BCAST.1 implementation notes:
 - Full solution suite: 5055/5055 passed.
 - EF migration/model validation: PASS; no pending model changes after `20260630195828_AddTelegramBroadcasts`.
 - `git diff --check`: PASS.
-- Production PASS remains pending until the ED-24BCAST.1 VPS live-check is completed.
+- Production live-check: PASS.
+- VPS: `assistantengineer-beta-01`; repo: `/opt/assistantengineer`; deploy dir: `/opt/assistantengineer/deploy`.
+- Production HEAD: `2682440f`; service: `assistantengineer-api`.
+- Broadcast migration `20260630195828_AddTelegramBroadcasts` was applied on the VPS by a manual SQL script because the
+  main PostgreSQL `AppDbContext` does not yet have a controlled production auto-migration runner.
+- This manual production migration step does not block ED-24BCAST.1 production PASS, but it creates future ops debt:
+  `ED-24OPS.4 Add controlled PostgreSQL EF migration runner`.
+- Production DB migration history confirms `20260630195828_AddTelegramBroadcasts` with `ProductVersion = 10.0.6`.
+- Production DB tables confirmed: `public.TelegramBroadcastCampaigns` and `public.TelegramBroadcastRecipients`.
+- Owner audience broadcast live-check: preview rendered, test-to-self sent, confirm completed; final report showed
+  Audience Owner, Recipients 1, Sent 1, Skipped 0, Failed 0.
+- Engineer audience broadcast live-check: preview rendered and confirm completed; final report showed Audience Engineer,
+  Recipients 1, Sent 1, Skipped 0, Failed 0.
+- Production DB campaign validation: Campaign 1 Role/Owner Completed with TotalRecipients 1, SentCount 1, SkippedCount 0,
+  FailedCount 0; Campaign 2 Role/Engineer Completed with TotalRecipients 1, SentCount 1, SkippedCount 0, FailedCount 0.
+- Production DB recipient validation: Owner and Engineer recipient rows have `Status = Sent`, empty `SkipReason`, and
+  empty `ErrorCode`.
+- Production logs: Telegram command menu synchronized, polling started, startup `deleteWebhook` succeeded, updates were
+  processed with `Status: Processed`, callback answers/message edits/responses were sent.
+- Production logs contain no `BUTTON_DATA_INVALID`, `OutboundFailed`, `error`, `exception`, or `failed` entries in the
+  checked live window.
+- Runtime counts remain unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policies remain unchanged: ServiceManual library-only, InstallationManual hidden from visible library/upload
+  menus, diagnostic guide OwnerManual-only, protected `sendDocument` remains, and `forwardMessage`/`copyMessage` are not
+  used for protected library/manual delivery.
+- Diagnostic JSON/cards/codes/sourceReferences, routing, deploy scripts, PDFs/artifacts, and secrets are unchanged.
 
-ED-24USR.4 adds an Owner-only Telegram user overview; the stage is CLOSED / pushed. Production PASS is not marked yet
-because the VPS live-check is still pending.
+ED-24USR.4 adds an Owner-only Telegram user overview; the stage is CLOSED / production PASS.
+
+Implementation commit: `700fd4bd` (`ED-24USR.4 Add owner user overview`).
 
 ED-24USR.4 implementation notes:
 
@@ -76,8 +103,20 @@ ED-24USR.4 implementation notes:
 - No PDFs, generated artifacts, certificates, passwords, or secrets were committed.
 - Focused UserOverview tests: 5/5 passed.
 - Focused TelegramUser/UserOverview/UserAccess/Telegram tests: 589/589 passed.
-- Production PASS remains pending until the ED-24USR.4 VPS live-check is completed.
-- Next planned stage: ED-24BCAST.1 Owner text broadcast foundation.
+- Production live-check: PASS.
+- VPS: `assistantengineer-beta-01`; repo: `/opt/assistantengineer`; deploy dir: `/opt/assistantengineer/deploy`.
+- Production HEAD: `2682440f`; service: `assistantengineer-api`.
+- Owner opened `📚 Библиотека` -> `👥 Пользователи`.
+- Visible stats confirmed: total users 6, active 6, reachable for future private broadcast 4, unavailable for private
+  messages 2.
+- Role counts confirmed: Owner 1, Admin 0, Engineer 1, Installer 0, Consumer 4.
+- Owner sees `👥 Пользователи`; role buttons Owner/Admin/Engineer/Installer/Consumer are visible.
+- Phone numbers are not shown in the overview screen.
+- Owner-only placement under the library/admin area works.
+- Runtime counts remain unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policies remain unchanged: ServiceManual library-only, InstallationManual hidden from visible library/upload
+  menus, diagnostic guide OwnerManual-only.
+- Diagnostic JSON/cards/codes/sourceReferences, routing, deploy scripts, PDFs/artifacts, and secrets are unchanged.
 
 ED-24BRAND.1 polishes visible Telegram-facing branding and help copy; the stage is CLOSED / production PASS.
 
@@ -1211,8 +1250,8 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 ## Future candidates
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
-- ED-24USR.4 - Owner user overview.
-- ED-24BCAST.1 - Owner text broadcast foundation.
+- ED-24OPS.4 - Add controlled PostgreSQL EF migration runner.
+- ED-24BCAST.2 - Broadcast history/retry.
 - ED-24MAN.4 - Manual variants by model family / exact model matching.
 - TD-OPS-002 - optional DataProtection certificate hardening: mount and rotate a production-owned PFX/secret for key
   encryption at rest.
@@ -1220,10 +1259,11 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No implementation blocker. The Telegram library and branding production state is stable and ready for ED-24USR.4 and
-ED-24BCAST.1.
+No implementation blocker. ED-24USR.4 and ED-24BCAST.1 are production PASS. The next ops priority is a controlled
+PostgreSQL EF migration runner because the ED-24BCAST.1 migration was applied manually on production.
 
 ## Next step
 
-Start ED-24USR.4 Owner user overview, then ED-24BCAST.1 Owner text broadcast foundation.
+Start ED-24OPS.4 Add controlled PostgreSQL EF migration runner, or ED-24BCAST.2 Broadcast history/retry after the
+migration-runner debt is planned.
 
