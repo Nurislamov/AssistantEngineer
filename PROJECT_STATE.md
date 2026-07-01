@@ -1599,3 +1599,99 @@ Recommended next stage:
 
 <!-- ED-24-CI-MAN-USR-PRODUCTION-PASS:END -->
 
+
+<!-- ED-24SR-PRODUCTION-PASS:BEGIN -->
+
+## ED-24SR production pass update
+
+Updated: 2026-07-01 11:40:43 UTC
+
+### Production status
+
+The following stages are marked as CLOSED / production PASS:
+
+- ED-24SR.1 - Service request text dialog.
+- ED-24SR.2 - Service request dialog attachments.
+- ED-24SR.3 - Group-safe Telegram keyboards hotfix.
+
+### Production live-check
+
+VPS live-check passed after deployment:
+
+- Telegram polling started normally.
+- Service request creation still works.
+- Group service request notification works.
+- Group actions are processed with Status=Processed.
+- Text dialog is persisted and delivered both directions.
+- Operator-to-user text messages are saved.
+- User-to-operator text messages are saved and routed to the service group.
+- Dialog history is available from the request card.
+- The group-safe keyboard hotfix worked: no request_contact keyboard was sent to group chats.
+- No OutboundFailed, BUTTON_DATA_INVALID, phone-number request error, error, exception, or failed entries were observed in the checked production log windows.
+
+### Attachment live-check
+
+TelegramServiceRequestMessageAttachments contains production rows for:
+
+- Photo with FileId metadata.
+- Document with FileId, filename, mime type and file size metadata.
+- Video with FileId, mime type, file size, width, height and duration metadata.
+
+Confirmed attachment types:
+
+- Photo.
+- Document.
+- Video.
+
+Attachment handling policy:
+
+- Uses Telegram file_id metadata.
+- Does not download/store file bytes.
+- Keeps protect_content=true for service request dialog media.
+
+### Database status
+
+Production migrations applied:
+
+- 20260701095907_AddTelegramServiceRequestDialog.
+- 20260701101337_AddTelegramServiceRequestDialogAttachments.
+
+Production tables validated:
+
+- TelegramServiceRequestMessages.
+- TelegramServiceRequestMessageAttachments.
+
+### Validation summary
+
+Validation reported before deployment:
+
+- Restore/build: PASS.
+- Focused tests: PASS.
+- EquipmentDiagnostics CI-equivalent: PASS.
+- Full solution tests: PASS.
+- Gree diagnostics smoke: PASS.
+- EF model validation: clean.
+- Microsoft.OpenApi resolves to 2.7.5; 2.0.0 absent.
+- git diff --check: PASS.
+
+Runtime counts unchanged:
+
+- Gree total: 1296.
+- U-Match R32: 107.
+- ERV B Series: 5.
+
+No PDFs, manual intake artifacts, secrets, .env backups, or unrelated files were committed.
+
+### Known follow-up
+
+Branch-readiness still needs a separate cleanup because its narrow-skeleton policy treats the intentionally required EF migrations as forbidden, and its plain full-suite path can hit the known workflow artifact truncation limit. This is not a production blocker for ED-24SR.
+
+### Current next step
+
+Recommended next stages:
+
+- ED-24SR.4 - polish service request dialog UX after real usage if needed.
+- ED-24OPS.4 - controlled PostgreSQL EF migration runner / branch-readiness cleanup.
+- Continue adding equipment manuals and diagnostics in small verified batches.
+
+<!-- ED-24SR-PRODUCTION-PASS:END -->
