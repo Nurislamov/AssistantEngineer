@@ -2,18 +2,16 @@
 
 ## Current stage
 
-ED-24CI.1 / ED-24MAN.4c - CLOSED / pushed. Production PASS is pending GitHub Actions green and the VPS live-check.
+ED-24MAN.4d - CLOSED / pushed. Production PASS is pending GitHub Actions green and the VPS live-check.
 
 Next recommended steps:
 
 1. Pull `origin/master` on `assistantengineer-beta-01`.
-2. Run the four ED-24MAN metadata repair scripts against the production PostgreSQL database, including the hardened
-   `fix-gree-erv-b-series-owner-manual-bindings.sql`.
-3. Rebuild/restart `assistantengineer-api` and complete the OpenAPI restore, Controllers labels, U-Match/ERV diagnostics,
-   and guide live-check.
-4. Watch GitHub Actions for the Engineering Core V1 checks and mark production PASS only after Actions are green and the
+2. Rebuild/restart `assistantengineer-api` and complete the Controllers selected-file labels/captions, U-Match/ERV
+   diagnostics, and guide live-check. No production metadata script is required for ED-24MAN.4d.
+3. Verify GitHub Actions for the Engineering Core V1 checks and mark production PASS only after Actions are green and the
    VPS live-check passes.
-5. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
+4. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 
 ## Current branch
 
@@ -21,11 +19,57 @@ master
 
 ## Last completed work
 
+ED-24MAN.4d fixes Gree Controllers manual-library display when production rows have correct `FileName` values but stale
+`Title` values. The stage is CLOSED / pushed; production PASS remains pending until GitHub Actions are green and the VPS
+live-check passes.
+
+Implementation commit: current commit (`ED-24MAN.4d Fix controller manual labels`).
+
+ED-24MAN.4d implementation notes:
+
+- Root cause: generic manual-library display and diagnostic selection used the binding display title, which can be stale
+  metadata, instead of the selected binding filename. This let the first/stale `Gree ERV Wired Controller...` title replace
+  selected controller labels and captions even though the correct Telegram file was sent.
+- Generic library send status and document captions now prefer the selected binding filename. `Title` remains only as a
+  fallback when a filename is missing.
+- Gree Controllers short labels and classification use selected filename text, producing `ERV Wired Controller`,
+  `YAP1F / YV1L1`, `XE7A-23H / XE7A-23HC`, `XE7A-24H / XE7A-24HC`, and `XK46` without leaking stale ERV titles.
+- U-Match diagnostic selection and selected document captions use selected filenames; ERV exact guide matching also uses
+  filename text, so controller titles cannot make a row look like the ERV Installation/Startup/Maintenance guide.
+- Callback payloads remain short id/token-based values without filenames, Telegram file ids, file_unique_id, source
+  references, or long manual ids.
+- Manual policies remain unchanged: ServiceManual is library-only, InstallationManual remains hidden from visible generic
+  menus, and diagnostic guide delivery uses safe OwnerManual guide bindings only.
+- No production DB change, migration, PDF binary, manual intake artifact, secret, runtime JSON/card change, or runtime count
+  change was added.
+
+ED-24MAN.4d local validation:
+
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS, 0 warnings.
+- `dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~EquipmentDiagnosticTelegramManualLibraryTests" --logger "console;verbosity=normal"`: PASS, 64/64.
+- Focused OpenAPI/import/runtime/manual-registry guards: PASS, 37/37; runtime counts remain Gree 1296, U-Match R32 107,
+  ERV B Series 5.
+- `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1`: PASS, 14/14.
+- `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=normal"`: PASS, 5104/5104.
+- Engineering Core V1 Smoke CI-equivalent: PASS.
+- Engineering Core V1 coverage: `.\scripts\engineering-core\verify-engineering-core-v1.ps1 -SkipFullDotnet` PASS after
+  standalone full solution suite PASS. The exact no-skip run completed all pre-full groups but was stopped after the
+  duplicate full backend step stayed silent for 15:43; the same full backend suite had already passed separately.
+- Engineering Core V1 Validation CI-equivalent: PASS, including generated artifact diff check and regeneration.
+- `dotnet list .\AssistantEngineer.sln package --include-transitive | Select-String "Microsoft.OpenApi"` resolves
+  `Microsoft.OpenApi 2.7.5`; `2.0.0` is absent.
+- EF model validation: `dotnet ef migrations has-pending-model-changes` reports no model changes. The known EF tools
+  10.0.5 vs runtime 10.0.6 warning is non-blocking.
+- `git diff --check`: PASS.
+
+## Previous completed work
+
 ED-24CI.1 and ED-24MAN.4c fix the GitHub restore failure from `Microsoft.OpenApi 2.0.0`, harden the ERV owner repair
 script against controller misclassification, and make Gree Controllers file buttons readable. The stage is CLOSED /
 pushed; production PASS remains pending until GitHub Actions are green and the VPS live-check passes.
 
-Implementation commit: current commit (`ED-24CI.1 Fix OpenAPI vulnerability and controller labels`).
+Implementation commit: `945e1164` (`ED-24CI.1 Fix OpenAPI vulnerability and controller labels`).
 
 Package implementation notes:
 

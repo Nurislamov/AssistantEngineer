@@ -967,12 +967,13 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         await AllowAsync(provider, TelegramUserRole.Owner);
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
         var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
-        await SeedControllerBindingAsync(bindingStore, "xk46", "telegram-file-id-xk46", "Gree Wired Controller XK46 Owner Manual EN.pdf");
-        await SeedControllerBindingAsync(bindingStore, "xe7a-23", "telegram-file-id-xe7a-23", "Gree Wired Controller XE7A-23H XE7A-23HC Owner Manual EN.pdf");
-        await SeedControllerBindingAsync(bindingStore, "xe7a-24", "telegram-file-id-xe7a-24", "Gree Wired Controller XE7A-24H XE7A-24HC Owner Manual EN.pdf");
-        await SeedControllerBindingAsync(bindingStore, "yap", "telegram-file-id-yap", "Gree Remote Controller YAP1F YV1L1 Owner Manual EN.pdf");
-        await SeedControllerBindingAsync(bindingStore, "erv-wired", "telegram-file-id-erv-wired", "Gree ERV Wired Controller Owner Manual EN.pdf");
-        await SeedControllerBindingAsync(bindingStore, "unknown", "telegram-file-id-unknown-controller", "Gree Controller Unknown Owner Manual EN.pdf");
+        const string staleControllerTitle = "Gree ERV Wired Controller Owner Manual EN.pdf";
+        await SeedControllerBindingAsync(bindingStore, "xk46", "telegram-file-id-xk46", "Gree Wired Controller XK46 Owner Manual EN.pdf", title: staleControllerTitle);
+        await SeedControllerBindingAsync(bindingStore, "xe7a-23", "telegram-file-id-xe7a-23", "Gree Wired Controller XE7A-23H XE7A-23HC Owner Manual EN.pdf", title: staleControllerTitle);
+        await SeedControllerBindingAsync(bindingStore, "xe7a-24", "telegram-file-id-xe7a-24", "Gree Wired Controller XE7A-24H XE7A-24HC Owner Manual EN.pdf", title: staleControllerTitle);
+        await SeedControllerBindingAsync(bindingStore, "yap", "telegram-file-id-yap", "Gree Remote Controller YAP1F YV1L1 Owner Manual EN.pdf", title: staleControllerTitle);
+        await SeedControllerBindingAsync(bindingStore, "erv-wired", "telegram-file-id-erv-wired", "Gree ERV Wired Controller Owner Manual EN.pdf", title: staleControllerTitle);
+        await SeedControllerBindingAsync(bindingStore, "unknown", "telegram-file-id-unknown-controller", "Gree Controller Unknown Owner Manual EN.pdf", title: staleControllerTitle);
 
         var root = await adapter.HandleAsync(LibraryCallback("lib:gree:section:controllers"));
         var wall = await adapter.HandleAsync(LibraryCallback("lib:c:wall"));
@@ -994,6 +995,38 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.DoesNotContain(InlineButtons(wall).Concat(InlineButtons(ir)), button => button.Contains("ERV Owner Manual EN", StringComparison.Ordinal));
         AssertSafeLibraryFileButtons(wall);
         AssertSafeLibraryFileButtons(ir);
+
+        await AssertControllerFileDeliveryAsync(wall, "ERV Wired Controller", "telegram-file-id-erv-wired", "Gree ERV Wired Controller Owner Manual EN.pdf");
+        await AssertControllerFileDeliveryAsync(wall, "XE7A-23H / XE7A-23HC", "telegram-file-id-xe7a-23", "Gree Wired Controller XE7A-23H XE7A-23HC Owner Manual EN.pdf");
+        await AssertControllerFileDeliveryAsync(wall, "XE7A-24H / XE7A-24HC", "telegram-file-id-xe7a-24", "Gree Wired Controller XE7A-24H XE7A-24HC Owner Manual EN.pdf");
+        await AssertControllerFileDeliveryAsync(wall, "XK46", "telegram-file-id-xk46", "Gree Wired Controller XK46 Owner Manual EN.pdf");
+        await AssertControllerFileDeliveryAsync(ir, "YAP1F / YV1L1", "telegram-file-id-yap", "Gree Remote Controller YAP1F YV1L1 Owner Manual EN.pdf");
+
+        async Task AssertControllerFileDeliveryAsync(
+            EquipmentDiagnosticTelegramResponse response,
+            string label,
+            string fileId,
+            string fileName)
+        {
+            var callback = Assert.Single(
+                InlineButtonsWithCallbacks(response),
+                button => button.Text.Contains(label, StringComparison.Ordinal)).CallbackData;
+            var sent = await adapter.HandleAsync(LibraryCallback(callback));
+            var document = Assert.Single(
+                sent.OutboundMessages,
+                message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+
+            Assert.Contains(fileName, sent.Text, StringComparison.Ordinal);
+            Assert.Contains(sent.OutboundMessages, message => message.Text?.Contains(fileName, StringComparison.Ordinal) == true);
+            Assert.Equal(fileId, document.DocumentFileId);
+            Assert.Equal(fileName, document.DocumentFileName);
+            Assert.Equal(fileName, document.Text);
+            if (!string.Equals(fileName, staleControllerTitle, StringComparison.Ordinal))
+            {
+                Assert.DoesNotContain(staleControllerTitle, sent.Text, StringComparison.Ordinal);
+                Assert.DoesNotContain(sent.OutboundMessages, message => message.Text?.Contains(staleControllerTitle, StringComparison.Ordinal) == true);
+            }
+        }
     }
 
     [Fact]
@@ -1346,6 +1379,11 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.DoesNotContain("Service Manual", selection.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Installation Manual", selection.Text, StringComparison.OrdinalIgnoreCase);
 
+        var expectedUMatchFileNames = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["umatch-owner-cassette-file"] = "Gree U-Match R32 Cassette Type Owner Manual EN 3.5-16kW.pdf",
+            ["umatch-owner-duct-file"] = "Gree U-Match R32 Duct Type Owner Manual EN 3.5-16kW.pdf"
+        };
         var sentUMatchFileIds = new List<string>();
         foreach (var button in manualButtons)
         {
@@ -1358,6 +1396,10 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
                 sent.OutboundMessages,
                 message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
             Assert.True(document.ProtectContent);
+            Assert.True(expectedUMatchFileNames.TryGetValue(document.DocumentFileId!, out var expectedFileName));
+            Assert.Equal(expectedFileName, document.DocumentFileName);
+            Assert.Equal(expectedFileName, document.Text);
+            Assert.Contains(expectedFileName, sent.Text, StringComparison.Ordinal);
             sentUMatchFileIds.Add(document.DocumentFileId!);
         }
 
@@ -1377,6 +1419,9 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Equal(
             "Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf",
             ervDocument.DocumentFileName);
+        Assert.Equal(
+            "Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf",
+            ervDocument.Text);
         Assert.True(ervDocument.ProtectContent);
     }
 
@@ -1615,7 +1660,8 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         TelegramLibraryDocumentType documentType = TelegramLibraryDocumentType.ControllerGuide,
         TelegramUserRole minRole = TelegramUserRole.Installer,
         bool isActive = true,
-        bool isLibraryVisible = true) =>
+        bool isLibraryVisible = true,
+        string? title = null) =>
         bindingStore.UpsertAsync(new TelegramManualFileBinding(
             $"gree-controllers-{key}",
             fileId,
@@ -1627,7 +1673,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
             Brand: "Gree",
             Series: "Controllers",
             IsActive: isActive,
-            Title: fileName,
+            Title: title ?? fileName,
             DocumentType: documentType,
             MinRole: minRole,
             IsLibraryVisible: isLibraryVisible,

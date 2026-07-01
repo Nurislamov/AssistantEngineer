@@ -322,6 +322,7 @@ public sealed class TelegramManualLibraryService
 
         var replyMarkup = TelegramDiagnosticConversationService.DiagnosticManualContextKeyboard(access);
         var binding = bindings[0];
+        var fileName = DisplayBindingFileName(binding);
         var heading =
             $"{TelegramHtml.Bold("Руководство по диагностике")}\n\n" +
             $"{TelegramHtml.Bold("Оборудование:")} {TelegramHtml.Escape(equipment)}\n" +
@@ -334,7 +335,7 @@ public sealed class TelegramManualLibraryService
                 ParseMode: TelegramHtml.ParseMode,
                 ReplyMarkup: replyMarkup),
             new(
-                "Сохранённое руководство по последней диагностике.",
+                fileName,
                 ReplyMarkup: replyMarkup,
                 DocumentFileId: binding.TelegramFileId,
                 DocumentFileName: binding.OriginalFileName,
@@ -1352,7 +1353,7 @@ public sealed class TelegramManualLibraryService
                 string.Equals(binding.Series, SectionStorageSeries(sectionSlug), StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(ClassifyTypedBinding(sectionSlug, binding), category.Slug, StringComparison.Ordinal) &&
                 CanAccessBinding(access, binding))
-            .OrderBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
+            .OrderBy(binding => DisplayBindingFileName(binding), StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
         return BuildFileList(
@@ -1406,7 +1407,7 @@ public sealed class TelegramManualLibraryService
                 string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(binding.Series, series.Series, StringComparison.OrdinalIgnoreCase) &&
                 CanAccessBinding(access, binding))
-            .OrderBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
+            .OrderBy(binding => DisplayBindingFileName(binding), StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
         if (bindings.Length == 0)
@@ -1444,7 +1445,7 @@ public sealed class TelegramManualLibraryService
                 IsVisibleLibraryDocumentType(binding.DocumentType) &&
                 IsAllowedLibraryBinding(binding) &&
                 CanAccessBinding(access, binding))
-            .OrderBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
+            .OrderBy(binding => DisplayBindingFileName(binding), StringComparer.OrdinalIgnoreCase)
             .ToArray();
         var totalPages = Math.Max(1, (int)Math.Ceiling(bindings.Length / (double)FreeSectionPageSize));
         page = Math.Clamp(page, 0, totalPages - 1);
@@ -1542,7 +1543,7 @@ public sealed class TelegramManualLibraryService
             {
                 text.Append(i + 1);
                 text.Append(". ");
-                text.AppendLine(SafeFileName(bindings[i].OriginalFileName) ?? DisplayBindingTitle(bindings[i]));
+                text.AppendLine(DisplayBindingFileName(bindings[i]));
             }
         }
 
@@ -1583,7 +1584,7 @@ public sealed class TelegramManualLibraryService
                 string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(binding.Series, section.StorageSeries, StringComparison.OrdinalIgnoreCase) &&
                 CanAccessBinding(access, binding))
-            .OrderBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
+            .OrderBy(binding => DisplayBindingFileName(binding), StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
         return BuildFileList(
@@ -1842,7 +1843,7 @@ public sealed class TelegramManualLibraryService
 
     private static bool IsExactErvDiagnosticOwnerManual(TelegramManualFileBinding binding)
     {
-        var token = NormalizeFileToken(BindingSearchText(binding));
+        var token = NormalizeFileToken(BindingFileSearchText(binding));
         return token.Contains("installationstartupmaintenance", StringComparison.Ordinal) &&
             token.Contains("fhbqgd35bd60b", StringComparison.Ordinal);
     }
@@ -2248,7 +2249,7 @@ public sealed class TelegramManualLibraryService
 
     private static string? ClassifyControllerBinding(TelegramManualFileBinding binding)
     {
-        var text = BindingSearchText(binding);
+        var text = BindingFileSearchText(binding);
         if (ContainsAny(text, "Remote Controller", "Wireless", " YAP", " YV"))
         {
             return "ir";
@@ -2276,6 +2277,12 @@ public sealed class TelegramManualLibraryService
             new[] { binding.OriginalFileName, binding.Title }
                 .Where(value => !string.IsNullOrWhiteSpace(value))
                 .SelectMany(value => new[] { value!, value!.Replace('_', ' ') }));
+
+    private static string BindingFileSearchText(TelegramManualFileBinding binding)
+    {
+        var title = DisplayBindingFileName(binding);
+        return string.Join(' ', title, title.Replace('_', ' '));
+    }
 
     private static string SectionStorageSeries(string sectionSlug) =>
         FindSection(sectionSlug)?.StorageSeries ?? string.Empty;
@@ -2338,9 +2345,11 @@ public sealed class TelegramManualLibraryService
             : $"chat {user.TelegramChatId}";
 
     private static string DisplayBindingTitle(TelegramManualFileBinding binding) =>
-        string.IsNullOrWhiteSpace(binding.Title)
-            ? SafeFileName(binding.OriginalFileName) ?? "Telegram file"
-            : binding.Title.Trim();
+        DisplayBindingFileName(binding);
+
+    private static string DisplayBindingFileName(TelegramManualFileBinding binding) =>
+        SafeFileName(binding.OriginalFileName) ??
+        (string.IsNullOrWhiteSpace(binding.Title) ? "Telegram file" : binding.Title.Trim());
 
     private static string LibraryFileCallbackData(TelegramManualFileBinding binding)
     {
@@ -2412,7 +2421,7 @@ public sealed class TelegramManualLibraryService
         TelegramManualFileBinding binding,
         string fallbackTitle)
     {
-        var text = BindingSearchText(binding);
+        var text = BindingFileSearchText(binding);
         if (ContainsAny(text, "ERV Wired Controller"))
         {
             return "ERV Wired Controller";

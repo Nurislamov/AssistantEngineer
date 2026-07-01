@@ -221,6 +221,20 @@ Production metadata scripts:
 The scripts use the real `TelegramManualBindings` columns `FileName` and `UpdatedAt`, are idempotent, do not insert rows,
 and print the final matching metadata.
 
+## ED-24MAN.4d controller selected-file captions
+
+ED-24MAN.4d keeps the production metadata unchanged and fixes display logic when a binding has a correct `FileName` but a
+stale `Title`:
+
+- Generic manual-library button labels, send status text, and document captions prefer the selected binding filename.
+- Gree Controllers short labels are derived from the selected binding filename, so `YAP1F / YV1L1`,
+  `XE7A-23H / XE7A-23HC`, `XE7A-24H / XE7A-24HC`, and `XK46` cannot be replaced by a stale ERV title.
+- Controller classification uses filename text instead of stale title text.
+- U-Match diagnostic selection and selected document captions use the selected binding filename; ERV exact-guide matching
+  also uses filename text.
+- Library and diagnostic callback data remains short id/token-based and does not include filenames, Telegram file ids,
+  file_unique_id, source references, or long manual ids.
+
 ## Future work
 
 - Richer model matching and exact model-family variants.
