@@ -17,7 +17,8 @@ $telegramFields = @(
     "possibleCauses",
     "checkSteps",
     "recommendedAction",
-    "safetyNote"
+    "safetyNote",
+    "sourceNote"
 )
 $badPhrases = @(
     "по таблице руководства",
@@ -34,6 +35,23 @@ $badPhrases = @(
     "packageId",
     "document code"
 )
+$manualReviewedCodes = @(
+    "AJ",
+    "b1",
+    "b2",
+    "b3",
+    "b4",
+    "b5",
+    "b6",
+    "b7",
+    "b8",
+    "b9",
+    "bA"
+)
+$manualReviewedCodesLookup = @{}
+foreach ($code in $manualReviewedCodes) {
+    $manualReviewedCodesLookup[$code] = $true
+}
 
 $packages = @{}
 foreach ($file in Get-ChildItem -LiteralPath $packageRoot -Filter "*.json" -File) {
@@ -66,7 +84,10 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $greeRoot -Recurse -Filt
     $runtimeDirectory = Split-Path $relativePath -Parent
     $isReviewedCriticalCard =
         ($entry.series -eq "GMV6") -and
-        (($entry.code -eq "AJ") -or ($entry.code -eq "b1"))
+        ($manualReviewedCodesLookup.ContainsKey($entry.code))
+    $isReviewedSensorCard =
+        ($entry.series -eq "GMV6") -and
+        ($entry.code -match '^b[1-9A]$')
 
     [pscustomobject]@{
         series = $entry.series
@@ -85,9 +106,9 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $greeRoot -Recurse -Filt
         badGenericPhrases = $foundPhrases
         manualSectionFound = if ($isReviewedCriticalCard) { $true } else { $null }
         manualHasFaultDiagnosis = if ($isReviewedCriticalCard) { $true } else { $null }
-        manualHasPossibleCauses = if ($entry.series -eq "GMV6" -and $entry.code -eq "b1") { $true } elseif ($entry.series -eq "GMV6" -and $entry.code -eq "AJ") { $false } else { $null }
+        manualHasPossibleCauses = if ($isReviewedSensorCard) { $true } elseif ($entry.series -eq "GMV6" -and $entry.code -eq "AJ") { $false } else { $null }
         manualHasTroubleshooting = if ($isReviewedCriticalCard) { $true } else { $null }
-        manualHasFlowchart = if ($entry.series -eq "GMV6" -and $entry.code -eq "b1") { $true } elseif ($entry.series -eq "GMV6" -and $entry.code -eq "AJ") { $false } else { $null }
+        manualHasFlowchart = if ($isReviewedSensorCard) { $true } elseif ($entry.series -eq "GMV6" -and $entry.code -eq "AJ") { $false } else { $null }
         repairStatus = if ($isReviewedCriticalCard -and $foundPhrases.Count -eq 0) { "Repaired" } else { "NeedsManualReview" }
         runtimeDirectory = $runtimeDirectory
     }
@@ -116,7 +137,7 @@ foreach ($map in $packageMap) {
 New-Item -ItemType Directory -Force -Path $outputRoot | Out-Null
 $report = [pscustomobject]@{
     generatedAtUtc = [DateTime]::UtcNow.ToString("O")
-    scope = "ED-24SRC.1 emergency audit: all Gree runtime cards; manual review completed for GMV6 AJ and b1 only."
+    scope = "ED-24SRC.2 audit: all Gree runtime cards; manual review completed for GMV6 AJ and outdoor sensor batch b1-bA."
     totalEntries = $entries.Count
     packageMap = @($packageMap)
     entries = @($entries | Sort-Object series, code, filePath)

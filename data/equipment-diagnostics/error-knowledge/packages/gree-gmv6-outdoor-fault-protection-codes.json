@@ -22,7 +22,7 @@
     "OutdoorBoard"
   ],
   "entryCountExpected": 121,
-  "notes": "One-manual source boundary: GC202001-I, GMV6 only. Exact table wording is stored in sourceMeaning. Detailed troubleshooting is imported for H5; other entries remain table-bound unless explicitly noted.",
+  "notes": "One-manual source boundary: GC202001-I, GMV6 only. Exact table wording is stored in sourceMeaning. Detailed troubleshooting is imported for H5 and the outdoor sensor batch b1-bA; other entries remain table-bound unless explicitly noted.",
   "createdAt": "2026-06-20T00:00:00Z",
   "updatedAt": "2026-06-20T00:00:00Z"
 }

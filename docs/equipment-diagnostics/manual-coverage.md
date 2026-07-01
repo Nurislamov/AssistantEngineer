@@ -15,8 +15,13 @@ The registry is metadata only. It is not loaded by Telegram diagnostics and it d
 ED-24SRC.1 applies a strict presentation boundary: source names, document identifiers, package identifiers, source
 references, and import evidence remain metadata and are not emitted as Telegram diagnostic guidance. The stage audits
 all 1296 Gree runtime cards, removes the known generic import template from 235 GMV6 cards, and completes a
-manual-section repair only for GMV6 `AJ` and `b1`. The other 1294 cards remain `NeedsManualReview` in the generated
-repair audit. Runtime counts do not change, and no PDF/manual binary is committed.
+manual-section repair for GMV6 `AJ` and `b1`.
+
+ED-24SRC.2 repairs the first detailed GMV6 batch from the same service-manual boundary: outdoor sensor/procedure cards
+`b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`, `b9`, and `bA` now carry the documented 30-second sensor-detection
+condition, three possible causes, and connector -> sensor -> detection-circuit/main-board troubleshooting flow. Runtime
+counts do not change, remaining unrepaired cards stay `NeedsManualReview` in the generated repair audit, and no
+PDF/manual binary is committed.
 
 Current snapshot:
 

@@ -1,4 +1,4 @@
-# ED-24SRC.1 manual-bound Gree diagnostic card repair
+# ED-24SRC.2 manual-bound Gree diagnostic card repair
 
 ## Outcome and boundary
 
@@ -6,13 +6,16 @@ This is an honest emergency-scope repair, not a claim that all 1296 cards have b
 diagnostic chapters.
 
 - All 1296 Gree runtime cards are included in the generated audit.
-- The known generic import template was present in 235 GMV6 cards. Their Telegram-visible summaries, checks, and
+- ED-24SRC.1 found the known generic import template in 235 GMV6 cards. Their Telegram-visible summaries, checks, and
   recommended actions were reduced to neutral table-only-safe wording without adding causes or component repairs.
 - GMV6 `AJ` was checked against section 2.12 and repaired as a filter-clean prompt with filter cleaning, prompt reset,
   and the next service cycle.
-- GMV6 `b1` was checked against section 2.17 and its rendered flowchart. The card now includes the 30-second detection
-  condition, all three possible causes, and the ordered connector, sensor, detection-circuit, and main-board actions.
-- The remaining 1294 cards are marked `NeedsManualReview`. Detailed diagnostic chapters and flowcharts must be reviewed
+- ED-24SRC.2 repaired the first detailed GMV6 outdoor sensor/procedure batch: `b1`, `b2`, `b3`, `b4`, `b5`, `b6`,
+  `b7`, `b8`, `b9`, and `bA`.
+- GMV6 `b1`-`bA` were checked against sections 2.17-2.26 and their rendered flowcharts. The cards now include the
+  30-second detection condition, all three possible causes, and the ordered connector, sensor, detection-circuit, and
+  main-board actions with the correct sensor name for each code.
+- The remaining 1285 cards are marked `NeedsManualReview`. Detailed diagnostic chapters and flowcharts must be reviewed
   one source boundary at a time before those cards can be marked repaired.
 
 Provenance remains in runtime metadata. Telegram-visible fields do not expose filenames, document codes, manual IDs,
@@ -31,8 +34,9 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/manual-bound-card-repair-audit.json`
 - `artifacts/verification/equipment-diagnostics/manual-bound-card-repair-audit.csv`
 
-The JSON report contains the package-to-runtime map and one row per runtime card. Unreviewed manual-capability fields are
-`null` rather than guessed.
+The JSON report contains the package-to-runtime map and one row per runtime card. ED-24SRC.2 marks only `AJ` and
+`b1`-`bA` as repaired in the GMV6 manual-bound scope; unreviewed manual-capability fields are `null` rather than
+guessed.
 
 ## Stable runtime counts
 
@@ -58,12 +62,4 @@ procedure from another Gree series or another document.
 
 ## Validation status
 
-- Restore and build pass; build has 0 warnings and 0 errors.
-- EquipmentDiagnostics tests pass 1112/1112.
-- Telegram tests pass 640/640 with a disposable migrated local PostgreSQL test database.
-- The exact plain full suite runs 5135/5136. Its sole failure is the existing unrelated Engineering Workflow artifact
-  assertion receiving the configured 256 KiB truncation envelope instead of raw JSON.
-- The full suite passes 5136/5136 with the existing test-only 10 MiB artifact-content override. No production
-  configuration is changed.
-
-The stage is not labelled full validation PASS while the exact plain full-suite command remains red.
+ED-24SRC.2 validation is recorded in `PROJECT_STATE.md` after the local gate completes.

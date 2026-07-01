@@ -2,15 +2,13 @@
 
 ## Current stage
 
-ED-24SRC.1 - IMPLEMENTED / uncommitted; mandatory plain full-suite gate is not PASS because of one known unrelated
-Engineering Workflow truncation assertion. ED-24SR.3 remains CLOSED / pushed.
+ED-24SRC.2 - IMPLEMENTED / validation PASS / ready to commit. ED-24SRC.1 and ED-24SRC.1b are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Resolve or explicitly change the existing Engineering Workflow artifact truncation test/configuration contract.
-2. Re-run the exact plain full suite; commit and push the honest ED-24SRC.1 emergency scope only after it passes.
-3. Continue the 1294-card `NeedsManualReview` backlog one manual/source boundary at a time.
-4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
+1. Commit and push ED-24SRC.2.
+2. Continue the remaining `NeedsManualReview` backlog one manual/source boundary at a time.
+3. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
 
@@ -18,39 +16,36 @@ master
 
 ## Last completed work
 
-ED-24SRC.1 audits all 1296 Gree runtime cards and repairs the critical GMV6 `AJ` and `b1` examples directly from
-`Service Manual for GMV6 v_2020.09.pdf`. It also removes the known generic import template from 235 GMV6 cards by
-reducing those Telegram-visible fields to table-only-safe wording. This is an emergency-scope repair: the remaining 1294
-cards are explicitly `NeedsManualReview`, not falsely reported as fully repaired.
+ED-24SRC.2 repairs the first detailed GMV6 outdoor sensor/procedure batch directly from
+`Service Manual for GMV6 v_2020.09.pdf`: `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`, `b9`, and `bA`.
+ED-24SRC.1 and ED-24SRC.1b already repaired the critical GMV6 `AJ` / `b1` examples and removed the known generic import
+template from 235 GMV6 cards.
 
-ED-24SRC.1 implementation notes:
+ED-24SRC.2 implementation notes:
 
 - GMV6 `AJ` now means a filter-clean prompt and tells the user to clean the indoor-unit filter, reset the prompt, and
   begin the next service cycle.
-- GMV6 `b1` now identifies the outdoor ambient temperature sensor fault, the 30-second detection condition, the three
-  documented causes, and the connector -> sensor -> detection circuit -> main-board flowchart.
-- Telegram-visible diagnostic fields reject generic import/evidence and provenance phrases. Source/provenance data stays
-  in metadata-only fields.
+- GMV6 `b1`-`bA` now identify the correct outdoor sensor fault, the 30-second detection condition, the three documented
+  causes, and the connector -> sensor -> detection circuit -> main-board flowchart.
+- Telegram-visible diagnostic fields, including `sourceNote`, reject generic import/evidence and provenance phrases.
+  Source/provenance data stays in metadata-only fields.
 - `invoke-gree-manual-bound-card-audit.ps1` generates JSON and CSV reports under ignored verification artifacts. The
-  report contains 1296 rows and the 21-package runtime map.
+  report contains 1296 rows, the 21-package runtime map, and marks `AJ` plus `b1`-`bA` as repaired in this manual-bound
+  scope.
 - Runtime counts are unchanged: Gree 1296, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260,
   U-Match R32 107, ERV B Series 5.
 - No PDF/manual binary, migration, database model, Telegram callback, routing rule, environment file, secret, or deploy
   file changed.
-- Focused ED-24SRC.1 guards: PASS, 4/4.
+- Focused ED-24SRC.2 guard: PASS, 5/5.
 - `dotnet restore .\AssistantEngineer.sln`: PASS.
 - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 0 warnings and 0 errors.
-- EquipmentDiagnostics filter: PASS, 1112/1112.
-- Telegram filter: PASS, 640/640, using a disposable local PostgreSQL 17 test container with all 30 existing
-  migrations applied.
-- Exact plain full suite: 5135/5136. The sole failure is the pre-existing unrelated
-  `ApiIntegrationTests.EngineeringWorkflowPrepareAndRunPersistScenarioAndArtifacts` assertion: configured 256 KiB
-  artifact truncation returns the truncation envelope instead of JSON containing `scenarioId`.
-- Full suite with the existing test-only
-  `EngineeringWorkflowPersistence__PayloadLimits__ArtifactContentMaxBytes=10485760` override: PASS, 5136/5136.
-  Production configuration was not changed.
-- Because the exact plain full suite did not pass, ED-24SRC.1 is not reported as validation PASS and was not committed
-  or pushed.
+- EquipmentDiagnostics filter: PASS, 1113/1113.
+- Telegram filter: PASS, 640/640.
+- EquipmentDiagnosticTelegramWebhookApiIntegrationTests filter: PASS, 10/10.
+- Exact full solution suite: PASS, 5137/5137.
+- `git diff --check`: PASS.
+- `git status --short`: only the intended ED-24SRC.2 card, package, audit-script, test, docs, and `PROJECT_STATE.md`
+  changes.
 
 ED-24SR.3 fixes group-safe Telegram keyboards. Production rejected a service-group response with
 `Bad Request: phone number can be requested in private chats only` because a private reply keyboard containing
