@@ -2,12 +2,13 @@
 
 ## Current stage
 
-ED-24SRC.2 - IMPLEMENTED / validation PASS / ready to commit. ED-24SRC.1 and ED-24SRC.1b are CLOSED / pushed.
+ED-24SRC.3 - IMPLEMENTED / validation PASS / ready to commit. ED-24SRC.1, ED-24SRC.1b, and ED-24SRC.2 are CLOSED /
+pushed.
 
 Next recommended steps:
 
-1. Commit and push ED-24SRC.2.
-2. Continue the remaining `NeedsManualReview` backlog one manual/source boundary at a time.
+1. Commit and push ED-24SRC.3.
+2. Continue with ED-24SRC.4: the next controlled GMV6 outdoor detailed-procedure batch from the inventory.
 3. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -16,7 +17,27 @@ master
 
 ## Last completed work
 
-ED-24SRC.2 repairs the first detailed GMV6 outdoor sensor/procedure batch directly from
+ED-24SRC.3 maps all 263 GMV6 runtime cards for staged closure. The ignored inventory outputs are:
+
+- `artifacts/verification/equipment-diagnostics/gmv6-manual-bound-closure-inventory.json`
+- `artifacts/verification/equipment-diagnostics/gmv6-manual-bound-closure-inventory.csv`
+
+ED-24SRC.3 inventory results:
+
+- Counts are unchanged: GMV6 total 263; outdoor 121; indoor 60; debugging 38; status 44; Gree total 1296.
+- Repair classes: AlreadyRepaired 11; DetailedProcedureAvailable 83; TableOnlySafe 88; StatusOrPrompt 43;
+  DebuggingOrCommissioning 38.
+- Category split: outdoor = 10 AlreadyRepaired, 57 DetailedProcedureAvailable, 54 TableOnlySafe; indoor = 26
+  DetailedProcedureAvailable, 34 TableOnlySafe; debugging = 38 DebuggingOrCommissioning; status = 1 AlreadyRepaired,
+  43 StatusOrPrompt.
+- Conflict count: 0. Every GMV6 runtime card has an attached manual/source section or source reference in the current
+  runtime data.
+- The inventory is a planning map only. It does not rewrite runtime cards and does not mark GMV6 closed.
+- Validation: EquipmentDiagnostics filter PASS, 1113/1113; `git diff --check` PASS.
+- No PDF/manual binary, runtime card, migration, database model, Telegram callback, routing rule, environment file,
+  secret, deploy file, or production state changed.
+
+ED-24SRC.2 repaired the first detailed GMV6 outdoor sensor/procedure batch directly from
 `Service Manual for GMV6 v_2020.09.pdf`: `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`, `b9`, and `bA`.
 ED-24SRC.1 and ED-24SRC.1b already repaired the critical GMV6 `AJ` / `b1` examples and removed the known generic import
 template from 235 GMV6 cards.

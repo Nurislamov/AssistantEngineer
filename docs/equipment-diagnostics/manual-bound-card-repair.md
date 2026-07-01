@@ -1,4 +1,4 @@
-# ED-24SRC.2 manual-bound Gree diagnostic card repair
+# ED-24SRC manual-bound Gree diagnostic card repair
 
 ## Outcome and boundary
 
@@ -37,6 +37,38 @@ Ignored outputs:
 The JSON report contains the package-to-runtime map and one row per runtime card. ED-24SRC.2 marks only `AJ` and
 `b1`-`bA` as repaired in the GMV6 manual-bound scope; unreviewed manual-capability fields are `null` rather than
 guessed.
+
+## ED-24SRC.3 GMV6 closure inventory
+
+ED-24SRC.3 adds a dedicated GMV6-only closure inventory runner:
+
+```powershell
+.\scripts\equipment-diagnostics\invoke-gmv6-manual-bound-closure-inventory.ps1
+```
+
+Ignored outputs:
+
+- `artifacts/verification/equipment-diagnostics/gmv6-manual-bound-closure-inventory.json`
+- `artifacts/verification/equipment-diagnostics/gmv6-manual-bound-closure-inventory.csv`
+
+The inventory covers all 263 GMV6 runtime cards without editing card content. It records category, package/source
+boundary, current visible text, source meaning/reference, inferred manual-section availability, visible-text safety, and
+the next repair class used to plan ED-24SRC.4+.
+
+ED-24SRC.3 inventory snapshot:
+
+| Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | StatusOrPrompt | DebuggingOrCommissioning | Total |
+|---|---:|---:|---:|---:|---:|---:|
+| outdoor | 10 | 57 | 54 | 0 | 0 | 121 |
+| indoor | 0 | 26 | 34 | 0 | 0 | 60 |
+| debugging | 0 | 0 | 0 | 0 | 38 | 38 |
+| status | 1 | 0 | 0 | 43 | 0 | 44 |
+| **Total** | **11** | **83** | **88** | **43** | **38** | **263** |
+
+No conflicting source boundary was found by the inventory. Every GMV6 card has an attached manual/source section or
+source reference in the current runtime data. The inventory is a planning map, not a closure claim: cards in
+`DetailedProcedureAvailable`, `TableOnlySafe`, `StatusOrPrompt`, and `DebuggingOrCommissioning` still require the later
+staged repair/verification passes before GMV6 can be called closed.
 
 ## Stable runtime counts
 
