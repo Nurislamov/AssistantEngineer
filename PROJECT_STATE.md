@@ -1,4 +1,4 @@
-# AssistantEngineer Project State
+﻿# AssistantEngineer Project State
 
 ## Current stage
 
@@ -1476,4 +1476,91 @@ remain production PASS.
 ## Next step
 
 Complete ED-24OPS.4 production live-check, then continue with ED-24BCAST.2 Broadcast history/retry.
+
+
+<!-- ED-24-CI-MAN-USR-PRODUCTION-PASS:BEGIN -->
+
+## ED-24 production pass update
+
+Updated: 2026-07-01 09:06:57 UTC
+
+### Production status
+
+The following stages are marked as CLOSED / production PASS:
+
+- ED-24USR.5 вЂ” Owner-only user cards, role changes, block/unblock, self/last-owner protection.
+- ED-24MAN.4b вЂ” ERV/U-Match diagnostic guide binding fixes.
+- ED-24UX.8a вЂ” duplicate diagnostic code in visible titles fixed.
+- ED-24CI.1 вЂ” Microsoft.OpenApi restore vulnerability fixed; Engineering Core CI-equivalent checks passed.
+- ED-24MAN.4c вЂ” ERV SQL script hardened against misclassifying controller manuals.
+- ED-24MAN.4d вЂ” controller manual button labels and selected-file captions fixed.
+
+### Production live-check
+
+VPS live-check passed after deployment:
+
+- Telegram polling starts normally.
+- Telegram callbacks are processed.
+- Telegram document delivery works.
+- U-Match diagnostic guide sends the selected cassette/duct OwnerManual correctly.
+- ERV B Series diagnostic guide sends only the ERV-specific Installation Startup Maintenance manual.
+- ERV / Р СѓРєРѕРІРѕРґСЃС‚РІР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ contains the single expected ERV guide.
+- РџСѓР»СЊС‚С‹ / Controllers contains controller manuals under Controllers, not ERV.
+- Controller buttons are readable:
+  - ERV Wired Controller
+  - XE7A-23H / XE7A-23HC
+  - XE7A-24H / XE7A-24HC
+  - XK46
+- Selected controller file text/caption matches the selected binding.
+- No OutboundFailed, BUTTON_DATA_INVALID, error, exception, or ailed entries were observed in the checked production log window.
+
+### CI status
+
+GitHub CI issue root cause:
+
+- Microsoft.AspNetCore.OpenApi 10.0.5 pulled vulnerable transitive Microsoft.OpenApi 2.0.0.
+- NU1903 became WarningAsError during dotnet restore.
+- Fixed by direct safe override to Microsoft.OpenApi 2.7.5.
+- Guard test added to prevent Microsoft.OpenApi 2.0.0 from returning.
+
+Validation reported for ED-24CI.1 / ED-24MAN.4d:
+
+- Restore: PASS.
+- Build: PASS, 0 warnings / 0 errors.
+- Focused manual-library tests: PASS, 64/64.
+- OpenAPI/import/runtime/manual-registry guards: PASS, 37/37.
+- Gree diagnostics smoke: PASS, 14/14.
+- Full solution tests: PASS, 5104/5104.
+- Engineering Core V1 Smoke CI-equivalent: PASS.
+- Engineering Core V1 Validation + artifact diff/regenerate: PASS.
+- Microsoft.OpenApi resolves to 2.7.5; 2.0.0 absent.
+- EF pending model check: no model changes.
+- git diff --check: PASS.
+
+### Runtime and boundaries
+
+Runtime counts unchanged:
+
+- Gree total: 1296.
+- U-Match R32: 107.
+- ERV B Series: 5.
+
+No new migrations were added for these final fixes.
+
+No PDFs, manual intake artifacts, secrets, .env backups, or unrelated files were committed.
+
+Manual policy remains:
+
+- ServiceManual remains library-only.
+- InstallationManual remains hidden from generic visible installation menus.
+- Diagnostic guide uses safe user-facing guide bindings.
+
+### Current next step
+
+Recommended next stage:
+
+- ED-24USR.6 or later polish only if user-management UX needs refinement after more real use.
+- Otherwise continue adding equipment manuals/diagnostic cards in small verified batches.
+
+<!-- ED-24-CI-MAN-USR-PRODUCTION-PASS:END -->
 
