@@ -203,6 +203,46 @@ public sealed class EfTelegramBroadcastStore : ITelegramBroadcastStore
         return recipients.Select(ToSnapshot).ToArray();
     }
 
+    public async Task<TelegramBroadcastAttachmentSnapshot> AddAttachmentAsync(
+        long campaignId,
+        TelegramBroadcastAttachmentCreate attachment,
+        DateTimeOffset createdAt,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var entity = new TelegramBroadcastAttachmentEntity
+        {
+            CampaignId = campaignId,
+            AttachmentType = attachment.AttachmentType,
+            FileId = attachment.FileId,
+            FileUniqueId = attachment.FileUniqueId,
+            FileName = attachment.FileName,
+            MimeType = attachment.MimeType,
+            FileSize = attachment.FileSize,
+            SortOrder = attachment.SortOrder,
+            CreatedAt = createdAt
+        };
+        await context.TelegramBroadcastAttachments.AddAsync(entity, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+        return ToSnapshot(entity);
+    }
+
+    public async Task<IReadOnlyList<TelegramBroadcastAttachmentSnapshot>> ListAttachmentsAsync(
+        long campaignId,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var attachments = await context.TelegramBroadcastAttachments
+            .AsNoTracking()
+            .Where(item => item.CampaignId == campaignId)
+            .OrderBy(item => item.SortOrder)
+            .ThenBy(item => item.Id)
+            .ToArrayAsync(cancellationToken);
+        return attachments.Select(ToSnapshot).ToArray();
+    }
+
     private static TelegramBroadcastCampaignSnapshot ToSnapshot(TelegramBroadcastCampaignEntity campaign) =>
         new(
             campaign.Id,
@@ -235,4 +275,17 @@ public sealed class EfTelegramBroadcastStore : ITelegramBroadcastStore
             recipient.ErrorMessage,
             recipient.SentAt,
             recipient.CreatedAt);
+
+    private static TelegramBroadcastAttachmentSnapshot ToSnapshot(TelegramBroadcastAttachmentEntity attachment) =>
+        new(
+            attachment.Id,
+            attachment.CampaignId,
+            attachment.AttachmentType,
+            attachment.FileId,
+            attachment.FileUniqueId,
+            attachment.FileName,
+            attachment.MimeType,
+            attachment.FileSize,
+            attachment.SortOrder,
+            attachment.CreatedAt);
 }

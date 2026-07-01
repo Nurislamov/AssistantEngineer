@@ -5,8 +5,10 @@ public class InMemoryTelegramBroadcastStore : ITelegramBroadcastStore
     private readonly object _sync = new();
     private readonly Dictionary<long, TelegramBroadcastCampaignEntity> _campaigns = [];
     private readonly Dictionary<long, List<TelegramBroadcastRecipientEntity>> _recipients = [];
+    private readonly Dictionary<long, List<TelegramBroadcastAttachmentEntity>> _attachments = [];
     private long _lastCampaignId;
     private long _lastRecipientId;
+    private long _lastAttachmentId;
 
     public Task<TelegramBroadcastCampaignSnapshot> CreateDraftAsync(
         long createdByTelegramUserId,
@@ -30,6 +32,7 @@ public class InMemoryTelegramBroadcastStore : ITelegramBroadcastStore
             };
             _campaigns.Add(campaign.Id, campaign);
             _recipients.Add(campaign.Id, []);
+            _attachments.Add(campaign.Id, []);
             return Task.FromResult(ToSnapshot(campaign));
         }
     }
@@ -184,6 +187,52 @@ public class InMemoryTelegramBroadcastStore : ITelegramBroadcastStore
         }
     }
 
+    public Task<TelegramBroadcastAttachmentSnapshot> AddAttachmentAsync(
+        long campaignId,
+        TelegramBroadcastAttachmentCreate attachment,
+        DateTimeOffset createdAt,
+        CancellationToken cancellationToken = default)
+    {
+        lock (_sync)
+        {
+            if (!_attachments.ContainsKey(campaignId))
+            {
+                _attachments[campaignId] = [];
+            }
+
+            var entity = new TelegramBroadcastAttachmentEntity
+            {
+                Id = ++_lastAttachmentId,
+                CampaignId = campaignId,
+                AttachmentType = attachment.AttachmentType,
+                FileId = attachment.FileId,
+                FileUniqueId = attachment.FileUniqueId,
+                FileName = attachment.FileName,
+                MimeType = attachment.MimeType,
+                FileSize = attachment.FileSize,
+                SortOrder = attachment.SortOrder,
+                CreatedAt = createdAt
+            };
+            _attachments[campaignId].Add(entity);
+            return Task.FromResult(ToSnapshot(entity));
+        }
+    }
+
+    public Task<IReadOnlyList<TelegramBroadcastAttachmentSnapshot>> ListAttachmentsAsync(
+        long campaignId,
+        CancellationToken cancellationToken = default)
+    {
+        lock (_sync)
+        {
+            return Task.FromResult<IReadOnlyList<TelegramBroadcastAttachmentSnapshot>>(
+                _attachments.GetValueOrDefault(campaignId, [])
+                    .OrderBy(attachment => attachment.SortOrder)
+                    .ThenBy(attachment => attachment.Id)
+                    .Select(ToSnapshot)
+                    .ToArray());
+        }
+    }
+
     private static TelegramBroadcastCampaignSnapshot ToSnapshot(TelegramBroadcastCampaignEntity campaign) =>
         new(
             campaign.Id,
@@ -216,4 +265,17 @@ public class InMemoryTelegramBroadcastStore : ITelegramBroadcastStore
             recipient.ErrorMessage,
             recipient.SentAt,
             recipient.CreatedAt);
+
+    private static TelegramBroadcastAttachmentSnapshot ToSnapshot(TelegramBroadcastAttachmentEntity attachment) =>
+        new(
+            attachment.Id,
+            attachment.CampaignId,
+            attachment.AttachmentType,
+            attachment.FileId,
+            attachment.FileUniqueId,
+            attachment.FileName,
+            attachment.MimeType,
+            attachment.FileSize,
+            attachment.SortOrder,
+            attachment.CreatedAt);
 }

@@ -61,6 +61,8 @@ public sealed class TelegramManualLibraryService
     private const string IndoorSectionSlug = "indoor";
     private const string ControllersSectionSlug = "controllers";
     private const string AccessoriesSectionSlug = "accessories";
+    private const string UMatchSectionSlug = "umatch";
+    private const string ErvSectionSlug = "erv";
     private const int FreeSectionPageSize = 8;
 
     private static readonly IReadOnlyList<ManualSeriesOption> SupportedSeries =
@@ -88,6 +90,10 @@ public sealed class TelegramManualLibraryService
             [TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.ServiceManual]),
         new(ControllersSectionSlug, "Пульты / Controllers", "Controllers", false,
             [TelegramLibraryDocumentType.ControllerGuide]),
+        new(UMatchSectionSlug, "Полупром / U-Match", "U-Match R32", false,
+            [TelegramLibraryDocumentType.ServiceManual, TelegramLibraryDocumentType.OwnerManual]),
+        new(ErvSectionSlug, "Вентиляция ERV", "ERV B Series", false,
+            [TelegramLibraryDocumentType.ServiceManual, TelegramLibraryDocumentType.OwnerManual]),
         new(AccessoriesSectionSlug, "Аксессуары и прочее", "Accessories", false,
             [TelegramLibraryDocumentType.OwnerManual, TelegramLibraryDocumentType.ControllerGuide])
     ];
@@ -702,14 +708,27 @@ public sealed class TelegramManualLibraryService
 
         if (callback.StartsWith(LibraryGreeSectionPrefix, StringComparison.Ordinal))
         {
-            var sectionSlug = callback[LibraryGreeSectionPrefix.Length..];
+            var sectionRemainder = callback[LibraryGreeSectionPrefix.Length..];
+            var sectionSeparator = sectionRemainder.IndexOf(':', StringComparison.Ordinal);
+            var sectionSlug = sectionSeparator < 0 ? sectionRemainder : sectionRemainder[..sectionSeparator];
+            var documentSlug = sectionSeparator < 0 ? null : sectionRemainder[(sectionSeparator + 1)..];
             var page = 0;
-            var pageSeparator = sectionSlug.IndexOf(":p:", StringComparison.Ordinal);
+            var pageSeparator = (documentSlug ?? sectionSlug).IndexOf(":p:", StringComparison.Ordinal);
             if (pageSeparator >= 0)
             {
-                var pageText = sectionSlug[(pageSeparator + 3)..];
-                sectionSlug = sectionSlug[..pageSeparator];
-                _ = int.TryParse(pageText, out page);
+                if (documentSlug is null)
+                {
+                    var pageText = sectionSlug[(pageSeparator + 3)..];
+                    sectionSlug = sectionSlug[..pageSeparator];
+                    _ = int.TryParse(pageText, out page);
+                }
+                else
+                {
+                    var pageText = documentSlug[(pageSeparator + 3)..];
+                    documentSlug = documentSlug[..pageSeparator];
+                    _ = int.TryParse(pageText, out page);
+                }
+
                 page = Math.Max(0, page);
             }
 
@@ -727,6 +746,23 @@ public sealed class TelegramManualLibraryService
             if (section.Slug.Equals(ControllersSectionSlug, StringComparison.Ordinal))
             {
                 return BuildControllerCategoryRoot();
+            }
+
+            if (section.Slug.Equals(UMatchSectionSlug, StringComparison.Ordinal) ||
+                section.Slug.Equals(ErvSectionSlug, StringComparison.Ordinal))
+            {
+                if (documentSlug is null)
+                {
+                    return BuildSectionDocumentBuckets(section);
+                }
+
+                var documentType = FindDocumentType(documentSlug);
+                if (documentType is null || !section.DocumentTypes.Contains(documentType.DocumentType))
+                {
+                    return BuildSectionDocumentBuckets(section);
+                }
+
+                return await BuildSectionBucketAsync(section, documentType, access, page, cancellationToken);
             }
 
             return await BuildFreeLibrarySectionAsync(section, access, page, cancellationToken);
@@ -1243,6 +1279,8 @@ public sealed class TelegramManualLibraryService
             new[] { new EquipmentDiagnosticTelegramInlineKeyboardButton("Наружные", LibraryGreeOutdoorCallback) },
             [new EquipmentDiagnosticTelegramInlineKeyboardButton("Внутренние", FreeSectionCallback(IndoorSectionSlug))],
             [new EquipmentDiagnosticTelegramInlineKeyboardButton("Пульты / Controllers", FreeSectionCallback(ControllersSectionSlug))],
+            [new EquipmentDiagnosticTelegramInlineKeyboardButton("Полупром / U-Match", FreeSectionCallback(UMatchSectionSlug))],
+            [new EquipmentDiagnosticTelegramInlineKeyboardButton("Вентиляция ERV", FreeSectionCallback(ErvSectionSlug))],
             [new EquipmentDiagnosticTelegramInlineKeyboardButton("Аксессуары и прочее", FreeSectionCallback(AccessoriesSectionSlug))],
             [new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", LibraryOpenCallback)]
         };
@@ -1512,6 +1550,49 @@ public sealed class TelegramManualLibraryService
             text.ToString().Trim(),
             new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
             bindings.Count == 0 ? "Пока файлов нет" : callbackAnswerText);
+    }
+
+    private static TelegramManualLibraryResult BuildSectionDocumentBuckets(ManualLibrarySectionOption section)
+    {
+        var rows = DocumentTypeOptions
+            .Where(documentType => section.DocumentTypes.Contains(documentType.DocumentType))
+            .Where(documentType => IsVisibleLibraryDocumentType(documentType.DocumentType))
+            .Select(documentType => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton(documentType.Label, $"{FreeSectionCallback(section.Slug)}:{documentType.Slug}")])
+            .Append([new EquipmentDiagnosticTelegramInlineKeyboardButton("Назад", LibraryGreeCallback)])
+            .ToArray();
+
+        return BindText(
+            $"Gree / {section.DisplayName}\n\nВыберите тип документа:",
+            new EquipmentDiagnosticTelegramReplyMarkup(InlineKeyboard: rows),
+            section.DisplayName);
+    }
+
+    private async Task<TelegramManualLibraryResult> BuildSectionBucketAsync(
+        ManualLibrarySectionOption section,
+        ManualDocumentTypeOption documentType,
+        TelegramUserAccessResult access,
+        int page,
+        CancellationToken cancellationToken)
+    {
+        var bindings = (await _bindingStore.ListAsync(cancellationToken))
+            .Where(binding =>
+                binding.IsActive &&
+                binding.IsLibraryVisible &&
+                binding.DocumentType == documentType.DocumentType &&
+                string.Equals(binding.Brand, BrandGree, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(binding.Series, section.StorageSeries, StringComparison.OrdinalIgnoreCase) &&
+                CanAccessBinding(access, binding))
+            .OrderBy(binding => DisplayBindingTitle(binding), StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        return BuildFileList(
+            $"Gree / {section.DisplayName} / {documentType.Label}",
+            bindings,
+            page,
+            pageNumber => $"{FreeSectionCallback(section.Slug)}:{documentType.Slug}:p:{pageNumber}",
+            FreeSectionCallback(section.Slug),
+            documentType.Label);
     }
 
     private async Task<TelegramManualLibraryResult> BuildAccessRequestsAsync(
@@ -2072,6 +2153,13 @@ public sealed class TelegramManualLibraryService
         {
             return binding.DocumentType is TelegramLibraryDocumentType.OwnerManual or
                 TelegramLibraryDocumentType.ControllerGuide;
+        }
+
+        if (string.Equals(binding.Series, "U-Match R32", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(binding.Series, "ERV B Series", StringComparison.OrdinalIgnoreCase))
+        {
+            return binding.DocumentType is TelegramLibraryDocumentType.ServiceManual or
+                TelegramLibraryDocumentType.OwnerManual;
         }
 
         return SupportedSeries.Any(series =>

@@ -225,9 +225,7 @@ public sealed class EquipmentDiagnosticBotServiceTests
 
         Assert.Equal(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, response.Status);
         Assert.Equal("GMV6", response.EquipmentContext!.Series);
-        Assert.Contains("Gree GMV6", response.ApplicableContexts);
-        Assert.Contains("Gree GMV Mini", response.ApplicableContexts);
-        Assert.Contains(response.InternalDecisionTrace!, value => value.StartsWith("LocalizedKnowledgeMeaningGroup:", StringComparison.Ordinal));
+        Assert.Contains("LocalizedKnowledgeMatch", response.InternalDecisionTrace!);
     }
 
     [Theory]

@@ -577,6 +577,57 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
                     b.ToTable("EquipmentCatalogItems", (string)null);
                 });
 
+            modelBuilder.Entity("AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts.TelegramBroadcastAttachmentEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AttachmentType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<long>("CampaignId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FileId")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<long?>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FileUniqueId")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("MimeType")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("CampaignId", "SortOrder");
+
+                    b.ToTable("TelegramBroadcastAttachments", (string)null);
+                });
+
             modelBuilder.Entity("AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts.TelegramBroadcastCampaignEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -2168,6 +2219,15 @@ namespace AssistantEngineer.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("NominalCoolingCapacity")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts.TelegramBroadcastAttachmentEntity", b =>
+                {
+                    b.HasOne("AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts.TelegramBroadcastCampaignEntity", null)
+                        .WithMany()
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

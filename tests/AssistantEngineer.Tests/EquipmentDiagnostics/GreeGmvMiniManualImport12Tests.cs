@@ -1,4 +1,4 @@
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 
@@ -94,7 +94,7 @@ public sealed class GreeGmvMiniManualImport12Tests
                             string.Equals(entry.Series, "GMV Mini", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        Assert.Equal(1184, entries.Count);
+        Assert.Equal(1293, entries.Count);
         Assert.Equal(136, miniEntries.Length);
 
         foreach (var (code, id) in new[]

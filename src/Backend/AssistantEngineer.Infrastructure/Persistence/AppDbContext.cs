@@ -90,6 +90,8 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     public DbSet<TelegramBroadcastRecipientEntity> TelegramBroadcastRecipients { get; set; } = null!;
 
+    public DbSet<TelegramBroadcastAttachmentEntity> TelegramBroadcastAttachments { get; set; } = null!;
+
     protected override void OnModelCreating(
         ModelBuilder modelBuilder)
     {

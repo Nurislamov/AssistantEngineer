@@ -148,6 +148,79 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
+    public async Task GreeLibraryShowsUMatchAndErvSectionsWithVisibleDocumentBuckets()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        await bindingStore.UpsertAsync(new TelegramManualFileBinding(
+            "gree-umatch-r32-service-manual",
+            "telegram-file-id-umatch",
+            "Gree U-Match R32 Service Manual EN 3.5-16kW.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "U-Match R32",
+            Title: "Gree U-Match R32 Service Manual EN",
+            DocumentType: TelegramLibraryDocumentType.ServiceManual,
+            MinRole: TelegramUserRole.Engineer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: false));
+        await bindingStore.UpsertAsync(new TelegramManualFileBinding(
+            "gree-erv-b-series-service-manual",
+            "telegram-file-id-erv",
+            "Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "ERV B Series",
+            Title: "Gree ERV B Series Service Manual EN",
+            DocumentType: TelegramLibraryDocumentType.ServiceManual,
+            MinRole: TelegramUserRole.Engineer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: false));
+        await bindingStore.UpsertAsync(new TelegramManualFileBinding(
+            "gree-umatch-hidden-installation-manual",
+            "telegram-file-id-installation",
+            "Gree U-Match Installation Manual EN.pdf",
+            "application/pdf",
+            DateTimeOffset.UtcNow,
+            "TelegramManualBind",
+            TelegramUserRole.Owner.ToString(),
+            Brand: "Gree",
+            Series: "U-Match R32",
+            Title: "Gree U-Match Installation Manual EN",
+            DocumentType: TelegramLibraryDocumentType.InstallationManual,
+            MinRole: TelegramUserRole.Installer,
+            IsLibraryVisible: true,
+            CanUseForDiagnostics: false));
+
+        var gree = await adapter.HandleAsync(LibraryCallback("lib:brand:gree"));
+        var umatch = await adapter.HandleAsync(LibraryCallback("lib:gree:section:umatch"));
+        var erv = await adapter.HandleAsync(LibraryCallback("lib:gree:section:erv"));
+        var umatchService = await adapter.HandleAsync(LibraryCallback("lib:gree:section:umatch:service"));
+        var ervService = await adapter.HandleAsync(LibraryCallback("lib:gree:section:erv:service"));
+
+        Assert.Contains("Полупром / U-Match", InlineButtons(gree), StringComparer.Ordinal);
+        Assert.Contains("Вентиляция ERV", InlineButtons(gree), StringComparer.Ordinal);
+        Assert.Contains("📕 Сервисные мануалы", InlineButtons(umatch), StringComparer.Ordinal);
+        Assert.Contains("📘 Руководства пользователя", InlineButtons(umatch), StringComparer.Ordinal);
+        Assert.Contains("📕 Сервисные мануалы", InlineButtons(erv), StringComparer.Ordinal);
+        Assert.Contains("📘 Руководства пользователя", InlineButtons(erv), StringComparer.Ordinal);
+        Assert.DoesNotContain("Installation Manual", string.Join(" ", InlineButtons(umatch)), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Gree U-Match R32 Service Manual EN", umatchService.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree ERV B Series Service Manual EN", ervService.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Installation", umatchService.Text, StringComparison.OrdinalIgnoreCase);
+        AssertSafeLibraryFileButtons(umatchService);
+        AssertSafeLibraryFileButtons(ervService);
+    }
+
+    [Fact]
     public async Task EmptyAccessRequestsScreenHasBackButtonAndBackEditsRoot()
     {
         using var provider = CreateProvider();

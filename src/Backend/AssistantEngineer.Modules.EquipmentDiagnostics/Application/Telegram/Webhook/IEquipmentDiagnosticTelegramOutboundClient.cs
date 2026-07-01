@@ -27,6 +27,28 @@ public interface IEquipmentDiagnosticTelegramOutboundClient
             false,
             "Telegram document transport is not configured."));
 
+    Task<EquipmentDiagnosticTelegramOutboundResult> SendPhotoAsync(
+        long chatId,
+        string telegramFileId,
+        string? caption = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        bool protectContent = false,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
+            false,
+            "Telegram photo transport is not configured."));
+
+    Task<EquipmentDiagnosticTelegramOutboundResult> SendVideoAsync(
+        long chatId,
+        string telegramFileId,
+        string? caption = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        bool protectContent = false,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(
+            false,
+            "Telegram video transport is not configured."));
+
     Task<EquipmentDiagnosticTelegramOutboundResult> CopyMessageAsync(
         long chatId,
         long fromChatId,

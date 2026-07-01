@@ -1,0 +1,28 @@
+{
+  "packageId": "gree-erv-b-series-diagnostics",
+  "manufacturer": "Gree",
+  "equipmentFamily": "SemiIndustrial",
+  "series": "ERV B Series",
+  "title": "Gree ERV B Series confirmed diagnostic codes",
+  "description": "Manual-bound confirmed ERV diagnostics codes from the B Series service manual. Symptom-only rows are documented in audit only.",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B",
+  "sourceReference": "Troubleshooting and Maintenance / Diagnostics",
+  "verificationStatus": "ManualVerified",
+  "confidence": "High",
+  "intendedSignalTypes": [
+    "Fault",
+    "Communication"
+  ],
+  "intendedEquipmentTypes": [
+    "Unknown"
+  ],
+  "intendedDisplaySources": [
+    "WiredRemote"
+  ],
+  "entryCountExpected": 2,
+  "notes": "Only confirmed code rows E6 and L0 were imported; ordinary symptom rows were not promoted to runtime cards.",
+  "createdAt": "2026-07-01T00:00:00Z",
+  "updatedAt": "2026-07-01T00:00:00Z"
+}

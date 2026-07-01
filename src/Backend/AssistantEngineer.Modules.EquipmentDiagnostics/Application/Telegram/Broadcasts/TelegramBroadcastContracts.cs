@@ -26,6 +26,13 @@ public enum TelegramBroadcastRecipientStatus
     Failed
 }
 
+public enum TelegramBroadcastAttachmentType
+{
+    Photo,
+    Document,
+    Video
+}
+
 public sealed class TelegramBroadcastCampaignEntity
 {
     public long Id { get; set; }
@@ -58,6 +65,20 @@ public sealed class TelegramBroadcastRecipientEntity
     public string? ErrorCode { get; set; }
     public string? ErrorMessage { get; set; }
     public DateTimeOffset? SentAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+}
+
+public sealed class TelegramBroadcastAttachmentEntity
+{
+    public long Id { get; set; }
+    public long CampaignId { get; set; }
+    public TelegramBroadcastAttachmentType AttachmentType { get; set; }
+    public string FileId { get; set; } = string.Empty;
+    public string? FileUniqueId { get; set; }
+    public string? FileName { get; set; }
+    public string? MimeType { get; set; }
+    public long? FileSize { get; set; }
+    public int SortOrder { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }
 
@@ -104,6 +125,27 @@ public sealed record TelegramBroadcastRecipientSnapshot(
     string? ErrorCode,
     string? ErrorMessage,
     DateTimeOffset? SentAt,
+    DateTimeOffset CreatedAt);
+
+public sealed record TelegramBroadcastAttachmentCreate(
+    TelegramBroadcastAttachmentType AttachmentType,
+    string FileId,
+    string? FileUniqueId,
+    string? FileName,
+    string? MimeType,
+    long? FileSize,
+    int SortOrder);
+
+public sealed record TelegramBroadcastAttachmentSnapshot(
+    long Id,
+    long CampaignId,
+    TelegramBroadcastAttachmentType AttachmentType,
+    string FileId,
+    string? FileUniqueId,
+    string? FileName,
+    string? MimeType,
+    long? FileSize,
+    int SortOrder,
     DateTimeOffset CreatedAt);
 
 public interface ITelegramBroadcastStore
@@ -156,6 +198,16 @@ public interface ITelegramBroadcastStore
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<TelegramBroadcastRecipientSnapshot>> ListRecipientsAsync(
+        long campaignId,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramBroadcastAttachmentSnapshot> AddAttachmentAsync(
+        long campaignId,
+        TelegramBroadcastAttachmentCreate attachment,
+        DateTimeOffset createdAt,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<TelegramBroadcastAttachmentSnapshot>> ListAttachmentsAsync(
         long campaignId,
         CancellationToken cancellationToken = default);
 }

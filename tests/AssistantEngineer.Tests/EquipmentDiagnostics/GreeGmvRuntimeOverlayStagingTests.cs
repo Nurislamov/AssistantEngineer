@@ -1,4 +1,4 @@
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
@@ -122,7 +122,7 @@ public sealed class GreeGmvRuntimeOverlayStagingTests
 
         var entries = source.GetEntries();
 
-        Assert.Equal(1184, entries.Count);
+        Assert.Equal(1293, entries.Count);
         Assert.DoesNotContain(entries, entry => entry.Id.Contains("runtime-overlay", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(entries, entry => entry.PackageId.Contains("gree-official-support-error-catalog", StringComparison.OrdinalIgnoreCase));
     }

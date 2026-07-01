@@ -2,14 +2,15 @@
 
 ## Last updated
 
-ED-24OPS.4
+ED-24BCAST.2 / ED-24MAN.4 / ED-24E.4 / ED-24E.5
 
 ## Current stable point
 
-- Production baseline: `4b0f6b10` with ED-24USR.4 and ED-24BCAST.1 production PASS.
-- ED-24OPS.4 adds an explicit PostgreSQL EF migration runner for the main `AppDbContext`; production PASS is still
-  pending until VPS live-check.
-- Runtime counts: Gree 1184; GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260.
+- Production baseline: `4b0f6b10` with ED-24USR.4 and ED-24BCAST.1 production PASS; ED-24OPS.4 and the current
+  ED-24BCAST.2/ED-24MAN.4/ED-24E.4/ED-24E.5 package still require VPS live-check before production PASS.
+- ED-24OPS.4 adds an explicit PostgreSQL EF migration runner for the main `AppDbContext`.
+- Runtime counts: Gree 1293; GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260; U-Match R32 107;
+  ERV B Series 2.
 - Manual policy: ServiceManual and InstallationManual are library-only; diagnostic guide delivery is OwnerManual-only.
 
 ## P0 / blocking
@@ -47,7 +48,8 @@ No active P1 item was found.
 - Area: manual library
 - Severity: P2
 - Current evidence: GMV9 Flex OwnerManual remains unavailable/pending; InstallationManual coverage is incomplete; GMV Mini /
-  Slim uses a multi-file bucket rather than exact model-family matching.
+  Slim uses a multi-file bucket rather than exact model-family matching. ED-24MAN.4 adds U-Match and ERV library
+  sections, but exact model-family matching remains future work.
 - Risk: an eligible user may see no guide or must choose among broad family documents.
 - Suggested next stage: ED-24MAN.4 / exact-family matching follow-up
 - Notes: keep ServiceManual and InstallationManual library-only and diagnostics OwnerManual-only.

@@ -10,9 +10,9 @@ public sealed class GreeSeriesRefinementUx7Tests
 {
     [Theory]
     [InlineData("n2", "GMV6 HR", "GMV6", "GMV Mini", "GMV X")]
-    [InlineData("E0", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex")]
+    [InlineData("E0", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex", "U-Match R32")]
     [InlineData("U4", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex")]
-    [InlineData("C2", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex")]
+    [InlineData("C2", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex", "U-Match R32")]
     public void RuntimeLocalizationContainsExpectedSeries(
         string code,
         params string[] expectedSeries)
@@ -34,10 +34,10 @@ public sealed class GreeSeriesRefinementUx7Tests
 
     [Theory]
     [InlineData("n2", "GMV6 HR", "GMV6", "GMV Mini", "GMV X")]
-    [InlineData("E0", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex")]
+    [InlineData("E0", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex", "U-Match R32")]
     [InlineData("U4", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex")]
-    [InlineData("C2", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex")]
-    [InlineData("H5", "GMV6 HR", "GMV6", "GMV X", "GMV9 Flex")]
+    [InlineData("C2", "GMV6 HR", "GMV6", "GMV Mini", "GMV X", "GMV9 Flex", "U-Match R32")]
+    [InlineData("H5", "GMV6 HR", "GMV6", "GMV X", "GMV9 Flex", "U-Match R32")]
     [InlineData("o1", "GMV6 HR", "GMV6", "GMV X", "GMV9 Flex")]
     [InlineData("FH", "GMV6", "GMV X")]
     public async Task GenericCodeRefinementUsesAllRuntimeSeriesInStableOrder(
@@ -52,7 +52,7 @@ public sealed class GreeSeriesRefinementUx7Tests
         var seriesButtons = rows
             .SelectMany(row => row)
             .Select(button => button.Text)
-            .Where(text => text.StartsWith("GMV", StringComparison.Ordinal))
+            .Where(IsSeriesButton)
             .ToArray();
 
         Assert.Equal(expectedSeries, seriesButtons);
@@ -117,7 +117,7 @@ public sealed class GreeSeriesRefinementUx7Tests
                 .Select(button => button.Text)
                 .ToArray() ?? [];
             trace.Add($"{response.Text.ReplaceLineEndings(" ")} [{string.Join(", ", buttons)}]");
-            if (buttons.Count(text => text.StartsWith("GMV", StringComparison.Ordinal)) >= 2)
+            if (buttons.Count(IsSeriesButton) >= 2)
             {
                 return response;
             }
@@ -155,6 +155,13 @@ public sealed class GreeSeriesRefinementUx7Tests
             "GMV Mini" => 2,
             "GMV X" => 3,
             "GMV9 Flex" => 4,
+            "U-Match R32" => 5,
+            "ERV B Series" => 6,
             _ => 100
         };
+
+    private static bool IsSeriesButton(string text) =>
+        text.StartsWith("GMV", StringComparison.Ordinal) ||
+        text.StartsWith("U-Match", StringComparison.Ordinal) ||
+        text.StartsWith("ERV", StringComparison.Ordinal);
 }

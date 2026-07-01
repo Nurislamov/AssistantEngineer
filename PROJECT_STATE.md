@@ -2,12 +2,14 @@
 
 ## Current stage
 
-ED-24OPS.4 - CLOSED / pushed; production live-check is still pending.
+ED-24BCAST.2 / ED-24MAN.4 / ED-24E.4 / ED-24E.5 - CLOSED locally; push and production live-check are pending.
 
 Next recommended steps:
 
-1. Complete ED-24OPS.4 production live-check on `assistantengineer-beta-01`.
-2. ED-24BCAST.2 Broadcast history/retry.
+1. Push the current implementation commit to `origin/master`.
+2. Apply the new EF migration on `assistantengineer-beta-01` with `./scripts/deployment/apply-production-migrations.sh`.
+3. Rebuild/restart `assistantengineer-api` and complete the Telegram/manual-library/diagnostics/broadcast production
+   live-check.
 3. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 
 ## Current branch
@@ -15,6 +17,51 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24BCAST.2, ED-24MAN.4, ED-24E.4, and ED-24E.5 add broadcast media attachments, Gree U-Match/ERV manual-library
+sections, and U-Match/ERV runtime diagnostics. The package is CLOSED locally; production PASS is not marked yet because
+the VPS live-check is still pending.
+
+Implementation commit: current commit (`ED-24PACK.1 Add broadcast media and Gree U-Match ERV diagnostics`).
+
+Package implementation notes:
+
+- ED-24BCAST.2 adds Owner broadcast attachments for Telegram photo, document, and video `file_id` metadata.
+- Broadcast media uses Telegram `sendPhoto`, `sendDocument`, or `sendVideo` with `protect_content=true`; bytes are not
+  downloaded or stored locally.
+- Existing text-only broadcast flow is preserved: audience, text, preview, test-to-self, confirm send, per-recipient
+  result accounting, and sanitized send errors.
+- New EF migration: `20260701024951_AddTelegramBroadcastAttachments`.
+- ED-24MAN.4 adds Gree library sections `Полупром / U-Match` and `Вентиляция ERV`.
+- U-Match and ERV library sections show visible `ServiceManual` and `OwnerManual` buckets only.
+- Manual policies remain unchanged: ServiceManual library-only, InstallationManual hidden from visible library/upload
+  menus, diagnostic guide OwnerManual-only.
+- Added idempotent manual-library metadata correction scripts for U-Match R32 and ERV B Series service manual rows.
+- ED-24E.4 imports 107 confirmed U-Match R32 service-manual table codes from section 3.3.
+- ED-24E.5 imports 2 confirmed ERV B Series diagnostic codes: E6 and L0.
+- Runtime counts: Gree 1293, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260, U-Match R32 107,
+  ERV B Series 2.
+- Existing GMV runtime counts are unchanged.
+- Routing now recognizes U-Match/UMatch/U Match/GUD/semi-industrial hints and ERV/FHBQG/ventilation/recuperator/Energy
+  Recovery Ventilation hints.
+- Source references remain metadata-only; visible Telegram text does not expose document codes such as `GC202209-I`,
+  package ids, raw paths, or English `sourceMeaning`.
+- Diagnostic JSON/cards/sourceReferences/routing changed only for the U-Match/ERV import and required routing support.
+- Deploy scripts changed only for the ED-24MAN.4 manual-library metadata correction SQL scripts; existing deployment
+  runner scripts are unchanged.
+- No PDF binaries, intake artifacts, certificates, passwords, or secrets were committed.
+
+Package local validation:
+
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 0 errors and the 6 known TD-BUILD-001 nullable warnings
+  in architecture guard tests.
+- Focused package tests: PASS, 1528/1528.
+- Gree diagnostics smoke: PASS, 14/14.
+- EF/model validation: PASS, no pending model changes after `20260701024951_AddTelegramBroadcastAttachments`.
+- Full solution suite: PASS, 5079/5079.
+- `git diff --check`: PASS.
+- Production PASS remains pending until the VPS live-check is completed.
 
 ED-24OPS.4 adds a controlled PostgreSQL EF migration runner for the main `AppDbContext`; the stage is CLOSED / pushed.
 Production PASS is not marked yet because the VPS live-check is still pending.

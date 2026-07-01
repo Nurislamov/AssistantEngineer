@@ -1,0 +1,140 @@
+{
+  "id": "gree-umatch-r32-q3",
+  "manufacturer": "Gree",
+  "equipmentFamily": "SemiIndustrial",
+  "equipmentType": "IndoorUnit",
+  "series": "U-Match R32",
+  "models": [
+    "GUD35W1/NhB-S",
+    "GUD50W1/NhB-S",
+    "GUD71W1/NhB-S",
+    "GUD85W1/NhB-S",
+    "GUD100W1/NhB-S",
+    "GUD125W1/NhB-S",
+    "GUD140W1/NhB-S",
+    "GUD160W1/NhB-S",
+    "GUD125W1/NhB-X",
+    "GUD140W1/NhB-X",
+    "GUD160W1/NhB-X"
+  ],
+  "code": "q3",
+  "signalType": "Protection",
+  "displaySource": "IndoorUnit",
+  "systemPart": "Fan",
+  "severity": "High",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-umatch-r32-error-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree U-Match R32 Service Manual EN 3.5-16kW",
+  "sourceMeaning": "DC indoor fan driver IPM module protection",
+  "sourceReference": "Section 3.3 Error Code, PDF pages 51-54; detailed troubleshooting in section 3.4 where applicable",
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-07-01T00:00:00Z",
+  "updatedAt": "2026-07-01T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "title": "Gree U-Match R32 q3 — код из сервисной таблицы",
+      "summary": "Код q3 для Gree U-Match R32 подтвержден таблицей 3.3 сервисного руководства. Карточка дает безопасную первичную проверку для узла: вентилятор.",
+      "safetyNote": "Не снимайте крышки и не работайте с силовыми цепями под напряжением. Работы с платами, хладагентом и силовыми цепями выполняет квалифицированный специалист.",
+      "possibleCauses": [
+        "Код подтвержден сервисной таблицей 3.3 для линейки U-Match R32.",
+        "Причина относится к узлу: вентилятор.",
+        "Возможны нарушение питания, контактных соединений, условий работы или отказ связанного компонента."
+      ],
+      "checkSteps": [
+        "Убедитесь, что оборудование относится к Gree U-Match R32 и на дисплее указан код q3.",
+        "Зафиксируйте модель, режим работы и условия появления ошибки.",
+        "Проверьте вентилятор, разъемы, кабели и питание без подмены процедуры кодами GMV/VRF.",
+        "Если ошибка повторяется после безопасной проверки, передайте диагностику квалифицированному сервисному специалисту."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы GMV/VRF вместо карты U-Match.",
+        "Не рекомендовать перемычки, отключение защит, сбросы без устранения причины или замену платы без проверки по руководству."
+      ],
+      "recommendedAction": "Сохраните код и модель оборудования; при повторении ошибки обратитесь к специалисту по Gree U-Match R32.",
+      "sourceNote": "Основание: таблица 3.3 сервисного руководства; подробная процедура в источнике для этого кода не выделена.",
+      "audience": "Consumer",
+      "id": "gree-umatch-r32-q3-ru-consumer"
+    },
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "title": "Gree U-Match R32 q3 — код из сервисной таблицы",
+      "summary": "Код q3 для Gree U-Match R32 подтвержден таблицей 3.3 сервисного руководства. Карточка дает безопасную первичную проверку для узла: вентилятор.",
+      "safetyNote": "Не снимайте крышки и не работайте с силовыми цепями под напряжением. Работы с платами, хладагентом и силовыми цепями выполняет квалифицированный специалист.",
+      "possibleCauses": [
+        "Код подтвержден сервисной таблицей 3.3 для линейки U-Match R32.",
+        "Причина относится к узлу: вентилятор.",
+        "Возможны нарушение питания, контактных соединений, условий работы или отказ связанного компонента."
+      ],
+      "checkSteps": [
+        "Убедитесь, что оборудование относится к Gree U-Match R32 и на дисплее указан код q3.",
+        "Зафиксируйте модель, режим работы и условия появления ошибки.",
+        "Проверьте вентилятор, разъемы, кабели и питание без подмены процедуры кодами GMV/VRF.",
+        "Если ошибка повторяется после безопасной проверки, передайте диагностику квалифицированному сервисному специалисту."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы GMV/VRF вместо карты U-Match.",
+        "Не рекомендовать перемычки, отключение защит, сбросы без устранения причины или замену платы без проверки по руководству."
+      ],
+      "recommendedAction": "Сохраните код и модель оборудования; при повторении ошибки обратитесь к специалисту по Gree U-Match R32.",
+      "sourceNote": "Основание: таблица 3.3 сервисного руководства; подробная процедура в источнике для этого кода не выделена.",
+      "audience": "Installer",
+      "id": "gree-umatch-r32-q3-ru-installer"
+    },
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "title": "Gree U-Match R32 q3 — код из сервисной таблицы",
+      "summary": "Код q3 для Gree U-Match R32 подтвержден таблицей 3.3 сервисного руководства. Карточка дает безопасную первичную проверку для узла: вентилятор.",
+      "safetyNote": "Не снимайте крышки и не работайте с силовыми цепями под напряжением. Работы с платами, хладагентом и силовыми цепями выполняет квалифицированный специалист.",
+      "possibleCauses": [
+        "Код подтвержден сервисной таблицей 3.3 для линейки U-Match R32.",
+        "Причина относится к узлу: вентилятор.",
+        "Возможны нарушение питания, контактных соединений, условий работы или отказ связанного компонента."
+      ],
+      "checkSteps": [
+        "Убедитесь, что оборудование относится к Gree U-Match R32 и на дисплее указан код q3.",
+        "Зафиксируйте модель, режим работы и условия появления ошибки.",
+        "Проверьте вентилятор, разъемы, кабели и питание без подмены процедуры кодами GMV/VRF.",
+        "Если ошибка повторяется после безопасной проверки, передайте диагностику квалифицированному сервисному специалисту."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы GMV/VRF вместо карты U-Match.",
+        "Не рекомендовать перемычки, отключение защит, сбросы без устранения причины или замену платы без проверки по руководству."
+      ],
+      "recommendedAction": "Сохраните код и модель оборудования; при повторении ошибки обратитесь к специалисту по Gree U-Match R32.",
+      "sourceNote": "Основание: таблица 3.3 сервисного руководства; подробная процедура в источнике для этого кода не выделена.",
+      "audience": "Engineer",
+      "id": "gree-umatch-r32-q3-ru-engineer"
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Gree U-Match R32 Service Manual EN 3.5-16kW",
+      "documentCode": "GC202209-I",
+      "sourceReference": "artifacts/manual-intake/sources/gree/Gree U-Match R32 Service Manual EN 3.5-16kW.pdf; section 3.3 Error Code",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-umatch-r32-service-manual",
+      "packageId": "gree-umatch-r32-error-codes",
+      "notes": "Source PDF is local intake only and is not committed. Document code retained only in metadata, not visible Telegram text."
+    }
+  ]
+}

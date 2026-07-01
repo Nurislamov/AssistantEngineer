@@ -1,4 +1,4 @@
-using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
+﻿using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
@@ -35,7 +35,7 @@ public sealed class GreeGmvOfficialSupportSourceReferenceTests
 
         var entries = source.GetEntries();
 
-        Assert.Equal(1184, entries.Count);
+        Assert.Equal(1293, entries.Count);
 
         var officialSupportEntries = entries
             .Where(entry => entry.SourceReferences.Any(reference =>

@@ -12,6 +12,28 @@ public static partial class DiagnosticRoutingHintExtractor
             return null;
         }
 
+        if (normalized.Contains("UMATCH", StringComparison.Ordinal) ||
+            normalized.Contains("GUD", StringComparison.Ordinal) ||
+            normalized.Contains("ПОЛУПРОМ", StringComparison.Ordinal) ||
+            normalized.Contains("ПОЛУПРОМЫШЛЕН", StringComparison.Ordinal) ||
+            HasTokenPair(text, "U", "MATCH") ||
+            HasToken(text, "UMATCH") ||
+            HasToken(text, "U-MATCH"))
+        {
+            return "U-Match R32";
+        }
+
+        if (normalized.Contains("ERV", StringComparison.Ordinal) ||
+            normalized.Contains("FHBQG", StringComparison.Ordinal) ||
+            normalized.Contains("ВЕНТИЛЯЦ", StringComparison.Ordinal) ||
+            normalized.Contains("РЕКУПЕРАТ", StringComparison.Ordinal) ||
+            normalized.Contains("ENERGYRECOVERYVENTILATION", StringComparison.Ordinal) ||
+            HasTokenPair(text, "ENERGY", "RECOVERY") ||
+            HasTokenPair(text, "RECOVERY", "VENTILATION"))
+        {
+            return "ERV B Series";
+        }
+
         if (normalized.Contains("GMV6HR", StringComparison.Ordinal) ||
             normalized.Contains("GMVHR", StringComparison.Ordinal) ||
             normalized.Contains("HEATRECOVERY", StringComparison.Ordinal) ||
@@ -71,6 +93,19 @@ public static partial class DiagnosticRoutingHintExtractor
 
     public static bool IsSeriesHintToken(string token) =>
         token.Equals("GMV", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("U", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("MATCH", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("U-MATCH", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("UMATCH", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("GUD", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("ПОЛУПРОМ", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("ПОЛУПРОМЫШЛЕННЫЙ", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("ERV", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("FHBQG", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("ВЕНТИЛЯЦИЯ", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("РЕКУПЕРАТОР", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("ENERGY", StringComparison.OrdinalIgnoreCase) ||
+        token.Equals("VENTILATION", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV5", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("GMV6", StringComparison.OrdinalIgnoreCase) ||
         token.Equals("HR", StringComparison.OrdinalIgnoreCase) ||
@@ -105,8 +140,14 @@ public static partial class DiagnosticRoutingHintExtractor
         }
 
         return Normalize(candidateSeries) == Normalize(requestedSeries) ||
-               string.Equals(requestedSeries, "GMV", StringComparison.OrdinalIgnoreCase) &&
-               candidateSeries.StartsWith("GMV", StringComparison.OrdinalIgnoreCase);
+               (string.Equals(requestedSeries, "U-Match", StringComparison.OrdinalIgnoreCase) &&
+                candidateSeries.StartsWith("U-Match", StringComparison.OrdinalIgnoreCase)) ||
+               (string.Equals(requestedSeries, "UMatch", StringComparison.OrdinalIgnoreCase) &&
+                candidateSeries.StartsWith("U-Match", StringComparison.OrdinalIgnoreCase)) ||
+               (string.Equals(requestedSeries, "ERV", StringComparison.OrdinalIgnoreCase) &&
+                candidateSeries.StartsWith("ERV", StringComparison.OrdinalIgnoreCase)) ||
+               (string.Equals(requestedSeries, "GMV", StringComparison.OrdinalIgnoreCase) &&
+                candidateSeries.StartsWith("GMV", StringComparison.OrdinalIgnoreCase));
     }
 
     public static string ContextLabel(string manufacturer, string? series) =>

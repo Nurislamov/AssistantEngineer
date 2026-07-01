@@ -298,15 +298,15 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         var harness = CreateHarness([
             Summary("Gree", "H5", EquipmentCategory.VrfOutdoorUnit),
             Summary("Daikin", "H5", EquipmentCategory.VrfOutdoorUnit),
-            Summary("Gree", "E6", EquipmentCategory.VrfOutdoorUnit)
+            Summary("Gree", "99", EquipmentCategory.VrfOutdoorUnit)
         ]);
 
         var h5 = await harness.Adapter.HandleAsync(Update("H5"));
-        var e6 = await harness.Adapter.HandleAsync(Update("E6"));
+        var code99 = await harness.Adapter.HandleAsync(Update("99"));
 
         Assert.Contains("нескольких брендов", h5.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("E6", e6.Text, StringComparison.Ordinal);
-        Assert.Contains("Что можно сделать безопасно", e6.Text, StringComparison.Ordinal);
+        Assert.Contains("99", code99.Text, StringComparison.Ordinal);
+        Assert.Contains("Что можно сделать безопасно", code99.Text, StringComparison.Ordinal);
     }
 
     [Fact]

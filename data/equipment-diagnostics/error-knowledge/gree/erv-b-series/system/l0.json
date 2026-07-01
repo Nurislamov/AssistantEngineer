@@ -1,0 +1,139 @@
+{
+  "id": "gree-erv-b-series-l0",
+  "manufacturer": "Gree",
+  "equipmentFamily": "SemiIndustrial",
+  "equipmentType": "Unknown",
+  "series": "ERV B Series",
+  "models": [
+    "FHBQG-D3.5B-K",
+    "FHBQG-D5B-K",
+    "FHBQG-D6.5B-K",
+    "FHBQG-D8B-K",
+    "FHBQG-D10B-K",
+    "FHBQG-D13B-K",
+    "FHBQG-D15B-K",
+    "FHBQG-D20B-K",
+    "FHBQG-D25B-M",
+    "FHBQG-D30B-M",
+    "FHBQG-D40B-M",
+    "FHBQG-D50B-M",
+    "FHBQG-D60B-M"
+  ],
+  "code": "L0",
+  "signalType": "Fault",
+  "displaySource": "WiredRemote",
+  "systemPart": "Controller",
+  "severity": "High",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-erv-b-series-diagnostics",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B",
+  "sourceMeaning": "Faults of air dampers/relevant fittings or disconnected centralized controller/main board of air valve",
+  "sourceReference": "Troubleshooting and Maintenance / Diagnostics, PDF page 18 / manual page 16",
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-07-01T00:00:00Z",
+  "updatedAt": "2026-07-01T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-l0-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree ERV B Series L0 — диагностическая карта ERV",
+      "summary": "Код L0 для Gree ERV B Series подтвержден разделом диагностики сервисного руководства. Он относится к воздушным заслонкам, их арматуре или цепи контроллера воздушного клапана.",
+      "safetyNote": "Не снимайте крышки и не работайте с силовыми цепями под напряжением. Работы с платами и силовыми цепями выполняет квалифицированный специалист.",
+      "possibleCauses": [
+        "Неисправность или заклинивание воздушной заслонки.",
+        "Проблема арматуры, привода или проводки воздушного клапана.",
+        "Отключение централизованного контроллера или платы управления воздушным клапаном."
+      ],
+      "checkSteps": [
+        "Проверьте состояние байпасной и воздушных заслонок без принудительного проворота механизма.",
+        "Осмотрите соединения между контроллером, платой и приводом воздушного клапана.",
+        "Проверьте питание и управляющие цепи по сервисному руководству."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы GMV или U-Match вместо карты ERV.",
+        "Не рекомендовать перемычки, отключение защит или замену платы без проверки питания, связи и подключений."
+      ],
+      "recommendedAction": "Сохраните код, модель ERV и условия появления ошибки; при повторении передайте диагностику квалифицированному специалисту.",
+      "sourceNote": "Основание: раздел Diagnostics сервисного руководства ERV; строки без подтвержденного кода в карточки не импортировались."
+    },
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-l0-ru-installer",
+      "audience": "Installer",
+      "title": "Gree ERV B Series L0 — диагностическая карта ERV",
+      "summary": "Код L0 для Gree ERV B Series подтвержден разделом диагностики сервисного руководства. Он относится к воздушным заслонкам, их арматуре или цепи контроллера воздушного клапана.",
+      "safetyNote": "Не снимайте крышки и не работайте с силовыми цепями под напряжением. Работы с платами и силовыми цепями выполняет квалифицированный специалист.",
+      "possibleCauses": [
+        "Неисправность или заклинивание воздушной заслонки.",
+        "Проблема арматуры, привода или проводки воздушного клапана.",
+        "Отключение централизованного контроллера или платы управления воздушным клапаном."
+      ],
+      "checkSteps": [
+        "Проверьте состояние байпасной и воздушных заслонок без принудительного проворота механизма.",
+        "Осмотрите соединения между контроллером, платой и приводом воздушного клапана.",
+        "Проверьте питание и управляющие цепи по сервисному руководству."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы GMV или U-Match вместо карты ERV.",
+        "Не рекомендовать перемычки, отключение защит или замену платы без проверки питания, связи и подключений."
+      ],
+      "recommendedAction": "Сохраните код, модель ERV и условия появления ошибки; при повторении передайте диагностику квалифицированному специалисту.",
+      "sourceNote": "Основание: раздел Diagnostics сервисного руководства ERV; строки без подтвержденного кода в карточки не импортировались."
+    },
+    {
+      "locale": "ru",
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-01T00:00:00Z",
+      "updatedAt": "2026-07-01T00:00:00Z",
+      "id": "gree-erv-b-series-l0-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree ERV B Series L0 — диагностическая карта ERV",
+      "summary": "Код L0 для Gree ERV B Series подтвержден разделом диагностики сервисного руководства. Он относится к воздушным заслонкам, их арматуре или цепи контроллера воздушного клапана.",
+      "safetyNote": "Не снимайте крышки и не работайте с силовыми цепями под напряжением. Работы с платами и силовыми цепями выполняет квалифицированный специалист.",
+      "possibleCauses": [
+        "Неисправность или заклинивание воздушной заслонки.",
+        "Проблема арматуры, привода или проводки воздушного клапана.",
+        "Отключение централизованного контроллера или платы управления воздушным клапаном."
+      ],
+      "checkSteps": [
+        "Проверьте состояние байпасной и воздушных заслонок без принудительного проворота механизма.",
+        "Осмотрите соединения между контроллером, платой и приводом воздушного клапана.",
+        "Проверьте питание и управляющие цепи по сервисному руководству."
+      ],
+      "doNotAdvise": [
+        "Не применять алгоритмы GMV или U-Match вместо карты ERV.",
+        "Не рекомендовать перемычки, отключение защит или замену платы без проверки питания, связи и подключений."
+      ],
+      "recommendedAction": "Сохраните код, модель ERV и условия появления ошибки; при повторении передайте диагностику квалифицированному специалисту.",
+      "sourceNote": "Основание: раздел Diagnostics сервисного руководства ERV; строки без подтвержденного кода в карточки не импортировались."
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B",
+      "documentCode": "Not stated",
+      "sourceReference": "artifacts/manual-intake/sources/gree/Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B.pdf; Troubleshooting and Maintenance / Diagnostics",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-erv-b-series-service-manual",
+      "packageId": "gree-erv-b-series-diagnostics",
+      "notes": "Source PDF is local intake only and is not committed. Only confirmed code rows E6 and L0 were imported."
+    }
+  ]
+}

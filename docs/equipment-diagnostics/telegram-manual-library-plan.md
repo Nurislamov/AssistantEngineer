@@ -159,6 +159,30 @@ Expected corrected metadata:
 
 Production correction is not complete until the script is executed on the VPS and its before/after output is checked.
 
+## ED-24MAN.4 U-Match and ERV library sections
+
+ED-24MAN.4 adds two structured Gree library sections without changing the diagnostic manual-delivery policy:
+
+- `Gree -> Полупром / U-Match`
+- `Gree -> Вентиляция ERV`
+
+Both sections expose only visible document buckets for:
+
+- `ServiceManual`
+- `OwnerManual`
+
+`InstallationManual` remains hidden from visible Telegram library/upload menus and remains library-only. Diagnostic guide
+delivery remains OwnerManual-only; ServiceManual files are library-only and require the configured library role/access
+checks.
+
+ED-24MAN.4 also adds idempotent production metadata correction scripts for the expected uploaded service-manual rows:
+
+- `scripts/deployment/manual-library/fix-gree-umatch-r32-service-manual-binding.sql`
+- `scripts/deployment/manual-library/fix-gree-erv-b-series-service-manual-binding.sql`
+
+The scripts normalize only manual-library metadata. They do not add Telegram file ids, PDF binaries, secrets, or runtime
+diagnostic cards.
+
 ## Future work
 
 - Richer model matching and exact model-family variants.

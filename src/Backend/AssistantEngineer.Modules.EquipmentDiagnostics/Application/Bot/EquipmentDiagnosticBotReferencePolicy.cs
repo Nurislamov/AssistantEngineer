@@ -55,7 +55,9 @@ public static class EquipmentDiagnosticBotReferencePolicy
         IsManualVerifiedGmvMiniRuntimeEntry(entry) ||
         IsManualVerifiedGmvXRuntimeEntry(entry) ||
         IsManualVerifiedGmv6HrRuntimeEntry(entry) ||
-        IsManualVerifiedGmv9FlexRuntimeEntry(entry);
+        IsManualVerifiedGmv9FlexRuntimeEntry(entry) ||
+        IsManualVerifiedUMatchRuntimeEntry(entry) ||
+        IsManualVerifiedErvRuntimeEntry(entry);
 
     private static bool IsManualVerifiedGmv6RuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
         string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
@@ -84,6 +86,18 @@ public static class EquipmentDiagnosticBotReferencePolicy
     private static bool IsManualVerifiedGmv9FlexRuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
         string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
         string.Equals(entry.Series, "GMV9 Flex", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.SourceType, "Manual", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.VerificationStatus, "ManualVerified", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsManualVerifiedUMatchRuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
+        string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.Series, "U-Match R32", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.SourceType, "Manual", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.VerificationStatus, "ManualVerified", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsManualVerifiedErvRuntimeEntry(ErrorKnowledgeEntryV2 entry) =>
+        string.Equals(entry.Manufacturer, "Gree", StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(entry.Series, "ERV B Series", StringComparison.OrdinalIgnoreCase) &&
         string.Equals(entry.SourceType, "Manual", StringComparison.OrdinalIgnoreCase) &&
         string.Equals(entry.VerificationStatus, "ManualVerified", StringComparison.OrdinalIgnoreCase);
 }

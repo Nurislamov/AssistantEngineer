@@ -1,4 +1,4 @@
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 
 namespace AssistantEngineer.Tests.EquipmentDiagnostics;
 
@@ -100,7 +100,7 @@ public sealed class GreeGmv6ManualImport11Tests
             "equipment-diagnostics",
             "error-knowledge",
             "gree"), "*.json", SearchOption.AllDirectories).Length;
-        Assert.Equal(1184, totalRuntimeCount);
+        Assert.Equal(1293, totalRuntimeCount);
     }
 
     [Fact]

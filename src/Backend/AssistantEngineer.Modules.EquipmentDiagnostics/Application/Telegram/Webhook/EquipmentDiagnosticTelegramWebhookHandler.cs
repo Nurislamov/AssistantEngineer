@@ -217,6 +217,11 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
     {
         var message = update.Message!;
         var username = message.From?.Username ?? message.Chat?.Username;
+        var largestPhoto = message.Photo?
+            .OrderByDescending(photo => photo.FileSize ?? 0)
+            .ThenByDescending(photo => photo.Width ?? 0)
+            .ThenByDescending(photo => photo.Height ?? 0)
+            .FirstOrDefault();
         return new EquipmentDiagnosticTelegramUpdate(
             update.UpdateId,
             message.Chat!.Id,
@@ -242,6 +247,14 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             ReplyToDocumentFileSize: message.ReplyToMessage?.Document?.FileSize,
             DocumentFileUniqueId: message.Document?.FileUniqueId,
             ReplyToDocumentFileUniqueId: message.ReplyToMessage?.Document?.FileUniqueId,
+            PhotoFileId: largestPhoto?.FileId,
+            PhotoFileUniqueId: largestPhoto?.FileUniqueId,
+            PhotoFileSize: largestPhoto?.FileSize,
+            VideoFileId: message.Video?.FileId,
+            VideoFileUniqueId: message.Video?.FileUniqueId,
+            VideoFileName: message.Video?.FileName,
+            VideoMimeType: message.Video?.MimeType,
+            VideoFileSize: message.Video?.FileSize,
             ReplyToMessageId: message.ReplyToMessage?.MessageId,
             HasPhoto: message.Photo is { Count: > 0 },
             HasVideo: message.Video is not null,

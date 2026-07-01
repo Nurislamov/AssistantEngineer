@@ -185,6 +185,69 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         bool protectContent = false,
         CancellationToken cancellationToken = default)
     {
+        return await SendFileByIdAsync(
+            chatId,
+            telegramFileId,
+            "sendDocument",
+            "document",
+            "document",
+            caption,
+            replyMarkup,
+            protectContent,
+            cancellationToken);
+    }
+
+    public async Task<EquipmentDiagnosticTelegramOutboundResult> SendPhotoAsync(
+        long chatId,
+        string telegramFileId,
+        string? caption = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        bool protectContent = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await SendFileByIdAsync(
+            chatId,
+            telegramFileId,
+            "sendPhoto",
+            "photo",
+            "photo",
+            caption,
+            replyMarkup,
+            protectContent,
+            cancellationToken);
+    }
+
+    public async Task<EquipmentDiagnosticTelegramOutboundResult> SendVideoAsync(
+        long chatId,
+        string telegramFileId,
+        string? caption = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        bool protectContent = false,
+        CancellationToken cancellationToken = default)
+    {
+        return await SendFileByIdAsync(
+            chatId,
+            telegramFileId,
+            "sendVideo",
+            "video",
+            "video",
+            caption,
+            replyMarkup,
+            protectContent,
+            cancellationToken);
+    }
+
+    private async Task<EquipmentDiagnosticTelegramOutboundResult> SendFileByIdAsync(
+        long chatId,
+        string telegramFileId,
+        string telegramMethod,
+        string payloadField,
+        string logName,
+        string? caption = null,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+        bool protectContent = false,
+        CancellationToken cancellationToken = default)
+    {
         if (!_options.IsEnabled || string.IsNullOrWhiteSpace(BotToken) ||
             string.IsNullOrWhiteSpace(telegramFileId) ||
             !Uri.TryCreate(_options.TelegramApiBaseUrl, UriKind.Absolute, out var baseUri) ||
@@ -194,11 +257,11 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         }
 
         var endpoint = new Uri(
-            $"{baseUri.AbsoluteUri.TrimEnd('/')}/bot{BotToken}/sendDocument");
+            $"{baseUri.AbsoluteUri.TrimEnd('/')}/bot{BotToken}/{telegramMethod}");
         var payload = new Dictionary<string, object?>
         {
             ["chat_id"] = chatId,
-            ["document"] = telegramFileId
+            [payloadField] = telegramFileId
         };
         if (protectContent)
         {
@@ -229,30 +292,31 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
             using var scope = _logger.BeginScope(new Dictionary<string, object>
             {
                 ["correlationId"] = _correlation.CorrelationId ?? "none",
-                ["documentFileIdPresent"] = true
+                ["telegramFileIdPresent"] = true
             });
-            _logger.LogInformation("Sending Telegram document.");
+            _logger.LogInformation("Sending Telegram {TelegramFileKind}.", logName);
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             if (response.IsSuccessStatusCode)
             {
                 return new EquipmentDiagnosticTelegramOutboundResult(
                     true,
-                    "Telegram document sent.",
+                    $"Telegram {logName} sent.",
                     await ReadMessageIdAsync(response, cancellationToken));
             }
 
-            await LogTelegramApiFailureAsync(response, "send document", cancellationToken);
+            await LogTelegramApiFailureAsync(response, $"send {logName}", cancellationToken);
             return Failed();
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            _logger.LogWarning("Telegram document send timed out.");
+            _logger.LogWarning("Telegram {TelegramFileKind} send timed out.", logName);
             return Failed();
         }
         catch (HttpRequestException exception)
         {
             _logger.LogWarning(
-                "Telegram document send failed. ExceptionType: {ExceptionType}.",
+                "Telegram {TelegramFileKind} send failed. ExceptionType: {ExceptionType}.",
+                logName,
                 exception.GetType().Name);
             return Failed();
         }

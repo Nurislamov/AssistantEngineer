@@ -59,6 +59,7 @@ public sealed class EquipmentDiagnosticTelegramBroadcastTests
         Assert.Contains("Пропущено: 2", report.Text, StringComparison.Ordinal);
         Assert.Contains("Ошибок: 0", report.Text, StringComparison.Ordinal);
         Assert.Equal([(harness.Owner.TelegramChatId, "Плановое уведомление"), (harness.Installer.TelegramChatId, "Плановое уведомление")], harness.Outbound.Messages);
+        Assert.Empty(harness.Outbound.Attachments);
 
         var campaign = Assert.Single(await harness.BroadcastStore.ListCampaignIdsAsync());
         var recipients = await harness.BroadcastStore.ListRecipientsAsync(campaign);
@@ -68,7 +69,7 @@ public sealed class EquipmentDiagnosticTelegramBroadcastTests
     }
 
     [Fact]
-    public async Task BroadcastRejectsEmptyTooLongAndMediaDraftText()
+    public async Task BroadcastRejectsEmptyTooLongAndMediaBeforeDraftText()
     {
         var harness = await CreateHarnessAsync();
 
@@ -78,8 +79,76 @@ public sealed class EquipmentDiagnosticTelegramBroadcastTests
         var tooLong = await harness.Adapter.HandleAsync(Command(new string('a', 3501), harness.Owner));
 
         Assert.Contains("не должен быть пустым", empty.Text, StringComparison.Ordinal);
-        Assert.Contains("Только текст", media.Text, StringComparison.Ordinal);
+        Assert.Contains("Сначала введите текст", media.Text, StringComparison.Ordinal);
         Assert.Contains("слишком длинный", tooLong.Text, StringComparison.Ordinal);
+        Assert.Empty(harness.Outbound.Messages);
+    }
+
+    [Fact]
+    public async Task BroadcastPreviewTestAndSendSupportsPhotoDocumentAndVideoAttachments()
+    {
+        var harness = await CreateHarnessAsync();
+
+        await harness.Adapter.HandleAsync(Callback("bc:a:eng", harness.Owner));
+        var firstPreview = await harness.Adapter.HandleAsync(Command("Материалы для инженеров", harness.Owner));
+        var addCallback = Assert.Single(InlineButtons(firstPreview), button => button.Text == "➕ Добавить вложение").CallbackData;
+        Assert.True(System.Text.Encoding.UTF8.GetByteCount(addCallback) <= 64);
+
+        await harness.Adapter.HandleAsync(Callback(addCallback, harness.Owner));
+        var photoPreview = await harness.Adapter.HandleAsync(Photo(harness.Owner));
+        await harness.Adapter.HandleAsync(Callback(addCallback, harness.Owner));
+        var documentPreview = await harness.Adapter.HandleAsync(Document(harness.Owner));
+        await harness.Adapter.HandleAsync(Callback(addCallback, harness.Owner));
+        var videoPreview = await harness.Adapter.HandleAsync(Video(harness.Owner));
+        var testCallback = Assert.Single(InlineButtons(videoPreview), button => button.Text == "🧪 Отправить тест себе").CallbackData;
+        var sendCallback = Assert.Single(InlineButtons(videoPreview), button => button.Text == "✅ Отправить").CallbackData;
+
+        var test = await harness.Adapter.HandleAsync(Callback(testCallback, harness.Owner));
+        var report = await harness.Adapter.HandleAsync(Callback(sendCallback, harness.Owner));
+
+        Assert.Contains("Вложение добавлено", photoPreview.Text, StringComparison.Ordinal);
+        Assert.Contains("фото", photoPreview.Text, StringComparison.Ordinal);
+        Assert.Contains("manual.pdf", documentPreview.Text, StringComparison.Ordinal);
+        Assert.Contains("видео", videoPreview.Text, StringComparison.Ordinal);
+        Assert.Contains("clip.mp4", videoPreview.Text, StringComparison.Ordinal);
+        Assert.Contains("Тест отправлен вам.", test.Text, StringComparison.Ordinal);
+        Assert.Contains("Отправлено: 1", report.Text, StringComparison.Ordinal);
+        Assert.Equal(
+            [
+                (harness.Owner.TelegramChatId, "Материалы для инженеров"),
+                (harness.Engineer.TelegramChatId, "Материалы для инженеров")
+            ],
+            harness.Outbound.Messages);
+        Assert.Equal(
+            [
+                (harness.Owner.TelegramChatId, TelegramBroadcastAttachmentType.Photo, "photo-file-id"),
+                (harness.Owner.TelegramChatId, TelegramBroadcastAttachmentType.Document, "document-file-id"),
+                (harness.Owner.TelegramChatId, TelegramBroadcastAttachmentType.Video, "video-file-id"),
+                (harness.Engineer.TelegramChatId, TelegramBroadcastAttachmentType.Photo, "photo-file-id"),
+                (harness.Engineer.TelegramChatId, TelegramBroadcastAttachmentType.Document, "document-file-id"),
+                (harness.Engineer.TelegramChatId, TelegramBroadcastAttachmentType.Video, "video-file-id")
+            ],
+            harness.Outbound.Attachments);
+
+        var campaign = Assert.Single(await harness.BroadcastStore.ListCampaignIdsAsync());
+        var attachments = await harness.BroadcastStore.ListAttachmentsAsync(campaign);
+        Assert.Equal(3, attachments.Count);
+        Assert.Equal([TelegramBroadcastAttachmentType.Photo, TelegramBroadcastAttachmentType.Document, TelegramBroadcastAttachmentType.Video], attachments.Select(item => item.AttachmentType));
+        Assert.Equal([1, 2, 3], attachments.Select(item => item.SortOrder));
+    }
+
+    [Fact]
+    public async Task BroadcastAttachmentModeRejectsUnsupportedMediaSafely()
+    {
+        var harness = await CreateHarnessAsync();
+
+        await harness.Adapter.HandleAsync(Callback("bc:a:eng", harness.Owner));
+        var preview = await harness.Adapter.HandleAsync(Command("Текст", harness.Owner));
+        var addCallback = Assert.Single(InlineButtons(preview), button => button.Text == "➕ Добавить вложение").CallbackData;
+        await harness.Adapter.HandleAsync(Callback(addCallback, harness.Owner));
+        var unsupported = await harness.Adapter.HandleAsync(Command(string.Empty, harness.Owner) with { HasAudio = true });
+
+        Assert.Contains("не поддерживается", unsupported.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Empty(harness.Outbound.Messages);
     }
 
@@ -224,6 +293,36 @@ public sealed class EquipmentDiagnosticTelegramBroadcastTests
     private static EquipmentDiagnosticTelegramUpdate Media(TelegramUserSnapshot actor) =>
         Command(string.Empty, actor) with { DocumentFileId = "telegram-file-id", DocumentFileName = "manual.pdf" };
 
+    private static EquipmentDiagnosticTelegramUpdate Document(TelegramUserSnapshot actor) =>
+        Command(string.Empty, actor) with
+        {
+            DocumentFileId = "document-file-id",
+            DocumentFileUniqueId = "document-unique-id",
+            DocumentFileName = "manual.pdf",
+            DocumentMimeType = "application/pdf",
+            DocumentFileSize = 2048
+        };
+
+    private static EquipmentDiagnosticTelegramUpdate Photo(TelegramUserSnapshot actor) =>
+        Command(string.Empty, actor) with
+        {
+            PhotoFileId = "photo-file-id",
+            PhotoFileUniqueId = "photo-unique-id",
+            PhotoFileSize = 1024,
+            HasPhoto = true
+        };
+
+    private static EquipmentDiagnosticTelegramUpdate Video(TelegramUserSnapshot actor) =>
+        Command(string.Empty, actor) with
+        {
+            VideoFileId = "video-file-id",
+            VideoFileUniqueId = "video-unique-id",
+            VideoFileName = "clip.mp4",
+            VideoMimeType = "video/mp4",
+            VideoFileSize = 4096,
+            HasVideo = true
+        };
+
     private static IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton> InlineButtons(
         EquipmentDiagnosticTelegramResponse response) =>
         response.OutboundMessages.Single().ReplyMarkup?.InlineKeyboard?.SelectMany(row => row).ToArray() ?? [];
@@ -259,6 +358,7 @@ public sealed class EquipmentDiagnosticTelegramBroadcastTests
     private sealed class FakeOutbound : IEquipmentDiagnosticTelegramOutboundClient
     {
         public List<(long ChatId, string Text)> Messages { get; } = [];
+        public List<(long ChatId, TelegramBroadcastAttachmentType Type, string FileId)> Attachments { get; } = [];
         public HashSet<long> FailChatIds { get; } = [];
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
@@ -276,6 +376,42 @@ public sealed class EquipmentDiagnosticTelegramBroadcastTests
 
             Messages.Add((chatId, text));
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Sent.", 900));
+        }
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> SendDocumentAsync(
+            long chatId,
+            string telegramFileId,
+            string? caption = null,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            bool protectContent = false,
+            CancellationToken cancellationToken = default)
+        {
+            Attachments.Add((chatId, TelegramBroadcastAttachmentType.Document, telegramFileId));
+            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Document sent.", 901));
+        }
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> SendPhotoAsync(
+            long chatId,
+            string telegramFileId,
+            string? caption = null,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            bool protectContent = false,
+            CancellationToken cancellationToken = default)
+        {
+            Attachments.Add((chatId, TelegramBroadcastAttachmentType.Photo, telegramFileId));
+            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Photo sent.", 902));
+        }
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> SendVideoAsync(
+            long chatId,
+            string telegramFileId,
+            string? caption = null,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            bool protectContent = false,
+            CancellationToken cancellationToken = default)
+        {
+            Attachments.Add((chatId, TelegramBroadcastAttachmentType.Video, telegramFileId));
+            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Video sent.", 903));
         }
 
         public Task<EquipmentDiagnosticTelegramSetCommandsResult> SetMyCommandsAsync(
