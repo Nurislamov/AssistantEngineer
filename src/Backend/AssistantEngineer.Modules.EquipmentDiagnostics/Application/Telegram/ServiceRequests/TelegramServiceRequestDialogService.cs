@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
@@ -13,6 +14,9 @@ public sealed record TelegramServiceRequestDialogResult(
 
 public sealed class TelegramServiceRequestDialogService
 {
+    private const string UnsupportedContentText =
+        "Этот тип сообщения пока не поддерживается. Отправьте текст, фото, файл или видео.";
+    private const string PendingAttachmentPrefix = "attachment:";
     public const string ReplyPrefix = "sr:reply:";
     public const string ThreadPrefix = "sr:thread:";
     public const string PickPrefix = "sr:pick:";
@@ -139,8 +143,13 @@ public sealed class TelegramServiceRequestDialogService
         {
             return null;
         }
+        if (!access.User.IsEnabled || access.User.IsBlocked)
+        {
+            return new(EquipmentDiagnosticTelegramAdapter.BlockedUserMessage);
+        }
 
         var text = update.Text?.Trim();
+        var attachment = AttachmentFrom(update);
         var pending = await _dialogStore.GetPendingAsync(access.User.Id, cancellationToken);
         if (string.Equals(text, "/cancel", StringComparison.OrdinalIgnoreCase) && pending is not null)
         {
@@ -155,6 +164,14 @@ public sealed class TelegramServiceRequestDialogService
 
         if (pending?.Kind == TelegramServiceRequestPendingKind.OperatorReply)
         {
+            if (attachment is not null)
+            {
+                return await SendOperatorAttachmentAsync(update, access.User, pending, attachment, cancellationToken);
+            }
+            if (HasUnsupportedContent(update))
+            {
+                return new(UnsupportedContentText);
+            }
             if (string.IsNullOrWhiteSpace(text))
             {
                 return new("Отправьте текстовое сообщение или используйте /cancel.");
@@ -162,7 +179,7 @@ public sealed class TelegramServiceRequestDialogService
             return await SendOperatorTextAsync(update, access.User, pending, text, cancellationToken);
         }
 
-        if (string.IsNullOrWhiteSpace(text) || access.Role != TelegramUserRole.Consumer)
+        if (access.Role != TelegramUserRole.Consumer)
         {
             return null;
         }
@@ -172,17 +189,32 @@ public sealed class TelegramServiceRequestDialogService
         {
             return null;
         }
+        if (attachment is null && HasUnsupportedContent(update))
+        {
+            return new(UnsupportedContentText);
+        }
+        if (attachment is null && string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
         if (candidates.Count == 1)
         {
-            return await SendUserTextAsync(update, access.User, candidates[0], text, cancellationToken);
+            if (attachment is not null)
+            {
+                return await SendUserAttachmentAsync(update, access.User, candidates[0], attachment, cancellationToken);
+            }
+            return await SendUserTextAsync(update, access.User, candidates[0], text!, cancellationToken);
         }
 
         var now = DateTimeOffset.UtcNow;
+        var pendingPayload = attachment is null
+            ? text
+            : PendingAttachmentPrefix + JsonSerializer.Serialize(attachment);
         await _dialogStore.SetPendingAsync(
             access.User.Id,
             TelegramServiceRequestPendingKind.UserRequestSelection,
             null,
-            text,
+            pendingPayload,
             now,
             now.Add(PendingLifetime),
             cancellationToken);
@@ -282,7 +314,21 @@ public sealed class TelegramServiceRequestDialogService
 
         await _dialogStore.ClearPendingAsync(actor.Id, cancellationToken);
         var syntheticUpdate = new EquipmentDiagnosticTelegramUpdate(0, actor.TelegramChatId, actor.Username, pending.PendingText);
-        var result = await SendUserTextAsync(syntheticUpdate, actor, request, pending.PendingText, cancellationToken);
+        TelegramServiceRequestDialogResult result;
+        if (pending.PendingText.StartsWith(PendingAttachmentPrefix, StringComparison.Ordinal))
+        {
+            var attachment = JsonSerializer.Deserialize<AttachmentPayload>(
+                pending.PendingText[PendingAttachmentPrefix.Length..]);
+            if (attachment is null)
+            {
+                return new("Выбор устарел. Отправьте вложение ещё раз.", CallbackAnswerText: "Выбор устарел", SuppressOutbound: true);
+            }
+            result = await SendUserAttachmentAsync(syntheticUpdate, actor, request, attachment, cancellationToken);
+        }
+        else
+        {
+            result = await SendUserTextAsync(syntheticUpdate, actor, request, pending.PendingText, cancellationToken);
+        }
         return result with { CallbackAnswerText = "Сообщение отправлено" };
     }
 
@@ -319,7 +365,20 @@ public sealed class TelegramServiceRequestDialogService
         {
             builder.AppendLine();
             builder.AppendLine($"{index++}. {(message.Direction == TelegramServiceRequestMessageDirection.UserToOperator ? "Пользователь" : "Инженер")}, {_timeFormatter.FormatRelative(message.CreatedAt)}:");
-            builder.Append(Preview(message.Text, 500));
+            var attachments = await _dialogStore.GetAttachmentsAsync(message.Id, cancellationToken);
+            if (attachments.Count > 0)
+            {
+                builder.Append($"📎 {AttachmentLabel(attachments[0].AttachmentType)}");
+                if (!string.IsNullOrWhiteSpace(message.Text))
+                {
+                    builder.AppendLine();
+                    builder.Append(Preview(message.Text, 500));
+                }
+            }
+            else
+            {
+                builder.Append(Preview(message.Text, 500));
+            }
         }
         return builder.ToString();
     }
@@ -397,4 +456,180 @@ public sealed class TelegramServiceRequestDialogService
 
     private static string Title(TelegramServiceRequestSnapshot request) =>
         string.IsNullOrWhiteSpace(request.Manufacturer) ? request.Code : $"{request.Manufacturer} {request.Code}";
+
+    private async Task<TelegramServiceRequestDialogResult> SendOperatorAttachmentAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserSnapshot actor,
+        TelegramServiceRequestPendingSnapshot pending,
+        AttachmentPayload attachment,
+        CancellationToken cancellationToken)
+    {
+        var request = pending.ServiceRequestId is null
+            ? null
+            : await _requestStore.GetByIdAsync(pending.ServiceRequestId.Value, cancellationToken);
+        if (request is null)
+        {
+            await _dialogStore.ClearPendingAsync(actor.Id, cancellationToken);
+            return new("Заявка не найдена. Режим ответа отменён.");
+        }
+        var requester = await _userStore.GetByIdAsync(request.TelegramUserId, cancellationToken);
+        if (requester is null || !requester.IsEnabled || requester.IsBlocked)
+        {
+            await _dialogStore.ClearPendingAsync(actor.Id, cancellationToken);
+            return new("Пользователь заблокирован. Отправка невозможна.");
+        }
+
+        var caption = $"📎 Вложение по заявке #{request.Id}" +
+            (string.IsNullOrWhiteSpace(attachment.Caption) ? string.Empty : $"\n\n{attachment.Caption}") +
+            "\n\nОтветьте здесь, если нужно дополнить заявку.";
+        var sent = await SendAttachmentAsync(
+            requester.TelegramChatId,
+            attachment,
+            caption,
+            replyMarkup: null,
+            cancellationToken);
+        if (!sent.Succeeded)
+        {
+            return new("Не удалось отправить вложение пользователю. Попробуйте ещё раз или используйте /cancel.");
+        }
+
+        var message = await _dialogStore.AddMessageAsync(new(
+            request.Id,
+            TelegramServiceRequestMessageDirection.OperatorToUser,
+            actor.Id,
+            actor.Role,
+            attachment.Caption ?? string.Empty,
+            requester.TelegramChatId,
+            sent.MessageId,
+            DateTimeOffset.UtcNow), cancellationToken);
+        await SaveAttachmentAsync(message.Id, attachment, cancellationToken);
+        await _dialogStore.ClearPendingAsync(actor.Id, cancellationToken);
+        await SendGroupTextAsync(
+            $"📎 Вложение отправлено пользователю по заявке #{request.Id}\n\nТип: {AttachmentLabel(attachment.Type)}" +
+            (string.IsNullOrWhiteSpace(attachment.Caption) ? string.Empty : $"\nПодпись: {Preview(attachment.Caption)}"),
+            request.Id,
+            cancellationToken);
+        return new($"Вложение по заявке #{request.Id} отправлено пользователю.");
+    }
+
+    private async Task<TelegramServiceRequestDialogResult> SendUserAttachmentAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        TelegramUserSnapshot user,
+        TelegramServiceRequestSnapshot request,
+        AttachmentPayload attachment,
+        CancellationToken cancellationToken)
+    {
+        if (_options.ServiceRequests.NotificationChatId is not { } groupChatId)
+        {
+            return new("Сервисная группа временно недоступна.");
+        }
+
+        var caption = $"📎 Вложение пользователя по заявке #{request.Id}" +
+            (string.IsNullOrWhiteSpace(attachment.Caption) ? string.Empty : $"\n\n{attachment.Caption}");
+        var sent = await SendAttachmentAsync(
+            groupChatId,
+            attachment,
+            caption,
+            DialogKeyboard(request.Id),
+            cancellationToken);
+        if (!sent.Succeeded)
+        {
+            return new("Не удалось передать вложение в сервисную группу. Попробуйте ещё раз.");
+        }
+
+        var message = await _dialogStore.AddMessageAsync(new(
+            request.Id,
+            TelegramServiceRequestMessageDirection.UserToOperator,
+            user.Id,
+            user.Role,
+            attachment.Caption ?? string.Empty,
+            update.ChatId,
+            update.MessageId,
+            update.ReceivedAt ?? DateTimeOffset.UtcNow), cancellationToken);
+        await SaveAttachmentAsync(message.Id, attachment, cancellationToken);
+        return new($"Вложение добавлено к заявке #{request.Id}.");
+    }
+
+    private Task<EquipmentDiagnosticTelegramOutboundResult> SendAttachmentAsync(
+        long chatId,
+        AttachmentPayload attachment,
+        string caption,
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup,
+        CancellationToken cancellationToken) =>
+        attachment.Type switch
+        {
+            TelegramServiceRequestAttachmentType.Photo => _outboundClient.SendPhotoAsync(
+                chatId, attachment.FileId, caption, replyMarkup, protectContent: true, cancellationToken),
+            TelegramServiceRequestAttachmentType.Document => _outboundClient.SendDocumentAsync(
+                chatId, attachment.FileId, caption, replyMarkup, protectContent: true, cancellationToken),
+            TelegramServiceRequestAttachmentType.Video => _outboundClient.SendVideoAsync(
+                chatId, attachment.FileId, caption, replyMarkup, protectContent: true, cancellationToken),
+            _ => Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(false, "Unsupported attachment."))
+        };
+
+    private async Task SaveAttachmentAsync(
+        long messageId,
+        AttachmentPayload attachment,
+        CancellationToken cancellationToken) =>
+        await _dialogStore.AddAttachmentAsync(new(
+            messageId,
+            attachment.Type,
+            attachment.FileId,
+            attachment.FileUniqueId,
+            attachment.FileName,
+            attachment.MimeType,
+            attachment.FileSize,
+            attachment.Width,
+            attachment.Height,
+            attachment.Duration,
+            DateTimeOffset.UtcNow), cancellationToken);
+
+    private static AttachmentPayload? AttachmentFrom(EquipmentDiagnosticTelegramUpdate update)
+    {
+        if (!string.IsNullOrWhiteSpace(update.PhotoFileId))
+        {
+            return new(TelegramServiceRequestAttachmentType.Photo, update.PhotoFileId,
+                update.PhotoFileUniqueId, null, null, update.PhotoFileSize,
+                update.PhotoWidth, update.PhotoHeight, null, update.Text);
+        }
+        if (!string.IsNullOrWhiteSpace(update.DocumentFileId))
+        {
+            return new(TelegramServiceRequestAttachmentType.Document, update.DocumentFileId,
+                update.DocumentFileUniqueId, update.DocumentFileName, update.DocumentMimeType,
+                update.DocumentFileSize, null, null, null, update.Text);
+        }
+        if (!string.IsNullOrWhiteSpace(update.VideoFileId))
+        {
+            return new(TelegramServiceRequestAttachmentType.Video, update.VideoFileId,
+                update.VideoFileUniqueId, update.VideoFileName, update.VideoMimeType,
+                update.VideoFileSize, update.VideoWidth, update.VideoHeight, update.VideoDuration, update.Text);
+        }
+        return null;
+    }
+
+    private static bool HasUnsupportedContent(EquipmentDiagnosticTelegramUpdate update) =>
+        update.HasVoice || update.HasVideoNote || update.HasAudio ||
+        update.HasLocation || update.HasAnimation || update.HasSticker ||
+        update.HasPoll || !string.IsNullOrWhiteSpace(update.ContactPhoneNumber);
+
+    private static string AttachmentLabel(TelegramServiceRequestAttachmentType type) =>
+        type switch
+        {
+            TelegramServiceRequestAttachmentType.Photo => "фото",
+            TelegramServiceRequestAttachmentType.Document => "файл",
+            TelegramServiceRequestAttachmentType.Video => "видео",
+            _ => "вложение"
+        };
+
+    private sealed record AttachmentPayload(
+        TelegramServiceRequestAttachmentType Type,
+        string FileId,
+        string? FileUniqueId,
+        string? FileName,
+        string? MimeType,
+        long? FileSize,
+        int? Width,
+        int? Height,
+        int? Duration,
+        string? Caption);
 }

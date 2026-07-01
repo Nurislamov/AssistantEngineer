@@ -82,6 +82,8 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     public DbSet<TelegramServiceRequestMessageEntity> TelegramServiceRequestMessages { get; set; } = null!;
 
+    public DbSet<TelegramServiceRequestMessageAttachmentEntity> TelegramServiceRequestMessageAttachments { get; set; } = null!;
+
     public DbSet<TelegramServiceRequestPendingEntity> TelegramServiceRequestPending { get; set; } = null!;
 
     public DbSet<TelegramUserAuditEventEntity> TelegramUserAuditEvents { get; set; } = null!;

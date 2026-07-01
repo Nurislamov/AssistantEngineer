@@ -51,3 +51,26 @@ public sealed class TelegramServiceRequestPendingConfiguration : IEntityTypeConf
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+public sealed class TelegramServiceRequestMessageAttachmentConfiguration
+    : IEntityTypeConfiguration<TelegramServiceRequestMessageAttachmentEntity>
+{
+    public void Configure(EntityTypeBuilder<TelegramServiceRequestMessageAttachmentEntity> builder)
+    {
+        builder.ToTable("TelegramServiceRequestMessageAttachments");
+        builder.HasKey(item => item.Id);
+        builder.Property(item => item.Id).ValueGeneratedOnAdd();
+        builder.Property(item => item.AttachmentType).HasConversion<string>().HasMaxLength(32).IsRequired();
+        builder.Property(item => item.FileId).HasMaxLength(512).IsRequired();
+        builder.Property(item => item.FileUniqueId).HasMaxLength(256);
+        builder.Property(item => item.FileName).HasMaxLength(256);
+        builder.Property(item => item.MimeType).HasMaxLength(128);
+        builder.Property(item => item.CreatedAt).IsRequired();
+        builder.HasIndex(item => item.MessageId);
+        builder.HasIndex(item => new { item.MessageId, item.AttachmentType });
+        builder.HasOne<TelegramServiceRequestMessageEntity>()
+            .WithMany()
+            .HasForeignKey(item => item.MessageId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}

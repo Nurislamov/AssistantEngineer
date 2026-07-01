@@ -63,6 +63,48 @@ public sealed class EfTelegramServiceRequestDialogStore : ITelegramServiceReques
                 cancellationToken);
     }
 
+    public async Task<TelegramServiceRequestMessageAttachmentSnapshot> AddAttachmentAsync(
+        TelegramServiceRequestMessageAttachmentCreate attachment,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var entity = new TelegramServiceRequestMessageAttachmentEntity
+        {
+            MessageId = attachment.MessageId,
+            AttachmentType = attachment.AttachmentType,
+            FileId = attachment.FileId,
+            FileUniqueId = attachment.FileUniqueId,
+            FileName = attachment.FileName,
+            MimeType = attachment.MimeType,
+            FileSize = attachment.FileSize,
+            Width = attachment.Width,
+            Height = attachment.Height,
+            Duration = attachment.Duration,
+            CreatedAt = attachment.CreatedAt
+        };
+        context.TelegramServiceRequestMessageAttachments.Add(entity);
+        await context.SaveChangesAsync(cancellationToken);
+        return ToSnapshot(entity);
+    }
+
+    public async Task<IReadOnlyList<TelegramServiceRequestMessageAttachmentSnapshot>> GetAttachmentsAsync(
+        long messageId,
+        CancellationToken cancellationToken = default)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        return await context.TelegramServiceRequestMessageAttachments
+            .AsNoTracking()
+            .Where(item => item.MessageId == messageId)
+            .OrderBy(item => item.Id)
+            .Select(item => new TelegramServiceRequestMessageAttachmentSnapshot(
+                item.Id, item.MessageId, item.AttachmentType, item.FileId, item.FileUniqueId,
+                item.FileName, item.MimeType, item.FileSize, item.Width, item.Height,
+                item.Duration, item.CreatedAt))
+            .ToArrayAsync(cancellationToken);
+    }
+
     public async Task<TelegramServiceRequestPendingSnapshot?> GetPendingAsync(
         long telegramUserId,
         CancellationToken cancellationToken = default)
@@ -123,4 +165,10 @@ public sealed class EfTelegramServiceRequestDialogStore : ITelegramServiceReques
     private static TelegramServiceRequestPendingSnapshot ToSnapshot(TelegramServiceRequestPendingEntity entity) =>
         new(entity.Id, entity.TelegramUserId, entity.Kind, entity.ServiceRequestId, entity.PendingText,
             entity.CreatedAt, entity.ExpiresAt);
+
+    private static TelegramServiceRequestMessageAttachmentSnapshot ToSnapshot(
+        TelegramServiceRequestMessageAttachmentEntity entity) =>
+        new(entity.Id, entity.MessageId, entity.AttachmentType, entity.FileId, entity.FileUniqueId,
+            entity.FileName, entity.MimeType, entity.FileSize, entity.Width, entity.Height,
+            entity.Duration, entity.CreatedAt);
 }

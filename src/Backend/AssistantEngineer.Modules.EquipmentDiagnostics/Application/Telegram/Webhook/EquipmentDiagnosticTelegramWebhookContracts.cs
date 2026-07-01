@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
@@ -80,7 +81,9 @@ public sealed record TelegramWebhookMessageDto(
     [property: JsonPropertyName("audio")] TelegramWebhookAudioDto? Audio = null,
     [property: JsonPropertyName("location")] TelegramWebhookLocationDto? Location = null,
     [property: JsonPropertyName("animation")] TelegramWebhookAnimationDto? Animation = null,
-    [property: JsonPropertyName("reply_to_message")] TelegramWebhookMessageDto? ReplyToMessage = null);
+    [property: JsonPropertyName("reply_to_message")] TelegramWebhookMessageDto? ReplyToMessage = null,
+    [property: JsonPropertyName("sticker")] JsonElement? Sticker = null,
+    [property: JsonPropertyName("poll")] JsonElement? Poll = null);
 
 public sealed record TelegramWebhookChatDto(
     [property: JsonPropertyName("id")] long Id,
@@ -116,7 +119,10 @@ public sealed record TelegramWebhookVideoDto(
     [property: JsonPropertyName("file_unique_id")] string? FileUniqueId = null,
     [property: JsonPropertyName("file_name")] string? FileName = null,
     [property: JsonPropertyName("mime_type")] string? MimeType = null,
-    [property: JsonPropertyName("file_size")] long? FileSize = null);
+    [property: JsonPropertyName("file_size")] long? FileSize = null,
+    [property: JsonPropertyName("width")] int? Width = null,
+    [property: JsonPropertyName("height")] int? Height = null,
+    [property: JsonPropertyName("duration")] int? Duration = null);
 
 public sealed record TelegramWebhookVoiceDto(
     [property: JsonPropertyName("file_id")] string FileId,

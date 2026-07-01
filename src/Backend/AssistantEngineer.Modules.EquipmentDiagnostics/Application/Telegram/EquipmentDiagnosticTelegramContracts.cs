@@ -93,11 +93,16 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     string? PhotoFileId = null,
     string? PhotoFileUniqueId = null,
     long? PhotoFileSize = null,
+    int? PhotoWidth = null,
+    int? PhotoHeight = null,
     string? VideoFileId = null,
     string? VideoFileUniqueId = null,
     string? VideoFileName = null,
     string? VideoMimeType = null,
     long? VideoFileSize = null,
+    int? VideoWidth = null,
+    int? VideoHeight = null,
+    int? VideoDuration = null,
     long? ReplyToMessageId = null,
     bool HasPhoto = false,
     bool HasVideo = false,
@@ -105,7 +110,9 @@ public sealed record EquipmentDiagnosticTelegramUpdate(
     bool HasVideoNote = false,
     bool HasAudio = false,
     bool HasLocation = false,
-    bool HasAnimation = false);
+    bool HasAnimation = false,
+    bool HasSticker = false,
+    bool HasPoll = false);
 
 public sealed record EquipmentDiagnosticTelegramParseResult(
     EquipmentDiagnosticTelegramCommand Command,

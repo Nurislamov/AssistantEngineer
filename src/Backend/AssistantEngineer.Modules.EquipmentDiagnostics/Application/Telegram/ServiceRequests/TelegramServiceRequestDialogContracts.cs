@@ -15,6 +15,13 @@ public enum TelegramServiceRequestPendingKind
     UserRequestSelection
 }
 
+public enum TelegramServiceRequestAttachmentType
+{
+    Photo,
+    Document,
+    Video
+}
+
 public sealed class TelegramServiceRequestMessageEntity
 {
     public long Id { get; set; }
@@ -37,6 +44,22 @@ public sealed class TelegramServiceRequestPendingEntity
     public string? PendingText { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset ExpiresAt { get; set; }
+}
+
+public sealed class TelegramServiceRequestMessageAttachmentEntity
+{
+    public long Id { get; set; }
+    public long MessageId { get; set; }
+    public TelegramServiceRequestAttachmentType AttachmentType { get; set; }
+    public string FileId { get; set; } = string.Empty;
+    public string? FileUniqueId { get; set; }
+    public string? FileName { get; set; }
+    public string? MimeType { get; set; }
+    public long? FileSize { get; set; }
+    public int? Width { get; set; }
+    public int? Height { get; set; }
+    public int? Duration { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 }
 
 public sealed record TelegramServiceRequestMessageCreate(
@@ -69,6 +92,33 @@ public sealed record TelegramServiceRequestPendingSnapshot(
     DateTimeOffset CreatedAt,
     DateTimeOffset ExpiresAt);
 
+public sealed record TelegramServiceRequestMessageAttachmentCreate(
+    long MessageId,
+    TelegramServiceRequestAttachmentType AttachmentType,
+    string FileId,
+    string? FileUniqueId,
+    string? FileName,
+    string? MimeType,
+    long? FileSize,
+    int? Width,
+    int? Height,
+    int? Duration,
+    DateTimeOffset CreatedAt);
+
+public sealed record TelegramServiceRequestMessageAttachmentSnapshot(
+    long Id,
+    long MessageId,
+    TelegramServiceRequestAttachmentType AttachmentType,
+    string FileId,
+    string? FileUniqueId,
+    string? FileName,
+    string? MimeType,
+    long? FileSize,
+    int? Width,
+    int? Height,
+    int? Duration,
+    DateTimeOffset CreatedAt);
+
 public interface ITelegramServiceRequestDialogStore
 {
     Task<TelegramServiceRequestMessageSnapshot> AddMessageAsync(
@@ -82,6 +132,14 @@ public interface ITelegramServiceRequestDialogStore
 
     Task<bool> HasOperatorReplyAsync(
         long serviceRequestId,
+        CancellationToken cancellationToken = default);
+
+    Task<TelegramServiceRequestMessageAttachmentSnapshot> AddAttachmentAsync(
+        TelegramServiceRequestMessageAttachmentCreate attachment,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<TelegramServiceRequestMessageAttachmentSnapshot>> GetAttachmentsAsync(
+        long messageId,
         CancellationToken cancellationToken = default);
 
     Task<TelegramServiceRequestPendingSnapshot?> GetPendingAsync(

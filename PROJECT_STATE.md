@@ -2,13 +2,16 @@
 
 ## Current stage
 
-ED-24SR.1 - CLOSED / local commit pending. Production PASS is pending migration/deploy and the VPS live-check.
+ED-24SR.2 - CLOSED / local commit; push pending. ED-24SR.1 is CLOSED / local commit `ce1b79e3`.
+Production PASS is pending migration/deploy and the VPS live-check.
 
 Next recommended steps:
 
-1. Complete ED-24SR.2 attachment support and its separate commit.
+1. Complete ED-24SR.2 validation and its separate commit.
 2. Push both ED-24SR commits, then pull `origin/master` on `assistantengineer-beta-01`.
-3. Apply the EF migrations, rebuild/restart `assistantengineer-api`, and live-check the service-request dialog.
+3. Apply migrations `20260701095907_AddTelegramServiceRequestDialog` and
+   `20260701101337_AddTelegramServiceRequestDialogAttachments`, rebuild/restart `assistantengineer-api`, and live-check
+   text/photo/document/video dialog delivery.
 4. Mark production PASS only after GitHub Actions and the VPS live-check pass.
 
 ## Current branch
@@ -17,33 +20,48 @@ master
 
 ## Last completed work
 
-ED-24SR.1 adds a text-only service-request dialog through the Telegram bot. The stage is CLOSED / local commit pending;
+ED-24SR.2 adds photo/document/video attachments to the service-request dialog. The stage is CLOSED / local commit pending;
 production PASS remains pending until the migration is applied, GitHub Actions are green, and the VPS live-check passes.
 
-Implementation commit: pending (`ED-24SR.1 Add service request text dialog`).
+Implementation commit: current commit (`ED-24SR.2 Add service request dialog attachments`).
 
-ED-24SR.1 implementation notes:
+ED-24SR.2 implementation notes:
 
-- Service request cards preserve lifecycle actions and add `💬 Ответить` / `📜 Диалог` with short request-id callbacks.
-- Owner, Admin, and Engineer can start an operator reply from the service group; the bot prompts in the operator's private
-  chat, persists pending state, sends the text to the requester under the bot identity, and posts a safe preview to the group.
-- Consumer messages are routed back only after an operator response. Multiple active requests require an explicit request
-  selection. `/start`, `/help`, `/history`, `/last`, and `/cancel` are not swallowed by dialog routing.
-- The dialog view shows the latest 15 messages and never renders phone numbers, internal roles, or audit details.
-- Disabled/blocked users cannot participate; operators cannot send to a blocked requester. Current Engineer policy permits
-  every active Engineer because strict per-request assignment is not yet required for reply access.
-- Migration `20260701095907_AddTelegramServiceRequestDialog` adds `TelegramServiceRequestMessages` and persistent
-  `TelegramServiceRequestPending`. Message history and pending reply modes survive application restart.
-- ED-24SR.1 is text-only. Photo/document/video support is deferred to ED-24SR.2.
+- Operator and Consumer dialog messages support photo, document, and video with captions. One attachment completes and
+  clears an operator pending reply; another message requires pressing `💬 Ответить` again.
+- Delivery reuses Telegram `file_id` through `sendPhoto`, `sendDocument`, or `sendVideo`; the application never downloads
+  or stores file bytes. `file_unique_id`, filename, MIME type, size, dimensions, and duration are metadata only.
+- Service-request dialog media is sent with `protect_content=true` for privacy. Consumer attachments reach the configured
+  service group with request context plus `💬 Ответить` / `📜 Диалог`; operator delivery posts a safe group receipt.
+- Unsupported voice/audio/video-note/location/animation content receives a clear Russian message and does not crash or
+  clear an operator pending reply. Album items are handled independently by normal Telegram updates.
+- Disabled/blocked users cannot participate; an operator cannot send an attachment to a blocked requester. Owner, Admin,
+  and Engineer retain operator attachment access; Consumer cannot use operator reply callbacks.
+- Migration `20260701101337_AddTelegramServiceRequestDialogAttachments` adds
+  `TelegramServiceRequestMessageAttachments` as a child of persisted dialog messages.
+- ED-24SR.1 remains CLOSED in commit `ce1b79e3`; text routing, persistent pending state, ambiguity selection, dialog
+  history, command precedence, callbacks, and lifecycle actions remain unchanged.
 - Runtime catalogs are unchanged: Gree 1296, U-Match R32 107, ERV B Series 5. No PDF, manual intake artifact, secret,
   `.env` backup, or runtime catalog change was added.
 
-ED-24SR.1 local validation:
+ED-24SR.2 local validation:
 
-- Dialog-focused tests: PASS, 14/14.
-- Build: PASS with the six existing nullable warnings in architecture guard tests.
-- EF model validation: PASS; no changes after `20260701095907_AddTelegramServiceRequestDialog`.
-- Remaining required stage validation is run immediately before the ED-24SR.1 commit.
+- Dialog-focused text and attachment tests: PASS, 22/22.
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with the six existing nullable warnings in architecture guards.
+- Focused Telegram/service-request/attachment/broadcast/user/manual/Gree tests: PASS, 865/865.
+- Gree diagnostics smoke: PASS, 14/14.
+- Equipment Diagnostics workflow test command: PASS, 1102/1102.
+- Full solution suite: PASS, 5126/5126, with a local test-only
+  `EngineeringWorkflowPersistence__PayloadLimits__ArtifactContentMaxBytes=10485760` override. Without the override, one
+  unrelated Engineering Workflow artifact assertion receives the configured 256 KiB truncation envelope instead of raw
+  JSON; the isolated test passes with the larger test limit and no production configuration was changed.
+- EF model validation: PASS; no pending changes after
+  `20260701101337_AddTelegramServiceRequestDialogAttachments`.
+- Equipment Diagnostics branch-readiness tool was executed. Its build/restore and diagnostics checks pass, but the legacy
+  narrow-skeleton scope policy reports the explicitly required Infrastructure migrations as forbidden and repeats the
+  unrelated 256 KiB artifact-test failure in its internally launched plain full suite.
+- Final OpenAPI, repository hygiene, diff, commit, and push checks follow immediately after this state update.
 
 ## Previous completed work
 

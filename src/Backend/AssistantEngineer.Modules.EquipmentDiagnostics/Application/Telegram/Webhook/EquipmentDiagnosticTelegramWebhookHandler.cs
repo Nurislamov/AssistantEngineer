@@ -250,11 +250,16 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             PhotoFileId: largestPhoto?.FileId,
             PhotoFileUniqueId: largestPhoto?.FileUniqueId,
             PhotoFileSize: largestPhoto?.FileSize,
+            PhotoWidth: largestPhoto?.Width,
+            PhotoHeight: largestPhoto?.Height,
             VideoFileId: message.Video?.FileId,
             VideoFileUniqueId: message.Video?.FileUniqueId,
             VideoFileName: message.Video?.FileName,
             VideoMimeType: message.Video?.MimeType,
             VideoFileSize: message.Video?.FileSize,
+            VideoWidth: message.Video?.Width,
+            VideoHeight: message.Video?.Height,
+            VideoDuration: message.Video?.Duration,
             ReplyToMessageId: message.ReplyToMessage?.MessageId,
             HasPhoto: message.Photo is { Count: > 0 },
             HasVideo: message.Video is not null,
@@ -262,7 +267,9 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             HasVideoNote: message.VideoNote is not null,
             HasAudio: message.Audio is not null,
             HasLocation: message.Location is not null,
-            HasAnimation: message.Animation is not null);
+            HasAnimation: message.Animation is not null,
+            HasSticker: message.Sticker is not null,
+            HasPoll: message.Poll is not null);
     }
 
     private bool IsConfiguredOperatorChat(EquipmentDiagnosticTelegramUpdate update) =>

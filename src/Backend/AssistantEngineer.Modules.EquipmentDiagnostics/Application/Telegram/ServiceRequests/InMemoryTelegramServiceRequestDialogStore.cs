@@ -6,9 +6,11 @@ public sealed class InMemoryTelegramServiceRequestDialogStore : ITelegramService
 {
     private readonly object _sync = new();
     private readonly List<TelegramServiceRequestMessageSnapshot> _messages = [];
+    private readonly List<TelegramServiceRequestMessageAttachmentSnapshot> _attachments = [];
     private readonly ConcurrentDictionary<long, TelegramServiceRequestPendingSnapshot> _pending = new();
     private long _messageId;
     private long _pendingId;
+    private long _attachmentId;
 
     public Task<TelegramServiceRequestMessageSnapshot> AddMessageAsync(
         TelegramServiceRequestMessageCreate message,
@@ -61,6 +63,43 @@ public sealed class InMemoryTelegramServiceRequestDialogStore : ITelegramService
             return Task.FromResult(_messages.Any(item =>
                 item.ServiceRequestId == serviceRequestId &&
                 item.Direction == TelegramServiceRequestMessageDirection.OperatorToUser));
+        }
+    }
+
+    public Task<TelegramServiceRequestMessageAttachmentSnapshot> AddAttachmentAsync(
+        TelegramServiceRequestMessageAttachmentCreate attachment,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_sync)
+        {
+            var snapshot = new TelegramServiceRequestMessageAttachmentSnapshot(
+                ++_attachmentId,
+                attachment.MessageId,
+                attachment.AttachmentType,
+                attachment.FileId,
+                attachment.FileUniqueId,
+                attachment.FileName,
+                attachment.MimeType,
+                attachment.FileSize,
+                attachment.Width,
+                attachment.Height,
+                attachment.Duration,
+                attachment.CreatedAt);
+            _attachments.Add(snapshot);
+            return Task.FromResult(snapshot);
+        }
+    }
+
+    public Task<IReadOnlyList<TelegramServiceRequestMessageAttachmentSnapshot>> GetAttachmentsAsync(
+        long messageId,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        lock (_sync)
+        {
+            return Task.FromResult<IReadOnlyList<TelegramServiceRequestMessageAttachmentSnapshot>>(
+                _attachments.Where(item => item.MessageId == messageId).OrderBy(item => item.Id).ToArray());
         }
     }
 

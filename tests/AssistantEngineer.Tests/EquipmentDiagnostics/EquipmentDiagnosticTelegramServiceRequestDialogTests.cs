@@ -188,6 +188,109 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestDialogTests
         Assert.Null(await harness.DialogStore.GetPendingAsync(harness.Operator.Id));
     }
 
+    [Theory]
+    [InlineData(TelegramServiceRequestAttachmentType.Photo)]
+    [InlineData(TelegramServiceRequestAttachmentType.Document)]
+    [InlineData(TelegramServiceRequestAttachmentType.Video)]
+    public async Task OperatorAttachmentIsSentByFileIdSavedAndClearsPending(
+        TelegramServiceRequestAttachmentType type)
+    {
+        var harness = await CreateHarnessAsync(TelegramUserRole.Engineer);
+        await harness.Service.HandleCallbackAsync(new(
+            20, ServiceChatId, "operator", null, 10, UserId: OperatorAccountId,
+            ChatType: "supergroup", CallbackData: $"sr:reply:{harness.Request.Id}"));
+        var update = AttachmentUpdate(type, OperatorChatId, OperatorAccountId, "Проверьте вложение");
+
+        var result = await harness.Service.TryHandlePrivateMessageAsync(
+            update,
+            Access(harness.Operator));
+
+        Assert.Contains("отправлено", result!.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Null(await harness.DialogStore.GetPendingAsync(harness.Operator.Id));
+        var message = Assert.Single(await harness.DialogStore.GetLatestMessagesAsync(harness.Request.Id, 10));
+        var attachment = Assert.Single(await harness.DialogStore.GetAttachmentsAsync(message.Id));
+        Assert.Equal(type, attachment.AttachmentType);
+        Assert.Equal($"file-{type}", attachment.FileId);
+        Assert.Equal($"unique-{type}", attachment.FileUniqueId);
+        Assert.Equal("Проверьте вложение", message.Text);
+        var media = Assert.Single(harness.Outbound.Media);
+        Assert.Equal(RequesterChatId, media.ChatId);
+        Assert.Equal($"file-{type}", media.FileId);
+        Assert.True(media.ProtectContent);
+        Assert.Contains("Проверьте вложение", media.Caption, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(TelegramServiceRequestAttachmentType.Photo)]
+    [InlineData(TelegramServiceRequestAttachmentType.Document)]
+    [InlineData(TelegramServiceRequestAttachmentType.Video)]
+    public async Task UserAttachmentIsSentToGroupWithDialogButtons(
+        TelegramServiceRequestAttachmentType type)
+    {
+        var harness = await CreateHarnessAsync(TelegramUserRole.Engineer);
+        await harness.DialogStore.AddMessageAsync(new(
+            harness.Request.Id, TelegramServiceRequestMessageDirection.OperatorToUser,
+            harness.Operator.Id, harness.Operator.Role, "Пришлите файл", null, null, DateTimeOffset.UtcNow));
+
+        var result = await harness.Service.TryHandlePrivateMessageAsync(
+            AttachmentUpdate(type, RequesterChatId, RequesterAccountId, "Подпись клиента"),
+            Access(harness.Requester));
+
+        Assert.Contains($"#{harness.Request.Id}", result!.Text, StringComparison.Ordinal);
+        var media = Assert.Single(harness.Outbound.Media);
+        Assert.Equal(ServiceChatId, media.ChatId);
+        Assert.True(media.ProtectContent);
+        Assert.Contains("Вложение пользователя", media.Caption, StringComparison.Ordinal);
+        Assert.Contains(media.Markup!.InlineKeyboard!.SelectMany(row => row), button => button.Text == "💬 Ответить");
+        var messages = await harness.DialogStore.GetLatestMessagesAsync(harness.Request.Id, 10);
+        var userMessage = Assert.Single(messages, item =>
+            item.Direction == TelegramServiceRequestMessageDirection.UserToOperator);
+        var saved = Assert.Single(await harness.DialogStore.GetAttachmentsAsync(userMessage.Id));
+        Assert.Equal($"file-{type}", saved.FileId);
+        if (type == TelegramServiceRequestAttachmentType.Document)
+        {
+            Assert.Equal("manual.pdf", saved.FileName);
+            Assert.Equal("application/pdf", saved.MimeType);
+            Assert.Equal(1234, saved.FileSize);
+        }
+    }
+
+    [Fact]
+    public async Task UnsupportedContentInPendingReplyReturnsClearMessage()
+    {
+        var harness = await CreateHarnessAsync(TelegramUserRole.Engineer);
+        await harness.Service.HandleCallbackAsync(new(
+            20, ServiceChatId, "operator", null, 10, UserId: OperatorAccountId,
+            ChatType: "supergroup", CallbackData: $"sr:reply:{harness.Request.Id}"));
+
+        var result = await harness.Service.TryHandlePrivateMessageAsync(
+            new(21, OperatorChatId, "operator", null, UserId: OperatorAccountId,
+                ChatType: "private", HasLocation: true),
+            Access(harness.Operator));
+
+        Assert.Equal("Этот тип сообщения пока не поддерживается. Отправьте текст, фото, файл или видео.", result!.Text);
+        Assert.NotNull(await harness.DialogStore.GetPendingAsync(harness.Operator.Id));
+        Assert.Empty(harness.Outbound.Media);
+    }
+
+    [Fact]
+    public async Task BlockedRequesterCannotReceiveOperatorAttachment()
+    {
+        var harness = await CreateHarnessAsync(TelegramUserRole.Engineer);
+        await harness.Service.HandleCallbackAsync(new(
+            20, ServiceChatId, "operator", null, 10, UserId: OperatorAccountId,
+            ChatType: "supergroup", CallbackData: $"sr:reply:{harness.Request.Id}"));
+        await harness.UserStore.SetBlockedAsync(RequesterChatId, true);
+
+        var result = await harness.Service.TryHandlePrivateMessageAsync(
+            AttachmentUpdate(TelegramServiceRequestAttachmentType.Photo, OperatorChatId, OperatorAccountId, null),
+            Access(harness.Operator));
+
+        Assert.Contains("заблокирован", result!.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(harness.Outbound.Media);
+        Assert.Null(await harness.DialogStore.GetPendingAsync(harness.Operator.Id));
+    }
+
     private static async Task<Harness> CreateHarnessAsync(TelegramUserRole operatorRole)
     {
         var users = new InMemoryTelegramUserStore();
@@ -227,6 +330,29 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestDialogTests
             null, null, null, null, null, DateTimeOffset.UtcNow, null, null,
             null, null, null, null);
 
+    private static EquipmentDiagnosticTelegramUpdate AttachmentUpdate(
+        TelegramServiceRequestAttachmentType type,
+        long chatId,
+        long accountId,
+        string? caption) =>
+        type switch
+        {
+            TelegramServiceRequestAttachmentType.Photo => new(
+                30, chatId, "user", caption, 300, UserId: accountId, ChatType: "private",
+                PhotoFileId: $"file-{type}", PhotoFileUniqueId: $"unique-{type}",
+                PhotoFileSize: 1234, PhotoWidth: 800, PhotoHeight: 600, HasPhoto: true),
+            TelegramServiceRequestAttachmentType.Document => new(
+                30, chatId, "user", caption, 300, UserId: accountId, ChatType: "private",
+                DocumentFileId: $"file-{type}", DocumentFileUniqueId: $"unique-{type}",
+                DocumentFileName: "manual.pdf", DocumentMimeType: "application/pdf", DocumentFileSize: 1234),
+            TelegramServiceRequestAttachmentType.Video => new(
+                30, chatId, "user", caption, 300, UserId: accountId, ChatType: "private",
+                VideoFileId: $"file-{type}", VideoFileUniqueId: $"unique-{type}",
+                VideoFileName: "clip.mp4", VideoMimeType: "video/mp4", VideoFileSize: 1234,
+                VideoWidth: 1280, VideoHeight: 720, VideoDuration: 15, HasVideo: true),
+            _ => throw new ArgumentOutOfRangeException(nameof(type))
+        };
+
     private const long ServiceChatId = -100500;
     private const long RequesterChatId = 100;
     private const long RequesterAccountId = 1000;
@@ -234,10 +360,18 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestDialogTests
     private const long OperatorAccountId = 2000;
 
     private sealed record SentMessage(long ChatId, string Text, EquipmentDiagnosticTelegramReplyMarkup? Markup);
+    private sealed record SentMedia(
+        long ChatId,
+        TelegramServiceRequestAttachmentType Type,
+        string FileId,
+        string Caption,
+        EquipmentDiagnosticTelegramReplyMarkup? Markup,
+        bool ProtectContent);
 
     private sealed class FakeOutbound : IEquipmentDiagnosticTelegramOutboundClient
     {
         public List<SentMessage> Messages { get; } = [];
+        public List<SentMedia> Media { get; } = [];
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
             long chatId,
@@ -255,6 +389,45 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestDialogTests
             IReadOnlyList<EquipmentDiagnosticTelegramBotCommand> commands,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "ok"));
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> SendPhotoAsync(
+            long chatId,
+            string telegramFileId,
+            string? caption = null,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            bool protectContent = false,
+            CancellationToken cancellationToken = default) =>
+            AddMedia(chatId, TelegramServiceRequestAttachmentType.Photo, telegramFileId, caption, replyMarkup, protectContent);
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> SendDocumentAsync(
+            long chatId,
+            string telegramFileId,
+            string? caption = null,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            bool protectContent = false,
+            CancellationToken cancellationToken = default) =>
+            AddMedia(chatId, TelegramServiceRequestAttachmentType.Document, telegramFileId, caption, replyMarkup, protectContent);
+
+        public Task<EquipmentDiagnosticTelegramOutboundResult> SendVideoAsync(
+            long chatId,
+            string telegramFileId,
+            string? caption = null,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
+            bool protectContent = false,
+            CancellationToken cancellationToken = default) =>
+            AddMedia(chatId, TelegramServiceRequestAttachmentType.Video, telegramFileId, caption, replyMarkup, protectContent);
+
+        private Task<EquipmentDiagnosticTelegramOutboundResult> AddMedia(
+            long chatId,
+            TelegramServiceRequestAttachmentType type,
+            string fileId,
+            string? caption,
+            EquipmentDiagnosticTelegramReplyMarkup? replyMarkup,
+            bool protectContent)
+        {
+            Media.Add(new(chatId, type, fileId, caption ?? string.Empty, replyMarkup, protectContent));
+            return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "ok", Media.Count + 100));
+        }
     }
 
     private sealed record Harness(

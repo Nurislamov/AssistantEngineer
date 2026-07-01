@@ -420,6 +420,16 @@ Migration `20260701095907_AddTelegramServiceRequestDialog` adds `TelegramService
 `TelegramServiceRequestPending`. Pending modes therefore survive restart. ED-24SR.1 is text-only; attachment metadata
 and `file_id` delivery are added separately by ED-24SR.2.
 
+ED-24SR.2 supports photo, document, and video in both directions. It calls Telegram media send methods with the existing
+`file_id` and `protect_content=true`; file bytes are never downloaded or persisted. Migration
+`20260701101337_AddTelegramServiceRequestDialogAttachments` adds child metadata rows containing attachment type,
+`file_id`, optional `file_unique_id`, filename, MIME type, size, dimensions, and duration. A caption remains the dialog
+message text. Each album item is processed independently.
+
+One operator attachment completes the pending reply. Consumer attachments are sent to the service group with request
+context and dialog buttons. Voice, audio, video note, location, animation, sticker, poll, contact, and other unsupported
+message types return a safe Russian explanation; pending operator state remains available for a supported retry.
+
 ## Security And Runtime Boundaries
 
 - No committed token or application setting containing a token.
