@@ -39,5 +39,6 @@ user-facing Telegram wording. The source PDF is not committed.
 - Source meanings remain English metadata from the source table.
 - Routing recognizes `U-Match`, `UMatch`, `U Match`, `GUD`, and Russian semi-industrial wording as `U-Match R32`.
 - Diagnostic guide accepts only active `OwnerManual` bindings with `CanUseForDiagnostics = true`.
-- The cassette and duct OwnerManual files are shown as a two-file selection with full filenames in the message body and
+- The cassette and duct OwnerManual files are shown as a two-file selection with full filenames in the message body,
+  readable buttons `Кассетные 3.5-16kW` and `Канальные 3.5-16kW`, and
   short callback tokens.

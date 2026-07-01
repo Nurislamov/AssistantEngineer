@@ -436,6 +436,21 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         ErrorKnowledgeTextV2 text)
     {
         var title = TechnicalTitle(response, text);
+        var titleParts = title.Split('—', StringSplitOptions.TrimEntries);
+        for (var index = 0; index < titleParts.Length - 1; index++)
+        {
+            if (!string.Equals(titleParts[index], response.NormalizedCode, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var meaningAfterCode = string.Join(" — ", titleParts[(index + 1)..]).Trim();
+            if (!string.IsNullOrWhiteSpace(meaningAfterCode))
+            {
+                return NormalizeTechnicalMeaning(meaningAfterCode);
+            }
+        }
+
         var separator = title.IndexOf('—', StringComparison.Ordinal);
         var separatorLength = 1;
         if (separator < 0)
@@ -449,7 +464,12 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             return RussianDiagnosticTerminology.ImprovePhrase(text.Summary);
         }
 
-        var meaning = title[(separator + separatorLength)..].Trim();
+        return NormalizeTechnicalMeaning(title[(separator + separatorLength)..]);
+    }
+
+    private static string NormalizeTechnicalMeaning(string value)
+    {
+        var meaning = value.Trim();
         return RussianDiagnosticTerminology.ImprovePhrase(
             string.Concat(char.ToUpperInvariant(meaning[0]), meaning[1..].TrimEnd('.'), "."));
     }

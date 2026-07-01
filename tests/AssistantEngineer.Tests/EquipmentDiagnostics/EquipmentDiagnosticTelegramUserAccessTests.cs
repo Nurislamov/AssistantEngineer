@@ -55,7 +55,15 @@ public sealed class EquipmentDiagnosticTelegramUserAccessTests
         var response = await adapter.HandleAsync(Update("Gree H5", chatId: 300));
         var user = await store.GetByChatIdAsync(300);
 
-        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Ignored, response.ResponseKind);
+        Assert.Equal(
+            isBlocked
+                ? EquipmentDiagnosticTelegramResponseKind.Reply
+                : EquipmentDiagnosticTelegramResponseKind.Ignored,
+            response.ResponseKind);
+        if (isBlocked)
+        {
+            Assert.Equal(EquipmentDiagnosticTelegramAdapter.BlockedUserMessage, response.Text);
+        }
         Assert.NotNull(user?.LastAccessDeniedAt);
     }
 

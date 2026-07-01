@@ -130,6 +130,27 @@ public sealed class GreeUMatchErvImport24Tests
     }
 
     [Theory]
+    [InlineData("Gree U-Match E0", "Gree U-Match R32", "E0")]
+    [InlineData("Gree U-Match H5", "Gree U-Match R32", "H5")]
+    [InlineData("Gree ERV E6", "Gree ERV B Series", "E6")]
+    [InlineData("Gree ERV L9", "Gree ERV B Series", "L9")]
+    public async Task TelegramTitleContainsDiagnosticCodeOnlyOnce(
+        string query,
+        string expectedSeries,
+        string code)
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Contains(expectedSeries, response.Text, StringComparison.Ordinal);
+        Assert.Contains($"— {code} —", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain($"— {code} — {code}", response.Text, StringComparison.OrdinalIgnoreCase);
+        AssertVisibleTelegramTextDoesNotLeakEvidence(response.Text);
+    }
+
+    [Theory]
     [InlineData("Gree H5", "U-Match R32")]
     [InlineData("Gree E6", "ERV B Series")]
     public async Task GeneralGreeAmbiguityIncludesOnlyActualRuntimeSeries(string query, string expectedSeries)
@@ -158,7 +179,7 @@ public sealed class GreeUMatchErvImport24Tests
             ["fix-gree-erv-b-series-service-manual-binding.sql"] =
                 ["Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B.pdf"],
             ["fix-gree-erv-b-series-owner-manual-bindings.sql"] =
-                ["Gree ERV Wired Controller Owner Manual EN.pdf"]
+                ["Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf"]
         };
 
         foreach (var (fileName, expectedNames) in scripts)

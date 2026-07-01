@@ -37,4 +37,8 @@ all public ERV wording. Source PDFs are not committed.
 - User-visible card text is Russian, conservative, and specific to ERV rather than GMV/VRF.
 - Routing recognizes `ERV`, `FHBQG`, Russian ventilation/recuperator wording, and `Energy Recovery Ventilation` as `ERV B Series`.
 - Public cards do not expose source tables, sections, filenames, or evidence phrases.
-- The diagnostic guide sends the single active ERV OwnerManual directly with protected content.
+- ED-24MAN.4b uses the ERV-specific
+  `Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf` row as an `OwnerManual`
+  diagnostic guide. It sends directly with protected content when it is the only eligible ERV guide.
+- Diagnostic lookup is exact to Gree + ERV B Series + OwnerManual + `CanUseForDiagnostics`; Controllers,
+  ControllerGuide, XK46, and XE7A rows are excluded.

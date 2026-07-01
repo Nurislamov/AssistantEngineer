@@ -168,6 +168,7 @@ public sealed class TelegramUserAuditEventService
     private static readonly HashSet<string?> AllowedReasons =
     [
         "owner_protected",
+        "last_owner_protected",
         "self_action_denied",
         "insufficient_permissions",
         "target_not_found",

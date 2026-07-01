@@ -1333,6 +1333,8 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Gree U-Match R32 Cassette Type Owner Manual EN 3.5-16kW.pdf", selection.Text, StringComparison.Ordinal);
         Assert.Contains("Gree U-Match R32 Duct Type Owner Manual EN 3.5-16kW.pdf", selection.Text, StringComparison.Ordinal);
         Assert.Equal(2, manualButtons.Length);
+        Assert.Contains(manualButtons, button => button.Text == "1) Кассетные 3.5-16kW");
+        Assert.Contains(manualButtons, button => button.Text == "2) Канальные 3.5-16kW");
         Assert.DoesNotContain("Service Manual", selection.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Installation Manual", selection.Text, StringComparison.OrdinalIgnoreCase);
 
@@ -1367,9 +1369,65 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.True(ervDocument.ProtectContent);
     }
 
+    [Fact]
+    public async Task ErvDiagnosticGuideUsesOnlyExactErvOwnerManualBindings()
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, TelegramUserRole.Owner);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+
+        await bindingStore.UpsertAsync(Binding(
+            "gree-erv-installation-owner",
+            "erv-installation-owner-file",
+            "Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf",
+            "ERV B Series",
+            TelegramLibraryDocumentType.OwnerManual,
+            canUseForDiagnostics: true));
+        await bindingStore.UpsertAsync(Binding(
+            "gree-erv-secondary-owner",
+            "erv-secondary-owner-file",
+            "Gree ERV Wired Controller Owner Manual EN.pdf",
+            "ERV B Series",
+            TelegramLibraryDocumentType.OwnerManual,
+            canUseForDiagnostics: true));
+        await bindingStore.UpsertAsync(Binding(
+            "gree-xk46-controller",
+            "xk46-controller-file",
+            "Gree Wired Controller XK46 Owner Manual EN.pdf",
+            "Controllers",
+            TelegramLibraryDocumentType.OwnerManual,
+            canUseForDiagnostics: true));
+        await bindingStore.UpsertAsync(Binding(
+            "gree-xe7a-controller-guide",
+            "xe7a-controller-file",
+            "Gree Wired Controller XE7A Owner Manual EN.pdf",
+            "ERV B Series",
+            TelegramLibraryDocumentType.ControllerGuide,
+            canUseForDiagnostics: true));
+
+        await adapter.HandleAsync(Update("Gree ERV E6"));
+        var selection = await adapter.HandleAsync(Update(TelegramManualLibraryService.DiagnosticGuideButton));
+        var buttons = InlineButtonsWithCallbacks(selection)
+            .Where(button => button.CallbackData.StartsWith("dm:file:", StringComparison.Ordinal))
+            .ToArray();
+
+        Assert.Equal(2, buttons.Length);
+        Assert.Contains("Installation Startup Maintenance", selection.Text, StringComparison.Ordinal);
+        Assert.Contains("ERV Wired Controller", selection.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("XK46", selection.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("XE7A", selection.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.All(buttons, button =>
+        {
+            Assert.True(Encoding.UTF8.GetByteCount(button.CallbackData) <= 64, button.CallbackData);
+            Assert.DoesNotContain(".pdf", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("file-id", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+        });
+    }
+
     [Theory]
     [InlineData("umatch", "U-Match R32", "Gree U-Match R32 Cassette Type Owner Manual EN 3.5-16kW.pdf")]
-    [InlineData("erv", "ERV B Series", "Gree ERV Wired Controller Owner Manual EN.pdf")]
+    [InlineData("erv", "ERV B Series", "Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf")]
     public async Task OwnerManualUploadMarksUMatchAndErvAsDiagnosticGuideEligible(
         string sectionSlug,
         string expectedSeries,

@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24UX.8 / ED-24MAN.4a / ED-24E.5a - CLOSED / pushed. Production PASS is pending the VPS live-check.
+ED-24USR.5 / ED-24MAN.4b / ED-24UX.8a - CLOSED / pushed. Production PASS is pending the VPS live-check.
 
 Next recommended steps:
 
 1. Pull `origin/master` on `assistantengineer-beta-01`.
-2. Run the four ED-24MAN.4a metadata repair scripts against the production PostgreSQL database.
-3. Rebuild/restart `assistantengineer-api` and complete the U-Match/ERV Telegram diagnostics and guide live-check.
+2. Run the four ED-24MAN metadata repair scripts against the production PostgreSQL database.
+3. Rebuild/restart `assistantengineer-api` and complete the user-management, U-Match/ERV diagnostics, and guide live-check.
 4. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 
 ## Current branch
@@ -16,6 +16,49 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24USR.5, ED-24MAN.4b, and ED-24UX.8a add Owner-only Telegram user management, correct the ERV/U-Match
+diagnostic-guide UX, and remove duplicated codes from rendered Gree diagnostic titles. The stage is CLOSED / pushed;
+production PASS remains pending until the VPS live-check.
+
+Implementation commit: current commit (`ED-24USR.5 Add user management and fix ERV guides`).
+
+Package implementation notes:
+
+- `👥 Пользователи` role lists now contain short user buttons that open a phone-free user card with role, active/blocked
+  status, private-chat availability, broadcast reachability, Telegram id, and last activity.
+- Owner can change roles among Owner/Admin/Engineer/Installer/Consumer and block or unblock users through confirmation
+  screens. Mutations use typed application results and existing safe user audit events.
+- Owner cannot block self or change own role; the last Owner cannot be demoted. Stale/direct non-Owner `usr:*` callbacks
+  and legacy `au:*` callbacks return a compact denial without user data.
+- Blocking uses the existing `TelegramUsers.IsBlocked` field. No EF migration was added.
+- Blocked users are denied at the beginning of Telegram adapter handling with `Доступ к боту ограничен.` for commands,
+  diagnostics, library, service requests, broadcasts, and callbacks.
+- Blocked users remain visible to Owner with status `Заблокирован` and are excluded from broadcast reachability.
+- ERV diagnostic-guide selection accepts only active Gree + ERV B Series + OwnerManual +
+  `CanUseForDiagnostics = true` bindings. ControllerGuide and Controllers rows are excluded.
+- The production repair script binds
+  `Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf` as the diagnostic OwnerManual,
+  disables secondary ERV diagnostic OwnerManual flags, and reclassifies wrongly attached XK46/XE7A rows without
+  deleting files.
+- U-Match guide buttons now read `Кассетные 3.5-16kW` and `Канальные 3.5-16kW`; full filenames remain in the message
+  body and callback payloads remain short opaque tokens.
+- Gree title rendering extracts meaning after the code segment, so U-Match E0/H5 and ERV E6/L9 render the code once.
+- Runtime counts remain unchanged: Gree 1296, U-Match R32 107, ERV B Series 5; existing GMV counts are unchanged.
+- Manual policies remain unchanged: ServiceManual library-only, InstallationManual hidden from generic visible menus,
+  and diagnostic guide delivery uses safe OwnerManual bindings.
+- No PDF binaries, intake artifacts, certificates, passwords, secrets, or `.env` backups were committed.
+
+Package local validation:
+
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 0 warnings and 0 errors.
+- Focused Telegram/UserOverview/UserAccess/Broadcast/EquipmentDiagnostics/ManualLibrary/Gree tests: PASS, 1523/1523.
+- Gree diagnostics smoke: PASS, 14/14.
+- Full solution suite: PASS, 5102/5102.
+- EF model validation: PASS; no pending model changes and no new migration.
+- `git diff --check`: PASS.
+- Production PASS remains pending until the VPS live-check is completed.
 
 ED-24UX.8, ED-24MAN.4a, and ED-24E.5a polish public U-Match/ERV diagnostics, repair OwnerManual diagnostic-guide
 bindings, and expand ERV controller diagnostics. The stage is CLOSED / pushed; production PASS is not marked yet because

@@ -2,6 +2,7 @@ using System.Text;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Manuals;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
@@ -71,8 +72,8 @@ public sealed class EquipmentDiagnosticTelegramUserOverviewTests
         Assert.Contains("Всего: 14", pageOne.Text, StringComparison.Ordinal);
         Assert.Contains("Страница 1/2", pageOne.Text, StringComparison.Ordinal);
         Assert.Contains("@engineer", pageOne.Text, StringComparison.Ordinal);
-        Assert.Contains("Личный чат: да", pageOne.Text, StringComparison.Ordinal);
-        Assert.Contains("Для рассылки: да", pageOne.Text, StringComparison.Ordinal);
+        Assert.Contains("Статус: Активен", pageOne.Text, StringComparison.Ordinal);
+        Assert.Contains("Рассылка: да", pageOne.Text, StringComparison.Ordinal);
         Assert.Contains("Страница 2/2", pageTwo.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, pageOne.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, pageTwo.Text, StringComparison.Ordinal);
@@ -99,6 +100,162 @@ public sealed class EquipmentDiagnosticTelegramUserOverviewTests
         Assert.DoesNotContain("@engineer", admin.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("@engineer", consumer.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(FullPhone, admin.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task OwnerCanOpenUserCardWithoutPhoneDisclosure()
+    {
+        var harness = await CreateHarnessAsync();
+
+        var list = await harness.Adapter.HandleAsync(Callback("usr:r:cons:0", harness.Owner));
+        var view = Assert.Single(
+            InlineButtons(list),
+            button => button.CallbackData == $"usr:view:{harness.Consumer.Id}");
+        var card = await harness.Adapter.HandleAsync(Callback(view.CallbackData, harness.Owner));
+
+        Assert.Contains("👤 Пользователь", card.Text, StringComparison.Ordinal);
+        Assert.Contains("Имя: Consumer", card.Text, StringComparison.Ordinal);
+        Assert.Contains("Username: @consumer", card.Text, StringComparison.Ordinal);
+        Assert.Contains("TelegramId: 5000", card.Text, StringComparison.Ordinal);
+        Assert.Contains("Текущая роль: Consumer", card.Text, StringComparison.Ordinal);
+        Assert.Contains("Статус: Активен", card.Text, StringComparison.Ordinal);
+        Assert.Contains("Личный чат: есть", card.Text, StringComparison.Ordinal);
+        Assert.Contains("Доступен для рассылки: да", card.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(FullPhone, card.Text, StringComparison.Ordinal);
+        Assert.Contains(InlineButtons(card), button => button.CallbackData == $"usr:role:{harness.Consumer.Id}");
+        Assert.Contains(InlineButtons(card), button => button.CallbackData == $"usr:block:{harness.Consumer.Id}");
+    }
+
+    [Fact]
+    public async Task OwnerChangesRoleOnlyAfterConfirmationAndCountsFollowNewRole()
+    {
+        var harness = await CreateHarnessAsync();
+
+        var picker = await harness.Adapter.HandleAsync(Callback($"usr:role:{harness.Consumer.Id}", harness.Owner));
+        var chooseEngineer = Assert.Single(
+            InlineButtons(picker),
+            button => button.CallbackData == $"usr:set:{harness.Consumer.Id}:eng");
+        var confirmation = await harness.Adapter.HandleAsync(Callback(chooseEngineer.CallbackData, harness.Owner));
+
+        Assert.Contains("Назначить роль Engineer", confirmation.Text, StringComparison.Ordinal);
+        Assert.Equal(TelegramUserRole.Consumer, (await harness.Users.GetByIdAsync(harness.Consumer.Id))?.Role);
+
+        var confirm = Assert.Single(
+            InlineButtons(confirmation),
+            button => button.CallbackData == $"usr:confirm:set:{harness.Consumer.Id}:eng");
+        var updatedCard = await harness.Adapter.HandleAsync(Callback(confirm.CallbackData, harness.Owner));
+        var overview = await harness.Adapter.HandleAsync(Callback("usr:stats", harness.Owner));
+
+        Assert.Equal(TelegramUserRole.Engineer, (await harness.Users.GetByIdAsync(harness.Consumer.Id))?.Role);
+        Assert.Contains("Текущая роль: Engineer", updatedCard.Text, StringComparison.Ordinal);
+        Assert.Contains("Engineer: 3", overview.Text, StringComparison.Ordinal);
+        Assert.Contains("Consumer: 1", overview.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task OwnerBlocksAndUnblocksUserWithEarlyDenialAndBroadcastExclusion()
+    {
+        var harness = await CreateHarnessAsync();
+        var before = await harness.Users.GetUserOverviewAsync();
+
+        var prompt = await harness.Adapter.HandleAsync(
+            Callback($"usr:block:{harness.Consumer.Id}", harness.Owner));
+        Assert.Contains("Подтвердить блокировку", prompt.Text, StringComparison.Ordinal);
+        Assert.False((await harness.Users.GetByIdAsync(harness.Consumer.Id))?.IsBlocked);
+
+        var blockedCard = await harness.Adapter.HandleAsync(
+            Callback($"usr:confirm:block:{harness.Consumer.Id}", harness.Owner));
+        var afterBlock = await harness.Users.GetUserOverviewAsync();
+        Assert.Contains("Статус: Заблокирован", blockedCard.Text, StringComparison.Ordinal);
+        Assert.True((await harness.Users.GetByIdAsync(harness.Consumer.Id))?.IsBlocked);
+        Assert.Equal(before.BroadcastReachableCount - 1, afterBlock.BroadcastReachableCount);
+
+        foreach (var text in new[]
+        {
+            "/start",
+            "Gree H5",
+            TelegramManualLibraryService.LibraryButton,
+            TelegramDiagnosticConversationService.ServiceRequestButton
+        })
+        {
+            var denied = await harness.Adapter.HandleAsync(Command(text, harness.Consumer));
+            Assert.Equal(EquipmentDiagnosticTelegramAdapter.BlockedUserMessage, denied.Text);
+            Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, denied.ResponseKind);
+        }
+
+        var unblockPrompt = await harness.Adapter.HandleAsync(
+            Callback($"usr:unblock:{harness.Consumer.Id}", harness.Owner));
+        Assert.Contains("Подтвердить разблокировку", unblockPrompt.Text, StringComparison.Ordinal);
+        var activeCard = await harness.Adapter.HandleAsync(
+            Callback($"usr:confirm:unblock:{harness.Consumer.Id}", harness.Owner));
+        var afterUnblock = await harness.Users.GetUserOverviewAsync();
+
+        Assert.Contains("Статус: Активен", activeCard.Text, StringComparison.Ordinal);
+        Assert.False((await harness.Users.GetByIdAsync(harness.Consumer.Id))?.IsBlocked);
+        Assert.Equal(before.BroadcastReachableCount, afterUnblock.BroadcastReachableCount);
+        var start = await harness.Adapter.HandleAsync(Command("/start", harness.Consumer));
+        Assert.NotEqual(EquipmentDiagnosticTelegramAdapter.BlockedUserMessage, start.Text);
+    }
+
+    [Fact]
+    public async Task OwnerSelfAndLastOwnerProtectionsRejectDirectCallbacks()
+    {
+        var harness = await CreateHarnessAsync();
+
+        var selfBlock = await harness.Adapter.HandleAsync(
+            Callback($"usr:confirm:block:{harness.Owner.Id}", harness.Owner));
+        var lastOwnerDemotion = await harness.Adapter.HandleAsync(
+            Callback($"usr:confirm:set:{harness.Owner.Id}:cons", harness.Owner));
+
+        Assert.Equal("Нельзя изменить собственный уровень или заблокировать себя.", selfBlock.Text);
+        Assert.Equal("Нельзя понизить или заблокировать последнего Owner.", lastOwnerDemotion.Text);
+        var owner = await harness.Users.GetByIdAsync(harness.Owner.Id);
+        Assert.Equal(TelegramUserRole.Owner, owner?.Role);
+        Assert.False(owner?.IsBlocked);
+    }
+
+    [Fact]
+    public async Task NonOwnerManagementCallbackIsSafeAndCallbacksContainNoPersonalData()
+    {
+        var harness = await CreateHarnessAsync();
+
+        var denied = await harness.Adapter.HandleAsync(
+            Callback($"usr:view:{harness.Consumer.Id}", harness.Admin));
+        var deniedLegacy = await harness.Adapter.HandleAsync(
+            Callback($"au:v:{harness.Consumer.Id}", harness.Admin));
+        var ownerList = await harness.Adapter.HandleAsync(
+            Callback("usr:r:cons:0", harness.Owner));
+
+        Assert.Equal("Раздел пользователей доступен только владельцу.", denied.Text);
+        Assert.Equal("Раздел пользователей доступен только владельцу.", deniedLegacy.Text);
+        Assert.DoesNotContain("@consumer", denied.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("@consumer", deniedLegacy.Text, StringComparison.Ordinal);
+        Assert.All(InlineButtons(ownerList), button =>
+        {
+            Assert.True(Encoding.UTF8.GetByteCount(button.CallbackData) <= 64, button.CallbackData);
+            Assert.DoesNotContain("consumer", button.CallbackData, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(FullPhone, button.CallbackData, StringComparison.Ordinal);
+        });
+    }
+
+    [Fact]
+    public async Task UserManagementServiceReturnsTypedSafetyResults()
+    {
+        var harness = await CreateHarnessAsync();
+        var service = new TelegramUserManagementService(harness.Users);
+
+        var invalid = await service.ChangeUserRoleAsync(
+            harness.Consumer.Id,
+            (TelegramUserRole)999,
+            harness.Owner.Id);
+        var missing = await service.BlockUserAsync(long.MaxValue, harness.Owner.Id);
+        var nonOwner = await service.BlockUserAsync(
+            harness.Consumer.Id,
+            harness.Admin.Id);
+
+        Assert.Equal(TelegramUserManagementStatus.InvalidRole, invalid.Status);
+        Assert.Equal(TelegramUserManagementStatus.NotFound, missing.Status);
+        Assert.Equal(TelegramUserManagementStatus.AccessDenied, nonOwner.Status);
     }
 
     [Fact]

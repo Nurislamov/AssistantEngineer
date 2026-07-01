@@ -2,16 +2,18 @@
 
 ## Last updated
 
-ED-24UX.8 / ED-24MAN.4a / ED-24E.5a
+ED-24USR.5 / ED-24MAN.4b / ED-24UX.8a
 
 ## Current stable point
 
 - Production baseline: `4b0f6b10` with ED-24USR.4 and ED-24BCAST.1 production PASS; ED-24OPS.4 and the current
-  ED-24BCAST.2/ED-24MAN.4/ED-24E.4/ED-24E.5 package still require VPS live-check before production PASS.
+  user-management and ERV/U-Match guide corrections still require VPS live-check before production PASS.
 - ED-24OPS.4 adds an explicit PostgreSQL EF migration runner for the main `AppDbContext`.
 - Runtime counts: Gree 1296; GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260; U-Match R32 107;
   ERV B Series 5.
-- Manual policy: ServiceManual and InstallationManual are library-only; diagnostic guide delivery is OwnerManual-only.
+- Manual policy: ServiceManual is library-only; InstallationManual remains hidden from generic visible menus; diagnostic
+  guide delivery is OwnerManual-only, including the explicitly classified ERV-specific Installation/Startup/Maintenance
+  upload.
 
 ## P0 / blocking
 

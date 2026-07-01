@@ -11,6 +11,7 @@ namespace AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 
 public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTelegramAdapter
 {
+    public const string BlockedUserMessage = "Доступ к боту ограничен.";
     private const int TelegramTechnicalChunkLength = 3500;
     private const int ConsumerMessageLength = 900;
 
@@ -71,6 +72,19 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         if (!_options.IsEnabled)
         {
             return Response(update.ChatId, string.Empty, EquipmentDiagnosticTelegramResponseKind.Ignored);
+        }
+
+        if (await IsBlockedUserAsync(update, cancellationToken))
+        {
+            if (IsPrivateChat(update.ChatType))
+            {
+                await _userStore.MarkAccessDeniedAsync(update.ChatId, cancellationToken);
+            }
+
+            return Response(
+                update.ChatId,
+                BlockedUserMessage,
+                EquipmentDiagnosticTelegramResponseKind.Reply);
         }
 
         if (!string.IsNullOrWhiteSpace(update.CallbackQueryId))
@@ -148,6 +162,17 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
             if (update.CallbackData?.StartsWith("au:", StringComparison.Ordinal) == true)
             {
+                var callbackAccess = await _accessService.ResolveAccessAsync(update, cancellationToken);
+                if (callbackAccess.User is not
+                    { Role: TelegramUserRole.Owner, IsEnabled: true, IsBlocked: false })
+                {
+                    return Response(
+                        update.ChatId,
+                        "Раздел пользователей доступен только владельцу.",
+                        EquipmentDiagnosticTelegramResponseKind.Reply,
+                        callbackAnswerText: "Нет доступа");
+                }
+
                 var adminResult = _adminUserManagementService is null
                     ? new TelegramAdminUserManagementResult(
                         "Действие недоступно или устарело.",
@@ -511,6 +536,28 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
 
         return await _operatorInboxService.MirrorUserMessageAsync(update, access, cancellationToken);
     }
+
+    private async Task<bool> IsBlockedUserAsync(
+        EquipmentDiagnosticTelegramUpdate update,
+        CancellationToken cancellationToken)
+    {
+        TelegramUserSnapshot? user = null;
+        if (IsPrivateChat(update.ChatType))
+        {
+            user = await _userStore.GetByChatIdAsync(update.ChatId, cancellationToken);
+        }
+
+        if (user is null && update.UserId is not null)
+        {
+            user = await _userStore.GetByTelegramUserIdAsync(update.UserId.Value, cancellationToken);
+        }
+
+        return user?.IsBlocked == true;
+    }
+
+    private static bool IsPrivateChat(string? chatType) =>
+        string.IsNullOrWhiteSpace(chatType) ||
+        chatType.Equals("private", StringComparison.OrdinalIgnoreCase);
 
     private static bool IsCommandText(string? text) =>
         text?.TrimStart().StartsWith("/", StringComparison.Ordinal) == true;

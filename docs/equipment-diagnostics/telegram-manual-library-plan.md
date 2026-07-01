@@ -192,6 +192,23 @@ ED-24MAN.4a fixes OwnerManual upload and production metadata handling for U-Matc
 - U-Match R32 supports the cassette and duct OwnerManual files as a safe selection list.
 - ERV B Series sends its single wired-controller OwnerManual directly.
 - ServiceManual remains library-only and InstallationManual remains hidden and ineligible for diagnostic delivery.
+
+## ED-24MAN.4b ERV/U-Match diagnostic guide correction
+
+ED-24MAN.4b keeps diagnostic delivery OwnerManual-only while correcting production metadata and selection UX:
+
+- ERV diagnostic lookup requires exact `Brand = Gree`, `Series = ERV B Series`, `DocumentType = OwnerManual`,
+  `CanUseForDiagnostics = true`, and `IsActive = true`.
+- The ERV Installation/Startup/Maintenance document is intentionally stored as an ERV-specific `OwnerManual` for this
+  diagnostic-guide context. Its filename is
+  `Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf`.
+- Generic Controllers rows, ControllerGuide rows, XK46, and XE7A documents are never fallback ERV diagnostic guides.
+- If one eligible ERV guide remains it is sent directly with protected content; multiple eligible ERV-specific guides
+  produce an ERV-only selection.
+- U-Match keeps full cassette/duct filenames in the message body while buttons distinguish
+  `Кассетные 3.5-16kW` and `Канальные 3.5-16kW`.
+- Diagnostic file callbacks contain only a short opaque token and remain within Telegram's 64-byte limit.
+- ServiceManual remains library-only. InstallationManual remains hidden from generic visible library/upload menus.
 - Callback data contains only a short derived token and remains within Telegram's 64-byte limit.
 
 Production metadata scripts:

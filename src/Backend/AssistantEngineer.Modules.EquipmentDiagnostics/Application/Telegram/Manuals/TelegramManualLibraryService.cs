@@ -1887,8 +1887,30 @@ public sealed class TelegramManualLibraryService
 
     private static string DiagnosticOwnerManualButtonLabel(
         TelegramManualFileBinding binding,
-        int number) =>
-        TrimUtf8($"{number}) {ShortOwnerManualTitle(DisplayBindingTitle(binding))}", TelegramInlineButtonTextMaxBytes);
+        int number)
+    {
+        var title = DisplayBindingTitle(binding);
+        var shortTitle = string.Equals(binding.Series, "U-Match R32", StringComparison.OrdinalIgnoreCase)
+            ? UMatchOwnerManualButtonTitle(title)
+            : ShortOwnerManualTitle(title);
+        return TrimUtf8($"{number}) {shortTitle}", TelegramInlineButtonTextMaxBytes);
+    }
+
+    private static string UMatchOwnerManualButtonTitle(string title)
+    {
+        var capacity = ShortOwnerManualTitle(title);
+        if (title.Contains("Cassette", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"Кассетные {capacity}";
+        }
+
+        if (title.Contains("Duct", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"Канальные {capacity}";
+        }
+
+        return capacity;
+    }
 
     private static int? DiagnosticOwnerManualSortNumber(TelegramManualFileBinding binding)
     {
