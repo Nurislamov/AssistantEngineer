@@ -2,23 +2,58 @@
 
 ## Current stage
 
-ED-24SR.2 - CLOSED / local commit; push pending. ED-24SR.1 is CLOSED / local commit `ce1b79e3`.
-Production PASS is pending migration/deploy and the VPS live-check.
+ED-24SR.3 - CLOSED / local commit; push pending. ED-24SR.1 and ED-24SR.2 remain CLOSED / pushed.
+Production PASS remains pending until the VPS live-check.
 
 Next recommended steps:
 
-1. Complete ED-24SR.2 validation and its separate commit.
-2. Push both ED-24SR commits, then pull `origin/master` on `assistantengineer-beta-01`.
-3. Apply migrations `20260701095907_AddTelegramServiceRequestDialog` and
-   `20260701101337_AddTelegramServiceRequestDialogAttachments`, rebuild/restart `assistantengineer-api`, and live-check
-   text/photo/document/video dialog delivery.
-4. Mark production PASS only after GitHub Actions and the VPS live-check pass.
+1. Complete ED-24SR.3 validation, commit, and push.
+2. Pull `origin/master` on `assistantengineer-beta-01`.
+3. Rebuild/restart `assistantengineer-api` and live-check group reply/dialog/lifecycle callbacks plus private phone sharing.
+4. Keep ED-24SR.1/2 production PASS pending until this live-check and GitHub Actions pass.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24SR.3 fixes group-safe Telegram keyboards. Production rejected a service-group response with
+`Bad Request: phone number can be requested in private chats only` because a private reply keyboard containing
+`request_contact=true` reached a group send.
+
+Implementation commit: current commit (`ED-24SR.3 Fix group-safe Telegram keyboards`).
+
+ED-24SR.3 implementation notes:
+
+- The webhook transport now sanitizes every adapter response using the original Telegram `ChatType`. Group and supergroup
+  responses discard reply-keyboard rows and preserve only inline actions; a safe remove-keyboard marker remains allowed.
+- The outbound Telegram client adds a second defensive guard for negative group chat ids, covering direct group sends that
+  do not pass through the webhook response path. Text, photo, document, video, and edited-message reply markup use it.
+- Service request cards, reply/dialog history, user attachment messages, take/assign/close/status actions remain inline
+  keyboards. Their callback payloads and behavior are unchanged.
+- Private chat reply keyboards are unchanged. `/start`, main-menu, phone registration, and change-phone flows retain
+  `request_contact=true` in private chats.
+- No database schema, EF migration, runtime diagnostic JSON/card, configuration secret, PDF, or intake artifact changed.
+  Runtime remains Gree 1296, U-Match R32 107, ERV B Series 5.
+- ED-24SR.1 and ED-24SR.2 remain CLOSED / pushed; their production PASS remains pending.
+
+ED-24SR.3 local validation:
+
+- Targeted webhook/outbound keyboard safety tests: PASS, 48/48.
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with the six existing nullable warnings in architecture guards.
+- Focused service-request/Telegram/keyboard/attachment/broadcast/user/manual/Gree tests: PASS, 871/871.
+- Gree diagnostics smoke: PASS, 14/14.
+- Equipment Diagnostics CI-equivalent filter: PASS, 1108/1108.
+- Exact plain full suite executed: 5131/5132; the sole failure is the already recorded unrelated Engineering Workflow
+  artifact assertion receiving the configured 256 KiB truncation envelope.
+- Full suite with the existing local test-only
+  `EngineeringWorkflowPersistence__PayloadLimits__ArtifactContentMaxBytes=10485760` override: PASS, 5132/5132.
+  Production configuration was not changed.
+- Final EF/OpenAPI/diff/repository-hygiene checks run immediately before commit.
+
+## Previous completed work
 
 ED-24SR.2 adds photo/document/video attachments to the service-request dialog. The stage is CLOSED / local commit pending;
 production PASS remains pending until the migration is applied, GitHub Actions are green, and the VPS live-check passes.

@@ -175,6 +175,23 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestDialogTests
     }
 
     [Fact]
+    public async Task GroupReplyAndDialogCallbacksNeverExposePrivateReplyKeyboard()
+    {
+        var harness = await CreateHarnessAsync(TelegramUserRole.Engineer);
+        var reply = await harness.Service.HandleCallbackAsync(new(
+            13, ServiceChatId, "operator", null, 8, UserId: OperatorAccountId,
+            ChatType: "group", CallbackData: $"sr:reply:{harness.Request.Id}"));
+        var dialog = await harness.Service.HandleCallbackAsync(new(
+            14, ServiceChatId, "operator", null, 9, UserId: OperatorAccountId,
+            ChatType: "supergroup", CallbackData: $"sr:thread:{harness.Request.Id}"));
+
+        Assert.Null(reply.ReplyMarkup?.Keyboard);
+        Assert.Null(dialog.ReplyMarkup?.Keyboard);
+        Assert.Contains(dialog.ReplyMarkup!.InlineKeyboard!.SelectMany(row => row), button =>
+            button.CallbackData == $"sr:reply:{harness.Request.Id}");
+    }
+
+    [Fact]
     public async Task BlockedRequesterCannotReceiveOperatorReply()
     {
         var harness = await CreateHarnessAsync(TelegramUserRole.Engineer);

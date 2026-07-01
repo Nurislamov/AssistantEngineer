@@ -71,6 +71,74 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         Assert.Equal("Safe deterministic reply", outbound.Text);
     }
 
+    [Theory]
+    [InlineData("group")]
+    [InlineData("supergroup")]
+    public async Task GroupResponsesStripPrivateReplyKeyboardAndKeepInlineActions(string chatType)
+    {
+        var unsafeMarkup = new EquipmentDiagnosticTelegramReplyMarkup(
+            Keyboard:
+            [
+                [new EquipmentDiagnosticTelegramKeyboardButton("Поделиться номером", RequestContact: true)]
+            ],
+            ResizeKeyboard: true,
+            InlineKeyboard:
+            [
+                [new EquipmentDiagnosticTelegramInlineKeyboardButton("💬 Ответить", "sr:reply:13")]
+            ]);
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "Service request",
+            [new EquipmentDiagnosticTelegramOutboundMessage("Service request", ReplyMarkup: unsafeMarkup)]);
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+        var update = new TelegramWebhookUpdateDto(
+            1,
+            new TelegramWebhookMessageDto(
+                2,
+                "message",
+                new TelegramWebhookChatDto(3, "operator", chatType),
+                new TelegramWebhookUserDto(4, "operator"),
+                1_700_000_000));
+
+        var result = await handler.HandleAsync(update, "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.Null(outbound.ReplyMarkup?.Keyboard);
+        var button = Assert.Single(Assert.Single(outbound.ReplyMarkup!.InlineKeyboard!));
+        Assert.Equal("sr:reply:13", button.CallbackData);
+    }
+
+    [Fact]
+    public async Task PrivateResponseKeepsContactRequestKeyboard()
+    {
+        var privateMarkup = new EquipmentDiagnosticTelegramReplyMarkup(
+            Keyboard:
+            [
+                [new EquipmentDiagnosticTelegramKeyboardButton("Поделиться номером", RequestContact: true)]
+            ],
+            ResizeKeyboard: true);
+        var adapter = new FakeAdapter(
+            EquipmentDiagnosticTelegramResponseKind.Reply,
+            "Private menu",
+            [new EquipmentDiagnosticTelegramOutboundMessage("Private menu", ReplyMarkup: privateMarkup)]);
+        var outbound = new FakeOutbound();
+        var handler = new EquipmentDiagnosticTelegramWebhookHandler(EnabledOptions(), _policy, adapter, outbound);
+        var update = new TelegramWebhookUpdateDto(
+            1,
+            new TelegramWebhookMessageDto(
+                2,
+                "/start",
+                new TelegramWebhookChatDto(3, "operator", "private"),
+                new TelegramWebhookUserDto(4, "operator"),
+                1_700_000_000));
+
+        var result = await handler.HandleAsync(update, "test_webhook_secret");
+
+        Assert.Equal(EquipmentDiagnosticTelegramWebhookStatus.Processed, result.Status);
+        Assert.True(outbound.ReplyMarkup!.Keyboard![0][0].RequestContact);
+    }
+
     [Fact]
     public async Task TextDiagnosticFailureSendsSafeFallbackAndLogsSafeContext()
     {
@@ -597,6 +665,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
         public long? EditMessageId { get; private set; }
         public string? EditText { get; private set; }
         public EquipmentDiagnosticTelegramReplyMarkup? EditReplyMarkup { get; private set; }
+        public EquipmentDiagnosticTelegramReplyMarkup? ReplyMarkup { get; private set; }
 
         public Task<EquipmentDiagnosticTelegramOutboundResult> SendMessageAsync(
             long chatId,
@@ -609,6 +678,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookTests
             CallCount++;
             Text = text;
             Texts.Add(text);
+            ReplyMarkup = replyMarkup;
             return Task.FromResult(new EquipmentDiagnosticTelegramOutboundResult(true, "Sent."));
         }
 

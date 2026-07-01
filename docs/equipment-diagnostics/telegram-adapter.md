@@ -430,6 +430,11 @@ One operator attachment completes the pending reply. Consumer attachments are se
 context and dialog buttons. Voice, audio, video note, location, animation, sticker, poll, contact, and other unsupported
 message types return a safe Russian explanation; pending operator state remains available for a supported retry.
 
+ED-24SR.3 enforces chat-type-safe reply markup. Group and supergroup adapter responses are reduced to inline keyboard
+actions (or a safe remove-keyboard marker), so private `request_contact` reply buttons can never reach those chats. The
+Telegram outbound client independently applies the same guard to negative group chat ids for direct text/media/edit
+sends. Private main-menu and phone-sharing reply keyboards remain unchanged.
+
 ## Security And Runtime Boundaries
 
 - No committed token or application setting containing a token.

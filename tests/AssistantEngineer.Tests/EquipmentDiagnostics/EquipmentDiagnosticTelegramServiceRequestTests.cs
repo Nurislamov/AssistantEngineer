@@ -239,6 +239,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
         var inlineButtons = notification.ReplyMarkup?.InlineKeyboard?
             .SelectMany(row => row)
             .ToArray() ?? [];
+        Assert.Null(notification.ReplyMarkup?.Keyboard);
         Assert.Equal(
             ["💬 Ответить", "📜 Диалог", "Взять в работу", "Назначить", "Контакт", "Статус", "История", "Отменить"],
             inlineButtons.Select(button => button.Text).ToArray());

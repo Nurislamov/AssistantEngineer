@@ -169,3 +169,34 @@ public sealed record EquipmentDiagnosticTelegramKeyboardButton(
 public sealed record EquipmentDiagnosticTelegramInlineKeyboardButton(
     string Text,
     string CallbackData);
+
+public static class EquipmentDiagnosticTelegramReplyMarkupSafety
+{
+    public static bool IsGroupChat(string? chatType) =>
+        string.Equals(chatType, "group", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(chatType, "supergroup", StringComparison.OrdinalIgnoreCase);
+
+    public static EquipmentDiagnosticTelegramReplyMarkup? ForChat(
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup,
+        string? chatType) =>
+        IsGroupChat(chatType) ? GroupSafe(replyMarkup) : replyMarkup;
+
+    public static EquipmentDiagnosticTelegramReplyMarkup? ForChatId(
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup,
+        long chatId) =>
+        chatId < 0 ? GroupSafe(replyMarkup) : replyMarkup;
+
+    public static EquipmentDiagnosticTelegramReplyMarkup? GroupSafe(
+        EquipmentDiagnosticTelegramReplyMarkup? replyMarkup)
+    {
+        if (replyMarkup?.InlineKeyboard is { Count: > 0 })
+        {
+            return new EquipmentDiagnosticTelegramReplyMarkup(
+                InlineKeyboard: replyMarkup.InlineKeyboard);
+        }
+
+        return replyMarkup?.RemoveKeyboard == true
+            ? new EquipmentDiagnosticTelegramReplyMarkup(RemoveKeyboard: true)
+            : null;
+    }
+}

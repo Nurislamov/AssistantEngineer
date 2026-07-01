@@ -551,6 +551,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Contains(
             await harness.EventStore.GetLatestAsync(second.Id, 50),
             item => item.EventType == TelegramServiceRequestEventType.Cancelled);
+        Assert.All(harness.Outbound.Edits, edit => Assert.Null(edit.ReplyMarkup?.Keyboard));
         Assert.Contains(harness.Outbound.Edits, edit =>
             edit.Text.Contains("Статус: отменена", StringComparison.Ordinal) &&
             InlineButtons(edit.ReplyMarkup).Select(button => button.CallbackData).Order().SequenceEqual(

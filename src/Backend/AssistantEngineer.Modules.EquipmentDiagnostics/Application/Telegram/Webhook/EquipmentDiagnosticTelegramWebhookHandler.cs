@@ -200,7 +200,11 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 
         foreach (var message in adapterResponse.OutboundMessages)
         {
-            var outbound = await SendOutboundMessageAsync(adapterResponse.ChatId, message, cancellationToken);
+            var outbound = await SendOutboundMessageAsync(
+                adapterResponse.ChatId,
+                mappedUpdate.ChatType,
+                message,
+                cancellationToken);
 
             if (!outbound.Succeeded)
             {
@@ -324,7 +328,10 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                 return Result(EquipmentDiagnosticTelegramWebhookStatus.Processed, "Telegram callback processed.");
             }
 
-            return await SendAdapterResponseAsync(adapterResponse, cancellationToken);
+            return await SendAdapterResponseAsync(
+                adapterResponse,
+                callback.Message.Chat.Type,
+                cancellationToken);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -415,6 +422,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 
     private async Task<EquipmentDiagnosticTelegramWebhookResult> SendAdapterResponseAsync(
         EquipmentDiagnosticTelegramResponse adapterResponse,
+        string? chatType,
         CancellationToken cancellationToken)
     {
         if (adapterResponse.ResponseKind == EquipmentDiagnosticTelegramResponseKind.Ignored)
@@ -433,7 +441,11 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 
         foreach (var message in adapterResponse.OutboundMessages)
         {
-            var outbound = await SendOutboundMessageAsync(adapterResponse.ChatId, message, cancellationToken);
+            var outbound = await SendOutboundMessageAsync(
+                adapterResponse.ChatId,
+                chatType,
+                message,
+                cancellationToken);
 
             if (!outbound.Succeeded)
             {
@@ -448,16 +460,20 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
 
     private async Task<EquipmentDiagnosticTelegramOutboundResult> SendOutboundMessageAsync(
         long chatId,
+        string? chatType,
         EquipmentDiagnosticTelegramOutboundMessage message,
         CancellationToken cancellationToken)
     {
+        var replyMarkup = EquipmentDiagnosticTelegramReplyMarkupSafety.ForChat(
+            message.ReplyMarkup,
+            chatType);
         if (!string.IsNullOrWhiteSpace(message.DocumentFileId))
         {
             return await _outboundClient.SendDocumentAsync(
                 chatId,
                 message.DocumentFileId,
                 message.Text,
-                message.ReplyMarkup,
+                replyMarkup,
                 protectContent: message.ProtectContent,
                 cancellationToken: cancellationToken);
         }
@@ -468,7 +484,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
                 chatId,
                 message.EditMessageId.Value,
                 message.Text,
-                InlineOnly(message.ReplyMarkup),
+                InlineOnly(replyMarkup),
                 cancellationToken);
             if (edit.Succeeded)
             {
@@ -481,7 +497,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookHandler : IEquipmentDiagno
             message.Text,
             message.ParseMode,
             message.DisableWebPagePreview,
-            message.ReplyMarkup,
+            replyMarkup,
             cancellationToken);
     }
 

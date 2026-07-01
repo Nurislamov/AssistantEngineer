@@ -35,6 +35,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
         CancellationToken cancellationToken = default)
     {
+        replyMarkup = EquipmentDiagnosticTelegramReplyMarkupSafety.ForChatId(replyMarkup, chatId);
         if (!_options.IsEnabled || string.IsNullOrWhiteSpace(_options.BotToken))
         {
             return Failed();
@@ -248,6 +249,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         bool protectContent = false,
         CancellationToken cancellationToken = default)
     {
+        replyMarkup = EquipmentDiagnosticTelegramReplyMarkupSafety.ForChatId(replyMarkup, chatId);
         if (!_options.IsEnabled || string.IsNullOrWhiteSpace(BotToken) ||
             string.IsNullOrWhiteSpace(telegramFileId) ||
             !Uri.TryCreate(_options.TelegramApiBaseUrl, UriKind.Absolute, out var baseUri) ||
@@ -459,6 +461,7 @@ public sealed class EquipmentDiagnosticTelegramOutboundClient : IEquipmentDiagno
         EquipmentDiagnosticTelegramReplyMarkup? replyMarkup = null,
         CancellationToken cancellationToken = default)
     {
+        replyMarkup = EquipmentDiagnosticTelegramReplyMarkupSafety.ForChatId(replyMarkup, chatId);
         if (!_options.IsEnabled || string.IsNullOrWhiteSpace(BotToken) ||
             !Uri.TryCreate(_options.TelegramApiBaseUrl, UriKind.Absolute, out var baseUri) ||
             baseUri.Scheme != Uri.UriSchemeHttps)

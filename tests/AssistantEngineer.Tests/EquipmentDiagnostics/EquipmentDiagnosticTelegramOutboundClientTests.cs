@@ -101,6 +101,57 @@ public sealed class EquipmentDiagnosticTelegramOutboundClientTests
     }
 
     [Fact]
+    public async Task GroupChatIdStripsContactReplyKeyboardBeforeTelegramPayload()
+    {
+        var handler = new CapturingHandler(HttpStatusCode.OK);
+        var client = CreateClient(handler, EnabledOptions());
+
+        await client.SendMessageAsync(
+            -1001234567890,
+            "Group response",
+            null,
+            true,
+            new EquipmentDiagnosticTelegramReplyMarkup(
+                Keyboard:
+                [
+                    [new EquipmentDiagnosticTelegramKeyboardButton("Поделиться номером", RequestContact: true)]
+                ],
+                ResizeKeyboard: true));
+
+        using var payload = JsonDocument.Parse(handler.Body!);
+        Assert.False(payload.RootElement.TryGetProperty("reply_markup", out _));
+    }
+
+    [Fact]
+    public async Task GroupChatIdKeepsInlineKeyboardButDropsPrivateKeyboard()
+    {
+        var handler = new CapturingHandler(HttpStatusCode.OK);
+        var client = CreateClient(handler, EnabledOptions());
+
+        await client.SendMessageAsync(
+            -1001234567890,
+            "Group response",
+            null,
+            true,
+            new EquipmentDiagnosticTelegramReplyMarkup(
+                Keyboard:
+                [
+                    [new EquipmentDiagnosticTelegramKeyboardButton("Поделиться номером", RequestContact: true)]
+                ],
+                InlineKeyboard:
+                [
+                    [new EquipmentDiagnosticTelegramInlineKeyboardButton("📜 Диалог", "sr:thread:13")]
+                ]));
+
+        using var payload = JsonDocument.Parse(handler.Body!);
+        var markup = payload.RootElement.GetProperty("reply_markup");
+        Assert.False(markup.TryGetProperty("keyboard", out _));
+        Assert.Equal(
+            "sr:thread:13",
+            markup.GetProperty("inline_keyboard")[0][0].GetProperty("callback_data").GetString());
+    }
+
+    [Fact]
     public async Task SendMessageSerializesInlineKeyboardCallbackData()
     {
         var handler = new CapturingHandler(HttpStatusCode.OK);
