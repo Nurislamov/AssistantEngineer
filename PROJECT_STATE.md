@@ -1,4 +1,4 @@
-﻿# AssistantEngineer Project State
+# AssistantEngineer Project State
 
 ## Current stage
 
@@ -1482,18 +1482,18 @@ Complete ED-24OPS.4 production live-check, then continue with ED-24BCAST.2 Broad
 
 ## ED-24 production pass update
 
-Updated: 2026-07-01 09:06:57 UTC
+Updated: 2026-07-01 09:09:29 UTC
 
 ### Production status
 
 The following stages are marked as CLOSED / production PASS:
 
-- ED-24USR.5 вЂ” Owner-only user cards, role changes, block/unblock, self/last-owner protection.
-- ED-24MAN.4b вЂ” ERV/U-Match diagnostic guide binding fixes.
-- ED-24UX.8a вЂ” duplicate diagnostic code in visible titles fixed.
-- ED-24CI.1 вЂ” Microsoft.OpenApi restore vulnerability fixed; Engineering Core CI-equivalent checks passed.
-- ED-24MAN.4c вЂ” ERV SQL script hardened against misclassifying controller manuals.
-- ED-24MAN.4d вЂ” controller manual button labels and selected-file captions fixed.
+- ED-24USR.5 - Owner-only user cards, role changes, block/unblock, self/last-owner protection.
+- ED-24MAN.4b - ERV/U-Match diagnostic guide binding fixes.
+- ED-24UX.8a - duplicate diagnostic code in visible titles fixed.
+- ED-24CI.1 - Microsoft.OpenApi restore vulnerability fixed; Engineering Core CI-equivalent checks passed.
+- ED-24MAN.4c - ERV SQL script hardened against misclassifying controller manuals.
+- ED-24MAN.4d - controller manual button labels and selected-file captions fixed.
 
 ### Production live-check
 
@@ -1504,15 +1504,15 @@ VPS live-check passed after deployment:
 - Telegram document delivery works.
 - U-Match diagnostic guide sends the selected cassette/duct OwnerManual correctly.
 - ERV B Series diagnostic guide sends only the ERV-specific Installation Startup Maintenance manual.
-- ERV / Р СѓРєРѕРІРѕРґСЃС‚РІР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ contains the single expected ERV guide.
-- РџСѓР»СЊС‚С‹ / Controllers contains controller manuals under Controllers, not ERV.
+- ERV user guides section contains the single expected ERV guide.
+- Controllers section contains controller manuals under Controllers, not ERV.
 - Controller buttons are readable:
   - ERV Wired Controller
   - XE7A-23H / XE7A-23HC
   - XE7A-24H / XE7A-24HC
   - XK46
 - Selected controller file text/caption matches the selected binding.
-- No OutboundFailed, BUTTON_DATA_INVALID, error, exception, or ailed entries were observed in the checked production log window.
+- No OutboundFailed, BUTTON_DATA_INVALID, error, exception, or failed entries were observed in the checked production log window.
 
 ### CI status
 
