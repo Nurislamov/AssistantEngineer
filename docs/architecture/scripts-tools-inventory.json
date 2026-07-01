@@ -1535,6 +1535,38 @@
                         "riskIfChanged":  "Runner drift can bypass the diagnostic adapter, hide focused smoke failures, or introduce unintended external calls."
                     },
                     {
+                        "id":  "SCR-095",
+                        "path":  "scripts/equipment-diagnostics/invoke-gree-manual-bound-card-audit.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Generate ignored JSON and CSV audit reports for manual-bound Gree runtime card review.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the audit deterministic, metadata-preserving, and aligned with package entry-count guards.",
+                        "proposedStage":  "ED-24SRC.1",
+                        "riskIfChanged":  "Audit drift can hide generic Telegram wording, misstate manual review status, or miss runtime count changes."
+                    },
+                    {
+                        "id":  "SCR-096",
+                        "path":  "scripts/equipment-diagnostics/repair-gree-gmv6-generic-visible-text.ps1",
+                        "type":  "PowerShell",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Apply the reviewed ED-24SRC.1 GMV6 visible-wording repair without changing diagnostic metadata or counts.",
+                        "invokedBy":  [
+                                          "LocalManual"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the rewrite scope limited to known generic GMV6 text and the reviewed AJ/b1 manual sections.",
+                        "proposedStage":  "ED-24SRC.1",
+                        "riskIfChanged":  "Broader rewrite rules can invent diagnostic causes, cross manual boundaries, or alter runtime metadata."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

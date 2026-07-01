@@ -4,6 +4,7 @@ using System.Text;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Conversations;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Users;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Webhook;
 using Microsoft.AspNetCore.Hosting;
@@ -80,7 +81,9 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(1, factory.Outbound.CallCount);
-        Assert.Contains("Что можно сделать безопасно", factory.Outbound.LastText, StringComparison.Ordinal);
+        Assert.DoesNotContain("Диагностика временно недоступна", factory.Outbound.LastText, StringComparison.Ordinal);
+        Assert.Contains("Код оборудования: GREE H5", factory.Outbound.LastText, StringComparison.Ordinal);
+        Assert.Contains("H5", factory.Outbound.LastText, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -173,6 +176,8 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
                 services.RemoveAll<ITelegramUserStore>();
                 services.RemoveAll<ITelegramConversationSessionStore>();
                 services.RemoveAll<ITelegramDiagnosticCaseStore>();
+                services.RemoveAll<ITelegramServiceRequestDialogStore>();
+                services.RemoveAll<TelegramServiceRequestDialogService>();
                 services.RemoveAll<EquipmentDiagnosticTelegramWebhookOptions>();
                 services.RemoveAll<EquipmentDiagnosticTelegramOptions>();
                 var chatIds = allowedChatId is null ? Array.Empty<long>() : [allowedChatId.Value];
@@ -197,6 +202,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
                 services.AddSingleton<ITelegramUserStore, InMemoryTelegramUserStore>();
                 services.AddSingleton<ITelegramConversationSessionStore, InMemoryTelegramConversationSessionStore>();
                 services.AddSingleton<ITelegramDiagnosticCaseStore, InMemoryTelegramDiagnosticCaseStore>();
+                services.AddSingleton<ITelegramServiceRequestDialogStore, InMemoryTelegramServiceRequestDialogStore>();
                 services.AddSingleton<IEquipmentDiagnosticTelegramOutboundClient>(Outbound);
             });
         }
@@ -226,3 +232,7 @@ public sealed class EquipmentDiagnosticTelegramWebhookApiIntegrationTests
             Task.FromResult(new EquipmentDiagnosticTelegramSetCommandsResult(true, "Commands set."));
     }
 }
+
+
+
+

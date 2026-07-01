@@ -12,16 +12,24 @@ The registry is metadata only. It is not loaded by Telegram diagnostics and it d
 
 `artifacts/manual-intake/sources/gree`
 
+ED-24SRC.1 applies a strict presentation boundary: source names, document identifiers, package identifiers, source
+references, and import evidence remain metadata and are not emitted as Telegram diagnostic guidance. The stage audits
+all 1296 Gree runtime cards, removes the known generic import template from 235 GMV6 cards, and completes a
+manual-section repair only for GMV6 `AJ` and `b1`. The other 1294 cards remain `NeedsManualReview` in the generated
+repair audit. Runtime counts do not change, and no PDF/manual binary is committed.
+
 Current snapshot:
 
-- Source files tracked: 47.
-- Imported manuals: 1.
+- Source files tracked: 52.
+- Imported manuals: 5.
 - Partially imported manuals: 2.
 - New, not imported: 28.
 - Needs identity, duplicate, or import-design review: 16.
-- Repo-backed diagnostic packages: 7.
-- Repo-backed diagnostic entries: 262.
-- Current imported source: `Service Manual for GMV6 v_2020.09.pdf`, document code `GC202001-I`.
+- Analyzed manuals: 1.
+- Repo-backed diagnostic packages: 21.
+- Repo-backed diagnostic entries: 1296.
+- Runtime series counts: GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260; U-Match R32 107;
+  ERV B Series 5.
 
 Only the GMV6 service manual diagnostic scope has been production smoke verified. ED-24H.2 partially imports
 `SERVICE_MANUAL_GMV_MINI.pdf` as repository knowledge, but production deployment and smoke verification are still pending.

@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `94`
+- `PowerShell` scripts reviewed: `97`
 - `CSharpTool` projects reviewed: `14`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `116`
+- Total reviewed entries: `119`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
@@ -59,6 +59,9 @@ ED-22F adds one secret-free local release tag/handoff checklist generator plus c
 ED-SEC.1 adds one local production secret rotation candidate generator. It writes ignored artifacts by default, does not read or edit `deploy/.env`, and must not be used to paste generated secrets into chats/issues/logs.
 
 ED-24OPS.1 adds one secret-free, offline wrapper for focused Gree diagnostics smoke tests. It invokes the existing test and Telegram adapter infrastructure without calling Telegram or changing runtime data.
+
+ED-24SRC.1 adds one ignored-artifact audit producer and one bounded GMV6 visible-wording repair utility. Neither script
+calls external services, changes runtime counts, or imports manual binaries.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
