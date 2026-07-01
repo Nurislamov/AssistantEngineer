@@ -1,4 +1,10 @@
 using AssistantEngineer.Api.Configuration;
+using AssistantEngineer.Api.Services.DatabaseMigrations;
+
+if (PostgresMigrationCommand.IsMigrationCommand(args))
+{
+    return await PostgresMigrationCommand.RunAsync(args);
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,5 +27,6 @@ var app = builder.Build();
 app.UseApiPipeline();
 
 app.Run();
+return 0;
 
 public partial class Program;

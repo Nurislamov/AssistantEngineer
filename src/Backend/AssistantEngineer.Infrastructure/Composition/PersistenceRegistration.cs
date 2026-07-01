@@ -1,6 +1,5 @@
 ﻿using AssistantEngineer.Infrastructure.Persistence;
 using AssistantEngineer.SharedKernel.Abstractions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,25 +12,7 @@ internal static class PersistenceRegistration
         IConfiguration configuration,
         string environmentName)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new InvalidOperationException("Connection string 'DefaultConnection' is not configured.");
-
-        services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseNpgsql(
-                connectionString,
-                npgsql =>
-                {
-                    npgsql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
-                });
-
-            if (string.Equals(environmentName, "Development", StringComparison.OrdinalIgnoreCase))
-            {
-                options.EnableDetailedErrors();
-                options.EnableSensitiveDataLogging();
-            }
-        });
+        services.AddAppDbContextPersistence(configuration, environmentName);
 
         services.AddScoped<IUnitOfWork>(sp =>
             sp.GetRequiredService<AppDbContext>());

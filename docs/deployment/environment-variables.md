@@ -67,6 +67,35 @@ docker compose logs --since=10m assistantengineer-api \
 Recreate the API container and repeat the filename-only check. Existing key filenames should remain present. Do not
 remove `assistantengineer_dataprotection_keys` during routine deploy or rollback operations.
 
+## Controlled PostgreSQL Migrations
+
+ED-24OPS.4 adds an explicit migration-only entrypoint for the main PostgreSQL `AppDbContext`. It is intentionally not
+part of normal API startup: `docker compose up -d --build assistantengineer-api` does not auto-apply pending EF
+migrations.
+
+Run the migration runner only as an operator action:
+
+```bash
+cd /opt/assistantengineer/deploy
+docker compose run --rm assistantengineer-api dotnet AssistantEngineer.Api.dll --migrate-database
+```
+
+or from the repository root with the wrapper:
+
+```bash
+cd /opt/assistantengineer
+./scripts/deployment/apply-production-migrations.sh
+```
+
+The command reads `ConnectionStrings__DefaultConnection` from the existing container environment, prints pending
+migration IDs, applies them through `AppDbContext.Database.MigrateAsync()`, then prints the final applied/latest
+migration status. It does not start Kestrel, Telegram polling, Telegram command-menu synchronization, or the normal API
+runtime. Errors return a non-zero exit code and redact password-like connection string values from command output.
+
+Do not paste resolved connection strings or full `docker compose config` output into logs, issues, or chats. If the VPS
+needs a post-run database check, use an operator-owned `psql` command that obtains credentials from the production
+environment or secret store without echoing them.
+
 Telegram `BotToken`, `WebhookSecret`, `BootstrapOwnerChatId`, `AllowedChatIds`, `AllowedUsernames`, and `DeniedChatIds` use the nested
 ASP.NET environment variable names shown in `.env.example`. They intentionally have empty committed values. For
 Docker Compose deployments, prefer `TELEGRAM_BOOTSTRAP_OWNER_CHAT_ID=<telegram-chat-id>` for the emergency owner.

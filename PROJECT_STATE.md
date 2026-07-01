@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24BCAST.1 - CLOSED / production PASS.
+ED-24OPS.4 - CLOSED / pushed; production live-check is still pending.
 
 Next recommended steps:
 
-1. ED-24OPS.4 Add controlled PostgreSQL EF migration runner.
+1. Complete ED-24OPS.4 production live-check on `assistantengineer-beta-01`.
 2. ED-24BCAST.2 Broadcast history/retry.
 3. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
 
@@ -15,6 +15,39 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24OPS.4 adds a controlled PostgreSQL EF migration runner for the main `AppDbContext`; the stage is CLOSED / pushed.
+Production PASS is not marked yet because the VPS live-check is still pending.
+
+ED-24OPS.4 implementation notes:
+
+- Added explicit migration-only API entrypoint: `dotnet AssistantEngineer.Api.dll --migrate-database`.
+- Added VPS wrapper: `./scripts/deployment/apply-production-migrations.sh`.
+- The runner resolves the existing production `ConnectionStrings__DefaultConnection` through normal container
+  configuration, lists pending migrations, applies them through `AppDbContext.Database.MigrateAsync()`, and reports the
+  final applied/latest migration status.
+- The migration command returns exit code 0 on success and non-zero on errors.
+- Error output redacts password-like connection string values and does not print the full connection string.
+- Normal API startup does not auto-apply migrations; `docker compose up -d --build assistantengineer-api` keeps the
+  current migration policy.
+- Migration-only mode does not start Kestrel/web server, Telegram polling, Telegram command-menu synchronization, or
+  normal API hosted services.
+- No EF migration was added because the database model did not change.
+- Runtime counts are unchanged: Gree 1184, GMV6 HR 262, GMV6 263, GMV Mini 136, GMV X 263, GMV9 Flex 260.
+- Manual policies are unchanged: ServiceManual library-only, InstallationManual hidden from visible library/upload menus,
+  diagnostic guide OwnerManual-only.
+- Diagnostic JSON/cards/codes/sourceReferences and routing are unchanged.
+- Telegram UX and broadcast behavior are unchanged.
+- No PDFs, generated artifacts, certificates, passwords, or secrets were committed.
+- Local validation: `dotnet restore .\AssistantEngineer.sln` PASS.
+- Local validation: `dotnet build .\AssistantEngineer.sln` PASS with 0 errors; known TD-BUILD-001 nullable warnings
+  remain in test guard files.
+- Focused regression tests PASS: 1120/1120.
+- Gree diagnostics smoke PASS: 14/14.
+- Full suite PASS: 5062/5062.
+- EF/model validation PASS: no pending model changes and no new EF migration.
+- `git diff --check` PASS.
+- Production PASS remains pending until the ED-24OPS.4 VPS live-check is completed.
 
 ED-24BCAST.1 adds the Owner-only Telegram text broadcast foundation; the stage is CLOSED / production PASS.
 
@@ -1250,7 +1283,6 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 ## Future candidates
 
 - ED-24MAN.1 follow-up - Production library finalization / bind GMV Mini after ED-24SRC.2 audit, if still pending.
-- ED-24OPS.4 - Add controlled PostgreSQL EF migration runner.
 - ED-24BCAST.2 - Broadcast history/retry.
 - ED-24MAN.4 - Manual variants by model family / exact model matching.
 - TD-OPS-002 - optional DataProtection certificate hardening: mount and rotate a production-owned PFX/secret for key
@@ -1259,11 +1291,10 @@ ede84516 ED-24GEC.14.2 Polish GMV X visible wording grammar
 
 ## Current blocker
 
-No implementation blocker. ED-24USR.4 and ED-24BCAST.1 are production PASS. The next ops priority is a controlled
-PostgreSQL EF migration runner because the ED-24BCAST.1 migration was applied manually on production.
+No implementation blocker. ED-24OPS.4 is implemented and pushed pending VPS live-check; ED-24USR.4 and ED-24BCAST.1
+remain production PASS.
 
 ## Next step
 
-Start ED-24OPS.4 Add controlled PostgreSQL EF migration runner, or ED-24BCAST.2 Broadcast history/retry after the
-migration-runner debt is planned.
+Complete ED-24OPS.4 production live-check, then continue with ED-24BCAST.2 Broadcast history/retry.
 

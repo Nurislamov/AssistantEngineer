@@ -2,13 +2,13 @@
 
 ## Last updated
 
-ED-24MAN.3
+ED-24OPS.4
 
 ## Current stable point
 
-- Production baseline: `44f5a0a4` with ED-24OPS.3 production PASS.
-- ED-24MAN.3 fixes generic manual-library callbacks and typed Indoor/Controllers categories locally; production
-  data-correction SQL still requires VPS execution/check before production PASS.
+- Production baseline: `4b0f6b10` with ED-24USR.4 and ED-24BCAST.1 production PASS.
+- ED-24OPS.4 adds an explicit PostgreSQL EF migration runner for the main `AppDbContext`; production PASS is still
+  pending until VPS live-check.
 - Runtime counts: Gree 1184; GMV6 HR 262; GMV6 263; GMV Mini 136; GMV X 263; GMV9 Flex 260.
 - Manual policy: ServiceManual and InstallationManual are library-only; diagnostic guide delivery is OwnerManual-only.
 
@@ -74,6 +74,23 @@ No active P1 item was found.
   PFX.
 - Suggested next stage: production ops/configuration follow-up
 - Notes: provision and rotate a production-owned certificate outside Git; never commit or log the PFX/password.
+
+## Resolved in ED-24OPS.4
+
+### TD-OPS-004 - Main PostgreSQL AppDbContext had no controlled production migration runner
+
+- Area: operations/database
+- Severity: resolved
+- Previous evidence: broadcast migration `20260630195828_AddTelegramBroadcasts` was applied on the VPS manually through
+  SQL because the production server does not include the .NET SDK and normal API startup intentionally does not
+  auto-apply migrations.
+- Resolution: the built API container now supports the explicit command
+  `dotnet AssistantEngineer.Api.dll --migrate-database`, and `scripts/deployment/apply-production-migrations.sh` wraps
+  the Docker Compose invocation for VPS operators.
+- Safety boundary: normal API startup still does not auto-migrate; the migration-only command does not start Kestrel,
+  Telegram polling, Telegram command-menu synchronization, or normal hosted services.
+- Validation: focused tests cover argument recognition, no-pending success, pending migration application, failure
+  sanitization, missing connection string behavior, and script/source guards.
 
 ### TD-TOOL-001 - EF CLI patch version trails runtime
 
