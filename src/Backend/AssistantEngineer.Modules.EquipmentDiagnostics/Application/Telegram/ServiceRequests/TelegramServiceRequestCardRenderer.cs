@@ -47,8 +47,9 @@ public sealed class TelegramServiceRequestCardRenderer
         return builder.ToString();
     }
 
-    public static EquipmentDiagnosticTelegramReplyMarkup Keyboard(TelegramServiceRequestSnapshot request) =>
-        request.Status switch
+    public static EquipmentDiagnosticTelegramReplyMarkup Keyboard(TelegramServiceRequestSnapshot request)
+    {
+        var markup = request.Status switch
         {
             TelegramServiceRequestStatus.New => InlineKeyboard(
             [
@@ -67,6 +68,16 @@ public sealed class TelegramServiceRequestCardRenderer
                 [Button("Статус", Callback("s", request.Id)), Button("История", Callback("e", request.Id))]
             ])
         };
+        var rows = markup.InlineKeyboard?
+            .Select(row => (IReadOnlyList<EquipmentDiagnosticTelegramInlineKeyboardButton>)row.ToArray())
+            .ToList() ?? [];
+        rows.Insert(0,
+        [
+            Button("💬 Ответить", $"sr:reply:{request.Id}"),
+            Button("📜 Диалог", $"sr:thread:{request.Id}")
+        ]);
+        return InlineKeyboard(rows);
+    }
 
     private static string DisplayName(TelegramUserSnapshot user)
     {

@@ -39,6 +39,8 @@ internal static class RepositoryRegistration
         services.AddSingleton<ITelegramServiceRequestStore, EfTelegramServiceRequestStore>();
         services.RemoveAll<ITelegramServiceRequestEventStore>();
         services.AddSingleton<ITelegramServiceRequestEventStore, EfTelegramServiceRequestEventStore>();
+        services.RemoveAll<ITelegramServiceRequestDialogStore>();
+        services.AddSingleton<ITelegramServiceRequestDialogStore, EfTelegramServiceRequestDialogStore>();
         services.RemoveAll<ITelegramUserAuditEventStore>();
         services.AddSingleton<ITelegramUserAuditEventStore, EfTelegramUserAuditEventStore>();
         services.RemoveAll<ITelegramManualFileBindingStore>();

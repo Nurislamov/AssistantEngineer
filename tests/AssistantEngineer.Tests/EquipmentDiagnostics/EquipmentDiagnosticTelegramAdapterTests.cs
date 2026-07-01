@@ -715,6 +715,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.History.TelegramDiagnosticHistoryService),
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests.TelegramServiceRequestService),
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests.TelegramServiceRequestQueueService),
+                typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.ServiceRequests.TelegramServiceRequestDialogService),
                 typeof(TelegramAdminUserManagementService),
                 typeof(TelegramUserOverviewService),
                 typeof(AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram.Broadcasts.TelegramBroadcastService),

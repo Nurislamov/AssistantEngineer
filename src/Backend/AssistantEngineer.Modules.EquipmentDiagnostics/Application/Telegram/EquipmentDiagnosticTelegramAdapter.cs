@@ -25,6 +25,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
     private readonly TelegramDiagnosticHistoryService? _historyService;
     private readonly TelegramServiceRequestService? _serviceRequestService;
     private readonly TelegramServiceRequestQueueService? _serviceRequestQueueService;
+    private readonly TelegramServiceRequestDialogService? _serviceRequestDialogService;
     private readonly TelegramAdminUserManagementService? _adminUserManagementService;
     private readonly TelegramUserOverviewService? _userOverviewService;
     private readonly TelegramBroadcastService? _broadcastService;
@@ -42,6 +43,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         TelegramDiagnosticHistoryService? historyService = null,
         TelegramServiceRequestService? serviceRequestService = null,
         TelegramServiceRequestQueueService? serviceRequestQueueService = null,
+        TelegramServiceRequestDialogService? serviceRequestDialogService = null,
         TelegramAdminUserManagementService? adminUserManagementService = null,
         TelegramUserOverviewService? userOverviewService = null,
         TelegramBroadcastService? broadcastService = null,
@@ -58,6 +60,7 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
         _historyService = historyService;
         _serviceRequestService = serviceRequestService;
         _serviceRequestQueueService = serviceRequestQueueService;
+        _serviceRequestDialogService = serviceRequestDialogService;
         _adminUserManagementService = adminUserManagementService;
         _userOverviewService = userOverviewService;
         _broadcastService = broadcastService;
@@ -228,6 +231,23 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                     editMessageId: update.MessageId);
             }
 
+            if (TelegramServiceRequestDialogService.IsCallback(update.CallbackData))
+            {
+                var dialogResult = _serviceRequestDialogService is null
+                    ? new TelegramServiceRequestDialogResult(
+                        "Диалог по заявке сейчас недоступен.",
+                        CallbackAnswerText: "Недоступно",
+                        SuppressOutbound: true)
+                    : await _serviceRequestDialogService.HandleCallbackAsync(update, cancellationToken);
+                return Response(
+                    update.ChatId,
+                    dialogResult.Text,
+                    EquipmentDiagnosticTelegramResponseKind.Reply,
+                    replyMarkup: dialogResult.ReplyMarkup,
+                    callbackAnswerText: dialogResult.CallbackAnswerText,
+                    suppressOutbound: dialogResult.SuppressOutbound);
+            }
+
             var result = _serviceRequestQueueService is null
                 ? new TelegramServiceQueueCommandResult("Действие недоступно или устарело.")
                 : await _serviceRequestQueueService.HandleCallbackAsync(update, cancellationToken);
@@ -268,6 +288,20 @@ public sealed class EquipmentDiagnosticTelegramAdapter : IEquipmentDiagnosticTel
                 result.Text,
                 EquipmentDiagnosticTelegramResponseKind.Reply,
                     replyMarkup: result.ReplyMarkup);
+        }
+
+        var serviceDialogResult = _serviceRequestDialogService is null
+            ? null
+            : await _serviceRequestDialogService.TryHandlePrivateMessageAsync(update, access, cancellationToken);
+        if (serviceDialogResult is not null)
+        {
+            return Response(
+                update.ChatId,
+                serviceDialogResult.Text,
+                EquipmentDiagnosticTelegramResponseKind.Reply,
+                replyMarkup: serviceDialogResult.ReplyMarkup,
+                callbackAnswerText: serviceDialogResult.CallbackAnswerText,
+                suppressOutbound: serviceDialogResult.SuppressOutbound);
         }
 
         var broadcastTextResult = _broadcastService is null

@@ -543,8 +543,8 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
         Assert.Equal("Действие доступно в сервисной группе.", outside.Text);
         Assert.Contains(harness.Outbound.Edits, edit =>
             edit.Text.Contains("Статус: закрыта", StringComparison.Ordinal) &&
-            InlineButtons(edit.ReplyMarkup).Select(button => button.Text).Order().SequenceEqual(
-                new[] { "История", "Статус" }.Order()));
+            InlineButtons(edit.ReplyMarkup).Select(button => button.CallbackData).Order().SequenceEqual(
+                new[] { $"sr:e:{first.Id}", $"sr:reply:{first.Id}", $"sr:s:{first.Id}", $"sr:thread:{first.Id}" }.Order()));
         Assert.Contains(
             await harness.EventStore.GetLatestAsync(first.Id, 50),
             item => item.EventType == TelegramServiceRequestEventType.Resolved);
@@ -553,8 +553,8 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestQueueTests
             item => item.EventType == TelegramServiceRequestEventType.Cancelled);
         Assert.Contains(harness.Outbound.Edits, edit =>
             edit.Text.Contains("Статус: отменена", StringComparison.Ordinal) &&
-            InlineButtons(edit.ReplyMarkup).Select(button => button.Text).Order().SequenceEqual(
-                new[] { "История", "Статус" }.Order()));
+            InlineButtons(edit.ReplyMarkup).Select(button => button.CallbackData).Order().SequenceEqual(
+                new[] { $"sr:e:{second.Id}", $"sr:reply:{second.Id}", $"sr:s:{second.Id}", $"sr:thread:{second.Id}" }.Order()));
     }
 
     [Fact]

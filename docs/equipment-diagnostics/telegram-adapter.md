@@ -404,6 +404,22 @@ for brand/type/display-context remain focused on choices plus `🔎 Новый �
 service tickets, engineer assignment, admin notifications, web UI, Mini App, photo/OCR, AI, RAG, vector search, or
 manual-PDF access.
 
+## ED-24SR Service Request Dialog
+
+ED-24SR.1 turns a service request notification into a text dialog without exposing personal Telegram accounts. Every
+request card keeps its lifecycle controls and adds `💬 Ответить` and `📜 Диалог`. Owner, Admin, and Engineer may start
+an explicit reply; the bot opens a persistent pending mode in the operator's private chat, delivers the text to the
+requester under the bot identity, stores the message, and posts a short safe preview to the configured service group.
+
+A Consumer response is accepted only for that Consumer's active request after an operator has replied. If several
+active requests match, the bot asks for an explicit request selection. Telegram commands are left to the normal command
+router, `/cancel` clears pending operator state, and diagnostic flows retain precedence when no dialog context exists.
+The dialog view is limited to the latest 15 messages and excludes phone data and internal audit details.
+
+Migration `20260701095907_AddTelegramServiceRequestDialog` adds `TelegramServiceRequestMessages` and
+`TelegramServiceRequestPending`. Pending modes therefore survive restart. ED-24SR.1 is text-only; attachment metadata
+and `file_id` delivery are added separately by ED-24SR.2.
+
 ## Security And Runtime Boundaries
 
 - No committed token or application setting containing a token.

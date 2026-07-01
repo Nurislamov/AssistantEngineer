@@ -2,16 +2,14 @@
 
 ## Current stage
 
-ED-24MAN.4d - CLOSED / pushed. Production PASS is pending GitHub Actions green and the VPS live-check.
+ED-24SR.1 - CLOSED / local commit pending. Production PASS is pending migration/deploy and the VPS live-check.
 
 Next recommended steps:
 
-1. Pull `origin/master` on `assistantengineer-beta-01`.
-2. Rebuild/restart `assistantengineer-api` and complete the Controllers selected-file labels/captions, U-Match/ERV
-   diagnostics, and guide live-check. No production metadata script is required for ED-24MAN.4d.
-3. Verify GitHub Actions for the Engineering Core V1 checks and mark production PASS only after Actions are green and the
-   VPS live-check passes.
-4. Consider `TD-OPS-002` certificate-backed DataProtection key encryption at rest with a production-owned PFX.
+1. Complete ED-24SR.2 attachment support and its separate commit.
+2. Push both ED-24SR commits, then pull `origin/master` on `assistantengineer-beta-01`.
+3. Apply the EF migrations, rebuild/restart `assistantengineer-api`, and live-check the service-request dialog.
+4. Mark production PASS only after GitHub Actions and the VPS live-check pass.
 
 ## Current branch
 
@@ -19,49 +17,33 @@ master
 
 ## Last completed work
 
-ED-24MAN.4d fixes Gree Controllers manual-library display when production rows have correct `FileName` values but stale
-`Title` values. The stage is CLOSED / pushed; production PASS remains pending until GitHub Actions are green and the VPS
-live-check passes.
+ED-24SR.1 adds a text-only service-request dialog through the Telegram bot. The stage is CLOSED / local commit pending;
+production PASS remains pending until the migration is applied, GitHub Actions are green, and the VPS live-check passes.
 
-Implementation commit: current commit (`ED-24MAN.4d Fix controller manual labels`).
+Implementation commit: pending (`ED-24SR.1 Add service request text dialog`).
 
-ED-24MAN.4d implementation notes:
+ED-24SR.1 implementation notes:
 
-- Root cause: generic manual-library display and diagnostic selection used the binding display title, which can be stale
-  metadata, instead of the selected binding filename. This let the first/stale `Gree ERV Wired Controller...` title replace
-  selected controller labels and captions even though the correct Telegram file was sent.
-- Generic library send status and document captions now prefer the selected binding filename. `Title` remains only as a
-  fallback when a filename is missing.
-- Gree Controllers short labels and classification use selected filename text, producing `ERV Wired Controller`,
-  `YAP1F / YV1L1`, `XE7A-23H / XE7A-23HC`, `XE7A-24H / XE7A-24HC`, and `XK46` without leaking stale ERV titles.
-- U-Match diagnostic selection and selected document captions use selected filenames; ERV exact guide matching also uses
-  filename text, so controller titles cannot make a row look like the ERV Installation/Startup/Maintenance guide.
-- Callback payloads remain short id/token-based values without filenames, Telegram file ids, file_unique_id, source
-  references, or long manual ids.
-- Manual policies remain unchanged: ServiceManual is library-only, InstallationManual remains hidden from visible generic
-  menus, and diagnostic guide delivery uses safe OwnerManual guide bindings only.
-- No production DB change, migration, PDF binary, manual intake artifact, secret, runtime JSON/card change, or runtime count
-  change was added.
+- Service request cards preserve lifecycle actions and add `💬 Ответить` / `📜 Диалог` with short request-id callbacks.
+- Owner, Admin, and Engineer can start an operator reply from the service group; the bot prompts in the operator's private
+  chat, persists pending state, sends the text to the requester under the bot identity, and posts a safe preview to the group.
+- Consumer messages are routed back only after an operator response. Multiple active requests require an explicit request
+  selection. `/start`, `/help`, `/history`, `/last`, and `/cancel` are not swallowed by dialog routing.
+- The dialog view shows the latest 15 messages and never renders phone numbers, internal roles, or audit details.
+- Disabled/blocked users cannot participate; operators cannot send to a blocked requester. Current Engineer policy permits
+  every active Engineer because strict per-request assignment is not yet required for reply access.
+- Migration `20260701095907_AddTelegramServiceRequestDialog` adds `TelegramServiceRequestMessages` and persistent
+  `TelegramServiceRequestPending`. Message history and pending reply modes survive application restart.
+- ED-24SR.1 is text-only. Photo/document/video support is deferred to ED-24SR.2.
+- Runtime catalogs are unchanged: Gree 1296, U-Match R32 107, ERV B Series 5. No PDF, manual intake artifact, secret,
+  `.env` backup, or runtime catalog change was added.
 
-ED-24MAN.4d local validation:
+ED-24SR.1 local validation:
 
-- `dotnet restore .\AssistantEngineer.sln`: PASS.
-- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS, 0 warnings.
-- `dotnet test .\tests\AssistantEngineer.Tests\AssistantEngineer.Tests.csproj --filter "FullyQualifiedName~EquipmentDiagnosticTelegramManualLibraryTests" --logger "console;verbosity=normal"`: PASS, 64/64.
-- Focused OpenAPI/import/runtime/manual-registry guards: PASS, 37/37; runtime counts remain Gree 1296, U-Match R32 107,
-  ERV B Series 5.
-- `.\scripts\diagnostics\run-gree-diagnostics-smoke.ps1`: PASS, 14/14.
-- `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=normal"`: PASS, 5104/5104.
-- Engineering Core V1 Smoke CI-equivalent: PASS.
-- Engineering Core V1 coverage: `.\scripts\engineering-core\verify-engineering-core-v1.ps1 -SkipFullDotnet` PASS after
-  standalone full solution suite PASS. The exact no-skip run completed all pre-full groups but was stopped after the
-  duplicate full backend step stayed silent for 15:43; the same full backend suite had already passed separately.
-- Engineering Core V1 Validation CI-equivalent: PASS, including generated artifact diff check and regeneration.
-- `dotnet list .\AssistantEngineer.sln package --include-transitive | Select-String "Microsoft.OpenApi"` resolves
-  `Microsoft.OpenApi 2.7.5`; `2.0.0` is absent.
-- EF model validation: `dotnet ef migrations has-pending-model-changes` reports no model changes. The known EF tools
-  10.0.5 vs runtime 10.0.6 warning is non-blocking.
-- `git diff --check`: PASS.
+- Dialog-focused tests: PASS, 14/14.
+- Build: PASS with the six existing nullable warnings in architecture guard tests.
+- EF model validation: PASS; no changes after `20260701095907_AddTelegramServiceRequestDialog`.
+- Remaining required stage validation is run immediately before the ED-24SR.1 commit.
 
 ## Previous completed work
 

@@ -240,7 +240,7 @@ public sealed class EquipmentDiagnosticTelegramServiceRequestTests
             .SelectMany(row => row)
             .ToArray() ?? [];
         Assert.Equal(
-            ["Взять в работу", "Назначить", "Контакт", "Статус", "История", "Отменить"],
+            ["💬 Ответить", "📜 Диалог", "Взять в работу", "Назначить", "Контакт", "Статус", "История", "Отменить"],
             inlineButtons.Select(button => button.Text).ToArray());
         Assert.All(inlineButtons, button =>
         {

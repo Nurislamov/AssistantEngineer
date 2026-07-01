@@ -34,6 +34,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<ITelegramDiagnosticCaseStore, InMemoryTelegramDiagnosticCaseStore>();
         services.AddSingleton<ITelegramServiceRequestStore, InMemoryTelegramServiceRequestStore>();
         services.AddSingleton<ITelegramServiceRequestEventStore, InMemoryTelegramServiceRequestEventStore>();
+        services.AddSingleton<ITelegramServiceRequestDialogStore, InMemoryTelegramServiceRequestDialogStore>();
         services.AddSingleton<ITelegramUserAuditEventStore, InMemoryTelegramUserAuditEventStore>();
         services.AddSingleton<ITelegramManualRegistrySource, TelegramManualRegistrySource>();
         services.AddSingleton<ITelegramManualFileBindingStore, FileTelegramManualFileBindingStore>();
@@ -48,6 +49,7 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<TelegramServiceRequestQueueService>();
         services.AddSingleton<TelegramServiceRequestCardRenderer>();
         services.AddSingleton<TelegramServiceRequestEventService>();
+        services.AddSingleton<TelegramServiceRequestDialogService>();
         services.AddSingleton<TelegramUserAuditEventService>();
         services.AddSingleton<TelegramAdminUserManagementService>();
         services.AddSingleton<TelegramUserManagementService>();
