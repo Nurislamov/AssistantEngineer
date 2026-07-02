@@ -26,6 +26,8 @@ diagnostic chapters.
   `H9`, `HC`, `HH`, `HJ`, and `HL`, covering sections 2.78-2.90. The batch keeps the manual distinction between
   aggregate wired-controller codes (`H0`-`H2`) that require reading the outdoor 2-digit LED and the specific outdoor
   LED faults that carry direct flowchart actions.
+- ED-24SRC.6 reconciled the closure inventory after ED-24SRC.2a/4/5. It regenerated the ignored GMV6 inventory artifacts
+  and confirmed the current counts below with no conflicts, no unclassified rows, and no `NeedsManualReview` rows.
 - Remaining unrepaired GMV6 cards stay in the closure inventory as `DetailedProcedureAvailable`, `TableOnlySafe`,
   `StatusOrPrompt`, or `DebuggingOrCommissioning`. Detailed diagnostic chapters and flowcharts must be reviewed one
   source boundary at a time before those cards can be marked repaired.
@@ -67,7 +69,7 @@ The inventory covers all 263 GMV6 runtime cards without editing card content. It
 boundary, current visible text, source meaning/reference, inferred manual-section availability, visible-text safety, and
 the next repair class used to plan ED-24SRC.4+.
 
-Current ED-24SRC.5 inventory snapshot:
+Current ED-24SRC.6 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | StatusOrPrompt | DebuggingOrCommissioning | Total |
 |---|---:|---:|---:|---:|---:|---:|
@@ -80,7 +82,8 @@ Current ED-24SRC.5 inventory snapshot:
 No conflicting source boundary was found by the inventory. Every GMV6 card has an attached manual/source section or
 source reference in the current runtime data. The inventory is a planning map, not a closure claim: cards in
 `DetailedProcedureAvailable`, `TableOnlySafe`, `StatusOrPrompt`, and `DebuggingOrCommissioning` still require the later
-staged repair/verification passes before GMV6 can be called closed.
+staged repair/verification passes before GMV6 can be called closed. Current Conflict count is 0, and current
+NeedsManualReview / Unclassified count is 0.
 
 ## Stable runtime counts
 
@@ -115,4 +118,4 @@ procedure from another Gree series or another document.
 
 ## Validation status
 
-ED-24SRC.5 validation is recorded in `PROJECT_STATE.md` after the local gate completes.
+ED-24SRC.6 validation is recorded in `PROJECT_STATE.md` after the local gate completes.

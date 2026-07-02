@@ -2,14 +2,14 @@
 
 ## Current stage
 
-ED-24SRC.5 - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a, and
-ED-24SRC.4 are CLOSED / pushed.
+ED-24SRC.6 - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.4, and ED-24SRC.5 are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.5 validation gate.
-2. If validation passes, commit and push ED-24SRC.5.
-3. Continue GMV6 closure in a later stage from the remaining inventory.
+1. Complete the ED-24SRC.6 validation gate.
+2. If validation passes, commit and push ED-24SRC.6.
+3. Continue with ED-24SRC.7 from the remaining GMV6 outdoor `DetailedProcedureAvailable` inventory.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -17,6 +17,31 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.6 reconciles the GMV6 manual-bound closure inventory after ED-24SRC.2a, ED-24SRC.4, and ED-24SRC.5.
+
+ED-24SRC.6 implementation notes:
+
+- Verified `git log -12 --oneline`: ED-24SRC.2a, ED-24SRC.4, and ED-24SRC.5 are present on `master` after
+  ED-24SRC.3.
+- Reran `scripts/equipment-diagnostics/invoke-gmv6-manual-bound-closure-inventory.ps1`; ignored JSON/CSV artifacts were
+  regenerated under `artifacts/verification/equipment-diagnostics/`.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- Current repair classes: AlreadyRepaired 30; DetailedProcedureAvailable 64; TableOnlySafe 88; StatusOrPrompt 43;
+  DebuggingOrCommissioning 38.
+- Current category split: outdoor = 29 AlreadyRepaired, 38 DetailedProcedureAvailable, 54 TableOnlySafe; indoor = 26
+  DetailedProcedureAvailable, 34 TableOnlySafe; debugging = 38 DebuggingOrCommissioning; status = 1 AlreadyRepaired,
+  43 StatusOrPrompt.
+- Conflict count: 0. NeedsManualReview / Unclassified count: 0.
+- GMV6 remains open. ED-24SRC.6 is a reconciliation stage only and does not mark GMV6 closed.
+- No PDF/manual binary, runtime card, card count, package manifest, source reference, routing rule, migration, secret, or
+  deploy file changed.
+- Validation:
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1115/1115).
+  - `git diff --check`: PASS.
+  - `git status --short`: only ED-24SRC.6 documentation/state files changed before commit.
 
 ED-24SRC.5 repairs the next controlled GMV6 outdoor fan-drive detailed batch without changing runtime counts.
 
