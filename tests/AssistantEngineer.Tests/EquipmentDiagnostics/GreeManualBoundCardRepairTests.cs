@@ -287,7 +287,8 @@ public sealed class GreeManualBoundCardRepairTests
 
     private static readonly string[] Gmv6RepairedStatusCodes =
     [
-        "A0", "A2", "A3", "A4", "A6", "A7", "A8", "A9", "Ab", "AC", "Ad", "AE", "AF", "AH", "AL"
+        "A0", "A2", "A3", "A4", "A6", "A7", "A8", "A9", "Ab", "AC", "Ad", "AE", "AF", "AH", "AL",
+        "An", "AP", "AU", "Ay", "n0", "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9"
     ];
 
     [Fact]

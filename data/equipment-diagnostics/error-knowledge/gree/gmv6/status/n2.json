@@ -1,123 +1,129 @@
 {
-  "id": "gree-gmv6-status-n2",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "OutdoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "n2",
-  "signalType": "Status",
-  "displaySource": "OutdoorBoard",
-  "systemPart": "Controller",
-  "severity": "Info",
-  "requiresQualifiedService": false,
-  "canCustomerContinueOperation": null,
-  "packageId": "gree-gmv6-status-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Settings Status of Maximum Capacity Configuration Rate for indoor and outdoor units",
-  "sourceReference": "Troubleshooting 2.114 n2 / manual evidence line 8995",
-  "sourceReferences": [
-    {
-      "sourceName": "Service Manual for GMV6 v_2020.09",
-      "documentCode": "GC202001-I",
-      "sourceReference": "Section 2.114: n2 Settings Status of Maximum Capacity Configuration / manual evidence line 8995",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv6-service-manual-2020-09",
-      "packageId": "gree-gmv6-status-codes",
-      "notes": "Exact GMV6 service manual row confirms code n2 as a status/settings item."
-    }
-  ],
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-26T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-26T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv6-status-n2-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 n2 — настройка предела коэффициента соответствия внутренних и наружных блоков",
-      "summary": "Код n2 для GMV6 означает параметрический статус: настройка предела коэффициента соответствия внутренних и наружных блоков. Это не аварийная неисправность.",
-      "safetyNote": "Не меняйте сервисные настройки и не открывайте панели оборудования.",
-      "checkSteps": [
-        "Запишите код n2, модель GMV6 и место, где он показан.",
-        "Отметьте, появился ли код во время настройки, проверки параметров или после изменения состава блоков.",
-        "Проверьте состояние пульта или контроллера без входа в сервисные настройки."
-      ],
-      "doNotAdvise": [
-        "Не менять коэффициенты соответствия без проекта и сервисной проверки.",
-        "Не трактовать n2 как подтверждённую неисправность."
-      ],
-      "recommendedAction": "Если есть сомнения по конфигурации системы, передайте код и список подключённых блоков квалифицированному специалисту.",
-      "sourceNote": "Значение подтверждено разделом 2.114 руководства GMV6."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-26T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv6-status-n2-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 n2 — настройка предела коэффициента соответствия внутренних и наружных блоков",
-      "summary": "n2 для GMV6 относится к параметру: настройка предела коэффициента соответствия внутренних и наружных блоков; проверку настроек, адресации и состава системы выполняет квалифицированный специалист.",
-      "safetyNote": "Проверку настроек, адресации и конфигурации выполняет квалифицированный специалист по проекту и сервисному руководству.",
-      "checkSteps": [
-        "Подтвердить серию GMV6, наружный блок и отображение кода n2.",
-        "Сверить состав внутренних и наружных блоков с проектом.",
-        "Проверить настройки, адресацию и режим конфигурации без изменения параметров наугад."
-      ],
-      "doNotAdvise": [
-        "Не менять предельный коэффициент соответствия без расчёта и подтверждения состава системы.",
-        "Не использовать n2 как признак замены платы или датчика."
-      ],
-      "recommendedAction": "Проверить конфигурацию по разделу 2.114 и зафиксировать фактический состав блоков перед изменением настроек.",
-      "sourceNote": "Значение подтверждено разделом 2.114 руководства GMV6."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-26T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv6-status-n2-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 n2 — настройка предела коэффициента соответствия внутренних и наружных блоков",
-      "summary": "n2 обозначает параметр GMV6: настройка предела коэффициента соответствия внутренних и наружных блоков. Используйте код как повод сверить конфигурацию, а не как самостоятельный признак отказа компонента.",
-      "safetyNote": "Работы с параметрами системы выполняются квалифицированным сервисом с проверкой проекта, адресации и фактического состава оборудования.",
-      "checkSteps": [
-        "Подтвердить модель, место отображения n2 и режим запроса параметров.",
-        "Сверить рассчитанный и фактический коэффициент соответствия внутренних и наружных блоков.",
-        "Проверить адресацию, настройки и условия установки по разделу 2.114."
-      ],
-      "doNotAdvise": [
-        "Не рассматривать n2 как самостоятельную неисправность компонента.",
-        "Не менять параметры без проверки допустимого диапазона для установленной системы."
-      ],
-      "recommendedAction": "Использовать n2 как указание на проверку конфигурации GMV6 и подтвердить настройки по руководству и проектным данным.",
-      "sourceNote": "Значение подтверждено разделом 2.114 руководства GMV6."
-    }
-  ]
+    "id":  "gree-gmv6-status-n2",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "OutdoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "n2",
+    "signalType":  "Status",
+    "displaySource":  "OutdoorBoard",
+    "systemPart":  "Controller",
+    "severity":  "Info",
+    "requiresQualifiedService":  false,
+    "canCustomerContinueOperation":  null,
+    "packageId":  "gree-gmv6-status-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Settings Status of Maximum Capacity Configuration Rate for indoor and outdoor units",
+    "sourceReference":  "Troubleshooting 2.114 n2 / manual evidence line 8995",
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Service Manual for GMV6 v_2020.09",
+                                 "documentCode":  "GC202001-I",
+                                 "sourceReference":  "Section 2.114: n2 Settings Status of Maximum Capacity Configuration / manual evidence line 8995",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv6-service-manual-2020-09",
+                                 "packageId":  "gree-gmv6-status-codes",
+                                 "notes":  "Exact GMV6 service manual row confirms code n2 as a status/settings item."
+                             }
+                         ],
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-26T00:00:00Z",
+    "updatedAt":  "2026-06-27T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-26T00:00:00Z",
+                      "updatedAt":  "2026-06-27T00:00:00Z",
+                      "id":  "gree-gmv6-status-n2-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 — n2 — настройка предела коэффициента соответствия внутренних и наружных блоков",
+                      "summary":  "Код n2 означает настройка предела коэффициента соответствия внутренних и наружных блоков.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не менять коэффициенты соответствия без проекта и сервисной проверки.",
+                                          "Не трактовать n2 как подтверждённую неисправность."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-26T00:00:00Z",
+                      "updatedAt":  "2026-06-27T00:00:00Z",
+                      "id":  "gree-gmv6-status-n2-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 — n2 — настройка предела коэффициента соответствия внутренних и наружных блоков",
+                      "summary":  "Код n2 означает настройка предела коэффициента соответствия внутренних и наружных блоков.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не менять предельный коэффициент соответствия без расчёта и подтверждения состава системы.",
+                                          "Не использовать n2 как признак замены платы или датчика."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-26T00:00:00Z",
+                      "updatedAt":  "2026-06-27T00:00:00Z",
+                      "id":  "gree-gmv6-status-n2-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 — n2 — настройка предела коэффициента соответствия внутренних и наружных блоков",
+                      "summary":  "Код n2 означает настройка предела коэффициента соответствия внутренних и наружных блоков.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не рассматривать n2 как самостоятельную неисправность компонента.",
+                                          "Не менять параметры без проверки допустимого диапазона для установленной системы."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  }
+              ]
 }

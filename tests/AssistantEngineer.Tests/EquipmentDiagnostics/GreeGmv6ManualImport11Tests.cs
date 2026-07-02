@@ -146,7 +146,7 @@ public sealed class GreeGmv6ManualImport11Tests
         Assert.Equal("GMV6", RequiredString(gmv6, "series"));
         Assert.Equal("GMV Mini", RequiredString(mini, "series"));
 
-        AssertN2Text(gmv6, "Gree GMV6 n2");
+        AssertN2Text(gmv6, "Gree GMV6 — n2");
         AssertN2Text(mini, "Gree GMV Mini n2");
     }
 
