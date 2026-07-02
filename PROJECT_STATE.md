@@ -2,16 +2,16 @@
 
 ## Current stage
 
-ED-24SRC.14a - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.14b - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
 ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
 ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, ED-24SRC.10a, ED-24SRC.10b, ED-24SRC.10c, and
 ED-24SRC.11a, ED-24SRC.11b-1, ED-24SRC.11b-2, ED-24SRC.12, ED-24SRC.13a, ED-24SRC.13b, and
-ED-24SRC.13c are CLOSED / pushed.
+ED-24SRC.13c, and ED-24SRC.14a are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete ED-24SRC.14a validation and push debugging batch 1.
-2. Continue the final 19 debugging cards in ED-24SRC.14b.
+1. Complete ED-24SRC.14b validation and push the final debugging batch.
+2. Perform final ED-24SRC.14c GMV6 closure verification.
 3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -20,6 +20,11 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.14b repairs the final 19 GMV6 debugging cards (`Cn`-`Uy`) as service/commissioning information while
+preserving the approved U0/U2/U3/U4/U5 titles.
+Validation: restore PASS; build PASS with 0 warnings/errors; EquipmentDiagnostics 1131/1131; Telegram 641/641;
+webhook 10/10; full suite 5155/5155; `git diff --check` PASS.
 
 ED-24SRC.14a repairs the first 19 GMV6 debugging cards (`C0`-`CL`) as service/commissioning information with empty
 causes and no invented troubleshooting.

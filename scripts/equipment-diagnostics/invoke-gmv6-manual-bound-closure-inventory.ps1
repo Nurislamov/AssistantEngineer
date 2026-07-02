@@ -295,7 +295,26 @@ $alreadyRepairedCodes = @(
     "CF",
     "CH",
     "CJ",
-    "CL"
+    "CL",
+    "Cn",
+    "CP",
+    "CU",
+    "Cy",
+    "U0",
+    "U2",
+    "U3",
+    "U4",
+    "U5",
+    "U6",
+    "U8",
+    "U9",
+    "UC",
+    "Ud",
+    "UE",
+    "UF",
+    "UL",
+    "Un",
+    "Uy"
 )
 $alreadyRepairedLookup = @{}
 foreach ($code in $alreadyRepairedCodes) {

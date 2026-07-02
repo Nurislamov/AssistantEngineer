@@ -295,7 +295,8 @@ public sealed class GreeManualBoundCardRepairTests
     private static readonly string[] Gmv6RepairedDebuggingCodes =
     [
         "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "CA", "Cb", "CC", "Cd", "CE", "CF",
-        "CH", "CJ", "CL"
+        "CH", "CJ", "CL", "Cn", "CP", "CU", "Cy", "U0", "U2", "U3", "U4", "U5", "U6", "U8", "U9", "UC",
+        "Ud", "UE", "UF", "UL", "Un", "Uy"
     ];
 
     [Fact]

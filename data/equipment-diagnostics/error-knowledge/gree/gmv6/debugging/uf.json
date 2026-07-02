@@ -1,103 +1,115 @@
 {
-  "id": "gree-gmv6-debugging-uf",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "OutdoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "UF",
-  "signalType": "Commissioning",
-  "displaySource": "OutdoorBoard",
-  "systemPart": "Unknown",
-  "severity": "Low",
-  "requiresQualifiedService": true,
-  "canCustomerContinueOperation": false,
-  "packageId": "gree-gmv6-debugging-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Identification malfunction of IDU of mode exchanger",
-  "sourceReference": "глава 3 Faults / Error Indication / Debugging UF / PDF page 77 / manual page 75",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-20T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-debugging-uf-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 UF — сообщение наладки оборудования",
-      "summary": "Код UF означает: сообщение наладки оборудования. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Не открывайте панели оборудования и не выполняйте электрические или холодильные проверки самостоятельно.",
-      "checkSteps": [
-        "Запишите код UF, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не открывать электрические отсеки.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наладка». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-debugging-uf-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 UF — сообщение наладки оборудования",
-      "summary": "Код UF означает: сообщение наладки оборудования. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Допустимы только безопасные внешние и визуальные проверки. Работы внутри электрических отсеков выполняет квалифицированный специалист при снятом питании.",
-      "checkSteps": [
-        "Запишите код UF, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наладка». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-debugging-uf-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 UF — сообщение наладки оборудования",
-      "summary": "Код UF означает: сообщение наладки оборудования. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Электрические, инверторные, компрессорные и холодильные проверки выполняются квалифицированным специалистом по штатной процедуре и при соблюдении требований безопасности.",
-      "checkSteps": [
-        "Запишите код UF, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправном компоненте только по коду.",
-        "Не отключать и не обходить защиты."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наладка». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    }
-  ]
+    "id":  "gree-gmv6-debugging-uf",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "OutdoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "UF",
+    "signalType":  "Commissioning",
+    "displaySource":  "OutdoorBoard",
+    "systemPart":  "Unknown",
+    "severity":  "Low",
+    "requiresQualifiedService":  true,
+    "canCustomerContinueOperation":  false,
+    "packageId":  "gree-gmv6-debugging-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Identification malfunction of IDU of mode exchanger",
+    "sourceReference":  "глава 3 Faults / Error Indication / Debugging UF / PDF page 77 / manual page 75",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-20T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-debugging-uf-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 — UF — ошибка идентификации внутреннего блока переключателем режимов",
+                      "summary":  "Код UF относится к наладочной информации и означает: ошибка идентификации внутреннего блока переключателем режимов.",
+                      "safetyNote":  "Настройки и проверки сервисных режимов выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Используйте код как сервисную или наладочную информацию.",
+                                         "Если вместе с кодом есть авария или нарушение работы, проверяйте соответствующую карточку неисправности."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не открывать электрические отсеки.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Использовать код как наладочную или сервисную информацию; не трактовать его как самостоятельную неисправность без сопутствующей аварии.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-debugging-uf-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 — UF — ошибка идентификации внутреннего блока переключателем режимов",
+                      "summary":  "Код UF относится к наладочной информации и означает: ошибка идентификации внутреннего блока переключателем режимов.",
+                      "safetyNote":  "Настройки и проверки сервисных режимов выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Используйте код как сервисную или наладочную информацию.",
+                                         "Если вместе с кодом есть авария или нарушение работы, проверяйте соответствующую карточку неисправности."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Использовать код как наладочную или сервисную информацию; не трактовать его как самостоятельную неисправность без сопутствующей аварии.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-debugging-uf-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 — UF — ошибка идентификации внутреннего блока переключателем режимов",
+                      "summary":  "Код UF относится к наладочной информации и означает: ошибка идентификации внутреннего блока переключателем режимов.",
+                      "safetyNote":  "Настройки и проверки сервисных режимов выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Используйте код как сервисную или наладочную информацию.",
+                                         "Если вместе с кодом есть авария или нарушение работы, проверяйте соответствующую карточку неисправности."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправном компоненте только по коду.",
+                                          "Не отключать и не обходить защиты."
+                                      ],
+                      "recommendedAction":  "Использовать код как наладочную или сервисную информацию; не трактовать его как самостоятельную неисправность без сопутствующей аварии.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  }
+              ]
 }

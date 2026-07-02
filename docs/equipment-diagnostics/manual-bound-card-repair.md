@@ -23,6 +23,7 @@ diagnostic chapters.
   The existing strict AJ guard plus the 43-card status guard mark GMV6 status CLOSED / manual-bound PASS.
 - ED-24SRC.14a repairs the first 19 debugging rows (`C0`-`CL`) as service/commissioning information rather than
   standalone fault diagnoses.
+- ED-24SRC.14b repairs the final 19 debugging rows (`Cn`-`Uy`); debugging has no remaining repair rows.
 - ED-24SRC.1 found the known generic import template in 235 GMV6 cards. Their Telegram-visible summaries, checks, and
   recommended actions were reduced to neutral table-only-safe wording without adding causes or component repairs.
 - GMV6 `AJ` was checked against section 2.12 and repaired as a filter-clean prompt with filter cleaning, prompt reset,
