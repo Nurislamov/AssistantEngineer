@@ -108,6 +108,21 @@ public sealed class GreeManualBoundCardRepairTests
             ["f3.json"] = ("F3", 4, ["датчик низкого давления", "AD-значение", "30 секунд", "точкой измерения давления", "замените основную плату управления"])
         };
 
+    private static readonly Dictionary<string, (string Code, int CauseCount, string[] RequiredPhrases)> Gmv6OutdoorJProtectionBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["j0.json"] = ("J0", 1, ["многомодульной системе", "других исправно работающих модулях", "исходного модуля"]),
+            ["j1.json"] = ("J1", 3, ["компрессора 1", "60 °C", "320-460 В", "модуль привода", "замените компрессор"]),
+            ["j2.json"] = ("J2", 3, ["компрессора 2", "60 °C", "320-460 В", "модуль привода", "замените компрессор"]),
+            ["j3.json"] = ("J3", 3, ["компрессора 3", "60 °C", "320-460 В", "модуль привода", "замените компрессор"]),
+            ["j4.json"] = ("J4", 3, ["компрессора 4", "60 °C", "320-460 В", "модуль привода", "замените компрессор"]),
+            ["j5.json"] = ("J5", 3, ["компрессора 5", "60 °C", "320-460 В", "модуль привода", "замените компрессор"]),
+            ["j6.json"] = ("J6", 3, ["компрессора 6", "60 °C", "320-460 В", "модуль привода", "замените компрессор"]),
+            ["j7.json"] = ("J7", 3, ["четырёхходового клапана", "0,1 МПа", "220 В", "замените четырёхходовой клапан"]),
+            ["j8.json"] = ("J8", 2, ["превышает 8", "-5 °C", "+50 °C", "-20 °C", "+24 °C", "датчиков высокого и низкого давления"]),
+            ["j9.json"] = ("J9", 2, ["меньше 1,8", "-5 °C", "+50 °C", "-20 °C", "+24 °C", "датчиков высокого и низкого давления"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -403,6 +418,51 @@ public sealed class GreeManualBoundCardRepairTests
             Assert.Contains("основная плата наружного блока", visible, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("проводной контроллер внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("приёмник сигнала внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text => Assert.Equal(expectation.CauseCount, RequiredArray(text, "possibleCauses").Count));
+
+            var technicalTexts = RequiredTexts(entry)
+                .Where(text =>
+                    !string.Equals(
+                        RequiredString(text, "audience"),
+                        "Consumer",
+                        StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            Assert.NotEmpty(technicalTexts);
+            Assert.All(
+                technicalTexts,
+                text => Assert.True(
+                    RequiredArray(text, "checkSteps").Count >= 3,
+                    $"Audience {RequiredString(text, "audience")} for {expectation.Code} must retain the documented troubleshooting steps."));
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorJProtectionBatchContainsManualDiagnosisCausesAndFlowchart()
+    {
+        foreach (var (fileName, expectation) in Gmv6OutdoorJProtectionBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains($"Gree GMV6 — {expectation.Code} —", visible, StringComparison.Ordinal);
+            Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
 
             foreach (var phrase in expectation.RequiredPhrases)
             {
