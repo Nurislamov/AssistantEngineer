@@ -1,5 +1,9 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24SRC.15 connects the closed GMV6 card content to Telegram technical HTML output: non-empty localized
+`checkSteps` are rendered directly (up to 10), while the former compact checks remain a fallback only. Consumer
+formatting, routing, card counts, and provenance boundaries are unchanged.
+
 ## Outcome and boundary
 
 This is an honest emergency-scope repair, not a claim that all 1296 cards have been manually reconstructed from their

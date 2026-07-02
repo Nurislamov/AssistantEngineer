@@ -1587,10 +1587,12 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.DoesNotContain(" IDU", c0.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(" ODU", c0.Text, StringComparison.Ordinal);
         Assert.DoesNotContain(" IDU", o1.Text, StringComparison.Ordinal);
-        Assert.Contains("Подтвердите код C0, серию GMV6 и место индикации.", c0.Text, StringComparison.Ordinal);
-        Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", c0.Text, StringComparison.Ordinal);
-        Assert.Contains("Подтвердите код o1", o1.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", o1.Text, StringComparison.Ordinal);
+        Assert.Contains("Зафиксируйте код и режим работы оборудования.", c0.Text, StringComparison.Ordinal);
+        Assert.Contains("сервисную или наладочную информацию", c0.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Зафиксируйте код, модель внутреннего блока", o1.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Передайте данные квалифицированному специалисту.", o1.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Подтвердите код", c0.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Подтвердите код", o1.Text, StringComparison.Ordinal);
     }
 
     private static async Task UploadGmvMiniOwnerManualAsync(

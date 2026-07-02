@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24SRC.14c - VALIDATED / commit pending. All preceding ED-24SRC stages through ED-24SRC.14b are CLOSED / pushed.
+ED-24SRC.15 - VALIDATED / commit pending. ED-24SRC.14c and all preceding GMV6 closure stages are CLOSED / pushed.
 
 Next recommended steps:
 
@@ -16,6 +16,13 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.15 changes the localized Gree Telegram HTML formatter to render non-empty card `checkSteps` (up to 10)
+and use compact generic checks only when localized steps are empty. Plain technical and Consumer formatting retain
+their existing length/stage behavior. Focused b1, AJ, U0, escaping, and fallback tests cover the change.
+Validation: restore PASS; build PASS with 6 existing nullable warnings and 0 errors; EquipmentDiagnostics 1136/1136;
+Telegram 645/645; webhook 10/10; full suite 5160/5160; `git diff --check` PASS; EquipmentDiagnostics branch-readiness
+CI PASS with 0 blockers (4 documented warnings).
 
 ED-24SRC.14c final closure inventory reports all 263 GMV6 cards as AlreadyRepaired: outdoor 121, indoor 60,
 status 44, debugging 38. DetailedProcedureAvailable, TableOnlySafe, StatusOrPrompt, DebuggingOrCommissioning,
@@ -1846,7 +1853,7 @@ Latest validation after ED-24UX.5:
 
 - Found Gree Telegram answers are shorter and retain at most three focused checks.
 - Separate `Техническая заметка:`, `Ограничения:`, and `Дальше:` blocks are absent.
-- A single short `Важно:` block preserves the one-code, protection-bypass, power-circuit, refrigerant-circuit, and qualified-specialist safety boundaries.
+- A single short `Важно:` block preserves the one-code, protection-safeguard, power-circuit, refrigerant-circuit, and qualified-specialist safety boundaries.
 - Safe escaped HTML and the existing narrow `ParseMode: HTML` scope are unchanged.
 - Local Gree diagnostics smoke: 9/9 passed.
 - EquipmentDiagnostics tests: 940/940 passed.

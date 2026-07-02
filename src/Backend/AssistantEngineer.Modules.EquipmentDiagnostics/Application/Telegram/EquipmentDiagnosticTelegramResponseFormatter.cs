@@ -109,9 +109,9 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
         AppendHtmlSection(
             builder,
             "Что проверить:",
-            CompactChecks(response, entry, series),
+            LocalizedChecks(response, entry, text, series),
             numbered: false,
-            limit: 3);
+            limit: 10);
         builder.AppendLine();
         builder.AppendLine($"{TelegramHtml.Bold("Серия:")} {TelegramHtml.Escape(series)}");
         builder.AppendLine();
@@ -151,6 +151,21 @@ public sealed class EquipmentDiagnosticTelegramResponseFormatter
             "Сверьте модель, условия появления и сопутствующие коды.",
             serviceProcedure
         ];
+    }
+
+    private static IReadOnlyList<string> LocalizedChecks(
+        EquipmentDiagnosticBotResponse response,
+        ErrorKnowledgeEntryV2 entry,
+        ErrorKnowledgeTextV2 text,
+        string series)
+    {
+        var checks = text.CheckSteps
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .ToArray();
+
+        return checks.Length > 0
+            ? checks
+            : CompactChecks(response, entry, series);
     }
 
     public string FormatStart(int maxLength) =>

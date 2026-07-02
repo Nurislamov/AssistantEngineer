@@ -255,24 +255,85 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.Contains("GMV &lt;X&gt; &amp;", html, StringComparison.Ordinal);
         Assert.Contains("Сводка &lt;summary&gt; &amp;", html, StringComparison.Ordinal);
         Assert.Contains("Причина &lt;cause&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains("Проверка &lt;check&gt; &amp;", html, StringComparison.Ordinal);
+        Assert.Contains("Не обходите защиты", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<b>Ограничения:</b>", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<b>Техническая заметка:</b>", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<summary>", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<check>", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Gmv6B1TechnicalHtmlUsesManualBoundChecksInsteadOfCompactFallback()
+    {
+        using var provider = CreateProvider();
+        var facade = provider.GetRequiredService<IEquipmentDiagnosticBotFacade>();
+        var formatter = provider.GetRequiredService<EquipmentDiagnosticTelegramResponseFormatter>();
+        var response = await facade.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "b1", Series: "GMV6"));
+
+        var html = formatter.FormatTechnicalHtml(response, TelegramUserRole.Engineer);
+
+        Assert.Contains("Проверьте разъём", html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("датчиком температуры наружного воздуха", html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("замените датчик", html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("основную плату", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Дальнейшие действия выполняйте по сервисной процедуре", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("Подтвердите код b1, серию GMV6", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Gmv6AjTechnicalHtmlUsesFilterMaintenanceChecks()
+    {
+        using var provider = CreateProvider();
+        var facade = provider.GetRequiredService<IEquipmentDiagnosticBotFacade>();
+        var formatter = provider.GetRequiredService<EquipmentDiagnosticTelegramResponseFormatter>();
+        var response = await facade.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "AJ", Series: "GMV6"));
+
+        var html = formatter.FormatTechnicalHtml(response, TelegramUserRole.Engineer);
+
+        Assert.Contains("Очистите фильтр", html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Сбросьте напоминание", html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("сервисный цикл", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Подтвердите код AJ", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("Дальнейшие действия выполняйте по сервисной процедуре", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Gmv6U0TechnicalHtmlUsesSafeDebuggingChecksWithoutInventedTroubleshooting()
+    {
+        using var provider = CreateProvider();
+        var facade = provider.GetRequiredService<IEquipmentDiagnosticBotFacade>();
+        var formatter = provider.GetRequiredService<EquipmentDiagnosticTelegramResponseFormatter>();
+        var response = await facade.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "U0", Series: "GMV6"));
+
+        var html = formatter.FormatTechnicalHtml(response, TelegramUserRole.Engineer);
+
+        Assert.Contains("наладочной информац", html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Зафиксируйте код и режим работы оборудования", html, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("сервисную или наладочную информацию", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Подтвердите код U0", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("проверьте компрессор", html, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("замените", html, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void GreeTechnicalHtmlUsesCompactChecksWhenLocalizedChecksAreEmpty()
+    {
+        var formatter = new EquipmentDiagnosticTelegramResponseFormatter(
+            new SpecialCharacterLocalizationSource(useEmptyChecks: true));
+
+        var html = formatter.FormatTechnicalHtml(
+            LocalizedResponse(code: "C<0", series: "GMV <X> &"),
+            TelegramUserRole.Engineer);
+
         Assert.Contains(
             "Подтвердите код C&lt;0, серию GMV &lt;X&gt; &amp; и место индикации.",
-            html,
-            StringComparison.Ordinal);
-        Assert.Contains(
-            "Сверьте модель, условия появления и сопутствующие коды.",
             html,
             StringComparison.Ordinal);
         Assert.Contains(
             "Дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
             html,
             StringComparison.Ordinal);
-        Assert.Contains("Не обходите защиты", html, StringComparison.Ordinal);
-        Assert.DoesNotContain("<b>Ограничения:</b>", html, StringComparison.Ordinal);
-        Assert.DoesNotContain("<b>Техническая заметка:</b>", html, StringComparison.Ordinal);
-        Assert.DoesNotContain("<summary>", html, StringComparison.Ordinal);
-        Assert.DoesNotContain("<check>", html, StringComparison.Ordinal);
-        Assert.DoesNotContain("Проверка &lt;check&gt; &amp;", html, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -593,6 +654,13 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
 
     private sealed class SpecialCharacterLocalizationSource : IErrorKnowledgeLocalizationSource
     {
+        private readonly IReadOnlyList<string> _checkSteps;
+
+        public SpecialCharacterLocalizationSource(bool useEmptyChecks = false)
+        {
+            _checkSteps = useEmptyChecks ? [] : Text.CheckSteps;
+        }
+
         private static readonly ErrorKnowledgeTextV2 Text = new(
             "special-ru-engineer",
             "special",
@@ -643,6 +711,6 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
             EquipmentDiagnosticBotResponse response,
             string locale,
             ErrorKnowledgeAudience audience) =>
-            new(Entry, Text with { Audience = audience });
+            new(Entry, Text with { Audience = audience, CheckSteps = _checkSteps });
     }
 }
