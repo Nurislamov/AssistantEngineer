@@ -2,14 +2,15 @@
 
 ## Current stage
 
-ED-24SRC.8a - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
-ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, and ED-24SRC.7d are CLOSED / pushed.
+ED-24SRC.8b - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, and ED-24SRC.8a are
+CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.8a validation gate.
-2. If validation passes, commit and push ED-24SRC.8a.
-3. Continue with ED-24SRC.8b from the remaining GMV6 outdoor `TableOnlySafe` inventory.
+1. Complete the ED-24SRC.8b validation gate.
+2. If validation passes, commit and push ED-24SRC.8b.
+3. Continue with ED-24SRC.8c from the remaining GMV6 outdoor `TableOnlySafe` inventory.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -17,6 +18,46 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.8b repairs the GMV6 outdoor G-family table-only batch without changing runtime counts.
+
+ED-24SRC.8b work-log selection:
+
+- Selected codes: `G0`, `G1`, `G2`, `G3`, `G4`, `G5`, `G6`, `G7`, `G8`, `G9`, `GA`, `Gb`, `GC`, `Gd`, `GE`, `GF`,
+  `GH`, `GJ`, `GL`, `Gn`, `GP`, `GU`, and `Gy`.
+- Manual/table references: Chapter 3 outdoor error-indication rows for the G-family photovoltaic/grid-side protections.
+- Batch reason: this is one table-only G family. The inventory shows no fault diagnosis, possible causes,
+  troubleshooting, or flowchart for these rows, so visible text uses only the stored meaning plus safe handoff steps.
+- Skipped codes: `H4`, `HA`, `HE`, `HF`, `HP`, `HU`, `JA`, `JC`, `JE`, `JF`, `JL`, `P4`, `PA`, `PE`, `PF`, `PP`,
+  and `PU` remain for ED-24SRC.8c; no indoor, status, or debugging cards were changed.
+
+ED-24SRC.8b implementation notes:
+
+- `G0`-`Gy` now use only their photovoltaic/grid-side table meaning in title and summary.
+- `possibleCauses` is empty for every ED-24SRC.8b card.
+- `checkSteps`, `recommendedAction`, `safetyNote`, and `sourceNote` are short, safe, and free of provenance wording.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` classifies the ED-24SRC.8b batch as repaired.
+- Inventory counts after script rerun: AlreadyRepaired 105; DetailedProcedureAvailable 26; TableOnlySafe 51;
+  StatusOrPrompt 43; DebuggingOrCommissioning 38.
+- Category split after script rerun: outdoor = 104 AlreadyRepaired, 0 DetailedProcedureAvailable, 17 TableOnlySafe;
+  indoor = 26 DetailedProcedureAvailable, 34 TableOnlySafe; debugging = 38 DebuggingOrCommissioning; status =
+  1 AlreadyRepaired, 43 StatusOrPrompt.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Validation:
+  - `dotnet restore .\AssistantEngineer.sln`: PASS.
+  - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 6 existing nullable warnings in architecture guard
+    tests and 0 errors.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1121/1121).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~Telegram" --logger "console;verbosity=minimal"`:
+    PASS (640/640).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnosticTelegramWebhookApiIntegrationTests" --logger "console;verbosity=minimal"`:
+    PASS (10/10).
+  - `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal"`: PASS (5145/5145).
+  - `git diff --check`: PASS.
 
 ED-24SRC.8a repairs the first GMV6 outdoor table-only batch without changing runtime counts.
 

@@ -160,6 +160,34 @@ public sealed class GreeManualBoundCardRepairTests
             ["fp.json"] = ("FP", ["DC-двигателя"])
         };
 
+    private static readonly Dictionary<string, (string Code, string[] RequiredPhrases)> Gmv6OutdoorTableOnlyGBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["g0.json"] = ("G0", ["PV", "обратного подключения"]),
+            ["g1.json"] = ("G1", ["PV", "островного режима"]),
+            ["g2.json"] = ("G2", ["PV DC", "перегрузке тока"]),
+            ["g3.json"] = ("G3", ["перегрузку выработки PV"]),
+            ["g4.json"] = ("G4", ["PV", "току утечки"]),
+            ["g5.json"] = ("G5", ["отсутствия фазы", "электросети"]),
+            ["g6.json"] = ("G6", ["PV LVRT"]),
+            ["g7.json"] = ("G7", ["частоте электросети"]),
+            ["g8.json"] = ("G8", ["перегрузке тока", "электросети"]),
+            ["g9.json"] = ("G9", ["IPM-модуля", "электросети"]),
+            ["ga.json"] = ("GA", ["входному напряжению", "электросети"]),
+            ["gb.json"] = ("Gb", ["реле", "электросети"]),
+            ["gc.json"] = ("GC", ["аппаратную защиту", "PV DC", "перегрузке тока"]),
+            ["gd.json"] = ("Gd", ["току", "электросети"]),
+            ["ge.json"] = ("GE", ["напряжению PV"]),
+            ["gf.json"] = ("GF", ["нейтральной точки DC-шины"]),
+            ["gh.json"] = ("GH", ["PV DC/DC"]),
+            ["gj.json"] = ("GJ", ["модуля", "высокой температуры"]),
+            ["gl.json"] = ("GL", ["аппаратную защиту", "электросети", "перегрузке тока"]),
+            ["gn.json"] = ("Gn", ["сопротивлению изоляции"]),
+            ["gp.json"] = ("GP", ["датчика температуры", "электросети"]),
+            ["gu.json"] = ("GU", ["цепи зарядки"]),
+            ["gy.json"] = ("Gy", ["питания PV"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -589,6 +617,56 @@ public sealed class GreeManualBoundCardRepairTests
             var visible = VisibleBlob(entry);
 
             Assert.Contains("Gree GMV", visible, StringComparison.Ordinal);
+            Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
+            Assert.Contains($"Код {expectation.Code} означает", visible, StringComparison.Ordinal);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.DoesNotContain("замен", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("flowchart", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("раздел 2.", visible, StringComparison.OrdinalIgnoreCase);
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    var textVisible = string.Join(
+                        "\n",
+                        TelegramVisibleFields
+                            .Select(field => text[field])
+                            .Where(node => node is not null)
+                            .SelectMany(node => node is JsonArray array
+                                ? array.Select(item => item!.GetValue<string>())
+                                : [node!.GetValue<string>()]));
+
+                    Assert.Empty(RequiredArray(text, "possibleCauses"));
+                    Assert.Equal(3, RequiredArray(text, "checkSteps").Count);
+                    Assert.Contains("Зафиксируйте код", textVisible, StringComparison.OrdinalIgnoreCase);
+                    Assert.Contains("квалифицированному специалисту", textVisible, StringComparison.OrdinalIgnoreCase);
+                });
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorTableOnlyGBatchUsesOnlySafeMeaningWithoutInventedCauses()
+    {
+        foreach (var (fileName, expectation) in Gmv6OutdoorTableOnlyGBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains("Gree GMV6", visible, StringComparison.Ordinal);
             Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
             Assert.Contains($"Код {expectation.Code} означает", visible, StringComparison.Ordinal);
 
