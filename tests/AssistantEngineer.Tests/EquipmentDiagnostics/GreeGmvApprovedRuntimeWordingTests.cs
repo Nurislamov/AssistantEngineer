@@ -44,7 +44,7 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
                 runtimePath.Replace('/', Path.DirectorySeparatorChar)));
 
             var normalizedRu = RequiredObject(approved, "normalizedRu");
-            var expectedTitle = RequiredString(normalizedRu, "titleRu");
+            var expectedTitle = NormalizeGmv6Title(RequiredString(normalizedRu, "titleRu"), code);
             var expectedChecks = RequiredArray(normalizedRu, "checksRu")
                 .Select(item => SanitizeVisibleRuntimeText(item!.GetValue<string>()))
                 .ToArray();
@@ -86,6 +86,9 @@ public sealed class GreeGmvApprovedRuntimeWordingTests
             }
         }
     }
+
+    private static string NormalizeGmv6Title(string title, string code) =>
+        title.Replace($"Gree GMV {code} —", $"Gree GMV6 — {code} —", StringComparison.Ordinal);
 
     [Fact]
     public void ApprovedPriorityGmvWordingDoesNotChangeMiniC0RuntimeTarget()

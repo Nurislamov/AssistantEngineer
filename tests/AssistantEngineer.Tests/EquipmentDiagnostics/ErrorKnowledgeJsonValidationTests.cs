@@ -629,7 +629,7 @@ public sealed class ErrorKnowledgeJsonValidationTests
         var text = formatter.FormatConsumer(Response(), hasPhoneNumber: false, maxLength: 2000);
 
         Assert.Contains("защита по перегрузке тока инверторного вентилятора", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Gree GMV H5", text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — H5", text, StringComparison.Ordinal);
         Assert.DoesNotContain("измерить напряжение", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("добавить хладагент", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("заменить компрессор", text, StringComparison.OrdinalIgnoreCase);

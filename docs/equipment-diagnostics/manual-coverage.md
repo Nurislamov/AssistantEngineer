@@ -17,6 +17,11 @@ references, and import evidence remain metadata and are not emitted as Telegram 
 all 1296 Gree runtime cards, removes the known generic import template from 235 GMV6 cards, and completes a
 manual-section repair for GMV6 `AJ` and `b1`.
 
+ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use
+the GMV6 series name, internal table-only `sourceNote` wording is replaced with a neutral handoff, and formatter tests
+confirm that `sourceNote` remains metadata for Consumer, Installer, and Engineer responses. Source mappings and binary
+manuals are unchanged.
+
 ED-24SRC.2 repairs the first detailed GMV6 batch from the same service-manual boundary: outdoor sensor/procedure cards
 `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`, `b9`, and `bA` now carry the documented 30-second sensor-detection
 condition, three possible causes, and connector -> sensor -> detection-circuit/main-board troubleshooting flow. Runtime

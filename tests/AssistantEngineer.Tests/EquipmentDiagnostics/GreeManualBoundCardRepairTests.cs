@@ -435,7 +435,7 @@ public sealed class GreeManualBoundCardRepairTests
 
             if (expectation.Code == "H5")
             {
-                Assert.Contains("Gree GMV H5 —", visible, StringComparison.Ordinal);
+                Assert.Contains("Gree GMV6 — H5 —", visible, StringComparison.Ordinal);
             }
             else
             {
@@ -859,7 +859,7 @@ public sealed class GreeManualBoundCardRepairTests
             var visible = VisibleBlob(entry);
 
             var expectedTitlePrefix = expectation.Code == "L1"
-                ? "Gree GMV L1 —"
+                ? "Gree GMV6 — L1 —"
                 : $"Gree GMV6 — {expectation.Code} —";
 
             Assert.Contains(expectedTitlePrefix, visible, StringComparison.Ordinal);
@@ -937,6 +937,47 @@ public sealed class GreeManualBoundCardRepairTests
                         string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")),
                         $"Safety note is empty: {path}");
                 });
+        }
+    }
+
+    [Fact]
+    public void Gmv6VisibleTitlesAndSourceNotesAreUserSafe()
+    {
+        var gmv6Root = Path.Combine(GreeRoot, "gmv6");
+        var entries = Directory
+            .EnumerateFiles(gmv6Root, "*.json", SearchOption.AllDirectories)
+            .Order(StringComparer.Ordinal)
+            .Select(path => (Path: path, Entry: ReadObject(path)))
+            .ToArray();
+
+        Assert.Equal(263, entries.Length);
+
+        foreach (var (path, entry) in entries)
+        {
+            foreach (var text in RequiredTexts(entry))
+            {
+                var title = RequiredString(text, "title");
+                var sourceNote = RequiredString(text, "sourceNote");
+
+                Assert.StartsWith("Gree GMV6", title, StringComparison.Ordinal);
+                Assert.DoesNotContain("Gree GMV ", title, StringComparison.Ordinal);
+
+                foreach (var phrase in ForbiddenVisiblePhrases)
+                {
+                    Assert.DoesNotContain(phrase, sourceNote, StringComparison.OrdinalIgnoreCase);
+                }
+
+                Assert.DoesNotContain("по таблице", sourceNote, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("классифицирован", sourceNote, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain(
+                    "Код передан без предположений",
+                    sourceNote,
+                    StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain(
+                    "без пошаговой диагностики",
+                    sourceNote,
+                    StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 

@@ -83,7 +83,7 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
 
         Assert.Contains("Возможное значение", text, StringComparison.Ordinal);
         Assert.Contains("Что можно сделать безопасно", text, StringComparison.Ordinal);
-        Assert.Contains("Gree GMV H5", text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 — H5", text, StringComparison.Ordinal);
         Assert.DoesNotContain("Confidence", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Source", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("deterministic bot API", text, StringComparison.OrdinalIgnoreCase);
@@ -221,6 +221,24 @@ public sealed class EquipmentDiagnosticTelegramFormatterTests
         Assert.DoesNotContain("связи связи", consumer, StringComparison.OrdinalIgnoreCase);
         Assert.Equal(6, CountOccurrences(technical, "сообщение о связи и адресации"));
         Assert.Equal(6, CountOccurrences(consumer, "сообщение о связи и адресации"));
+    }
+
+    [Fact]
+    public void SourceNoteIsNotRenderedForConsumerOrTechnicalAudiences()
+    {
+        var formatter = new EquipmentDiagnosticTelegramResponseFormatter(
+            new SpecialCharacterLocalizationSource());
+        var response = LocalizedResponse(code: "C<0", series: "GMV <X> &");
+
+        var consumer = formatter.FormatConsumer(response, hasPhoneNumber: false, maxLength: 4000);
+        var installer = formatter.FormatTechnical(response, TelegramUserRole.Installer);
+        var engineer = formatter.FormatTechnical(response, TelegramUserRole.Engineer);
+
+        foreach (var output in new[] { consumer, installer, engineer })
+        {
+            Assert.DoesNotContain("Источник <source> &", output, StringComparison.Ordinal);
+            Assert.DoesNotContain("sourceNote", output, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     [Fact]
