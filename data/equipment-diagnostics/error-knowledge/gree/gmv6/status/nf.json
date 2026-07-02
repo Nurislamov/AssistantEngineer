@@ -1,102 +1,114 @@
 {
-  "id": "gree-gmv6-status-nf",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "OutdoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "nF",
-  "signalType": "Status",
-  "displaySource": "OutdoorBoard",
-  "systemPart": "Fan",
-  "severity": "Info",
-  "requiresQualifiedService": false,
-  "canCustomerContinueOperation": null,
-  "packageId": "gree-gmv6-status-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Fan model",
-  "sourceReference": "глава 3 Faults / Error Indication / Status nF / PDF page 77 / manual page 75; Troubleshooting 2.124 / PDF page 165 / manual page 163",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-20T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-status-nf-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 nF — состояние вентилятора",
-      "summary": "Код nF означает: состояние вентилятора. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Это информационное сообщение. Не меняйте сервисные настройки и не открывайте панели оборудования.",
-      "checkSteps": [
-        "Запишите код nF, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не трактовать информационный код как подтверждённую неисправность."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.124, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-status-nf-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 nF — состояние вентилятора",
-      "summary": "Код nF означает: состояние вентилятора. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Допустимы только безопасные внешние и визуальные проверки. Работы внутри электрических отсеков выполняет квалифицированный специалист при снятом питании.",
-      "checkSteps": [
-        "Запишите код nF, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.124, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-status-nf-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 nF — состояние вентилятора",
-      "summary": "Код nF означает: состояние вентилятора. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Электрические, инверторные, компрессорные и холодильные проверки выполняются квалифицированным специалистом по штатной процедуре и при соблюдении требований безопасности.",
-      "checkSteps": [
-        "Запишите код nF, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправном компоненте только по коду.",
-        "Не отключать и не обходить защиты."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.124, но его пошаговая процедура в эту запись не перенесена."
-    }
-  ]
+    "id":  "gree-gmv6-status-nf",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "OutdoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "nF",
+    "signalType":  "Status",
+    "displaySource":  "OutdoorBoard",
+    "systemPart":  "Fan",
+    "severity":  "Info",
+    "requiresQualifiedService":  false,
+    "canCustomerContinueOperation":  null,
+    "packageId":  "gree-gmv6-status-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Fan model",
+    "sourceReference":  "глава 3 Faults / Error Indication / Status nF / PDF page 77 / manual page 75; Troubleshooting 2.124 / PDF page 165 / manual page 163",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-20T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-status-nf-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 — nF — модель вентилятора",
+                      "summary":  "Код nF означает модель вентилятора.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не трактовать информационный код как подтверждённую неисправность."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-status-nf-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 — nF — модель вентилятора",
+                      "summary":  "Код nF означает модель вентилятора.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-status-nf-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 — nF — модель вентилятора",
+                      "summary":  "Код nF означает модель вентилятора.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправном компоненте только по коду.",
+                                          "Не отключать и не обходить защиты."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  }
+              ]
 }

@@ -262,7 +262,21 @@ $alreadyRepairedCodes = @(
     "n6",
     "n7",
     "n8",
-    "n9"
+    "n9",
+    "nA",
+    "nb",
+    "nC",
+    "nE",
+    "nF",
+    "nH",
+    "nJ",
+    "nn",
+    "nU",
+    "qA",
+    "qC",
+    "qH",
+    "qP",
+    "qU"
 )
 $alreadyRepairedLookup = @{}
 foreach ($code in $alreadyRepairedCodes) {

@@ -2,15 +2,16 @@
 
 ## Current stage
 
-ED-24SRC.13b - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.13c - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
 ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
 ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, ED-24SRC.10a, ED-24SRC.10b, ED-24SRC.10c, and
-ED-24SRC.11a, ED-24SRC.11b-1, ED-24SRC.11b-2, ED-24SRC.12, and ED-24SRC.13a are CLOSED / pushed.
+ED-24SRC.11a, ED-24SRC.11b-1, ED-24SRC.11b-2, ED-24SRC.12, ED-24SRC.13a, and ED-24SRC.13b are
+CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete ED-24SRC.13b validation and push status batch 2.
-2. Continue the final 14 status cards in ED-24SRC.13c.
+1. Complete ED-24SRC.13c validation and push the final status batch.
+2. Verify status closure, then continue debugging.
 3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -19,6 +20,12 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.13c repairs the final 14 GMV6 status cards from `nA` through `qU`; all 44 status cards now have explicit
+status-only visible wording, including the already closed `AJ`.
+GMV6 status is CLOSED / manual-bound PASS. Inventory status remaining work is zero; runtime status count remains 44.
+Validation: restore PASS; build PASS with 6 existing nullable warnings and 0 errors; EquipmentDiagnostics 1130/1130;
+Telegram 641/641; webhook 10/10; full suite 5154/5154; `git diff --check` PASS.
 
 ED-24SRC.13b repairs 14 GMV6 status cards from `An` through `n9` as settings, queries, and operating modes.
 Validation: restore PASS; build PASS with 6 existing nullable warnings and 0 errors; EquipmentDiagnostics 1130/1130;
