@@ -48,6 +48,11 @@ ED-24SRC.10a repairs the first GMV6 indoor detailed batch from sections 2.43, 2.
 2.52, 2.53, and 2.54: `d1`, `d3`, `d4`, `d6`, `d7`, `d9`, `dA`, `dC`, `dH`, and `dL`. Runtime counts remain unchanged.
 Remaining indoor `DetailedProcedureAvailable` rows are 16 after this batch.
 
+ED-24SRC.10b repairs the remaining usable GMV6 indoor detailed rows: `L0`, `L1`, `L3`, `L4`, `L5`, `L7`, `L9`, `LA`,
+and `LC`. Reserved/not-applied or status-only rows `d5`, `d8`, `db`, `dE`, `L2`, `L6`, and `LH` are no longer treated as
+detailed procedure rows. GMV6 indoor `DetailedProcedureAvailable` is now zero; indoor table-only remains open with 41
+rows.
+
 Current snapshot:
 
 - Source files tracked: 52.

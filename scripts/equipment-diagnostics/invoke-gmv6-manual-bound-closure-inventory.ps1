@@ -183,11 +183,34 @@ $alreadyRepairedCodes = @(
     "dA",
     "dC",
     "dH",
-    "dL"
+    "dL",
+    "L0",
+    "L1",
+    "L3",
+    "L4",
+    "L5",
+    "L7",
+    "L9",
+    "LA",
+    "LC"
 )
 $alreadyRepairedLookup = @{}
 foreach ($code in $alreadyRepairedCodes) {
     $alreadyRepairedLookup[$code] = $true
+}
+
+$noDetailedIndoorProcedureCodes = @(
+    "d5",
+    "d8",
+    "db",
+    "dE",
+    "L2",
+    "L6",
+    "LH"
+)
+$noDetailedIndoorProcedureLookup = @{}
+foreach ($code in $noDetailedIndoorProcedureCodes) {
+    $noDetailedIndoorProcedureLookup[$code] = $true
 }
 
 function Join-TextValues {
@@ -255,6 +278,10 @@ function Get-RepairClass {
 
     if ($alreadyRepairedLookup.ContainsKey($Code) -and $VisibleTextIsManualBoundSafe) {
         return "AlreadyRepaired"
+    }
+
+    if ($Category -eq "indoor" -and $noDetailedIndoorProcedureLookup.ContainsKey($Code) -and $VisibleTextIsManualBoundSafe) {
+        return "TableOnlySafe"
     }
 
     if ($Category -eq "status") {
@@ -346,7 +373,10 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $gmv6Root -Recurse -Filt
     if ($sourceReferences.Count -gt 1) {
         $classificationNotes += "Multiple sourceReferences are present; treat as compatible unless a later manual review finds meaning divergence."
     }
-    if ($hasTroubleshootingReference -and -not $alreadyRepairedLookup.ContainsKey($entry.code)) {
+    if ($category -eq "indoor" -and $noDetailedIndoorProcedureLookup.ContainsKey($entry.code)) {
+        $classificationNotes += "Troubleshooting reference string is present, but the reviewed section is reserved, not applied, or status-only and has no detailed procedure to promote."
+    }
+    elseif ($hasTroubleshootingReference -and -not $alreadyRepairedLookup.ContainsKey($entry.code)) {
         $classificationNotes += "Troubleshooting section is referenced but visible procedure has not been promoted in ED-24SRC.3."
     }
     if (-not $manualSectionFound) {

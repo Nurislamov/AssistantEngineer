@@ -225,6 +225,20 @@ public sealed class GreeManualBoundCardRepairTests
             ["dl.json"] = ("dL", 3, ["датчика температуры воздуха на выходе", "AD-значение", "5 секунд", "разъём", "замените основную плату управления внутреннего блока"])
         };
 
+    private static readonly Dictionary<string, (string Code, int CauseCount, string[] RequiredPhrases)> Gmv6IndoorDetailedL10bBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["l0.json"] = ("L0", 1, ["инженерного номера", "неисправного внутреннего блока", "фактическому коду"]),
+            ["l1.json"] = ("L1", 2, ["вентилятора внутреннего блока", "DC", "PG", "двигатель", "реле перегрузки", "основную плату внутреннего блока"]),
+            ["l3.json"] = ("L3", 4, ["поплавковый выключатель", "дренажный насос", "дренажную трубу", "засорена"]),
+            ["l4.json"] = ("L4", 3, ["проводного контроллера", "замкнут", "замените проводной контроллер", "основную плату внутреннего блока"]),
+            ["l5.json"] = ("L5", 4, ["замерзания", "фильтр", "испаритель", "хладагент", "скорость вентилятора"]),
+            ["l7.json"] = ("L7", 3, ["главный внутренний блок", "одной системе питания", "заново установите"]),
+            ["l9.json"] = ("L9", 2, ["больше 16", "P14", "фактически подключённому количеству"]),
+            ["la.json"] = ("LA", 1, ["разным сериям", "одной серии", "проводному контроллеру"]),
+            ["lc.json"] = ("LC", 1, ["не соответствует наружному блоку", "не может распознать", "совместимый"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -806,6 +820,50 @@ public sealed class GreeManualBoundCardRepairTests
             Assert.Contains($"Gree GMV6 — {expectation.Code} —", visible, StringComparison.Ordinal);
             Assert.Contains("внутренн", visible, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("наружного блока и электрического отсека", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("2-разрядном LED", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("краткое значение кода", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("пошаговая процедура в эту запись не перенесена", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("раздел 2.", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    Assert.Equal(expectation.CauseCount, RequiredArray(text, "possibleCauses").Count);
+                    Assert.NotEmpty(RequiredArray(text, "checkSteps"));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")));
+                });
+        }
+    }
+
+    [Fact]
+    public void Gmv6IndoorDetailedL10bBatchContainsManualDiagnosisCausesAndIndoorFlow()
+    {
+        foreach (var (fileName, expectation) in Gmv6IndoorDetailedL10bBatch)
+        {
+            var entry = ReadEntry("gmv6", "indoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            var expectedTitlePrefix = expectation.Code == "L1"
+                ? "Gree GMV L1 —"
+                : $"Gree GMV6 — {expectation.Code} —";
+
+            Assert.Contains(expectedTitlePrefix, visible, StringComparison.Ordinal);
+            Assert.Contains("внутренн", visible, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("2-разрядном LED", visible, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("краткое значение кода", visible, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("пошаговая процедура в эту запись не перенесена", visible, StringComparison.OrdinalIgnoreCase);

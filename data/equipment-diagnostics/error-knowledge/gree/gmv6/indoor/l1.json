@@ -1,165 +1,161 @@
 {
-    "id":  "gree-gmv6-indoor-l1",
-    "manufacturer":  "Gree",
-    "equipmentFamily":  "VRF",
-    "equipmentType":  "IndoorUnit",
-    "series":  "GMV6",
-    "models":  [
-                   "GMV-224WM/G-X",
-                   "GMV-280WM/G-X",
-                   "GMV-335WM/G-X",
-                   "GMV-400WM/G-X",
-                   "GMV-450WM/G-X",
-                   "GMV-504WM/G-X",
-                   "GMV-560WM/G-X",
-                   "GMV-615WM/G-X",
-                   "GMV-680WM/G-X"
-               ],
-    "code":  "L1",
-    "signalType":  "Protection",
-    "displaySource":  "IndoorUnit",
-    "systemPart":  "Fan",
-    "severity":  "Medium",
-    "requiresQualifiedService":  true,
-    "canCustomerContinueOperation":  false,
-    "packageId":  "gree-gmv6-indoor-fault-codes",
-    "sourceLanguage":  "en",
-    "sourceType":  "Manual",
-    "sourceName":  "Service Manual for GMV6 v_2020.09",
-    "sourceMeaning":  "Protection of indoor fan",
-    "sourceReference":  "глава 3 Faults / Error Indication / Indoor L1 / PDF page 74 / manual page 72; Troubleshooting 2.102 / PDF page 155 / manual page 153",
-    "sourceReferences":  [
-                             {
-                                 "sourceName":  "Service Manual for GMV6 v_2020.09",
-                                 "documentCode":  "GC202001-I",
-                                 "sourceReference":  "глава 3 Faults / Error Indication / Indoor L1 / PDF page 74 / manual page 72; Troubleshooting 2.102 / PDF page 155 / manual page 153",
-                                 "sourceType":  "Manual",
-                                 "sourceLanguage":  "en",
-                                 "verificationStatus":  "ManualVerified",
-                                 "confidence":  "High",
-                                 "manualId":  "gree-gmv6-service-manual-2020-09",
-                                 "packageId":  "gree-gmv6-indoor-fault-codes",
-                                 "notes":  "Primary GMV6 manual source retained for backward compatibility."
-                             },
-                             {
-                                 "sourceName":  "Service Manual - Multi Variable Air Conditioners Indoor Units",
-                                 "documentCode":  "GC202004-X",
-                                 "sourceReference":  "Malfunction List for the Wired Controller, manual page 173 / PDF page 178",
-                                 "sourceType":  "Manual",
-                                 "sourceLanguage":  "en",
-                                 "verificationStatus":  "ManualVerified",
-                                 "confidence":  "High",
-                                 "manualId":  "gree-gmv-idu-service-manual",
-                                 "packageId":  "gree-gmv6-indoor-fault-codes",
-                                 "notes":  "GC202004-X also contains a detailed troubleshooting section reviewed in ED-24F.1b; Consumer advice remains unchanged."
-                             },
-                             {
-                                 "sourceName":  "Gree official support error code catalog",
-                                 "documentCode":  "Gree-GMV-L1",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-L1.подтверждённый.json",
-                                 "sourceType":  "Manual",
-                                 "sourceLanguage":  "en",
-                                 "verificationStatus":  "ManualVerified",
-                                 "confidence":  "High",
-                                 "manualId":  "gree-official-support-error-catalog",
-                                 "packageId":  "gree-gmv6-indoor-fault-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/L1 GMV.PNG. Approved title: Gree GMV L1 — защита вентилятора внутреннего блока."
-                             }
-                         ],
-    "confidence":  "High",
-    "verificationStatus":  "ManualVerified",
-    "createdAt":  "2026-06-20T00:00:00Z",
-    "updatedAt":  "2026-06-22T00:00:00Z",
-    "texts":  [
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Проблема питания внутреннего блока.",
-                                             "Ошибка цепей платы внутреннего блока.",
-                                             "Сработала защита внутреннего блока.",
-                                             "Есть сопутствующий код, который уточняет причину."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-22T00:00:00Z",
-                      "id":  "gree-gmv6-indoor-l1-ru-consumer",
-                      "audience":  "Consumer",
-                      "title":  "Gree GMV L1 — защита вентилятора внутреннего блока",
-                      "summary":  "L1 относится к внутреннему блоку. Сначала проверьте питание внутреннего блока, соединения платы, датчики и сопутствующие коды.",
-                      "safetyNote":  "Проверки питания и платы внутреннего блока выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить питание внутреннего блока.",
-                                         "Проверить разъёмы и соединения платы внутреннего блока.",
-                                         "Проверить датчики и сопутствующие коды.",
-                                         "Сверить процедуру диагностики с руководством для этой модели."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о неисправности платы только по L1.",
-                                          "Не выполнять повторные пуски при сохраняющейся ошибке без проверки причины."
-                                      ],
-                      "recommendedAction":  "Продолжить диагностику внутреннего блока по разделу L1 руководства GMV6.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Для кода есть отдельный раздел 2.102, но его пошаговая процедура в эту запись не перенесена."
-                  },
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Проблема питания внутреннего блока.",
-                                             "Ошибка цепей платы внутреннего блока.",
-                                             "Сработала защита внутреннего блока.",
-                                             "Есть сопутствующий код, который уточняет причину."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-22T00:00:00Z",
-                      "id":  "gree-gmv6-indoor-l1-ru-installer",
-                      "audience":  "Installer",
-                      "title":  "Gree GMV L1 — защита вентилятора внутреннего блока",
-                      "summary":  "При L1 подтвердить модель и место отображения кода. Затем проверить питание внутреннего блока, цепи платы, датчики и сопутствующие аварии.",
-                      "safetyNote":  "Проверки питания и платы внутреннего блока выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить питание внутреннего блока.",
-                                         "Проверить разъёмы и соединения платы внутреннего блока.",
-                                         "Проверить датчики и сопутствующие коды.",
-                                         "Сверить процедуру диагностики с руководством для этой модели."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о неисправности платы только по L1.",
-                                          "Не выполнять повторные пуски при сохраняющейся ошибке без проверки причины."
-                                      ],
-                      "recommendedAction":  "Продолжить диагностику внутреннего блока по разделу L1 руководства GMV6.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Для кода есть отдельный раздел 2.102, но его пошаговая процедура в эту запись не перенесена."
-                  },
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Проблема питания внутреннего блока.",
-                                             "Ошибка цепей платы внутреннего блока.",
-                                             "Сработала защита внутреннего блока.",
-                                             "Есть сопутствующий код, который уточняет причину."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-22T00:00:00Z",
-                      "id":  "gree-gmv6-indoor-l1-ru-engineer",
-                      "audience":  "Engineer",
-                      "title":  "Gree GMV L1 — защита вентилятора внутреннего блока",
-                      "summary":  "При L1 подтвердить модель и место отображения кода. Затем проверить питание внутреннего блока, цепи платы, датчики и сопутствующие аварии.",
-                      "safetyNote":  "Проверки питания и платы внутреннего блока выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить питание внутреннего блока.",
-                                         "Проверить разъёмы и соединения платы внутреннего блока.",
-                                         "Проверить датчики и сопутствующие коды.",
-                                         "Сверить процедуру диагностики с руководством для этой модели."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о неисправности платы только по L1.",
-                                          "Не выполнять повторные пуски при сохраняющейся ошибке без проверки причины."
-                                      ],
-                      "recommendedAction":  "Продолжить диагностику внутреннего блока по разделу L1 руководства GMV6.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Для кода есть отдельный раздел 2.102, но его пошаговая процедура в эту запись не перенесена."
-                  }
-              ]
+  "id": "gree-gmv6-indoor-l1",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "IndoorUnit",
+  "series": "GMV6",
+  "models": [
+    "GMV-224WM/G-X",
+    "GMV-280WM/G-X",
+    "GMV-335WM/G-X",
+    "GMV-400WM/G-X",
+    "GMV-450WM/G-X",
+    "GMV-504WM/G-X",
+    "GMV-560WM/G-X",
+    "GMV-615WM/G-X",
+    "GMV-680WM/G-X"
+  ],
+  "code": "L1",
+  "signalType": "Protection",
+  "displaySource": "IndoorUnit",
+  "systemPart": "Fan",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv6-indoor-fault-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Service Manual for GMV6 v_2020.09",
+  "sourceMeaning": "Protection of indoor fan",
+  "sourceReference": "глава 3 Faults / Error Indication / Indoor L1 / PDF page 74 / manual page 72; Troubleshooting 2.102 / PDF page 155 / manual page 153",
+  "sourceReferences": [
+    {
+      "sourceName": "Service Manual for GMV6 v_2020.09",
+      "documentCode": "GC202001-I",
+      "sourceReference": "глава 3 Faults / Error Indication / Indoor L1 / PDF page 74 / manual page 72; Troubleshooting 2.102 / PDF page 155 / manual page 153",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv6-service-manual-2020-09",
+      "packageId": "gree-gmv6-indoor-fault-codes",
+      "notes": "Primary GMV6 manual source retained for backward compatibility."
+    },
+    {
+      "sourceName": "Service Manual - Multi Variable Air Conditioners Indoor Units",
+      "documentCode": "GC202004-X",
+      "sourceReference": "Malfunction List for the Wired Controller, manual page 173 / PDF page 178",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-idu-service-manual",
+      "packageId": "gree-gmv6-indoor-fault-codes",
+      "notes": "GC202004-X also contains a detailed troubleshooting section reviewed in ED-24F.1b; Consumer advice remains unchanged."
+    },
+    {
+      "sourceName": "Gree official support error code catalog",
+      "documentCode": "Gree-GMV-L1",
+      "sourceReference": "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-L1.подтверждённый.json",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-official-support-error-catalog",
+      "packageId": "gree-gmv6-indoor-fault-codes",
+      "notes": "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-L1/L1 GMV.PNG. Approved title: Gree GMV L1 — защита вентилятора внутреннего блока."
+    }
+  ],
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-20T00:00:00Z",
+  "updatedAt": "2026-06-22T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Двигатель вентилятора остановлен или заклинил.",
+        "Основная плата внутреннего блока работает неправильно."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-07-02T00:00:00Z",
+      "id": "gree-gmv6-indoor-l1-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV L1 — защита вентилятора внутреннего блока",
+      "summary": "Защита L1 относится к вентилятору внутреннего блока: вентилятор может вращаться слишком медленно, быть остановлен или давать сигнал защиты.",
+      "safetyNote": "Не открывайте панели внутреннего блока и не выполняйте электрические проверки самостоятельно.",
+      "checkSteps": [
+        "Запишите код L1, модель внутреннего блока и условия появления.",
+        "Не разбирайте внутренний блок; передайте код квалифицированному специалисту."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о неисправности платы только по L1.",
+        "Не выполнять повторные пуски при сохраняющейся ошибке без проверки причины."
+      ],
+      "recommendedAction": "Обратитесь в квалифицированный сервис для проверки вентилятора внутреннего блока и его цепи защиты.",
+      "sourceNote": "Код относится к вентилятору внутреннего блока, входу защиты вентилятора и основной плате."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Двигатель вентилятора остановлен или заклинил.",
+        "Основная плата внутреннего блока работает неправильно."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-07-02T00:00:00Z",
+      "id": "gree-gmv6-indoor-l1-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV L1 — защита вентилятора внутреннего блока",
+      "summary": "Защита L1 появляется, когда вентилятор внутреннего блока вращается медленно, остановлен или поступает внешний сигнал защиты вентилятора. Индикация: проводной контроллер внутреннего блока или приёмник сигнала внутреннего блока.",
+      "safetyNote": "Работы внутри внутреннего блока и электрического отсека выполняет квалифицированный специалист при отключённом питании.",
+      "checkSteps": [
+        "Определите тип двигателя неисправного внутреннего блока: DC, AC или PG.",
+        "Для DC- или PG-двигателя проверьте, не заблокированы ли двигатель, вал или лопасти; удалите посторонние предметы.",
+        "Если двигатель неисправен — замените его двигателем той же модели.",
+        "Если двигатель исправен, но основная плата внутреннего блока работает неправильно — замените основную плату внутреннего блока.",
+        "Для AC-двигателя без входа сигнала защиты вентилятора проверьте подключение входа защиты на основной плате; ослабление, окисление или плохой контакт перемычек могут ошибочно вызвать защиту.",
+        "Для моделей с входом сигнала защиты вентилятора проверьте реле перегрузки вентилятора; при неисправности замените реле перегрузки."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о неисправности платы только по L1.",
+        "Не выполнять повторные пуски при сохраняющейся ошибке без проверки причины."
+      ],
+      "recommendedAction": "Проверить тип двигателя, механическую блокировку, сам двигатель, вход защиты вентилятора и основную плату внутреннего блока.",
+      "sourceNote": "Код относится к вентилятору внутреннего блока, входу защиты вентилятора и основной плате."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Двигатель вентилятора остановлен или заклинил.",
+        "Основная плата внутреннего блока работает неправильно."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-07-02T00:00:00Z",
+      "id": "gree-gmv6-indoor-l1-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV L1 — защита вентилятора внутреннего блока",
+      "summary": "Защита L1 появляется, когда вентилятор внутреннего блока вращается медленно, остановлен или поступает внешний сигнал защиты вентилятора. Индикация: проводной контроллер внутреннего блока или приёмник сигнала внутреннего блока.",
+      "safetyNote": "Работы внутри внутреннего блока и электрического отсека выполняет квалифицированный специалист при отключённом питании.",
+      "checkSteps": [
+        "Определите тип двигателя неисправного внутреннего блока: DC, AC или PG.",
+        "Для DC- или PG-двигателя проверьте, не заблокированы ли двигатель, вал или лопасти; удалите посторонние предметы.",
+        "Если двигатель неисправен — замените его двигателем той же модели.",
+        "Если двигатель исправен, но основная плата внутреннего блока работает неправильно — замените основную плату внутреннего блока.",
+        "Для AC-двигателя без входа сигнала защиты вентилятора проверьте подключение входа защиты на основной плате; ослабление, окисление или плохой контакт перемычек могут ошибочно вызвать защиту.",
+        "Для моделей с входом сигнала защиты вентилятора проверьте реле перегрузки вентилятора; при неисправности замените реле перегрузки."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о неисправности платы только по L1.",
+        "Не выполнять повторные пуски при сохраняющейся ошибке без проверки причины."
+      ],
+      "recommendedAction": "Проверить тип двигателя, механическую блокировку, сам двигатель, вход защиты вентилятора и основную плату внутреннего блока.",
+      "sourceNote": "Код относится к вентилятору внутреннего блока, входу защиты вентилятора и основной плате."
+    }
+  ]
 }

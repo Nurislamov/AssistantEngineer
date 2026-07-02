@@ -25,6 +25,10 @@ ED-24SRC.10a repairs the first indoor detailed batch (`d1`, `d3`, `d4`, `d6`, `d
 from the GMV6 indoor troubleshooting sections. After this batch, indoor has 10 repaired detailed rows, 16 remaining
 detailed rows, and 34 table-only rows.
 
+ED-24SRC.10b repairs the remaining usable indoor detailed rows (`L0`, `L1`, `L3`, `L4`, `L5`, `L7`, `L9`, `LA`, and
+`LC`) and corrects reserved/status false positives out of the detailed class. Indoor `DetailedProcedureAvailable` is now
+zero; indoor table-only remains open with 41 rows.
+
 ## ED-24F.1a multi-source diagnostic references
 
 ED-24F.1a adds optional `sourceReferences[]` support to repository-backed error knowledge while keeping existing single-source fields backward-compatible. Same code + same equipment type + same meaning remains one diagnostic answer with multiple manual/source references; genuinely different equipment meanings still use equipment clarification.

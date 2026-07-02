@@ -2,14 +2,14 @@
 
 ## Current stage
 
-ED-24SRC.10a - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.10b - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
 ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
-ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, and ED-24SRC.9 are CLOSED / pushed.
+ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, and ED-24SRC.10a are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Commit and push ED-24SRC.10a if the validation gate passes.
-2. Continue with ED-24SRC.10b GMV6 indoor detailed diagnostics for the remaining indoor L-family procedures.
+1. Commit and push ED-24SRC.10b if the validation gate passes.
+2. Continue with ED-24SRC.11 GMV6 indoor table-only diagnostics in a separate stage.
 3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -18,6 +18,59 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.10b repairs the remaining GMV6 indoor detailed diagnostic procedures and closes the indoor detailed class
+without changing runtime counts.
+
+ED-24SRC.10b work-log selection:
+
+- Selected codes: `L0`, `L1`, `L3`, `L4`, `L5`, `L7`, `L9`, `LA`, and `LC`.
+- Manual sections: 2.101, 2.102, 2.104, 2.105, 2.106, 2.108, 2.109, 2.110, and 2.112 in
+  `Service Manual for GMV6 v_2020.09.pdf`.
+- Batch reason: this is the remaining L-family indoor group with usable diagnosis, possible causes, and troubleshooting
+  text after ED-24SRC.10a.
+- No-procedure overrides: `d5`, `d8`, `dE`, `L2`, `L6`, and `LH` are reserved/not-applied or heading-only sections in
+  the current extraction; `db` is explicitly commissioning/status, not a fault. The inventory now classifies these rows
+  as indoor `TableOnlySafe` instead of false-positive detailed procedure rows.
+- No outdoor, status package, or debugging package cards were changed.
+
+ED-24SRC.10b implementation notes:
+
+- `L0` now carries the indoor-unit fault identification guidance through engineering number / faulty indoor-unit query.
+- `L1` now carries indoor fan protection checks for DC/PG/AC motors, fan-protection input, overload protector, motor,
+  and indoor main board.
+- `L3` now carries overflow protection checks for float switch, drain pump, water level, and drain pipe.
+- `L4` now carries wired-controller power over-current checks for controller wiring, controller board, and indoor main
+  board.
+- `L5` now carries antifreeze protection checks for filter/evaporator cleanliness, indoor motor, refrigerant, and low
+  ambient operating conditions.
+- `L7` now carries no-master-indoor-unit checks for common power supply and resetting the master indoor unit after board
+  replacement.
+- `L9` and `LA` now carry integrated-control checks for indoor-unit count and series consistency.
+- `LC` now carries indoor/outdoor compatibility checks and the manual corrective choices.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` classifies the ED-24SRC.10b batch as repaired and removes the
+  reserved/status false positives from `DetailedProcedureAvailable`.
+- Inventory counts after script rerun: AlreadyRepaired 141; TableOnlySafe 41; StatusOrPrompt 43;
+  DebuggingOrCommissioning 38; DetailedProcedureAvailable 0.
+- Category split after script rerun: outdoor = 121 AlreadyRepaired; indoor = 19 AlreadyRepaired and 41 TableOnlySafe;
+  debugging = 38 DebuggingOrCommissioning; status = 1 AlreadyRepaired and 43 StatusOrPrompt.
+- GMV6 indoor detailed diagnostics are CLOSED; GMV6 indoor remains open for the 41 table-only rows.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Validation:
+  - `dotnet restore .\AssistantEngineer.sln`: PASS.
+  - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 6 existing nullable warnings in architecture guard
+    tests and 0 errors.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1125/1125).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~Telegram" --logger "console;verbosity=minimal"`:
+    PASS (640/640).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnosticTelegramWebhookApiIntegrationTests" --logger "console;verbosity=minimal"`:
+    PASS (10/10).
+  - `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal"`: PASS (5149/5149).
+  - `git diff --check`: PASS.
 
 ED-24SRC.10a repairs the first GMV6 indoor detailed diagnostic batch without changing runtime counts.
 

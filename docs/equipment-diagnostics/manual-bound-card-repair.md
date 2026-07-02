@@ -61,6 +61,10 @@ diagnostic chapters.
   from sections 2.43, 2.44, 2.45, 2.47, 2.48, 2.50, 2.51, 2.52, 2.53, and 2.54. Adjacent rows `d5`, `d8`, and `dE`
   were skipped because they are reserved/no-procedure headings in the current extraction; `db` was skipped because the
   section identifies it as a commissioning/status code, not a fault.
+- ED-24SRC.10b repaired the remaining usable GMV6 indoor detailed rows: `L0`, `L1`, `L3`, `L4`, `L5`, `L7`, `L9`,
+  `LA`, and `LC`. It also corrected the inventory model so `d5`, `d8`, `dE`, `L2`, `L6`, and `LH` are treated as
+  reserved/not-applied table-only rows, while `db` is not treated as a detailed fault procedure. GMV6 indoor detailed
+  diagnostics are closed; indoor table-only diagnostics remain open.
 - Remaining unrepaired GMV6 cards stay in the closure inventory as `DetailedProcedureAvailable`, `TableOnlySafe`,
   `StatusOrPrompt`, or `DebuggingOrCommissioning`. Detailed diagnostic chapters and flowcharts must be reviewed one
   source boundary at a time before those cards can be marked repaired.
@@ -105,15 +109,15 @@ The inventory covers all 263 GMV6 runtime cards without editing card content. It
 boundary, current visible text, source meaning/reference, inferred manual-section availability, visible-text safety, and
 the next repair class used to plan ED-24SRC.4+.
 
-Current ED-24SRC.10a inventory snapshot:
+Current ED-24SRC.10b inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | StatusOrPrompt | DebuggingOrCommissioning | Total |
 |---|---:|---:|---:|---:|---:|---:|
 | outdoor | 121 | 0 | 0 | 0 | 0 | 121 |
-| indoor | 10 | 16 | 34 | 0 | 0 | 60 |
+| indoor | 19 | 0 | 41 | 0 | 0 | 60 |
 | debugging | 0 | 0 | 0 | 0 | 38 | 38 |
 | status | 1 | 0 | 0 | 43 | 0 | 44 |
-| **Total** | **132** | **16** | **34** | **43** | **38** | **263** |
+| **Total** | **141** | **0** | **41** | **43** | **38** | **263** |
 
 No conflicting source boundary was found by the inventory. Every GMV6 card has an attached manual/source section or
 source reference in the current runtime data. The inventory is a planning map, not a closure claim: cards in
@@ -121,13 +125,12 @@ source reference in the current runtime data. The inventory is a planning map, n
 staged repair/verification passes before GMV6 can be called closed. Current Conflict count is 0, and current
 NeedsManualReview / Unclassified count is 0.
 
-Exact ED-24SRC.10a remaining lists:
+Exact ED-24SRC.10b remaining lists:
 
-- Indoor `DetailedProcedureAvailable` (16): `d5`, `d8`, `db`, `dE`, `L0`, `L1`, `L2`, `L3`, `L4`, `L5`, `L6`, `L7`,
-  `L9`, `LA`, `LC`, and `LH`.
-- Indoor `TableOnlySafe` (34): `d2`, `dd`, `dF`, `dJ`, `dn`, `dP`, `dU`, `dy`, `L8`, `Lb`, `LE`, `LF`, `LJ`, `LL`,
-  `LP`, `LU`, `o0`, `o1`, `o2`, `o3`, `o4`, `o5`, `o6`, `o7`, `o8`, `o9`, `oA`, `ob`, `oC`, `y1`, `y2`, `y7`,
-  `y8`, and `yA`.
+- Indoor `DetailedProcedureAvailable` (0): none.
+- Indoor `TableOnlySafe` (41): `d2`, `d5`, `d8`, `db`, `dd`, `dE`, `dF`, `dJ`, `dn`, `dP`, `dU`, `dy`, `L2`, `L6`,
+  `L8`, `Lb`, `LE`, `LF`, `LH`, `LJ`, `LL`, `LP`, `LU`, `o0`, `o1`, `o2`, `o3`, `o4`, `o5`, `o6`, `o7`, `o8`,
+  `o9`, `oA`, `ob`, `oC`, `y1`, `y2`, `y7`, `y8`, and `yA`.
 - Status `StatusOrPrompt` (43): `A0`, `A2`, `A3`, `A4`, `A6`, `A7`, `A8`, `A9`, `Ab`, `AC`, `Ad`, `AE`, `AF`, `AH`,
   `AL`, `An`, `AP`, `AU`, `Ay`, `n0`, `n1`, `n2`, `n3`, `n4`, `n5`, `n6`, `n7`, `n8`, `n9`, `nA`, `nb`, `nC`,
   `nE`, `nF`, `nH`, `nJ`, `nn`, `nU`, `qA`, `qC`, `qH`, `qP`, and `qU`.
