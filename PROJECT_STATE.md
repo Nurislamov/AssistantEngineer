@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24SRC.17 CLOSED / production PASS
+ED-24GMVX.1 CLOSED / inventory PASS
 
 ## Current branch
 
@@ -10,7 +10,7 @@ master
 
 ## Last completed work
 
-GMV6 manual-bound diagnostic cards were fully repaired, reviewed, deployed to production, and smoke-tested in Telegram.
+GMV X manual-bound closure inventory was reconciled without editing runtime cards. GMV6 remains CLOSED / production PASS.
 
 Final GMV6 closure / production commits:
 
@@ -44,11 +44,13 @@ The smoke confirmed:
 
 ## Current blocker
 
-None for ED-24SRC.17.
+None for ED-24GMVX.1.
 
 ## Important decisions
 
 - GMV6 is now considered CLOSED after full local validation, archive review, production deploy, and Telegram smoke.
+- GMV6 remains CLOSED / production PASS and is not part of the GMV X inventory stage.
+- GMV X is NOT CLOSED. ED-24GMVX.1 is an inventory/audit pass only.
 - sourceNote remains non-rendered by Telegram; visible Telegram output uses card title, summary, causes, check steps, recommended action, and safety text.
 - Telegram formatter now prefers localized card CheckSteps; CompactChecks is only a fallback when a card has no check steps.
 - db keeps its existing package-compatible metadata boundary, but visible text and guards keep it as debugging/status wording rather than a normal fault.
@@ -67,6 +69,8 @@ Key recent areas:
 - docs/equipment-diagnostics/manual-coverage.md
 - docs/equipment-diagnostics/README.md
 - scripts/equipment-diagnostics/invoke-gmv6-manual-bound-closure-inventory.ps1
+- scripts/equipment-diagnostics/invoke-gmvx-manual-bound-closure-inventory.ps1
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXManualBoundInventoryTests.cs
 
 ## Validation status
 
@@ -79,6 +83,32 @@ Local final validation after ED-24SRC.16a:
 - Full suite: PASS, 5165/5165
 - Branch readiness: PASS, 0 blockers
 - Runtime counts unchanged: Gree 1296; GMV6 263 = 121 outdoor / 60 indoor / 44 status / 38 debugging
+
+ED-24GMVX.1 inventory snapshot:
+
+- GMV X total: 263
+- GMV X outdoor: 121
+- GMV X indoor: 60
+- GMV X status: 44
+- GMV X debugging: 38
+- DetailedProcedureAvailable: 132
+- StatusOrPrompt: 33
+- TableOnlySafe: 92
+- ManualSectionNeedsReview: 6
+- Conflict: 0
+- Unclassified: 0
+- GMV X CLOSED: no
+
+ED-24GMVX.1 local validation:
+
+- Inventory runner: PASS; gmvXClosed = false
+- dotnet restore: PASS
+- dotnet build --no-restore: PASS, 6 existing nullable warnings / 0 errors
+- EquipmentDiagnostics tests: PASS, 1145/1145
+- Telegram tests: PASS, 645/645
+- Full suite: PASS, 5169/5169
+- git diff --check: PASS
+- PROJECT_STATE.md UTF-8 read check: PASS; null byte count 0
 
 Final local GMV6 archive review after ED-24SRC.16a:
 
@@ -103,14 +133,8 @@ Migrations/env/artifacts:
 
 ## Next step
 
-Recommended optional follow-up:
+Recommended next stage:
 
-- ED-24SRC.18 Improve long Telegram diagnostic step wrapping.
+- ED-24GMVX.2 controlled status/prompt cleanup or the first detailed GMV X batch.
 
-Purpose:
-
-- avoid mid-sentence visual truncation or overly long bullet items in E1/E2-style detailed cards;
-- keep real card steps visible;
-- do not change card meanings or counts.
-
-After that, continue manual-bound repair/verification for the next Gree series only as a separate scoped stage. Do not mix it with GMV6, which is now closed.
+Do not attempt full GMV X repair in one commit. Keep GMV6 closed and out of scope.

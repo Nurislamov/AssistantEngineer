@@ -17,6 +17,12 @@ references, and import evidence remain metadata and are not emitted as Telegram 
 all 1296 Gree runtime cards, removes the known generic import template from 235 GMV6 cards, and completes a
 manual-section repair for GMV6 `AJ` and `b1`.
 
+ED-24GMVX.1 reconciles the GMV X manual-bound closure inventory against
+`artifacts/manual-intake/sources/gree/Gree GMV X Service Manual EN.pdf`. The stage is inventory-only: it does not edit
+runtime cards, does not commit generated JSON/CSV reports, and does not mark GMV X closed. Snapshot: GMV X 263 cards =
+121 outdoor / 60 indoor / 44 status / 38 debugging; `DetailedProcedureAvailable` 132, `StatusOrPrompt` 33,
+`TableOnlySafe` 92, `ManualSectionNeedsReview` 6, `Conflict` 0, `Unclassified` 0.
+
 ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use
 the GMV6 series name, internal table-only `sourceNote` wording is replaced with a neutral handoff, and formatter tests
 confirm that `sourceNote` remains metadata for Consumer, Installer, and Engineer responses. Source mappings and binary
@@ -121,6 +127,7 @@ binaries or runtime Telegram bindings.
 | `gree-gmv-idu-service-manual` | `SERVICE_MANUAL_GMV_IDU.pdf` | PartiallyImported | PartialDiagnosticScopeImported | 38 existing GMV6 indoor entries received `sourceReferences[]`; 19 detailed procedure codes reviewed; 0 new entries |
 | `gree-gmv-mini-service-manual` | `SERVICE_MANUAL_GMV_MINI.pdf` | PartiallyImported | PartialDiagnosticScopeImported | ED-24H.2 selected source only; 9 new entries, 31 `sourceReferences[]`, 90 NeedsReview contexts |
 | `gree-gmv-mini-service-manual-copy-1` | `SERVICE_MANUAL_GMV_MINI (1).pdf` | NeedsReview | NeedsManualReview | Duplicate/revision candidate; not used by ED-24H.2 |
+| `gree-gmv-x-service-manual-2022-09` | `Gree GMV X Service Manual EN.pdf` | Imported | DiagnosticScopeImported | ED-24GMVX.1 inventory-only closure map; GMV X is not closed |
 | `gree-gmv-x-owner-manual` | `Owner's Manual GMV X DC Inverter VRF Units.pdf` | New | DiagnosticSectionsUnknown | Owner-level source; usefulness not yet established |
 | `gree-gmv-x-technical-sales-guide` | `Technical Sales Guide GMV X DC Inverter VRF Units.pdf` | New | DiagnosticSectionsUnknown | Do not treat as troubleshooting authority without analysis |
 | `gree-gmv6-owner-manual` | `Owners-Manual-for GMV6.pdf` | New | DiagnosticSectionsUnknown | Separate source; do not merge with service-manual meanings |

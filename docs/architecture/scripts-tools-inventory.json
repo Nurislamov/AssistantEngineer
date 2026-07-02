@@ -1583,6 +1583,22 @@
                         "riskIfChanged":  "Inventory drift can misclassify GMV6 closure status, hide source-boundary conflicts, or plan unsafe repair batches."
                     },
                     {
+                        "id":  "SCR-098",
+                        "path":  "scripts/equipment-diagnostics/invoke-gmvx-manual-bound-closure-inventory.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Generate ignored JSON and CSV GMV X closure inventory reports for staged manual-bound card repair planning.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the inventory deterministic, runtime-read-only, and aligned with GMV X package/category count guards.",
+                        "proposedStage":  "ED-24GMVX.1",
+                        "riskIfChanged":  "Inventory drift can misclassify GMV X closure status, hide source-boundary conflicts, or plan unsafe repair batches."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

@@ -108,3 +108,6 @@ blob-report/
 
 # AssistantEngineer local backups
 .ae-backups/
+
+# Generated verification reports
+/artifacts/verification/
