@@ -2,15 +2,15 @@
 
 ## Current stage
 
-ED-24SRC.8c - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
-ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a, and
-ED-24SRC.8b are CLOSED / pushed.
+ED-24SRC.8d - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
+ED-24SRC.8b, and ED-24SRC.8c are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.8c validation gate.
-2. If validation passes, commit and push ED-24SRC.8c.
-3. Continue with ED-24SRC.8d outdoor closure verification.
+1. Complete the ED-24SRC.8d validation gate.
+2. If validation passes, commit and push ED-24SRC.8d.
+3. Continue with later GMV6 indoor/status/debugging closure work in a separate stage.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -18,6 +18,36 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.8d verifies GMV6 outdoor manual-bound closure without changing runtime counts.
+
+ED-24SRC.8d verification notes:
+
+- Regenerated `invoke-gmv6-manual-bound-closure-inventory.ps1` output.
+- Confirmed GMV6 outdoor total: 121.
+- Confirmed remaining GMV6 outdoor `DetailedProcedureAvailable`: 0.
+- Confirmed remaining GMV6 outdoor `TableOnlySafe`: 0.
+- Confirmed GMV6 outdoor cards are all classified as `AlreadyRepaired`.
+- Confirmed Conflict count: 0.
+- Confirmed `NeedsManualReview` / `Unclassified` count: 0.
+- Added a final outdoor closure guard covering all 121 GMV6 outdoor visible cards for non-empty visible fields,
+  no provenance leakage, and no generic placeholder wording.
+- GMV6 outdoor CLOSED / manual-bound PASS.
+- GMV6 as a whole is not closed because indoor/status/debugging work remains outside this stage.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Validation:
+  - `dotnet restore .\AssistantEngineer.sln`: PASS.
+  - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 6 existing nullable warnings in architecture guard
+    tests and 0 errors.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1123/1123).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~Telegram" --logger "console;verbosity=minimal"`:
+    PASS (640/640).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnosticTelegramWebhookApiIntegrationTests" --logger "console;verbosity=minimal"`:
+    PASS (10/10).
+  - `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal"`: PASS (5147/5147).
+  - `git diff --check`: PASS.
 
 ED-24SRC.8c repairs the final GMV6 outdoor table-only H/J/P batch without changing runtime counts.
 

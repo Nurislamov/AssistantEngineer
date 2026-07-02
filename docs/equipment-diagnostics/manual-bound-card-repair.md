@@ -49,6 +49,10 @@ diagnostic chapters.
 - ED-24SRC.8c repaired the final outdoor H/J/P table-only batch: `H4`, `HA`, `HE`, `HF`, `HP`, `HU`, `JA`, `JC`,
   `JE`, `JF`, `JL`, `P4`, `PA`, `PE`, `PF`, `PP`, and `PU`. This brings GMV6 outdoor to zero remaining
   `DetailedProcedureAvailable` and zero remaining `TableOnlySafe` rows.
+- ED-24SRC.8d verified GMV6 outdoor closure: all 121 GMV6 outdoor cards are classified as repaired in the closure
+  inventory, with zero outdoor `DetailedProcedureAvailable`, zero outdoor `TableOnlySafe`, zero conflicts, and zero
+  `NeedsManualReview` / `Unclassified` rows. GMV6 outdoor is closed; whole-GMV6 closure remains pending because indoor,
+  status, and debugging classes are outside this outdoor stage.
 - Remaining unrepaired GMV6 cards stay in the closure inventory as `DetailedProcedureAvailable`, `TableOnlySafe`,
   `StatusOrPrompt`, or `DebuggingOrCommissioning`. Detailed diagnostic chapters and flowcharts must be reviewed one
   source boundary at a time before those cards can be marked repaired.
@@ -69,7 +73,7 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/manual-bound-card-repair-audit.json`
 - `artifacts/verification/equipment-diagnostics/manual-bound-card-repair-audit.csv`
 
-The JSON report contains the package-to-runtime map and one row per runtime card. ED-24SRC.8c marks `AJ`, `b1`-`bA`,
+The JSON report contains the package-to-runtime map and one row per runtime card. ED-24SRC.8d marks `AJ`, `b1`-`bA`,
 the `bb`-`bU` table-only subset, `E0`-`E4`, `Ed`, `F0`, `F1`, `F3`, `F5`-`FA`, `Fd`, `Fn`, `FP`, the G-family
 table-only batch, the fan-drive `H0`-`HL` batch, the remaining H/J/P table-only batch, the `J0`-`J9` batch, the
 `P0`-`PJ`/`PL` compressor-drive batch, and
@@ -93,7 +97,7 @@ The inventory covers all 263 GMV6 runtime cards without editing card content. It
 boundary, current visible text, source meaning/reference, inferred manual-section availability, visible-text safety, and
 the next repair class used to plan ED-24SRC.4+.
 
-Current ED-24SRC.8c inventory snapshot:
+Current ED-24SRC.8d inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | StatusOrPrompt | DebuggingOrCommissioning | Total |
 |---|---:|---:|---:|---:|---:|---:|
@@ -142,4 +146,4 @@ procedure from another Gree series or another document.
 
 ## Validation status
 
-ED-24SRC.8c validation is recorded in `PROJECT_STATE.md` after the local gate completes.
+ED-24SRC.8d validation is recorded in `PROJECT_STATE.md` after the local gate completes.

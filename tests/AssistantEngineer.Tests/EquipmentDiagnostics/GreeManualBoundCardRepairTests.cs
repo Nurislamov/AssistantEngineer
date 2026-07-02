@@ -781,6 +781,52 @@ public sealed class GreeManualBoundCardRepairTests
     }
 
     [Fact]
+    public void Gmv6OutdoorManualBoundVisibleScopeIsClosed()
+    {
+        var outdoorRoot = Path.Combine(GreeRoot, "gmv6", "outdoor");
+        var outdoorEntries = Directory
+            .EnumerateFiles(outdoorRoot, "*.json", SearchOption.TopDirectoryOnly)
+            .Order(StringComparer.Ordinal)
+            .Select(path => (Path: path, Entry: ReadObject(path)))
+            .ToArray();
+
+        Assert.Equal(121, outdoorEntries.Length);
+
+        foreach (var (path, entry) in outdoorEntries)
+        {
+            var visible = VisibleBlob(entry);
+
+            Assert.False(string.IsNullOrWhiteSpace(visible), $"Visible text is empty: {path}");
+            Assert.DoesNotContain("краткое значение кода", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("пошаговая процедура в эту запись не перенесена", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("раздел 2.", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "title")), $"Title is empty: {path}");
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "summary")), $"Summary is empty: {path}");
+                    Assert.True(RequiredArray(text, "checkSteps").Count > 0, $"Check steps are empty: {path}");
+                    Assert.False(
+                        string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")),
+                        $"Recommended action is empty: {path}");
+                    Assert.False(
+                        string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")),
+                        $"Safety note is empty: {path}");
+                });
+        }
+    }
+
+    [Fact]
     public void GreeRuntimeAndSeriesCountsRemainStable()
     {
         var entries = ReadEntries().Select(item => item.Entry).ToArray();
