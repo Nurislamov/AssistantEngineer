@@ -55,6 +55,16 @@ public sealed class GreeManualBoundCardRepairTests
         ("ba.json", "bA", "датчика температуры возврата масла")
     ];
 
+    private static readonly (string FileName, string Code, string SensorText)[] Gmv6OutdoorDischargeTemperatureBatch =
+    [
+        ("f5.json", "F5", "датчик температуры нагнетания компрессора 1"),
+        ("f6.json", "F6", "датчик температуры нагнетания компрессора 2"),
+        ("f7.json", "F7", "датчик температуры нагнетания компрессора 3"),
+        ("f8.json", "F8", "датчик температуры нагнетания компрессора 4"),
+        ("f9.json", "F9", "датчик температуры нагнетания компрессора 5"),
+        ("fa.json", "FA", "датчик температуры нагнетания компрессора 6")
+    ];
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -195,6 +205,49 @@ public sealed class GreeManualBoundCardRepairTests
                         RequiredArray(text, "checkSteps").Count >= 3,
                         $"Audience {RequiredString(text, "audience")} for {code} must retain all flowchart steps.");
                 });
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorF5ToFAContainsManualDiagnosisCausesAndFlowchart()
+    {
+        foreach (var (fileName, code, sensorText) in Gmv6OutdoorDischargeTemperatureBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains($"Gree GMV6 — {code} —", visible, StringComparison.Ordinal);
+            Assert.Contains(sensorText, visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("AD-значение", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("30 секунд", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("основная плата наружного блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("проводной контроллер внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("приёмник сигнала внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("плохой контакт", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("разъём", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("посторонних предметов", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("неисправен ли датчик температуры нагнетания", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("цепь детекции", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("замените датчик", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("замените основную плату", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text => Assert.Equal(3, RequiredArray(text, "possibleCauses").Count));
+
+            Assert.All(
+                RequiredTexts(entry),
+                text => Assert.True(
+                    RequiredArray(text, "checkSteps").Count >= 3,
+                    $"Audience {RequiredString(text, "audience")} for {code} must retain all flowchart steps."));
         }
     }
 

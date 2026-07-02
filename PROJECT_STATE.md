@@ -2,20 +2,56 @@
 
 ## Current stage
 
-ED-24SRC.2a - IMPLEMENTED / validation PASS / ready to commit. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, and ED-24SRC.3 are CLOSED /
-pushed.
+ED-24SRC.4 - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, and ED-24SRC.2a are
+CLOSED / pushed.
 
 Next recommended steps:
 
-1. Commit and push ED-24SRC.2a.
-2. Continue with ED-24SRC.4: the next controlled GMV6 outdoor detailed-procedure batch from the inventory.
-3. Deploy only through a separately authorized production operation; this stage performs no production deployment.
+1. Complete the ED-24SRC.4 validation gate.
+2. If validation passes, commit and push ED-24SRC.4.
+3. Only after ED-24SRC.4 is pushed and status/log are clean, continue with ED-24SRC.5.
+4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
 
 master
 
 ## Last completed work
+
+ED-24SRC.4 repairs the next controlled GMV6 outdoor detailed-procedure batch without changing runtime counts.
+
+ED-24SRC.4 work-log selection:
+
+- Selected codes: `F5`, `F6`, `F7`, `F8`, `F9`, and `FA`.
+- Manual sections: 2.64-2.69 in `Service Manual for GMV6 v_2020.09.pdf`.
+- Batch reason: adjacent same-structure outdoor sections for discharge temperature sensor faults of compressors 1-6.
+- Skipped codes: `FH` / 2.70 and the current-sensor group `FC`, `FL`, `FE`, `FF`, `FJ` / 2.71-2.75 because they are
+  different manual structures and should be handled in a later batch.
+
+ED-24SRC.4 implementation notes:
+
+- `F5`-`FA` visible summaries now identify the discharge temperature sensor for the exact compressor, the manual fault
+  display locations, and the AD-value / 30-second detection condition.
+- Possible causes now match the manual: poor contact between discharge temperature sensor and main-board interface,
+  abnormal discharge temperature sensor, and abnormal detection circuit.
+- Check steps now follow the rendered flowchart: connector/foreign matter -> replace sensor -> replace main control
+  board.
+- `sourceNote` is neutral and does not expose section/manual/source wording.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` and the all-Gree manual-bound audit classify `F5`-`FA` as repaired.
+- Inventory counts after script rerun: AlreadyRepaired 17; DetailedProcedureAvailable 77; TableOnlySafe 88;
+  StatusOrPrompt 43; DebuggingOrCommissioning 38.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Focused ED-24SRC.4 guard: PASS, 6/6.
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 0 warnings and 0 errors.
+- EquipmentDiagnostics filter: PASS, 1114/1114.
+- Telegram filter: PASS, 640/640.
+- EquipmentDiagnosticTelegramWebhookApiIntegrationTests filter: PASS, 10/10.
+- Exact full solution suite: PASS, 5138/5138.
+- `git diff --check`: PASS.
 
 ED-24SRC.2a corrects the already repaired AJ and GMV6 outdoor sensor batch wording without changing runtime counts.
 

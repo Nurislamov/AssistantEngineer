@@ -18,8 +18,13 @@ diagnostic chapters.
 - ED-24SRC.2a corrected the repaired AJ and `b1`-`bA` visible wording without changing counts: `AJ` now includes the
   configurable filter-clean interval and neutral source note; `b1`-`bA` now include the manual fault-display locations
   and AD-value detection wording for Installer/Engineer audiences.
-- The remaining 1285 cards are marked `NeedsManualReview`. Detailed diagnostic chapters and flowcharts must be reviewed
-  one source boundary at a time before those cards can be marked repaired.
+- ED-24SRC.4 repaired the next outdoor detailed-procedure batch: `F5`, `F6`, `F7`, `F8`, `F9`, and `FA`, covering
+  sections 2.64-2.69 for discharge temperature sensor faults of compressors 1-6. The group is smaller than the
+  preferred 8-20 cards because the adjacent same-structure manual block ends at `FA`; `FH` and the current-sensor
+  `FC`/`FL`/`FE`/`FF`/`FJ` group were skipped for a later stage.
+- Remaining unrepaired GMV6 cards stay in the closure inventory as `DetailedProcedureAvailable`, `TableOnlySafe`,
+  `StatusOrPrompt`, or `DebuggingOrCommissioning`. Detailed diagnostic chapters and flowcharts must be reviewed one
+  source boundary at a time before those cards can be marked repaired.
 
 Provenance remains in runtime metadata. Telegram-visible fields do not expose filenames, document codes, manual IDs,
 source references, package IDs, source meanings, or generic import/evidence phrases.
@@ -37,9 +42,8 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/manual-bound-card-repair-audit.json`
 - `artifacts/verification/equipment-diagnostics/manual-bound-card-repair-audit.csv`
 
-The JSON report contains the package-to-runtime map and one row per runtime card. ED-24SRC.2 marks only `AJ` and
-`b1`-`bA` as repaired in the GMV6 manual-bound scope; unreviewed manual-capability fields are `null` rather than
-guessed.
+The JSON report contains the package-to-runtime map and one row per runtime card. ED-24SRC.4 marks `AJ`, `b1`-`bA`, and
+`F5`-`FA` as repaired in the GMV6 manual-bound scope; unreviewed manual-capability fields are `null` rather than guessed.
 
 ## ED-24SRC.3 GMV6 closure inventory
 
@@ -58,15 +62,15 @@ The inventory covers all 263 GMV6 runtime cards without editing card content. It
 boundary, current visible text, source meaning/reference, inferred manual-section availability, visible-text safety, and
 the next repair class used to plan ED-24SRC.4+.
 
-ED-24SRC.3 inventory snapshot:
+Current ED-24SRC.4 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | StatusOrPrompt | DebuggingOrCommissioning | Total |
 |---|---:|---:|---:|---:|---:|---:|
-| outdoor | 10 | 57 | 54 | 0 | 0 | 121 |
+| outdoor | 16 | 51 | 54 | 0 | 0 | 121 |
 | indoor | 0 | 26 | 34 | 0 | 0 | 60 |
 | debugging | 0 | 0 | 0 | 0 | 38 | 38 |
 | status | 1 | 0 | 0 | 43 | 0 | 44 |
-| **Total** | **11** | **83** | **88** | **43** | **38** | **263** |
+| **Total** | **17** | **77** | **88** | **43** | **38** | **263** |
 
 No conflicting source boundary was found by the inventory. Every GMV6 card has an attached manual/source section or
 source reference in the current runtime data. The inventory is a planning map, not a closure claim: cards in
@@ -98,11 +102,12 @@ instead of silently changing routing metadata.
 
 ## Backlog
 
-Continue from the generated `NeedsManualReview` rows. For each card, use only the manual named by its package/source
-boundary; determine whether the source provides a table meaning, fault diagnosis, possible causes, troubleshooting, or
-flowchart; then promote the audit status to `TableOnlySafe`, `Repaired`, or `Conflict` with evidence. Do not infer a
+Continue from the generated `DetailedProcedureAvailable`, `TableOnlySafe`, `StatusOrPrompt`, and
+`DebuggingOrCommissioning` rows. For each card, use only the manual named by its package/source boundary; determine
+whether the source provides a table meaning, fault diagnosis, possible causes, troubleshooting, or flowchart; then
+promote the inventory status to `AlreadyRepaired`, `TableOnlySafe`, or `Conflict` with evidence. Do not infer a
 procedure from another Gree series or another document.
 
 ## Validation status
 
-ED-24SRC.2 validation is recorded in `PROJECT_STATE.md` after the local gate completes.
+ED-24SRC.4 validation is recorded in `PROJECT_STATE.md` after the local gate completes.

@@ -29,6 +29,11 @@ section/source wording. `b1`-`bA` now include the manual fault-display locations
 technical audiences. The AJ package-level metadata remains runtime-compatible until a separate status package/routing
 split can safely model wired-controller/indoor-receiver applicability.
 
+ED-24SRC.4 repairs the next controlled GMV6 outdoor detailed batch from sections 2.64-2.69: `F5`, `F6`, `F7`, `F8`,
+`F9`, and `FA` now describe discharge temperature sensor faults for compressors 1-6 with the manual fault display,
+AD-value / 30-second diagnosis, three possible causes, and connector -> sensor -> detection-circuit/main-board
+flowchart. `FH` and the later current-sensor group remain intentionally skipped for later stages.
+
 Current snapshot:
 
 - Source files tracked: 52.

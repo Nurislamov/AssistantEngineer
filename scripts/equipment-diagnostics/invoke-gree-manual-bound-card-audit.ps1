@@ -46,7 +46,13 @@ $manualReviewedCodes = @(
     "b7",
     "b8",
     "b9",
-    "bA"
+    "bA",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "FA"
 )
 $manualReviewedCodesLookup = @{}
 foreach ($code in $manualReviewedCodes) {
@@ -88,6 +94,11 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $greeRoot -Recurse -Filt
     $isReviewedSensorCard =
         ($entry.series -eq "GMV6") -and
         ($entry.code -match '^b[1-9A]$')
+    $isReviewedDischargeTemperatureCard =
+        ($entry.series -eq "GMV6") -and
+        ($entry.code -in @("F5", "F6", "F7", "F8", "F9", "FA"))
+    $isReviewedFlowchartCard =
+        $isReviewedSensorCard -or $isReviewedDischargeTemperatureCard
 
     [pscustomobject]@{
         series = $entry.series
@@ -106,9 +117,9 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $greeRoot -Recurse -Filt
         badGenericPhrases = $foundPhrases
         manualSectionFound = if ($isReviewedCriticalCard) { $true } else { $null }
         manualHasFaultDiagnosis = if ($isReviewedCriticalCard) { $true } else { $null }
-        manualHasPossibleCauses = if ($isReviewedSensorCard) { $true } elseif ($entry.series -eq "GMV6" -and $entry.code -eq "AJ") { $false } else { $null }
+        manualHasPossibleCauses = if ($isReviewedFlowchartCard) { $true } elseif ($entry.series -eq "GMV6" -and $entry.code -eq "AJ") { $false } else { $null }
         manualHasTroubleshooting = if ($isReviewedCriticalCard) { $true } else { $null }
-        manualHasFlowchart = if ($isReviewedSensorCard) { $true } elseif ($entry.series -eq "GMV6" -and $entry.code -eq "AJ") { $false } else { $null }
+        manualHasFlowchart = if ($isReviewedFlowchartCard) { $true } elseif ($entry.series -eq "GMV6" -and $entry.code -eq "AJ") { $false } else { $null }
         repairStatus = if ($isReviewedCriticalCard -and $foundPhrases.Count -eq 0) { "Repaired" } else { "NeedsManualReview" }
         runtimeDirectory = $runtimeDirectory
     }
@@ -137,7 +148,7 @@ foreach ($map in $packageMap) {
 New-Item -ItemType Directory -Force -Path $outputRoot | Out-Null
 $report = [pscustomobject]@{
     generatedAtUtc = [DateTime]::UtcNow.ToString("O")
-    scope = "ED-24SRC.2 audit: all Gree runtime cards; manual review completed for GMV6 AJ and outdoor sensor batch b1-bA."
+    scope = "ED-24SRC.4 audit: all Gree runtime cards; manual review completed for GMV6 AJ, outdoor sensor batch b1-bA, and outdoor discharge-temperature batch F5-FA."
     totalEntries = $entries.Count
     packageMap = @($packageMap)
     entries = @($entries | Sort-Object series, code, filePath)
