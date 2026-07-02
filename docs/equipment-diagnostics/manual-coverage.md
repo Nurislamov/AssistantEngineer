@@ -34,6 +34,11 @@ ED-24SRC.4 repairs the next controlled GMV6 outdoor detailed batch from sections
 AD-value / 30-second diagnosis, three possible causes, and connector -> sensor -> detection-circuit/main-board
 flowchart. `FH` and the later current-sensor group remain intentionally skipped for later stages.
 
+ED-24SRC.5 repairs the next controlled GMV6 outdoor fan-drive batch from sections 2.78-2.90: aggregate codes `H0`-`H2`
+now instruct technical users to read the outdoor 2-digit LED before following the specific procedure, while `H3`, `H5`,
+`H6`, `H7`, `H8`, `H9`, `HC`, `HH`, `HJ`, and `HL` now carry their documented causes and flowchart actions. Runtime
+counts remain unchanged and GMV6 remains open for the remaining detailed, table-only, status, and debugging inventory.
+
 Current snapshot:
 
 - Source files tracked: 52.

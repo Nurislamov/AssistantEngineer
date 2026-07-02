@@ -52,7 +52,20 @@ $manualReviewedCodes = @(
     "F7",
     "F8",
     "F9",
-    "FA"
+    "FA",
+    "H0",
+    "H1",
+    "H2",
+    "H3",
+    "H5",
+    "H6",
+    "H7",
+    "H8",
+    "H9",
+    "HC",
+    "HH",
+    "HJ",
+    "HL"
 )
 $manualReviewedCodesLookup = @{}
 foreach ($code in $manualReviewedCodes) {
@@ -97,8 +110,11 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $greeRoot -Recurse -Filt
     $isReviewedDischargeTemperatureCard =
         ($entry.series -eq "GMV6") -and
         ($entry.code -in @("F5", "F6", "F7", "F8", "F9", "FA"))
+    $isReviewedFanDriveCard =
+        ($entry.series -eq "GMV6") -and
+        ($entry.code -in @("H0", "H1", "H2", "H3", "H5", "H6", "H7", "H8", "H9", "HC", "HH", "HJ", "HL"))
     $isReviewedFlowchartCard =
-        $isReviewedSensorCard -or $isReviewedDischargeTemperatureCard
+        $isReviewedSensorCard -or $isReviewedDischargeTemperatureCard -or $isReviewedFanDriveCard
 
     [pscustomobject]@{
         series = $entry.series
@@ -148,7 +164,7 @@ foreach ($map in $packageMap) {
 New-Item -ItemType Directory -Force -Path $outputRoot | Out-Null
 $report = [pscustomobject]@{
     generatedAtUtc = [DateTime]::UtcNow.ToString("O")
-    scope = "ED-24SRC.4 audit: all Gree runtime cards; manual review completed for GMV6 AJ, outdoor sensor batch b1-bA, and outdoor discharge-temperature batch F5-FA."
+    scope = "ED-24SRC.5 audit: all Gree runtime cards; manual review completed for GMV6 AJ, outdoor sensor batch b1-bA, outdoor discharge-temperature batch F5-FA, and outdoor fan-drive batch H0-HL."
     totalEntries = $entries.Count
     packageMap = @($packageMap)
     entries = @($entries | Sort-Object series, code, filePath)

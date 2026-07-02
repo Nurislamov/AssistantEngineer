@@ -65,6 +65,24 @@ public sealed class GreeManualBoundCardRepairTests
         ("fa.json", "FA", "датчик температуры нагнетания компрессора 6")
     ];
 
+    private static readonly Dictionary<string, (string Code, int CauseCount, string[] RequiredPhrases)> Gmv6OutdoorFanDriveBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["h0.json"] = ("H0", 7, ["платы привода вентилятора", "проводной контроллер", "2-разрядном LED", "H3", "H7", "H8", "HC", "HF", "H9", "HJ"]),
+            ["h1.json"] = ("H1", 3, ["ненормальная работа платы привода вентилятора", "проводной контроллер", "2-разрядном LED", "H6", "H5", "C3"]),
+            ["h2.json"] = ("H2", 2, ["защита напряжения питания платы привода вентилятора", "проводной контроллер", "2-разрядном LED", "HH", "HL"]),
+            ["h3.json"] = ("H3", 1, ["защита сброса модуля привода вентилятора", "P3", "плату привода компрессора", "плату привода вентилятора"]),
+            ["h5.json"] = ("H5", 4, ["перегрузке тока", "U, V, W", "меньше 10 Ом", "больше 2 МОм", "заменить вентилятор", "заменить плату привода вентилятора"]),
+            ["h6.json"] = ("H6", 4, ["защита IPM-модуля", "U, V и W", "меньше 10 Ом", "больше 2 МОм", "замените вентилятор", "замените плату привода вентилятора"]),
+            ["h7.json"] = ("H7", 1, ["датчика температуры привода вентилятора", "повторно включите блок более трёх раз", "замените плату привода вентилятора"]),
+            ["h8.json"] = ("H8", 3, ["защита IPM привода вентилятора от перегрева", "термопаст", "винты", "замените плату привода вентилятора"]),
+            ["h9.json"] = ("H9", 4, ["потери синхронизации", "U, V и W", "меньше 10 Ом", "больше 2 МОм", "замените вентилятор", "замените плату привода вентилятора"]),
+            ["hc.json"] = ("HC", 1, ["цепи детекции тока привода вентилятора", "повторно включите блок более трёх раз", "замените плату привода вентилятора"]),
+            ["hh.json"] = ("HH", 2, ["повышенного напряжения", "превышает 460 В", "приведите напряжение к 380 В", "замените плату привода вентилятора"]),
+            ["hj.json"] = ("HJ", 4, ["отказ запуска инверторного вентилятора", "U, V и W", "меньше 10 Ом", "больше 2 МОм", "замените вентилятор", "замените плату привода вентилятора"]),
+            ["hl.json"] = ("HL", 2, ["пониженного напряжения", "ниже 320 В", "приведите напряжение к 380 В", "замените плату привода вентилятора"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -248,6 +266,47 @@ public sealed class GreeManualBoundCardRepairTests
                 text => Assert.True(
                     RequiredArray(text, "checkSteps").Count >= 3,
                     $"Audience {RequiredString(text, "audience")} for {code} must retain all flowchart steps."));
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorFanDriveH0ToHLContainsManualDiagnosisCausesAndFlowchart()
+    {
+        foreach (var (fileName, expectation) in Gmv6OutdoorFanDriveBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            if (expectation.Code == "H5")
+            {
+                Assert.Contains("Gree GMV H5 —", visible, StringComparison.Ordinal);
+            }
+            else
+            {
+                Assert.Contains($"Gree GMV6 — {expectation.Code} —", visible, StringComparison.Ordinal);
+            }
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text => Assert.Equal(expectation.CauseCount, RequiredArray(text, "possibleCauses").Count));
+
+            Assert.All(
+                RequiredTexts(entry),
+                text => Assert.True(
+                    RequiredArray(text, "checkSteps").Count >= 2,
+                    $"Audience {RequiredString(text, "audience")} for {expectation.Code} must retain the documented troubleshooting steps."));
         }
     }
 

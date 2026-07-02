@@ -2,14 +2,14 @@
 
 ## Current stage
 
-ED-24SRC.4 - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, and ED-24SRC.2a are
-CLOSED / pushed.
+ED-24SRC.5 - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a, and
+ED-24SRC.4 are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.4 validation gate.
-2. If validation passes, commit and push ED-24SRC.4.
-3. Only after ED-24SRC.4 is pushed and status/log are clean, continue with ED-24SRC.5.
+1. Complete the ED-24SRC.5 validation gate.
+2. If validation passes, commit and push ED-24SRC.5.
+3. Continue GMV6 closure in a later stage from the remaining inventory.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -17,6 +17,44 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.5 repairs the next controlled GMV6 outdoor fan-drive detailed batch without changing runtime counts.
+
+ED-24SRC.5 work-log selection:
+
+- Selected codes: `H0`, `H1`, `H2`, `H3`, `H5`, `H6`, `H7`, `H8`, `H9`, `HC`, `HH`, `HJ`, and `HL`.
+- Manual sections: 2.78-2.90 in `Service Manual for GMV6 v_2020.09.pdf`.
+- Batch reason: adjacent outdoor fan-drive sections with one source boundary. `H0`-`H2` are aggregate
+  wired-controller codes that route to the outdoor 2-digit LED; the remaining codes are specific fan-drive LED faults.
+- Skipped codes: current-sensor compressor group `FH`, `FC`, `FL`, `FE`, `FF`, `FJ`, casing-top temperature sensor
+  group `FU`/`Fb`, and other later H/J/P groups because they are different manual structures.
+
+ED-24SRC.5 implementation notes:
+
+- `H0`-`H2` now preserve the manual behavior: check the wired-controller code, read the outdoor 2-digit LED, then use
+  the procedure for the specific LED code.
+- `H3`, `H7`, and `HC` now carry the power-cycle / fan-drive-board flowchart, with the documented `P3` branch for `H3`.
+- `H5`, `H6`, `H9`, and `HJ` now carry the fan UVW wiring, winding resistance, grounding insulation, blade blockage,
+  related-fault, fan replacement, and fan-drive-board flowchart.
+- `H8`, `HH`, and `HL` now carry their thermal-grease/screw or input-voltage threshold checks and final fan-drive-board
+  branch.
+- `sourceNote` is neutral and does not expose section/manual/source wording.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` and the all-Gree manual-bound audit classify the H fan-drive batch
+  as repaired.
+- Inventory counts after script rerun: AlreadyRepaired 30; DetailedProcedureAvailable 64; TableOnlySafe 88;
+  StatusOrPrompt 43; DebuggingOrCommissioning 38.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Focused ED-24SRC.5 guard: PASS, 7/7.
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 0 warnings and 0 errors.
+- EquipmentDiagnostics filter: PASS, 1115/1115 after preserving the existing H5 Telegram wording/safety anchor.
+- Telegram filter: PASS, 640/640.
+- EquipmentDiagnosticTelegramWebhookApiIntegrationTests filter: PASS, 10/10.
+- Exact full solution suite: PASS, 5139/5139.
+- `git diff --check`: PASS.
 
 ED-24SRC.4 repairs the next controlled GMV6 outdoor detailed-procedure batch without changing runtime counts.
 
