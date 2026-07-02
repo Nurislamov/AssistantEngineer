@@ -9,6 +9,9 @@ diagnostic chapters.
 - ED-24SRC.10c normalizes every non-grouped GMV6 runtime title to the `Gree GMV6 — <code> — <meaning>` form and
   replaces the internal table-only `sourceNote` wording with a neutral specialist handoff. The guard covers all 263
   GMV6 cards, and formatter tests keep `sourceNote` out of Consumer, Installer, and Engineer output.
+- ED-24SRC.11a repairs the first 18 indoor table-only cards (`d2`, `d5`, `d8`, `db`, `dd`, `dE`, `dF`, `dJ`, `dn`,
+  `dP`, `dU`, `dy`, `L2`, `L6`, `L8`, `Lb`, `LE`, `LF`). Each card uses its table meaning, has no inferred causes,
+  and provides only the common safe handoff; `db` remains a debugging status rather than a fault.
 - ED-24SRC.1 found the known generic import template in 235 GMV6 cards. Their Telegram-visible summaries, checks, and
   recommended actions were reduced to neutral table-only-safe wording without adding causes or component repairs.
 - GMV6 `AJ` was checked against section 2.12 and repaired as a filter-clean prompt with filter cleaning, prompt reset,

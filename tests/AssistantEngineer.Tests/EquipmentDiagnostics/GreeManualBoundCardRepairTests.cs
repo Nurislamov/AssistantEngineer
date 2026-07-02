@@ -239,6 +239,29 @@ public sealed class GreeManualBoundCardRepairTests
             ["lc.json"] = ("LC", 1, ["не соответствует наружному блоку", "не может распознать", "совместимый"])
         };
 
+    private static readonly Dictionary<string, (string Code, string Meaning)> Gmv6IndoorTableOnlyD11aBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["d2.json"] = ("d2", "неисправность нижнего датчика температуры воды в баке"),
+            ["d5.json"] = ("d5", "неисправность датчика температуры средней части трубки"),
+            ["d8.json"] = ("d8", "неисправность датчика температуры воды"),
+            ["db.json"] = ("db", "статус отладки"),
+            ["dd.json"] = ("dd", "неисправность датчика температуры солнечной системы"),
+            ["de.json"] = ("dE", "неисправность датчика CO₂ внутреннего блока"),
+            ["df.json"] = ("dF", "неисправность верхнего датчика температуры воды в баке"),
+            ["dj.json"] = ("dJ", "неисправность датчика температуры обратной воды"),
+            ["dn.json"] = ("dn", "неисправность механизма качания"),
+            ["dp.json"] = ("dP", "неисправность датчика температуры входной трубки генератора"),
+            ["du.json"] = ("dU", "неисправность датчика температуры дренажной трубки генератора"),
+            ["dy.json"] = ("dy", "неисправность датчика температуры воды"),
+            ["l2.json"] = ("L2", "защита вспомогательного нагревателя"),
+            ["l6.json"] = ("L6", "конфликт режимов"),
+            ["l8.json"] = ("L8", "недостаточная мощность"),
+            ["lb.json"] = ("Lb", "несоответствие внутренних блоков при групповом управлении системой осушения с повторным нагревом"),
+            ["le.json"] = ("LE", "ненормальная частота вращения водяного насоса EC DC"),
+            ["lf.json"] = ("LF", "неисправность настройки перепускного клапана")
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -888,6 +911,40 @@ public sealed class GreeManualBoundCardRepairTests
                 {
                     Assert.Equal(expectation.CauseCount, RequiredArray(text, "possibleCauses").Count);
                     Assert.NotEmpty(RequiredArray(text, "checkSteps"));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")));
+                });
+        }
+    }
+
+    [Fact]
+    public void Gmv6IndoorTableOnlyD11aBatchUsesExactMeaningAndSafeHandoff()
+    {
+        foreach (var (fileName, expectation) in Gmv6IndoorTableOnlyD11aBatch)
+        {
+            var entry = ReadEntry("gmv6", "indoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Equal(expectation.Code, RequiredString(entry, "code"));
+            Assert.Contains(expectation.Meaning, visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("краткое значение кода", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("пошаговая процедура", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    Assert.StartsWith(
+                        $"Gree GMV6 — {expectation.Code} —",
+                        RequiredString(text, "title"),
+                        StringComparison.Ordinal);
+                    Assert.Empty(RequiredArray(text, "possibleCauses"));
+                    Assert.Equal(3, RequiredArray(text, "checkSteps").Count);
                     Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")));
                     Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")));
                 });

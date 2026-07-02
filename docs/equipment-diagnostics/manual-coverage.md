@@ -22,6 +22,10 @@ the GMV6 series name, internal table-only `sourceNote` wording is replaced with 
 confirm that `sourceNote` remains metadata for Consumer, Installer, and Engineer responses. Source mappings and binary
 manuals are unchanged.
 
+ED-24SRC.11a promotes the first 18 GMV6 indoor table-only rows to safe visible cards using only their mapped table
+meanings. Possible causes remain empty, no troubleshooting flow is inferred, and the `db` debugging status is not
+presented as a fault.
+
 ED-24SRC.2 repairs the first detailed GMV6 batch from the same service-manual boundary: outdoor sensor/procedure cards
 `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`, `b9`, and `bA` now carry the documented 30-second sensor-detection
 condition, three possible causes, and connector -> sensor -> detection-circuit/main-board troubleshooting flow. Runtime

@@ -2,14 +2,15 @@
 
 ## Current stage
 
-ED-24SRC.10c - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.11a - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
 ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
-ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, ED-24SRC.10a, and ED-24SRC.10b are CLOSED / pushed.
+ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, ED-24SRC.10a, ED-24SRC.10b, and ED-24SRC.10c are
+CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.10c validation gate and commit/push the minimal visible cleanup.
-2. Continue with ED-24SRC.11 GMV6 indoor table-only diagnostics in a separate stage.
+1. Complete the ED-24SRC.11a validation gate and commit/push the first indoor table-only batch.
+2. Continue the remaining 23 GMV6 indoor table-only cards in separate batches.
 3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -18,6 +19,22 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.11a repairs the first 18 GMV6 indoor table-only cards without changing runtime counts.
+
+ED-24SRC.11a work-log selection:
+
+- Selected codes: `d2`, `d5`, `d8`, `db`, `dd`, `dE`, `dF`, `dJ`, `dn`, `dP`, `dU`, `dy`, `L2`, `L6`, `L8`,
+  `Lb`, `LE`, and `LF`.
+- Each card uses only its mapped table meaning and common safe handoff steps; `possibleCauses` remains empty.
+- `db` is explicitly presented as a debugging status, not as a fault.
+- Inventory after regeneration: AlreadyRepaired 159; indoor TableOnlySafe 23; StatusOrPrompt 43;
+  DebuggingOrCommissioning 38.
+- Runtime counts remain Gree 1296; GMV6 263; outdoor 121; indoor 60; debugging 38; status 44.
+- No PDF/manual binary, card count, package manifest, source mapping, migration, environment, secret, or deploy file
+  changed.
+- Validation: restore PASS; build PASS with 0 warnings and 0 errors; EquipmentDiagnostics 1128/1128; Telegram 641/641;
+  webhook integration 10/10; full suite 5152/5152; `git diff --check` PASS.
 
 ED-24SRC.10c normalizes all non-grouped GMV6 runtime titles and replaces the internal table-only `sourceNote` wording
 without changing any diagnostic meaning, cause, check, identifier, source mapping, or runtime count.
