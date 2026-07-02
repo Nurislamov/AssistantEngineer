@@ -306,18 +306,25 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $gmvXRoot -Recurse -Filt
     $texts = @($entry.texts)
     $visibleBlob = Get-VisibleBlob -Texts $texts
     $repairClass = Get-RepairClass -Code $entry.code
+    $preRepairClass = $repairClass
     $visibleTextFlags = @(Get-VisibleTextFlags `
         -RepairClass $repairClass `
         -Category $category `
         -Texts $texts `
         -VisibleBlob $visibleBlob)
+    if ($statusOrPromptLookup.ContainsKey($entry.code) -and $visibleTextFlags.Count -eq 0) {
+        $repairClass = "AlreadyRepaired"
+    }
     $sourceReferences = @($entry.sourceReferences)
     $sourceReferenceNames = @($sourceReferences | ForEach-Object { $_.sourceName } | Where-Object { $_ } | Sort-Object -Unique)
     $sourceReferenceManualIds = @($sourceReferences | ForEach-Object { $_.manualId } | Where-Object { $_ } | Sort-Object -Unique)
     $sourceReferenceDocumentCodes = @($sourceReferences | ForEach-Object { $_.documentCode } | Where-Object { $_ } | Sort-Object -Unique)
     $classificationNotes = @()
 
-    if ($repairClass -eq "DetailedProcedureAvailable") {
+    if ($repairClass -eq "AlreadyRepaired" -and $preRepairClass -eq "StatusOrPrompt") {
+        $classificationNotes += "GMV X status/prompt visible text has been repaired in ED-24GMVX.2."
+    }
+    elseif ($repairClass -eq "DetailedProcedureAvailable") {
         $classificationNotes += "GMV X manual inventory expects troubleshooting content; runtime visible text is not repaired in ED-24GMVX.1."
     }
     elseif ($repairClass -eq "StatusOrPrompt") {

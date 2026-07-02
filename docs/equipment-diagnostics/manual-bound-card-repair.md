@@ -1,7 +1,11 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
-ED-24GMVX.1 starts the GMV X closure work as inventory-only reconciliation. It does not edit runtime JSON cards and
-does not mark GMV X closed. The dedicated runner is:
+ED-24GMVX.2 repairs the 33 GMV X status/prompt cards from the inventory-only `StatusOrPrompt` class. These cards now
+use status, prompt, mode, setting, or commissioning wording instead of generic fault-like text; `AJ` is a filter-clean
+prompt with cleaning, reset, and next-service-cycle wording; `A0` is a to-be-commissioned state; `db` remains metadata-
+compatible but is visibly a debugging status. GMV X is still not closed.
+
+ED-24GMVX.1 started the GMV X closure work as inventory-only reconciliation. The dedicated runner is:
 
 ```powershell
 .\scripts\equipment-diagnostics\invoke-gmvx-manual-bound-closure-inventory.ps1
@@ -12,19 +16,19 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.1 inventory snapshot:
+Current ED-24GMVX.2 inventory snapshot:
 
-| Category | DetailedProcedureAvailable | StatusOrPrompt | TableOnlySafe | ManualSectionNeedsReview | Total |
+| Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
-| outdoor | 73 | 0 | 48 | 0 | 121 |
-| indoor | 32 | 1 | 21 | 6 | 60 |
-| status | 0 | 29 | 15 | 0 | 44 |
-| debugging | 27 | 3 | 8 | 0 | 38 |
-| **Total** | **132** | **33** | **92** | **6** | **263** |
+| outdoor | 0 | 73 | 48 | 0 | 121 |
+| indoor | 1 | 32 | 21 | 6 | 60 |
+| status | 29 | 0 | 15 | 0 | 44 |
+| debugging | 3 | 27 | 8 | 0 | 38 |
+| **Total** | **33** | **132** | **92** | **6** | **263** |
 
 Conflict count is 0 and Unclassified count is 0. The six `ManualSectionNeedsReview` rows are exactly `d5`, `d8`,
-`dE`, `L2`, `L6`, and `LH`. Visible-text audit flags are reported only; ED-24GMVX.1 intentionally does not repair the
-generic visible template, source/provenance wording, or status/debugging wording findings.
+`dE`, `L2`, `L6`, and `LH`. Remaining visible-text audit flags belong to unrepaired GMV X detailed/table/manual-review
+classes and are reported only until their controlled batches run.
 
 ED-24SRC.16a removes the last visible wording leftovers before production review: E2 refers to the permitted
 temperature characteristic instead of a “temperature table”, and all 43 generic GMV6 status cards now state

@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24GMVX.1 CLOSED / inventory PASS
+ED-24GMVX.2 CLOSED / status-prompt PASS
 
 ## Current branch
 
@@ -10,7 +10,7 @@ master
 
 ## Last completed work
 
-GMV X manual-bound closure inventory was reconciled without editing runtime cards. GMV6 remains CLOSED / production PASS.
+GMV X status/prompt diagnostics were repaired for the 33 ED-24GMVX.1 `StatusOrPrompt` cards. GMV6 remains CLOSED / production PASS.
 
 Final GMV6 closure / production commits:
 
@@ -44,13 +44,13 @@ The smoke confirmed:
 
 ## Current blocker
 
-None for ED-24GMVX.1.
+None for ED-24GMVX.2.
 
 ## Important decisions
 
 - GMV6 is now considered CLOSED after full local validation, archive review, production deploy, and Telegram smoke.
 - GMV6 remains CLOSED / production PASS and is not part of the GMV X inventory stage.
-- GMV X is NOT CLOSED. ED-24GMVX.1 is an inventory/audit pass only.
+- GMV X is NOT CLOSED. ED-24GMVX.2 repairs status/prompt cards only.
 - sourceNote remains non-rendered by Telegram; visible Telegram output uses card title, summary, causes, check steps, recommended action, and safety text.
 - Telegram formatter now prefers localized card CheckSteps; CompactChecks is only a fallback when a card has no check steps.
 - db keeps its existing package-compatible metadata boundary, but visible text and guards keep it as debugging/status wording rather than a normal fault.
@@ -71,6 +71,7 @@ Key recent areas:
 - scripts/equipment-diagnostics/invoke-gmv6-manual-bound-closure-inventory.ps1
 - scripts/equipment-diagnostics/invoke-gmvx-manual-bound-closure-inventory.ps1
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXManualBoundInventoryTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXStatusPromptRepairTests.cs
 
 ## Validation status
 
@@ -84,31 +85,39 @@ Local final validation after ED-24SRC.16a:
 - Branch readiness: PASS, 0 blockers
 - Runtime counts unchanged: Gree 1296; GMV6 263 = 121 outdoor / 60 indoor / 44 status / 38 debugging
 
-ED-24GMVX.1 inventory snapshot:
+ED-24GMVX.2 inventory snapshot:
 
 - GMV X total: 263
 - GMV X outdoor: 121
 - GMV X indoor: 60
 - GMV X status: 44
 - GMV X debugging: 38
+- AlreadyRepaired: 33
 - DetailedProcedureAvailable: 132
-- StatusOrPrompt: 33
+- StatusOrPrompt: 0
 - TableOnlySafe: 92
 - ManualSectionNeedsReview: 6
 - Conflict: 0
 - Unclassified: 0
 - GMV X CLOSED: no
 
-ED-24GMVX.1 local validation:
+Completed in ED-24GMVX.2:
 
-- Inventory runner: PASS; gmvXClosed = false
-- dotnet restore: PASS
-- dotnet build --no-restore: PASS, 6 existing nullable warnings / 0 errors
-- EquipmentDiagnostics tests: PASS, 1145/1145
-- Telegram tests: PASS, 645/645
-- Full suite: PASS, 5169/5169
+- 33 GMV X status/prompt cards repaired.
+- AJ is a filter-clean prompt with clean/reset/next-service-cycle wording.
+- A0 is a to-be-commissioned state; A2/A3/A4 are status modes; db is visible as debugging status.
+- No GMV6, GMV6 HR, GMV Mini, GMV9 Flex, U-Match R32, or ERV B Series cards were changed.
+
+ED-24GMVX.2 local validation:
+
+- dotnet restore .\AssistantEngineer.sln: PASS
+- dotnet build .\AssistantEngineer.sln --no-restore: PASS, 0 warnings / 0 errors
+- GMV X inventory runner: PASS, 263 rows; AlreadyRepaired 33 / DetailedProcedureAvailable 132 / TableOnlySafe 92 / ManualSectionNeedsReview 6; StatusOrPrompt 0; GMV X CLOSED = no
+- EquipmentDiagnostics filter: PASS, 1149/1149
+- Telegram filter: PASS, 646/646
+- EquipmentDiagnosticTelegramWebhookApiIntegrationTests filter: PASS, 10/10
+- Full suite: PASS, 5173/5173
 - git diff --check: PASS
-- PROJECT_STATE.md UTF-8 read check: PASS; null byte count 0
 
 Final local GMV6 archive review after ED-24SRC.16a:
 
@@ -135,6 +144,6 @@ Migrations/env/artifacts:
 
 Recommended next stage:
 
-- ED-24GMVX.2 controlled status/prompt cleanup or the first detailed GMV X batch.
+- ED-24GMVX.3 outdoor sensor detailed batch, not full GMV X closure.
 
 Do not attempt full GMV X repair in one commit. Keep GMV6 closed and out of scope.

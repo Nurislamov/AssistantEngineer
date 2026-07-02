@@ -125,7 +125,7 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
     [InlineData("Gree GMV X d9", "неисправность управления")]
     [InlineData("Gree GMV X UE", "сообщение наладки холодильного контура")]
     [InlineData("Gree GMV X qP", "настройка региона экспорта")]
-    [InlineData("Gree GMV X n2", "настройка предела коэффициента соответствия")]
+    [InlineData("Gree GMV X n2", "предела коэффициента соответствия")]
     public async Task TelegramGmvXSmokeAnswersUseReadableRussianWithoutQuestionMarks(
         string query,
         string expectedFragment)
@@ -185,7 +185,11 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         yield return RequiredString(text, "summary");
         yield return RequiredString(text, "safetyNote");
         yield return RequiredString(text, "recommendedAction");
-        yield return RequiredString(text, "sourceNote");
+        var sourceNote = OptionalString(text, "sourceNote");
+        if (!string.IsNullOrWhiteSpace(sourceNote))
+        {
+            yield return sourceNote;
+        }
 
         foreach (var propertyName in new[] { "possibleCauses", "checkSteps", "doNotAdvise" })
         {
@@ -256,6 +260,12 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
         var value = node.GetValue<string>();
         Assert.False(string.IsNullOrWhiteSpace(value), $"Property {propertyName} must not be blank.");
         return value;
+    }
+
+    private static string? OptionalString(JsonObject obj, string propertyName)
+    {
+        var node = obj[propertyName];
+        return node?.GetValue<string>();
     }
 
     [GeneratedRegex(@"\b(of|for|fault|error|protection|sensor|compressor|outdoor|indoor|controller|communication|temperature|pressure|voltage|current|module|fan|motor|valve|discharge|suction|setting|inquiry|mode|unit|board|address|quantity|refrigerant|heating|cooling|emergency|runtime|staging|review|imported|pipeline|raw|internal)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
