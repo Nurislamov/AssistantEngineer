@@ -1,103 +1,115 @@
 {
-  "id": "gree-gmv6-indoor-y7",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "IndoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "y7",
-  "signalType": "Fault",
-  "displaySource": "IndoorUnit",
-  "systemPart": "Sensor",
-  "severity": "Medium",
-  "requiresQualifiedService": true,
-  "canCustomerContinueOperation": false,
-  "packageId": "gree-gmv6-indoor-fault-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Malfunction of fresh air inlet temperature sensor",
-  "sourceReference": "глава 3 Faults / Error Indication / Indoor y7 / PDF page 74 / manual page 72",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-20T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-indoor-y7-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 y7 — неисправность датчика",
-      "summary": "Код y7 означает: неисправность датчика. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Не открывайте панели оборудования и не выполняйте электрические или холодильные проверки самостоятельно.",
-      "checkSteps": [
-        "Запишите код y7, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не открывать электрические отсеки.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-indoor-y7-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 y7 — неисправность датчика",
-      "summary": "Код y7 означает: неисправность датчика. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Допустимы только безопасные внешние и визуальные проверки. Работы внутри электрических отсеков выполняет квалифицированный специалист при снятом питании.",
-      "checkSteps": [
-        "Запишите код y7, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-indoor-y7-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 y7 — неисправность датчика",
-      "summary": "Код y7 означает: неисправность датчика. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Электрические, инверторные, компрессорные и холодильные проверки выполняются квалифицированным специалистом по штатной процедуре и при соблюдении требований безопасности.",
-      "checkSteps": [
-        "Запишите код y7, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправном компоненте только по коду.",
-        "Не отключать и не обходить защиты."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    }
-  ]
+    "id":  "gree-gmv6-indoor-y7",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "IndoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "y7",
+    "signalType":  "Fault",
+    "displaySource":  "IndoorUnit",
+    "systemPart":  "Sensor",
+    "severity":  "Medium",
+    "requiresQualifiedService":  true,
+    "canCustomerContinueOperation":  false,
+    "packageId":  "gree-gmv6-indoor-fault-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Malfunction of fresh air inlet temperature sensor",
+    "sourceReference":  "глава 3 Faults / Error Indication / Indoor y7 / PDF page 74 / manual page 72",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-20T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-y7-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 — y7 — неисправность датчика температуры приточного воздуха",
+                      "summary":  "Код y7 означает неисправность датчика температуры приточного воздуха.",
+                      "safetyNote":  "Работы с электрическими цепями внутреннего блока выполняет квалифицированный специалист при отключённом питании.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код, модель внутреннего блока и условия появления.",
+                                         "Не отключайте и не обходите защитные устройства.",
+                                         "Передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не открывать электрические отсеки.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Зафиксировать код и условия появления; выполнить проверку квалифицированным специалистом.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-y7-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 — y7 — неисправность датчика температуры приточного воздуха",
+                      "summary":  "Код y7 означает неисправность датчика температуры приточного воздуха.",
+                      "safetyNote":  "Работы с электрическими цепями внутреннего блока выполняет квалифицированный специалист при отключённом питании.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код, модель внутреннего блока и условия появления.",
+                                         "Не отключайте и не обходите защитные устройства.",
+                                         "Передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Зафиксировать код и условия появления; выполнить проверку квалифицированным специалистом.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-y7-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 — y7 — неисправность датчика температуры приточного воздуха",
+                      "summary":  "Код y7 означает неисправность датчика температуры приточного воздуха.",
+                      "safetyNote":  "Работы с электрическими цепями внутреннего блока выполняет квалифицированный специалист при отключённом питании.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код, модель внутреннего блока и условия появления.",
+                                         "Не отключайте и не обходите защитные устройства.",
+                                         "Передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправном компоненте только по коду.",
+                                          "Не отключать и не обходить защиты."
+                                      ],
+                      "recommendedAction":  "Зафиксировать код и условия появления; выполнить проверку квалифицированным специалистом.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  }
+              ]
 }

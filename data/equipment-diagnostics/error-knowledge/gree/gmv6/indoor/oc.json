@@ -1,129 +1,141 @@
 {
-  "id": "gree-gmv6-indoor-oc",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "IndoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "oC",
-  "signalType": "Fault",
-  "displaySource": "IndoorUnit",
-  "systemPart": "PowerSupply",
-  "severity": "High",
-  "requiresQualifiedService": true,
-  "canCustomerContinueOperation": false,
-  "packageId": "gree-gmv6-indoor-fault-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Charging circuit malfunction of IDU",
-  "sourceReference": "глава 3 Faults / Error Indication / Indoor oC / PDF page 74 / manual page 72",
-  "sourceReferences": [
-    {
-      "sourceName": "Service Manual for GMV6 v_2020.09",
-      "documentCode": "GC202001-I",
-      "sourceReference": "глава 3 Faults / Error Indication / Indoor oC / PDF page 74 / manual page 72",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv6-service-manual-2020-09",
-      "packageId": "gree-gmv6-indoor-fault-codes",
-      "notes": "Primary GMV6 manual source retained for backward compatibility."
-    },
-    {
-      "sourceName": "Service Manual - Multi Variable Air Conditioners Indoor Units",
-      "documentCode": "GC202004-X",
-      "sourceReference": "Malfunction List for the Wired Controller, manual page 173 / PDF page 178",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv-idu-service-manual",
-      "packageId": "gree-gmv6-indoor-fault-codes",
-      "notes": "GC202004-X confirms the existing indoor-unit code meaning."
-    }
-  ],
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-21T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-indoor-oc-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 oC — неисправность электропитания",
-      "summary": "Код oC означает: неисправность электропитания. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Не открывайте панели оборудования и не выполняйте электрические или холодильные проверки самостоятельно.",
-      "checkSteps": [
-        "Запишите код oC, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не открывать электрические отсеки.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-indoor-oc-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 oC — неисправность электропитания",
-      "summary": "Код oC означает: неисправность электропитания. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Допустимы только безопасные внешние и визуальные проверки. Работы внутри электрических отсеков выполняет квалифицированный специалист при снятом питании.",
-      "checkSteps": [
-        "Запишите код oC, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-indoor-oc-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 oC — неисправность электропитания",
-      "summary": "Код oC означает: неисправность электропитания. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Электрические, инверторные, компрессорные и холодильные проверки выполняются квалифицированным специалистом по штатной процедуре и при соблюдении требований безопасности.",
-      "checkSteps": [
-        "Запишите код oC, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправном компоненте только по коду.",
-        "Не отключать и не обходить защиты."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Внутренние блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-    }
-  ]
+    "id":  "gree-gmv6-indoor-oc",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "IndoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "oC",
+    "signalType":  "Fault",
+    "displaySource":  "IndoorUnit",
+    "systemPart":  "PowerSupply",
+    "severity":  "High",
+    "requiresQualifiedService":  true,
+    "canCustomerContinueOperation":  false,
+    "packageId":  "gree-gmv6-indoor-fault-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Charging circuit malfunction of IDU",
+    "sourceReference":  "глава 3 Faults / Error Indication / Indoor oC / PDF page 74 / manual page 72",
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Service Manual for GMV6 v_2020.09",
+                                 "documentCode":  "GC202001-I",
+                                 "sourceReference":  "глава 3 Faults / Error Indication / Indoor oC / PDF page 74 / manual page 72",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv6-service-manual-2020-09",
+                                 "packageId":  "gree-gmv6-indoor-fault-codes",
+                                 "notes":  "Primary GMV6 manual source retained for backward compatibility."
+                             },
+                             {
+                                 "sourceName":  "Service Manual - Multi Variable Air Conditioners Indoor Units",
+                                 "documentCode":  "GC202004-X",
+                                 "sourceReference":  "Malfunction List for the Wired Controller, manual page 173 / PDF page 178",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv-idu-service-manual",
+                                 "packageId":  "gree-gmv6-indoor-fault-codes",
+                                 "notes":  "GC202004-X confirms the existing indoor-unit code meaning."
+                             }
+                         ],
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-21T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-oc-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 — oC — неисправность цепи зарядки внутреннего блока",
+                      "summary":  "Код oC означает неисправность цепи зарядки внутреннего блока.",
+                      "safetyNote":  "Работы с электрическими цепями внутреннего блока выполняет квалифицированный специалист при отключённом питании.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код, модель внутреннего блока и условия появления.",
+                                         "Не отключайте и не обходите защитные устройства.",
+                                         "Передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не открывать электрические отсеки.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Зафиксировать код и условия появления; выполнить проверку квалифицированным специалистом.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-oc-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 — oC — неисправность цепи зарядки внутреннего блока",
+                      "summary":  "Код oC означает неисправность цепи зарядки внутреннего блока.",
+                      "safetyNote":  "Работы с электрическими цепями внутреннего блока выполняет квалифицированный специалист при отключённом питании.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код, модель внутреннего блока и условия появления.",
+                                         "Не отключайте и не обходите защитные устройства.",
+                                         "Передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Зафиксировать код и условия появления; выполнить проверку квалифицированным специалистом.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-indoor-oc-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 — oC — неисправность цепи зарядки внутреннего блока",
+                      "summary":  "Код oC означает неисправность цепи зарядки внутреннего блока.",
+                      "safetyNote":  "Работы с электрическими цепями внутреннего блока выполняет квалифицированный специалист при отключённом питании.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код, модель внутреннего блока и условия появления.",
+                                         "Не отключайте и не обходите защитные устройства.",
+                                         "Передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправном компоненте только по коду.",
+                                          "Не отключать и не обходить защиты."
+                                      ],
+                      "recommendedAction":  "Зафиксировать код и условия появления; выполнить проверку квалифицированным специалистом.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  }
+              ]
 }
