@@ -123,6 +123,24 @@ public sealed class GreeManualBoundCardRepairTests
             ["j9.json"] = ("J9", 2, ["меньше 1,8", "-5 °C", "+50 °C", "-20 °C", "+24 °C", "датчиков высокого и низкого давления"])
         };
 
+    private static readonly Dictionary<string, (string Code, int CauseCount, string[] RequiredPhrases)> Gmv6OutdoorCompressorDrivePBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["p0.json"] = ("P0", 7, ["проводном контроллере внутреннего блока", "2-разрядном LED", "P3", "P7", "P8", "PC", "PF", "P9", "PJ"]),
+            ["p1.json"] = ("P1", 3, ["проводном контроллере внутреннего блока", "2-разрядном LED", "P5", "P6", "C2"]),
+            ["p2.json"] = ("P2", 2, ["проводном контроллере внутреннего блока", "2-разрядном LED", "PH", "PL"]),
+            ["p3.json"] = ("P3", 1, ["защита сброса модуля привода компрессора", "более трёх раз", "заменить плату привода компрессора"]),
+            ["p5.json"] = ("P5", 5, ["перегрузке тока", "U, V и W", "меньше 2 Ом", "больше 2 МОм", "PJ", "P6", "P9", "заменить плату привода компрессора"]),
+            ["p6.json"] = ("P6", 5, ["защита IPM-модуля", "U, V и W", "меньше 2 Ом", "больше 2 МОм", "PJ", "P5", "P9", "заменить плату привода компрессора"]),
+            ["p7.json"] = ("P7", 1, ["датчика температуры платы привода компрессора", "более трёх раз", "заменить плату привода компрессора"]),
+            ["p8.json"] = ("P8", 3, ["защита IPM привода компрессора от перегрева", "винты IPM-модуля", "термопаст", "заменить плату привода компрессора"]),
+            ["p9.json"] = ("P9", 2, ["потере синхронизации", "U, V и W", "меньше 2 Ом", "больше 2 МОм", "PJ", "P6", "P5", "заменить плату привода компрессора"]),
+            ["pc.json"] = ("PC", 1, ["цепи детекции тока привода компрессора", "более трёх раз", "заменить плату привода компрессора"]),
+            ["ph.json"] = ("PH", 2, ["выше 460 В", "привести напряжение к 380 В", "заменить плату привода компрессора"]),
+            ["pl.json"] = ("PL", 2, ["ниже 320 В", "привести напряжение к 380 В", "заменить плату привода компрессора"]),
+            ["pj.json"] = ("PJ", 3, ["отказ запуска инверторного компрессора", "U, V и W", "меньше 2 Ом", "больше 2 МОм", "P9", "P6", "P5", "заменить плату привода компрессора"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -462,6 +480,51 @@ public sealed class GreeManualBoundCardRepairTests
             var visible = VisibleBlob(entry);
 
             Assert.Contains($"Gree GMV6 — {expectation.Code} —", visible, StringComparison.Ordinal);
+            Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text => Assert.Equal(expectation.CauseCount, RequiredArray(text, "possibleCauses").Count));
+
+            var technicalTexts = RequiredTexts(entry)
+                .Where(text =>
+                    !string.Equals(
+                        RequiredString(text, "audience"),
+                        "Consumer",
+                        StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            Assert.NotEmpty(technicalTexts);
+            Assert.All(
+                technicalTexts,
+                text => Assert.True(
+                    RequiredArray(text, "checkSteps").Count >= 3,
+                    $"Audience {RequiredString(text, "audience")} for {expectation.Code} must retain the documented troubleshooting steps."));
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorCompressorDrivePBatchContainsManualDiagnosisCausesAndFlowchart()
+    {
+        foreach (var (fileName, expectation) in Gmv6OutdoorCompressorDrivePBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains("Gree GMV", visible, StringComparison.Ordinal);
             Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
 
             foreach (var phrase in expectation.RequiredPhrases)

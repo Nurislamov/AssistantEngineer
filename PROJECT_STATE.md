@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24SRC.7c - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
-ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, and ED-24SRC.7b are CLOSED / pushed.
+ED-24SRC.7d - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, and ED-24SRC.7c are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Commit and push ED-24SRC.7c.
-2. Continue with ED-24SRC.7d from the remaining GMV6 outdoor `DetailedProcedureAvailable` inventory.
+1. Commit and push ED-24SRC.7d.
+2. Continue with ED-24SRC.7e only if the updated inventory still exposes in-scope GMV6 outdoor work.
 3. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -16,6 +16,53 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.7d repairs the remaining GMV6 outdoor P compressor-drive detailed-procedure batch without changing runtime
+counts.
+
+ED-24SRC.7d work-log selection:
+
+- Selected codes: `P0`, `P1`, `P2`, `P3`, `P5`, `P6`, `P7`, `P8`, `P9`, `PC`, `PH`, `PJ`, and `PL`.
+- Manual sections: 2.125-2.137 in `Service Manual for GMV6 v_2020.09.pdf`.
+- Batch reason: this is the contiguous P outdoor compressor-drive group, including aggregate wired-controller codes
+  `P0`-`P2` and specific outdoor 2-digit LED compressor-drive protections/faults.
+- Skipped codes: `P4`, `PA`, `PE`, `PF`, `PP`, and `PU` because they remain `TableOnlySafe` outdoor cards without a
+  promoted detailed troubleshooting section in the current inventory; no indoor, status, or debugging cards were
+  changed.
+
+ED-24SRC.7d implementation notes:
+
+- `P0`, `P1`, and `P2` now direct the technician to read the 2-digit LED on the outdoor main board and branch to the
+  specific compressor-drive code reported there.
+- `P3`, `P7`, and `PC` now carry the repeated power-cycle check and compressor drive board replacement branch.
+- `P5`, `P6`, `P9`, and `PJ` now carry the UVW wiring, winding resistance, insulation, clogged-system, control-valve,
+  simultaneous-fault, compressor replacement, and compressor drive board replacement flow.
+- `P8` now carries the IPM over-temperature screw/thermal-grease checks and compressor drive board replacement branch.
+- `PH` and `PL` now carry the 460 В / 320 В input-voltage thresholds, 380 В correction action, and compressor drive
+  board replacement branch.
+- Telegram-visible `sourceNote` fields are neutral and do not expose section/manual/source wording.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` classifies the ED-24SRC.7d batch as repaired.
+- Inventory counts after script rerun: AlreadyRepaired 68; DetailedProcedureAvailable 26; TableOnlySafe 88;
+  StatusOrPrompt 43; DebuggingOrCommissioning 38.
+- Category split after script rerun: outdoor = 67 AlreadyRepaired, 0 DetailedProcedureAvailable, 54 TableOnlySafe;
+  indoor = 26 DetailedProcedureAvailable, 34 TableOnlySafe; debugging = 38 DebuggingOrCommissioning; status =
+  1 AlreadyRepaired, 43 StatusOrPrompt.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Validation:
+  - `dotnet restore .\AssistantEngineer.sln`: PASS.
+  - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 6 existing nullable warnings in architecture guard
+    tests and 0 errors.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1119/1119).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~Telegram" --logger "console;verbosity=minimal"`:
+    PASS (640/640).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnosticTelegramWebhookApiIntegrationTests" --logger "console;verbosity=minimal"`:
+    PASS (10/10).
+  - `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal"`: PASS (5143/5143).
+  - `git diff --check`: PASS.
 
 ED-24SRC.7c repairs the remaining GMV6 outdoor J detailed-procedure batch without changing runtime counts.
 
