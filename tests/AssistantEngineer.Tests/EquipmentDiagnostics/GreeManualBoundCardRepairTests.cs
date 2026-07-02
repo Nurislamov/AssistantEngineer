@@ -87,11 +87,28 @@ public sealed class GreeManualBoundCardRepairTests
         Assert.Contains("статус", visible, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("сброс", visible, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("сервисный цикл", visible, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("интервал", visible, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(
             "напоминание по обслуживанию оборудования",
             visible,
             StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(
+            "наружного блока",
+            visible,
+            StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(
+            "основная плата",
+            visible,
+            StringComparison.OrdinalIgnoreCase);
         Assert.Empty(RequiredArray(RequiredTexts(entry)[0], "possibleCauses"));
+
+        Assert.Equal("OutdoorUnit", RequiredString(entry, "equipmentType"));
+        Assert.Equal("OutdoorBoard", RequiredString(entry, "displaySource"));
+        Assert.Contains(
+            "2.12",
+            RequiredString(entry, "sourceReference"),
+            StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -138,6 +155,9 @@ public sealed class GreeManualBoundCardRepairTests
             Assert.Contains($"Gree GMV6 — {code} —", visible, StringComparison.Ordinal);
             Assert.Contains(sensorText, visible, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("30 секунд", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("основная плата наружного блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("проводной контроллер внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("приёмник сигнала внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("плохой контакт", visible, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("разъём", visible, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("неисправен датчик", visible, StringComparison.OrdinalIgnoreCase);
@@ -168,9 +188,13 @@ public sealed class GreeManualBoundCardRepairTests
             Assert.NotEmpty(technicalTexts);
             Assert.All(
                 technicalTexts,
-                text => Assert.True(
-                    RequiredArray(text, "checkSteps").Count >= 3,
-                    $"Audience {RequiredString(text, "audience")} for {code} must retain all flowchart steps."));
+                text =>
+                {
+                    Assert.Contains("AD", RequiredString(text, "summary"), StringComparison.OrdinalIgnoreCase);
+                    Assert.True(
+                        RequiredArray(text, "checkSteps").Count >= 3,
+                        $"Audience {RequiredString(text, "audience")} for {code} must retain all flowchart steps.");
+                });
         }
     }
 

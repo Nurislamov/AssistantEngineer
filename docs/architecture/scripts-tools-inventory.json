@@ -1567,6 +1567,22 @@
                         "riskIfChanged":  "Broader rewrite rules can invent diagnostic causes, cross manual boundaries, or alter runtime metadata."
                     },
                     {
+                        "id":  "SCR-097",
+                        "path":  "scripts/equipment-diagnostics/invoke-gmv6-manual-bound-closure-inventory.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Generate ignored JSON and CSV GMV6 closure inventory reports for staged manual-bound card repair planning.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the inventory deterministic, runtime-read-only, and aligned with GMV6 package/category count guards.",
+                        "proposedStage":  "ED-24SRC.3",
+                        "riskIfChanged":  "Inventory drift can misclassify GMV6 closure status, hide source-boundary conflicts, or plan unsafe repair batches."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

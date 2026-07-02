@@ -23,6 +23,12 @@ condition, three possible causes, and connector -> sensor -> detection-circuit/m
 counts do not change, remaining unrepaired cards stay `NeedsManualReview` in the generated repair audit, and no
 PDF/manual binary is committed.
 
+ED-24SRC.2a refines the already repaired `AJ` and `b1`-`bA` visible wording from the same manual boundary. `AJ` now
+mentions the configurable filter-clean interval and keeps the prompt/reset/next-service-cycle meaning without visible
+section/source wording. `b1`-`bA` now include the manual fault-display locations and AD-value detection wording for
+technical audiences. The AJ package-level metadata remains runtime-compatible until a separate status package/routing
+split can safely model wired-controller/indoor-receiver applicability.
+
 Current snapshot:
 
 - Source files tracked: 52.

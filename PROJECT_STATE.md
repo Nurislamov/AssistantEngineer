@@ -2,12 +2,12 @@
 
 ## Current stage
 
-ED-24SRC.3 - IMPLEMENTED / validation PASS / ready to commit. ED-24SRC.1, ED-24SRC.1b, and ED-24SRC.2 are CLOSED /
+ED-24SRC.2a - IMPLEMENTED / validation PASS / ready to commit. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, and ED-24SRC.3 are CLOSED /
 pushed.
 
 Next recommended steps:
 
-1. Commit and push ED-24SRC.3.
+1. Commit and push ED-24SRC.2a.
 2. Continue with ED-24SRC.4: the next controlled GMV6 outdoor detailed-procedure batch from the inventory.
 3. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -16,6 +16,32 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.2a corrects the already repaired AJ and GMV6 outdoor sensor batch wording without changing runtime counts.
+
+ED-24SRC.2a implementation notes:
+
+- GMV6 `AJ` visible text now includes the manual's configurable filter-clean interval, keeps the indoor-filter service
+  cycle action, and removes section/source wording from `sourceNote`.
+- `AJ` metadata is not changed in this stage because `gree-gmv6-status-codes` currently allows `OutdoorUnit` /
+  `OutdoorBoard` for the whole status package. Correctly splitting status display/applicability to
+  `WiredRemote`/indoor receiver needs a separate package/routing-safe design stage.
+- GMV6 `b1`-`bA` visible summaries now include the manual fault display: outdoor main board, indoor-unit wired
+  controller, or indoor-unit receiver.
+- Installer/Engineer summaries for `b1`-`bA` now use the manual AD-value detection wording while keeping the existing
+  connector -> sensor -> detection circuit/main-board troubleshooting flow.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Focused ED-24SRC.2a guard: PASS, 5/5.
+- `dotnet restore .\AssistantEngineer.sln`: PASS.
+- `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 0 warnings and 0 errors.
+- EquipmentDiagnostics filter: PASS, 1113/1113 after correcting the receiver wording caught by the existing grammar
+  guard.
+- Telegram filter: PASS, 640/640.
+- EquipmentDiagnosticTelegramWebhookApiIntegrationTests filter: PASS, 10/10.
+- Exact full solution suite: PASS, 5137/5137.
+- Architecture scripts/tools inventory guard: PASS after adding the ED-24SRC.3 inventory runner to governance inventory.
+- `git diff --check`: PASS.
 
 ED-24SRC.3 maps all 263 GMV6 runtime cards for staged closure. The ignored inventory outputs are:
 

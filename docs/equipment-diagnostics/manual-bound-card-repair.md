@@ -15,6 +15,9 @@ diagnostic chapters.
 - GMV6 `b1`-`bA` were checked against sections 2.17-2.26 and their rendered flowcharts. The cards now include the
   30-second detection condition, all three possible causes, and the ordered connector, sensor, detection-circuit, and
   main-board actions with the correct sensor name for each code.
+- ED-24SRC.2a corrected the repaired AJ and `b1`-`bA` visible wording without changing counts: `AJ` now includes the
+  configurable filter-clean interval and neutral source note; `b1`-`bA` now include the manual fault-display locations
+  and AD-value detection wording for Installer/Engineer audiences.
 - The remaining 1285 cards are marked `NeedsManualReview`. Detailed diagnostic chapters and flowcharts must be reviewed
   one source boundary at a time before those cards can be marked repaired.
 
@@ -84,6 +87,14 @@ staged repair/verification passes before GMV6 can be called closed.
 | **Total** | **1296** |
 
 No runtime card was added or removed. No PDF, DOC, XLS, or XLSX source binary is part of this change.
+
+## ED-24SRC.2a metadata boundary
+
+The AJ manual section states that the prompt is displayed on the indoor-unit wired controller and indoor-unit receiver,
+and applies to all indoor units. The current runtime package `gree-gmv6-status-codes` is still package-scoped as
+`OutdoorUnit` / `OutdoorBoard`; changing only AJ would fail the package validator or require a package/routing split.
+ED-24SRC.2a therefore fixes the user-visible answer and records the metadata/package split as a later safe design task
+instead of silently changing routing metadata.
 
 ## Backlog
 
