@@ -15,6 +15,8 @@ diagnostic chapters.
 - ED-24SRC.11b-1 repairs the next 12 indoor table-only cards: `LH`, `LJ`, `LL`, `LP`, `LU`, and `o0`-`o6`.
 - ED-24SRC.11b-2 repairs the final 11 indoor table-only cards: `o7`, `o8`, `o9`, `oA`, `ob`, `oC`, `y1`, `y2`,
   `y7`, `y8`, and `yA`.
+- ED-24SRC.12 verifies all 60 indoor cards with no remaining detailed/table-only work. GMV6 indoor is CLOSED /
+  manual-bound PASS.
 - ED-24SRC.1 found the known generic import template in 235 GMV6 cards. Their Telegram-visible summaries, checks, and
   recommended actions were reduced to neutral table-only-safe wording without adding causes or component repairs.
 - GMV6 `AJ` was checked against section 2.12 and repaired as a filter-clean prompt with filter cleaning, prompt reset,

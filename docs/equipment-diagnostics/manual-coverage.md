@@ -26,6 +26,9 @@ ED-24SRC.11a promotes the first 18 GMV6 indoor table-only rows to safe visible c
 meanings. Possible causes remain empty, no troubleshooting flow is inferred, and the `db` debugging status is not
 presented as a fault.
 
+ED-24SRC.11b-1/11b-2 complete the remaining 23 indoor table-only rows. ED-24SRC.12 verifies all 60 GMV6 indoor cards
+and marks the indoor category CLOSED with no remaining detailed or table-only rows.
+
 ED-24SRC.2 repairs the first detailed GMV6 batch from the same service-manual boundary: outdoor sensor/procedure cards
 `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`, `b9`, and `bA` now carry the documented 30-second sensor-detection
 condition, three possible causes, and connector -> sensor -> detection-circuit/main-board troubleshooting flow. Runtime

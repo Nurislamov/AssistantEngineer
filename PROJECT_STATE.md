@@ -2,15 +2,15 @@
 
 ## Current stage
 
-ED-24SRC.11b-2 - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.12 - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
 ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
 ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, ED-24SRC.10a, ED-24SRC.10b, ED-24SRC.10c, and
-ED-24SRC.11a, and ED-24SRC.11b-1 are CLOSED / pushed.
+ED-24SRC.11a, ED-24SRC.11b-1, and ED-24SRC.11b-2 are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.11b-2 validation gate and commit/push the final indoor table-only batch.
-2. Regenerate closure inventory and close GMV6 indoor in ED-24SRC.12.
+1. Complete ED-24SRC.12 closure validation and push the GMV6 indoor closure.
+2. Continue with GMV6 status cards only after indoor closure is pushed.
 3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -19,6 +19,12 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.12 verifies all 60 GMV6 indoor cards as manual-bound closed: DetailedProcedureAvailable 0,
+TableOnlySafe 0, Conflict 0, and NeedsManualReview/Unclassified 0. A category-wide guard requires non-empty safe
+visible text and GMV6 titles for every indoor card.
+Validation: restore PASS; build PASS with 6 existing nullable warnings and 0 errors; EquipmentDiagnostics 1129/1129;
+Telegram 641/641; webhook 10/10; full suite 5153/5153; `git diff --check` PASS.
 
 ED-24SRC.11b-2 repairs the final 11 GMV6 indoor table-only cards: `o7`, `o8`, `o9`, `oA`, `ob`, `oC`, `y1`, `y2`,
 `y7`, `y8`, and `yA`. Causes remain empty and visible actions remain limited to the common safe indoor handoff.

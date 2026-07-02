@@ -1021,6 +1021,41 @@ public sealed class GreeManualBoundCardRepairTests
     }
 
     [Fact]
+    public void Gmv6IndoorManualBoundVisibleScopeIsClosed()
+    {
+        var indoorEntries = Directory
+            .EnumerateFiles(Path.Combine(GreeRoot, "gmv6", "indoor"), "*.json", SearchOption.TopDirectoryOnly)
+            .Order(StringComparer.Ordinal)
+            .Select(path => (Path: path, Entry: ReadObject(path)))
+            .ToArray();
+
+        Assert.Equal(60, indoorEntries.Length);
+        foreach (var (path, entry) in indoorEntries)
+        {
+            var visible = VisibleBlob(entry);
+            Assert.False(string.IsNullOrWhiteSpace(visible), $"Visible text is empty: {path}");
+            Assert.DoesNotContain("краткое значение кода", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("пошаговая процедура", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    Assert.StartsWith("Gree GMV6 —", RequiredString(text, "title"), StringComparison.Ordinal);
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "summary")));
+                    Assert.NotEmpty(RequiredArray(text, "checkSteps"));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")));
+                });
+        }
+    }
+
+    [Fact]
     public void Gmv6VisibleTitlesAndSourceNotesAreUserSafe()
     {
         var gmv6Root = Path.Combine(GreeRoot, "gmv6");
