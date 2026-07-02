@@ -989,6 +989,63 @@ public sealed class GreeManualBoundCardRepairTests
     }
 
     [Fact]
+    public void Gmv6J8AndJ9UseUserSafePressureSensorWording()
+    {
+        foreach (var code in new[] { "j8", "j9" })
+        {
+            var entry = ReadEntry("gmv6", "outdoor", $"{code}.json");
+            var visible = VisibleBlob(entry);
+
+            Assert.DoesNotContain("по таблице", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("датчиков высокого и низкого давления", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("допустимой характеристикой", visible, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
+    public void Gmv6IndoorDbRemainsVisibleAsDebuggingStatus()
+    {
+        var entry = ReadEntry("gmv6", "indoor", "db.json");
+
+        // The indoor package currently permits only Fault/Protection/Warning metadata.
+        Assert.Equal("Fault", RequiredString(entry, "signalType"));
+        Assert.All(
+            RequiredTexts(entry),
+            text =>
+            {
+                var titleAndSummary = string.Join(
+                    "\n",
+                    RequiredString(text, "title"),
+                    RequiredString(text, "summary"));
+
+                Assert.Contains("статус отладки", titleAndSummary, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("авария", titleAndSummary, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("неисправность", titleAndSummary, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("ошибка", titleAndSummary, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("fault", titleAndSummary, StringComparison.OrdinalIgnoreCase);
+            });
+    }
+
+    [Fact]
+    public void Gmv6IndoorConsumerSensorSummariesUseCorrectGrammar()
+    {
+        foreach (var code in new[] { "d3", "d4", "d6", "d7", "dl" })
+        {
+            var entry = ReadEntry("gmv6", "indoor", $"{code}.json");
+            var consumer = Assert.Single(
+                RequiredTexts(entry),
+                text => string.Equals(
+                    RequiredString(text, "audience"),
+                    "Consumer",
+                    StringComparison.Ordinal));
+            var summary = RequiredString(consumer, "summary");
+
+            Assert.DoesNotContain("к датчика ", summary, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("к датчику ", summary, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public void Gmv6OutdoorManualBoundVisibleScopeIsClosed()
     {
         var outdoorRoot = Path.Combine(GreeRoot, "gmv6", "outdoor");
@@ -1101,12 +1158,18 @@ public sealed class GreeManualBoundCardRepairTests
         foreach (var code in Gmv6RepairedDebuggingCodes)
         {
             var entry = ReadEntry("gmv6", "debugging", $"{code.ToLowerInvariant()}.json");
+            var visible = VisibleBlob(entry);
+
+            Assert.NotEqual("Fault", RequiredString(entry, "signalType"));
+            Assert.DoesNotContain("карточку неисправности", visible, StringComparison.OrdinalIgnoreCase);
             Assert.All(
                 RequiredTexts(entry),
                 text =>
                 {
+                    var summary = RequiredString(text, "summary");
+
                     Assert.StartsWith($"Gree GMV6 — {code} —", RequiredString(text, "title"), StringComparison.Ordinal);
-                    Assert.Contains("наладочной информации", RequiredString(text, "summary"), StringComparison.OrdinalIgnoreCase);
+                    Assert.Contains("наладочной информации", summary, StringComparison.OrdinalIgnoreCase);
                     Assert.Empty(RequiredArray(text, "possibleCauses"));
                     Assert.Equal(3, RequiredArray(text, "checkSteps").Count);
                     Assert.Contains("не трактовать", RequiredString(text, "recommendedAction"), StringComparison.OrdinalIgnoreCase);

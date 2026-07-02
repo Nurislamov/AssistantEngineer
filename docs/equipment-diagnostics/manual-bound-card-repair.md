@@ -1,5 +1,13 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24SRC.16 closes the post-review wording findings: J8/J9 retain their pressure-sensor diagnostic meaning without
+visible `по таблице` wording; every GMV6 debugging card now tells the user to diagnose a concurrent malfunction
+without referring to an internal “fault card”; and the five affected indoor Consumer summaries use correct Russian
+grammar. The `db` card remains visibly a debugging status. Its `Fault` signal metadata is intentionally retained
+because the existing indoor package contract allows only Fault/Protection/Warning; changing it alone would fail
+package validation, while widening or splitting the package would change the runtime metadata/routing boundary.
+Strict tests lock the non-fault visible presentation.
+
 ED-24SRC.15 connects the closed GMV6 card content to Telegram technical HTML output: non-empty localized
 `checkSteps` are rendered directly (up to 10), while the former compact checks remain a fallback only. Consumer
 formatting, routing, card counts, and provenance boundaries are unchanged.

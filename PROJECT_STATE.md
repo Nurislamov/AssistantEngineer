@@ -2,13 +2,13 @@
 
 ## Current stage
 
-ED-24SRC.15 - VALIDATED / commit pending. ED-24SRC.14c and all preceding GMV6 closure stages are CLOSED / pushed.
+ED-24SRC.16 - VALIDATED / commit pending. ED-24SRC.15 and all preceding GMV6 closure stages are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.14c final validation gate.
-2. Push final closure only if all 263 GMV6 cards and the full suite pass.
-3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
+1. Complete the ED-24SRC.16 review-wording validation gate.
+2. Push only if all 263 GMV6 cards and the full suite pass.
+3. Keep all non-GMV6 series untouched.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -16,6 +16,16 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.16 corrects the final GMV6 review findings without changing card counts or diagnostic meaning: J8/J9 no
+longer expose `по таблице`; all 38 debugging cards use a user-facing conditional handoff instead of the internal
+`карточку неисправности` phrase; and the five affected indoor Consumer summaries use correct Russian grammar.
+Indoor `db` remains visibly a debugging status. Its runtime `Fault` metadata is retained because the existing
+`gree-gmv6-indoor-fault-codes` package contract permits only Fault/Protection/Warning; strict tests prevent the card
+from being presented as a normal fault while avoiding a package/routing change.
+Validation: restore PASS; build PASS with 0 warnings/errors; EquipmentDiagnostics 1139/1139; Telegram 645/645;
+webhook 10/10; full suite 5163/5163; `git diff --check` PASS; EquipmentDiagnostics branch-readiness PASS with
+0 blockers (49 reviewed scope/staging warnings).
 
 ED-24SRC.15 changes the localized Gree Telegram HTML formatter to render non-empty card `checkSteps` (up to 10)
 and use compact generic checks only when localized steps are empty. Plain technical and Consumer formatting retain
