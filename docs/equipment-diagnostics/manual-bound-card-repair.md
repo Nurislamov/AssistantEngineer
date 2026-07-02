@@ -40,6 +40,9 @@ diagnostic chapters.
 - ED-24SRC.7d repaired the remaining P outdoor compressor-drive detailed batch: `P0`, `P1`, `P2`, `P3`, `P5`, `P6`,
   `P7`, `P8`, `P9`, `PC`, `PH`, `PJ`, and `PL`, covering sections 2.125-2.137. This closes the outdoor
   `DetailedProcedureAvailable` class; remaining detailed cards are indoor only.
+- ED-24SRC.8a repaired the first outdoor table-only batch: `bb`, `bd`, `bE`, `bF`, `bH`, `bJ`, `bn`, `bP`, `bU`,
+  `E0`, `Ed`, `Fd`, `Fn`, and `FP`. These rows have table meanings only in the current source boundary, so their
+  visible text contains no invented causes or flowchart actions.
 - Remaining unrepaired GMV6 cards stay in the closure inventory as `DetailedProcedureAvailable`, `TableOnlySafe`,
   `StatusOrPrompt`, or `DebuggingOrCommissioning`. Detailed diagnostic chapters and flowcharts must be reviewed one
   source boundary at a time before those cards can be marked repaired.
@@ -60,10 +63,11 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/manual-bound-card-repair-audit.json`
 - `artifacts/verification/equipment-diagnostics/manual-bound-card-repair-audit.csv`
 
-The JSON report contains the package-to-runtime map and one row per runtime card. ED-24SRC.7d marks `AJ`, `b1`-`bA`,
-`E1`-`E4`, `F0`, `F1`, `F3`, `F5`-`FA`, the fan-drive `H0`-`HL` batch, the `J0`-`J9` batch, the `P0`-`PJ`/`PL`
-compressor-drive batch, and `FH`/`FC`/`FL`/`FE`/`FF`/`FJ`/`FU`/`Fb` as repaired in the GMV6 manual-bound scope;
-unreviewed manual-capability fields are `null` rather than guessed.
+The JSON report contains the package-to-runtime map and one row per runtime card. ED-24SRC.8a marks `AJ`, `b1`-`bA`,
+the `bb`-`bU` table-only subset, `E0`-`E4`, `Ed`, `F0`, `F1`, `F3`, `F5`-`FA`, `Fd`, `Fn`, `FP`, the fan-drive
+`H0`-`HL` batch, the `J0`-`J9` batch, the `P0`-`PJ`/`PL` compressor-drive batch, and
+`FH`/`FC`/`FL`/`FE`/`FF`/`FJ`/`FU`/`Fb` as repaired in the GMV6 manual-bound scope; unreviewed manual-capability fields
+are `null` rather than guessed.
 
 ## ED-24SRC.3 GMV6 closure inventory
 
@@ -82,15 +86,15 @@ The inventory covers all 263 GMV6 runtime cards without editing card content. It
 boundary, current visible text, source meaning/reference, inferred manual-section availability, visible-text safety, and
 the next repair class used to plan ED-24SRC.4+.
 
-Current ED-24SRC.7d inventory snapshot:
+Current ED-24SRC.8a inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | StatusOrPrompt | DebuggingOrCommissioning | Total |
 |---|---:|---:|---:|---:|---:|---:|
-| outdoor | 67 | 0 | 54 | 0 | 0 | 121 |
+| outdoor | 81 | 0 | 40 | 0 | 0 | 121 |
 | indoor | 0 | 26 | 34 | 0 | 0 | 60 |
 | debugging | 0 | 0 | 0 | 0 | 38 | 38 |
 | status | 1 | 0 | 0 | 43 | 0 | 44 |
-| **Total** | **68** | **26** | **88** | **43** | **38** | **263** |
+| **Total** | **82** | **26** | **74** | **43** | **38** | **263** |
 
 No conflicting source boundary was found by the inventory. Every GMV6 card has an attached manual/source section or
 source reference in the current runtime data. The inventory is a planning map, not a closure claim: cards in
@@ -131,4 +135,4 @@ procedure from another Gree series or another document.
 
 ## Validation status
 
-ED-24SRC.7d validation is recorded in `PROJECT_STATE.md` after the local gate completes.
+ED-24SRC.8a validation is recorded in `PROJECT_STATE.md` after the local gate completes.

@@ -1,141 +1,123 @@
 {
-    "id":  "gree-gmv6-outdoor-e0",
-    "manufacturer":  "Gree",
-    "equipmentFamily":  "VRF",
-    "equipmentType":  "OutdoorUnit",
-    "series":  "GMV6",
-    "models":  [
-                   "GMV-224WM/G-X",
-                   "GMV-280WM/G-X",
-                   "GMV-335WM/G-X",
-                   "GMV-400WM/G-X",
-                   "GMV-450WM/G-X",
-                   "GMV-504WM/G-X",
-                   "GMV-560WM/G-X",
-                   "GMV-615WM/G-X",
-                   "GMV-680WM/G-X"
-               ],
-    "code":  "E0",
-    "signalType":  "Fault",
-    "displaySource":  "OutdoorBoard",
-    "systemPart":  "Unknown",
-    "severity":  "Medium",
-    "requiresQualifiedService":  true,
-    "canCustomerContinueOperation":  false,
-    "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-    "sourceLanguage":  "en",
-    "sourceType":  "Manual",
-    "sourceName":  "Service Manual for GMV6 v_2020.09",
-    "sourceMeaning":  "Malfunction of ODU",
-    "sourceReference":  "глава 3 Faults / Error Indication / Outdoor E0 / PDF page 75 / manual page 73",
-    "confidence":  "High",
-    "verificationStatus":  "ManualVerified",
-    "createdAt":  "2026-06-20T00:00:00Z",
-    "updatedAt":  "2026-06-20T00:00:00Z",
-    "texts":  [
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Сработала защита наружного блока.",
-                                             "Есть сопутствующая авария, которая уточняет причину.",
-                                             "Нестабильное питание или тяжёлые условия работы.",
-                                             "Ошибка в цепях контроля или защит."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-20T00:00:00Z",
-                      "id":  "gree-gmv6-outdoor-e0-ru-consumer",
-                      "audience":  "Consumer",
-                      "title":  "Gree GMV E0 — неисправность наружного блока",
-                      "summary":  "E0 означает срабатывание защиты наружного блока. Сам код не указывает на один конкретный компонент, поэтому нужно проверить условия работы и сопутствующие ошибки.",
-                      "safetyNote":  "Проверки наружного блока выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить наличие сопутствующих кодов на наружном блоке.",
-                                         "Проверить питание и условия работы наружного блока.",
-                                         "Проверить состояние защит и датчиков по сервисной процедуре.",
-                                         "Не отключать защиты и не запускать блок без устранения причины."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о конкретной неисправности только по E0.",
-                                          "Не отключать и не обходить защиты."
-                                      ],
-                      "recommendedAction":  "Сопоставить E0 с фактическими симптомами и сопутствующими кодами, затем продолжить диагностику по руководству.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-                  },
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Сработала защита наружного блока.",
-                                             "Есть сопутствующая авария, которая уточняет причину.",
-                                             "Нестабильное питание или тяжёлые условия работы.",
-                                             "Ошибка в цепях контроля или защит."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-20T00:00:00Z",
-                      "id":  "gree-gmv6-outdoor-e0-ru-installer",
-                      "audience":  "Installer",
-                      "title":  "Gree GMV E0 — неисправность наружного блока",
-                      "summary":  "При E0 сверить питание, условия работы наружного блока, состояние защит и наличие дополнительных кодов на наружной плате.",
-                      "safetyNote":  "Проверки наружного блока выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить наличие сопутствующих кодов на наружном блоке.",
-                                         "Проверить питание и условия работы наружного блока.",
-                                         "Проверить состояние защит и датчиков по сервисной процедуре.",
-                                         "Не отключать защиты и не запускать блок без устранения причины."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о конкретной неисправности только по E0.",
-                                          "Не отключать и не обходить защиты."
-                                      ],
-                      "recommendedAction":  "Сопоставить E0 с фактическими симптомами и сопутствующими кодами, затем продолжить диагностику по руководству.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-                  },
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Сработала защита наружного блока.",
-                                             "Есть сопутствующая авария, которая уточняет причину.",
-                                             "Нестабильное питание или тяжёлые условия работы.",
-                                             "Ошибка в цепях контроля или защит."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-20T00:00:00Z",
-                      "id":  "gree-gmv6-outdoor-e0-ru-engineer",
-                      "audience":  "Engineer",
-                      "title":  "Gree GMV E0 — неисправность наружного блока",
-                      "summary":  "При E0 сверить питание, условия работы наружного блока, состояние защит и наличие дополнительных кодов на наружной плате.",
-                      "safetyNote":  "Проверки наружного блока выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить наличие сопутствующих кодов на наружном блоке.",
-                                         "Проверить питание и условия работы наружного блока.",
-                                         "Проверить состояние защит и датчиков по сервисной процедуре.",
-                                         "Не отключать защиты и не запускать блок без устранения причины."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о конкретной неисправности только по E0.",
-                                          "Не отключать и не обходить защиты."
-                                      ],
-                      "recommendedAction":  "Сопоставить E0 с фактическими симптомами и сопутствующими кодами, затем продолжить диагностику по руководству.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Отдельная подробная процедура для этого кода из руководства не извлечена."
-                  }
-              ],
-    "sourceReferences":  [
-                             {
-                                 "sourceName":  "Gree official support error code catalog",
-                                 "documentCode":  "Gree-GMV-E0",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-E0.подтверждённый.json",
-                                 "sourceType":  "Manual",
-                                 "sourceLanguage":  "en",
-                                 "verificationStatus":  "ManualVerified",
-                                 "confidence":  "High",
-                                 "manualId":  "gree-official-support-error-catalog",
-                                 "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/E0 GMV.png. Approved title: Gree GMV E0 — неисправность наружного блока."
-                             }
-                         ]
+  "id": "gree-gmv6-outdoor-e0",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV6",
+  "models": [
+    "GMV-224WM/G-X",
+    "GMV-280WM/G-X",
+    "GMV-335WM/G-X",
+    "GMV-400WM/G-X",
+    "GMV-450WM/G-X",
+    "GMV-504WM/G-X",
+    "GMV-560WM/G-X",
+    "GMV-615WM/G-X",
+    "GMV-680WM/G-X"
+  ],
+  "code": "E0",
+  "signalType": "Fault",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "Unknown",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv6-outdoor-fault-protection-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Service Manual for GMV6 v_2020.09",
+  "sourceMeaning": "Malfunction of ODU",
+  "sourceReference": "глава 3 Faults / Error Indication / Outdoor E0 / PDF page 75 / manual page 73",
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-20T00:00:00Z",
+  "updatedAt": "2026-06-20T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-06-20T00:00:00Z",
+      "id": "gree-gmv6-outdoor-e0-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV E0 — неисправность наружного блока",
+      "summary": "Код E0 означает неисправность наружного блока.",
+      "safetyNote": "Работы внутри наружного блока и электрического отсека выполняет квалифицированный специалист при отключённом питании.",
+      "checkSteps": [
+        "Зафиксируйте код, модель оборудования и условия появления.",
+        "Не отключайте и не обходите защитные устройства.",
+        "Передайте данные квалифицированному специалисту для проверки по штатной процедуре этой серии."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о конкретной неисправности только по E0.",
+        "Не отключать и не обходить защиты."
+      ],
+      "recommendedAction": "Зафиксировать код и условия появления; выполнить проверку оборудования квалифицированным специалистом.",
+      "sourceNote": "Код передан без предположений о причинах и без пошаговой диагностики."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-06-20T00:00:00Z",
+      "id": "gree-gmv6-outdoor-e0-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV E0 — неисправность наружного блока",
+      "summary": "Код E0 означает неисправность наружного блока.",
+      "safetyNote": "Работы внутри наружного блока и электрического отсека выполняет квалифицированный специалист при отключённом питании.",
+      "checkSteps": [
+        "Зафиксируйте код, модель оборудования и условия появления.",
+        "Не отключайте и не обходите защитные устройства.",
+        "Передайте данные квалифицированному специалисту для проверки по штатной процедуре этой серии."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о конкретной неисправности только по E0.",
+        "Не отключать и не обходить защиты."
+      ],
+      "recommendedAction": "Зафиксировать код и условия появления; выполнить проверку оборудования квалифицированным специалистом.",
+      "sourceNote": "Код передан без предположений о причинах и без пошаговой диагностики."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-06-20T00:00:00Z",
+      "id": "gree-gmv6-outdoor-e0-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV E0 — неисправность наружного блока",
+      "summary": "Код E0 означает неисправность наружного блока.",
+      "safetyNote": "Работы внутри наружного блока и электрического отсека выполняет квалифицированный специалист при отключённом питании.",
+      "checkSteps": [
+        "Зафиксируйте код, модель оборудования и условия появления.",
+        "Не отключайте и не обходите защитные устройства.",
+        "Передайте данные квалифицированному специалисту для проверки по штатной процедуре этой серии."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о конкретной неисправности только по E0.",
+        "Не отключать и не обходить защиты."
+      ],
+      "recommendedAction": "Зафиксировать код и условия появления; выполнить проверку оборудования квалифицированным специалистом.",
+      "sourceNote": "Код передан без предположений о причинах и без пошаговой диагностики."
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Gree official support error code catalog",
+      "documentCode": "Gree-GMV-E0",
+      "sourceReference": "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-E0.подтверждённый.json",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-official-support-error-catalog",
+      "packageId": "gree-gmv6-outdoor-fault-protection-codes",
+      "notes": "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-E0/E0 GMV.png. Approved title: Gree GMV E0 — неисправность наружного блока."
+    }
+  ]
 }

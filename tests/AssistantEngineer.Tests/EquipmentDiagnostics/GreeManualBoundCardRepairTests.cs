@@ -141,6 +141,25 @@ public sealed class GreeManualBoundCardRepairTests
             ["pj.json"] = ("PJ", 3, ["отказ запуска инверторного компрессора", "U, V и W", "меньше 2 Ом", "больше 2 МОм", "P9", "P6", "P5", "заменить плату привода компрессора"])
         };
 
+    private static readonly Dictionary<string, (string Code, string[] RequiredPhrases)> Gmv6OutdoorTableOnlyBefBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["bb.json"] = ("bb", ["датчика температуры возврата масла 4"]),
+            ["bd.json"] = ("bd", ["датчика температуры газа на входе субохладителя"]),
+            ["be.json"] = ("bE", ["датчика температуры входной трубки конденсатора"]),
+            ["bf.json"] = ("bF", ["датчика температуры выходной трубки конденсатора"]),
+            ["bh.json"] = ("bH", ["системных часов"]),
+            ["bj.json"] = ("bJ", ["датчиков высокого и низкого давления"]),
+            ["bn.json"] = ("bn", ["датчика температуры жидкости на входе субохладителя"]),
+            ["bp.json"] = ("bP", ["датчика температуры возврата масла 2"]),
+            ["bu.json"] = ("bU", ["датчика температуры возврата масла 3"]),
+            ["e0.json"] = ("E0", ["наружного блока"]),
+            ["ed.json"] = ("Ed", ["IPM привода", "низкой температуре"]),
+            ["fd.json"] = ("Fd", ["датчика температуры выходной трубки переключателя режимов"]),
+            ["fn.json"] = ("Fn", ["датчика температуры входной трубки переключателя режимов"]),
+            ["fp.json"] = ("FP", ["DC-двигателя"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -558,6 +577,56 @@ public sealed class GreeManualBoundCardRepairTests
                 text => Assert.True(
                     RequiredArray(text, "checkSteps").Count >= 3,
                     $"Audience {RequiredString(text, "audience")} for {expectation.Code} must retain the documented troubleshooting steps."));
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorTableOnlyBefBatchUsesOnlySafeMeaningWithoutInventedCauses()
+    {
+        foreach (var (fileName, expectation) in Gmv6OutdoorTableOnlyBefBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains("Gree GMV", visible, StringComparison.Ordinal);
+            Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
+            Assert.Contains($"Код {expectation.Code} означает", visible, StringComparison.Ordinal);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.DoesNotContain("замен", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("flowchart", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("раздел 2.", visible, StringComparison.OrdinalIgnoreCase);
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    var textVisible = string.Join(
+                        "\n",
+                        TelegramVisibleFields
+                            .Select(field => text[field])
+                            .Where(node => node is not null)
+                            .SelectMany(node => node is JsonArray array
+                                ? array.Select(item => item!.GetValue<string>())
+                                : [node!.GetValue<string>()]));
+
+                    Assert.Empty(RequiredArray(text, "possibleCauses"));
+                    Assert.Equal(3, RequiredArray(text, "checkSteps").Count);
+                    Assert.Contains("Зафиксируйте код", textVisible, StringComparison.OrdinalIgnoreCase);
+                    Assert.Contains("квалифицированному специалисту", textVisible, StringComparison.OrdinalIgnoreCase);
+                });
         }
     }
 
