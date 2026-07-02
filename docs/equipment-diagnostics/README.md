@@ -21,6 +21,10 @@ the remaining non-outdoor work without changing runtime cards: indoor has 26 det
 43 prompt/status rows, and debugging has 38 commissioning/debugging rows. Conflict and NeedsManualReview / Unclassified
 counts are zero. See [the current GMV6 repair report](manual-bound-card-repair.md).
 
+ED-24SRC.10a repairs the first indoor detailed batch (`d1`, `d3`, `d4`, `d6`, `d7`, `d9`, `dA`, `dC`, `dH`, and `dL`)
+from the GMV6 indoor troubleshooting sections. After this batch, indoor has 10 repaired detailed rows, 16 remaining
+detailed rows, and 34 table-only rows.
+
 ## ED-24F.1a multi-source diagnostic references
 
 ED-24F.1a adds optional `sourceReferences[]` support to repository-backed error knowledge while keeping existing single-source fields backward-compatible. Same code + same equipment type + same meaning remains one diagnostic answer with multiple manual/source references; genuinely different equipment meanings still use equipment clarification.

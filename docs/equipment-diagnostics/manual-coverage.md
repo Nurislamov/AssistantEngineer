@@ -44,6 +44,10 @@ remaining outdoor `DetailedProcedureAvailable` or `TableOnlySafe` rows. ED-24SRC
 inventory: indoor has 26 `DetailedProcedureAvailable` and 34 `TableOnlySafe` rows; status has 43 `StatusOrPrompt` rows;
 debugging has 38 `DebuggingOrCommissioning` rows. Conflict and NeedsManualReview / Unclassified counts remain zero.
 
+ED-24SRC.10a repairs the first GMV6 indoor detailed batch from sections 2.43, 2.44, 2.45, 2.47, 2.48, 2.50, 2.51,
+2.52, 2.53, and 2.54: `d1`, `d3`, `d4`, `d6`, `d7`, `d9`, `dA`, `dC`, `dH`, and `dL`. Runtime counts remain unchanged.
+Remaining indoor `DetailedProcedureAvailable` rows are 16 after this batch.
+
 Current snapshot:
 
 - Source files tracked: 52.

@@ -2,14 +2,14 @@
 
 ## Current stage
 
-ED-24SRC.9 - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.10a - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
 ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
-ED-24SRC.8b, ED-24SRC.8c, and ED-24SRC.8d are CLOSED / pushed.
+ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, and ED-24SRC.9 are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Commit and push ED-24SRC.9 if the validation gate passes.
-2. Continue with ED-24SRC.10 GMV6 indoor detailed diagnostics in a separate stage.
+1. Commit and push ED-24SRC.10a if the validation gate passes.
+2. Continue with ED-24SRC.10b GMV6 indoor detailed diagnostics for the remaining indoor L-family procedures.
 3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -18,6 +18,56 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.10a repairs the first GMV6 indoor detailed diagnostic batch without changing runtime counts.
+
+ED-24SRC.10a work-log selection:
+
+- Selected codes: `d1`, `d3`, `d4`, `d6`, `d7`, `d9`, `dA`, `dC`, `dH`, and `dL`.
+- Manual sections: 2.43, 2.44, 2.45, 2.47, 2.48, 2.50, 2.51, 2.52, 2.53, and 2.54 in
+  `Service Manual for GMV6 v_2020.09.pdf`.
+- Batch reason: these are the actual first indoor detailed procedure rows with fault diagnosis, possible causes, and
+  troubleshooting text in the current GMV6 source boundary.
+- Skipped from the adjacent d-family block for this batch: `d5`, `d8`, and `dE` are reserved/no-procedure headings in
+  the current extraction; `db` is explicitly a commissioning/status code, not a fault. No outdoor, status package, or
+  debugging package cards were changed.
+
+ED-24SRC.10a implementation notes:
+
+- `d1` now carries the address-chip / memory-chip diagnosis and main-control-board replacement action.
+- `d3`, `d4`, `d6`, `d7`, and `dL` now carry the 5-second AD-value sensor-detection condition, sensor-specific
+  possible causes, and connector -> sensor -> detection-circuit/main-board flow.
+- `d9` now carries the jumper-cap installation, numbering, and detection-circuit flow.
+- `dA` now carries the abnormal indoor network address conditions, including address chip, IP address 0, and IP address
+  conflict handling.
+- `dC` now carries the DIP-switch capacity setting and detection-circuit flow.
+- `dH` now carries the wired-controller IIC communication causes and keypad/display-panel or controller replacement
+  flow.
+- Telegram-visible `sourceNote` fields are neutral and do not expose section/manual/source wording.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` classifies the ED-24SRC.10a batch as repaired.
+- Inventory counts after script rerun: AlreadyRepaired 132; DetailedProcedureAvailable 16; TableOnlySafe 34;
+  StatusOrPrompt 43; DebuggingOrCommissioning 38.
+- Category split after script rerun: outdoor = 121 AlreadyRepaired; indoor = 10 AlreadyRepaired,
+  16 DetailedProcedureAvailable, and 34 TableOnlySafe; debugging = 38 DebuggingOrCommissioning; status =
+  1 AlreadyRepaired and 43 StatusOrPrompt.
+- Remaining indoor `DetailedProcedureAvailable` codes after ED-24SRC.10a: `d5`, `d8`, `db`, `dE`, `L0`, `L1`, `L2`,
+  `L3`, `L4`, `L5`, `L6`, `L7`, `L9`, `LA`, `LC`, and `LH`.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Validation:
+  - `dotnet restore .\AssistantEngineer.sln`: PASS.
+  - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 6 existing nullable warnings in architecture guard
+    tests and 0 errors.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1124/1124).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~Telegram" --logger "console;verbosity=minimal"`:
+    PASS (640/640).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnosticTelegramWebhookApiIntegrationTests" --logger "console;verbosity=minimal"`:
+    PASS (10/10).
+  - `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal"`: PASS (5148/5148).
+  - `git diff --check`: PASS.
 
 ED-24SRC.9 reconciles the remaining GMV6 indoor/status/debugging closure inventory after GMV6 outdoor closure.
 

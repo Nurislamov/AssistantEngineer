@@ -210,6 +210,21 @@ public sealed class GreeManualBoundCardRepairTests
             ["pu.json"] = ("PU", ["AC-напряжение", "инверторного компрессора"])
         };
 
+    private static readonly Dictionary<string, (string Code, int CauseCount, string[] RequiredPhrases)> Gmv6IndoorDetailedD10aBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["d1.json"] = ("d1", 2, ["адресный чип", "чип памяти", "основную плату управления внутреннего блока"]),
+            ["d3.json"] = ("d3", 3, ["датчика температуры воздуха", "AD-значение", "5 секунд", "разъём", "замените основную плату управления внутреннего блока"]),
+            ["d4.json"] = ("d4", 3, ["датчика температуры входной трубки", "AD-значение", "5 секунд", "разъём", "замените основную плату управления внутреннего блока"]),
+            ["d6.json"] = ("d6", 3, ["датчика температуры выходной трубки", "AD-значение", "5 секунд", "разъём", "замените основную плату управления внутреннего блока"]),
+            ["d7.json"] = ("d7", 3, ["датчика влажности", "AD-значение", "5 секунд", "разъём", "замените основную плату управления внутреннего блока"]),
+            ["d9.json"] = ("d9", 3, ["перемыч", "номер перемычки", "цепь детекции", "замените основную плату управления внутреннего блока"]),
+            ["da.json"] = ("dA", 3, ["IP-адрес", "равен 0", "конфликт", "единичная", "основную плату внутреннего блока", "наружного блока"]),
+            ["dc.json"] = ("dC", 2, ["DIP-переключателя мощности", "цепь детекции", "замените основную плату управления внутреннего блока"]),
+            ["dh.json"] = ("dH", 2, ["IIC-связ", "сенсорная клавиатура", "дисплейной платой", "замените проводной контроллер"]),
+            ["dl.json"] = ("dL", 3, ["датчика температуры воздуха на выходе", "AD-значение", "5 секунд", "разъём", "замените основную плату управления внутреннего блока"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -776,6 +791,47 @@ public sealed class GreeManualBoundCardRepairTests
                     Assert.Equal(3, RequiredArray(text, "checkSteps").Count);
                     Assert.Contains("Зафиксируйте код", textVisible, StringComparison.OrdinalIgnoreCase);
                     Assert.Contains("квалифицированному специалисту", textVisible, StringComparison.OrdinalIgnoreCase);
+                });
+        }
+    }
+
+    [Fact]
+    public void Gmv6IndoorDetailedD10aBatchContainsManualDiagnosisCausesAndIndoorFlow()
+    {
+        foreach (var (fileName, expectation) in Gmv6IndoorDetailedD10aBatch)
+        {
+            var entry = ReadEntry("gmv6", "indoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains($"Gree GMV6 — {expectation.Code} —", visible, StringComparison.Ordinal);
+            Assert.Contains("внутренн", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("наружного блока и электрического отсека", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("2-разрядном LED", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("краткое значение кода", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("пошаговая процедура в эту запись не перенесена", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("раздел 2.", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    Assert.Equal(expectation.CauseCount, RequiredArray(text, "possibleCauses").Count);
+                    Assert.NotEmpty(RequiredArray(text, "checkSteps"));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")));
                 });
         }
     }
