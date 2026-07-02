@@ -53,6 +53,9 @@ diagnostic chapters.
   inventory, with zero outdoor `DetailedProcedureAvailable`, zero outdoor `TableOnlySafe`, zero conflicts, and zero
   `NeedsManualReview` / `Unclassified` rows. GMV6 outdoor is closed; whole-GMV6 closure remains pending because indoor,
   status, and debugging classes are outside this outdoor stage.
+- ED-24SRC.9 refreshed the GMV6 closure inventory after outdoor closure and recorded the exact remaining
+  indoor/status/debugging work without changing runtime cards. GMV6 outdoor remains closed; GMV6 as a whole remains open
+  until indoor detailed, indoor table-only, status, and debugging stages are repaired and verified.
 - Remaining unrepaired GMV6 cards stay in the closure inventory as `DetailedProcedureAvailable`, `TableOnlySafe`,
   `StatusOrPrompt`, or `DebuggingOrCommissioning`. Detailed diagnostic chapters and flowcharts must be reviewed one
   source boundary at a time before those cards can be marked repaired.
@@ -97,7 +100,7 @@ The inventory covers all 263 GMV6 runtime cards without editing card content. It
 boundary, current visible text, source meaning/reference, inferred manual-section availability, visible-text safety, and
 the next repair class used to plan ED-24SRC.4+.
 
-Current ED-24SRC.8d inventory snapshot:
+Current ED-24SRC.9 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | StatusOrPrompt | DebuggingOrCommissioning | Total |
 |---|---:|---:|---:|---:|---:|---:|
@@ -112,6 +115,20 @@ source reference in the current runtime data. The inventory is a planning map, n
 `DetailedProcedureAvailable`, `TableOnlySafe`, `StatusOrPrompt`, and `DebuggingOrCommissioning` still require the later
 staged repair/verification passes before GMV6 can be called closed. Current Conflict count is 0, and current
 NeedsManualReview / Unclassified count is 0.
+
+Exact ED-24SRC.9 remaining lists:
+
+- Indoor `DetailedProcedureAvailable` (26): `d1`, `d3`, `d4`, `d5`, `d6`, `d7`, `d8`, `d9`, `dA`, `db`, `dC`, `dE`,
+  `dH`, `dL`, `L0`, `L1`, `L2`, `L3`, `L4`, `L5`, `L6`, `L7`, `L9`, `LA`, `LC`, and `LH`.
+- Indoor `TableOnlySafe` (34): `d2`, `dd`, `dF`, `dJ`, `dn`, `dP`, `dU`, `dy`, `L8`, `Lb`, `LE`, `LF`, `LJ`, `LL`,
+  `LP`, `LU`, `o0`, `o1`, `o2`, `o3`, `o4`, `o5`, `o6`, `o7`, `o8`, `o9`, `oA`, `ob`, `oC`, `y1`, `y2`, `y7`,
+  `y8`, and `yA`.
+- Status `StatusOrPrompt` (43): `A0`, `A2`, `A3`, `A4`, `A6`, `A7`, `A8`, `A9`, `Ab`, `AC`, `Ad`, `AE`, `AF`, `AH`,
+  `AL`, `An`, `AP`, `AU`, `Ay`, `n0`, `n1`, `n2`, `n3`, `n4`, `n5`, `n6`, `n7`, `n8`, `n9`, `nA`, `nb`, `nC`,
+  `nE`, `nF`, `nH`, `nJ`, `nn`, `nU`, `qA`, `qC`, `qH`, `qP`, and `qU`.
+- Debugging `DebuggingOrCommissioning` (38): `C0`, `C1`, `C2`, `C3`, `C4`, `C5`, `C6`, `C7`, `C8`, `C9`, `CA`,
+  `Cb`, `CC`, `Cd`, `CE`, `CF`, `CH`, `CJ`, `CL`, `Cn`, `CP`, `CU`, `Cy`, `U0`, `U2`, `U3`, `U4`, `U5`, `U6`,
+  `U8`, `U9`, `UC`, `Ud`, `UE`, `UF`, `UL`, `Un`, and `Uy`.
 
 ## Stable runtime counts
 

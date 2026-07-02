@@ -39,6 +39,11 @@ now instruct technical users to read the outdoor 2-digit LED before following th
 `H6`, `H7`, `H8`, `H9`, `HC`, `HH`, `HJ`, and `HL` now carry their documented causes and flowchart actions. Runtime
 counts remain unchanged and GMV6 remains open for the remaining detailed, table-only, status, and debugging inventory.
 
+ED-24SRC.8d closes GMV6 outdoor manual-bound diagnostics: all 121 outdoor cards are classified as repaired with zero
+remaining outdoor `DetailedProcedureAvailable` or `TableOnlySafe` rows. ED-24SRC.9 refreshes the remaining GMV6 closure
+inventory: indoor has 26 `DetailedProcedureAvailable` and 34 `TableOnlySafe` rows; status has 43 `StatusOrPrompt` rows;
+debugging has 38 `DebuggingOrCommissioning` rows. Conflict and NeedsManualReview / Unclassified counts remain zero.
+
 Current snapshot:
 
 - Source files tracked: 52.

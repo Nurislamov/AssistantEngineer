@@ -2,15 +2,15 @@
 
 ## Current stage
 
-ED-24SRC.8d - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.9 - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
 ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
-ED-24SRC.8b, and ED-24SRC.8c are CLOSED / pushed.
+ED-24SRC.8b, ED-24SRC.8c, and ED-24SRC.8d are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.8d validation gate.
-2. If validation passes, commit and push ED-24SRC.8d.
-3. Continue with later GMV6 indoor/status/debugging closure work in a separate stage.
+1. Commit and push ED-24SRC.9 if the validation gate passes.
+2. Continue with ED-24SRC.10 GMV6 indoor detailed diagnostics in a separate stage.
+3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -18,6 +18,34 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.9 reconciles the remaining GMV6 indoor/status/debugging closure inventory after GMV6 outdoor closure.
+
+ED-24SRC.9 verification notes:
+
+- Regenerated `invoke-gmv6-manual-bound-closure-inventory.ps1` output.
+- Confirmed GMV6 total: 263.
+- Confirmed GMV6 outdoor total: 121 and outdoor CLOSED remains true.
+- Confirmed GMV6 indoor total: 60.
+- Confirmed GMV6 status total: 44.
+- Confirmed GMV6 debugging total: 38.
+- Confirmed Conflict count: 0.
+- Confirmed `NeedsManualReview` / `Unclassified` count: 0.
+- Confirmed runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging
+  38; GMV6 status 44.
+- Remaining indoor `DetailedProcedureAvailable` codes: `d1`, `d3`, `d4`, `d5`, `d6`, `d7`, `d8`, `d9`, `dA`, `db`,
+  `dC`, `dE`, `dH`, `dL`, `L0`, `L1`, `L2`, `L3`, `L4`, `L5`, `L6`, `L7`, `L9`, `LA`, `LC`, and `LH`.
+- Remaining indoor `TableOnlySafe` codes: `d2`, `dd`, `dF`, `dJ`, `dn`, `dP`, `dU`, `dy`, `L8`, `Lb`, `LE`, `LF`,
+  `LJ`, `LL`, `LP`, `LU`, `o0`, `o1`, `o2`, `o3`, `o4`, `o5`, `o6`, `o7`, `o8`, `o9`, `oA`, `ob`, `oC`, `y1`,
+  `y2`, `y7`, `y8`, and `yA`.
+- Remaining status `StatusOrPrompt` codes: `A0`, `A2`, `A3`, `A4`, `A6`, `A7`, `A8`, `A9`, `Ab`, `AC`, `Ad`, `AE`,
+  `AF`, `AH`, `AL`, `An`, `AP`, `AU`, `Ay`, `n0`, `n1`, `n2`, `n3`, `n4`, `n5`, `n6`, `n7`, `n8`, `n9`, `nA`,
+  `nb`, `nC`, `nE`, `nF`, `nH`, `nJ`, `nn`, `nU`, `qA`, `qC`, `qH`, `qP`, and `qU`.
+- Remaining debugging `DebuggingOrCommissioning` codes: `C0`, `C1`, `C2`, `C3`, `C4`, `C5`, `C6`, `C7`, `C8`, `C9`,
+  `CA`, `Cb`, `CC`, `Cd`, `CE`, `CF`, `CH`, `CJ`, `CL`, `Cn`, `CP`, `CU`, `Cy`, `U0`, `U2`, `U3`, `U4`, `U5`,
+  `U6`, `U8`, `U9`, `UC`, `Ud`, `UE`, `UF`, `UL`, `Un`, and `Uy`.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
 
 ED-24SRC.8d verifies GMV6 outdoor manual-bound closure without changing runtime counts.
 
