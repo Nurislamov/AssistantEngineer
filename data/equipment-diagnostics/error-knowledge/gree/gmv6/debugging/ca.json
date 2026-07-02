@@ -1,129 +1,141 @@
 {
-  "id": "gree-gmv6-debugging-ca",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "OutdoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "CA",
-  "signalType": "Commissioning",
-  "displaySource": "OutdoorBoard",
-  "systemPart": "Inverter",
-  "severity": "Low",
-  "requiresQualifiedService": true,
-  "canCustomerContinueOperation": false,
-  "packageId": "gree-gmv6-debugging-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Emergency status of module",
-  "sourceReference": "глава 3 Faults / Error Indication / Debugging CA / PDF page 77 / manual page 75; Troubleshooting 2.35 / PDF page 97 / manual page 95",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-23T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-debugging-ca-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 CA — сообщение наладки инверторного привода",
-      "summary": "Код CA означает: сообщение наладки инверторного привода. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Не открывайте панели оборудования и не выполняйте электрические или холодильные проверки самостоятельно.",
-      "checkSteps": [
-        "Запишите код CA, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не открывать электрические отсеки.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наладка». Для кода есть отдельный раздел 2.35, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-debugging-ca-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 CA — сообщение наладки инверторного привода",
-      "summary": "Код CA означает: сообщение наладки инверторного привода. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Допустимы только безопасные внешние и визуальные проверки. Работы внутри электрических отсеков выполняет квалифицированный специалист при снятом питании.",
-      "checkSteps": [
-        "Запишите код CA, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наладка». Для кода есть отдельный раздел 2.35, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-debugging-ca-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 CA — сообщение наладки инверторного привода",
-      "summary": "Код CA означает: сообщение наладки инверторного привода. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Электрические, инверторные, компрессорные и холодильные проверки выполняются квалифицированным специалистом по штатной процедуре и при соблюдении требований безопасности.",
-      "checkSteps": [
-        "Запишите код CA, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправном компоненте только по коду.",
-        "Не отключать и не обходить защиты."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Наладка». Для кода есть отдельный раздел 2.35, но его пошаговая процедура в эту запись не перенесена."
-    }
-  ],
-  "sourceReferences": [
-    {
-      "sourceName": "Service Manual for GMV6 v_2020.09",
-      "documentCode": "GC202001-I",
-      "sourceReference": "глава 3 Faults / Error Indication / Debugging CA / PDF page 77 / manual page 75; Troubleshooting 2.35 / PDF page 97 / manual page 95",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv6-service-manual-2020-09",
-      "packageId": "gree-gmv6-debugging-codes",
-      "notes": "Primary GMV6 manual source retained for backward compatibility."
-    },
-    {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
-      "sourceReference": "Outdoor main-board status display table, PDF page 83 / manual page 79",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv-mini-service-manual",
-      "packageId": "gree-gmv6-debugging-codes",
-      "notes": "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
-    }
-  ]
+    "id":  "gree-gmv6-debugging-ca",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "OutdoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "CA",
+    "signalType":  "Commissioning",
+    "displaySource":  "OutdoorBoard",
+    "systemPart":  "Inverter",
+    "severity":  "Low",
+    "requiresQualifiedService":  true,
+    "canCustomerContinueOperation":  false,
+    "packageId":  "gree-gmv6-debugging-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Emergency status of module",
+    "sourceReference":  "глава 3 Faults / Error Indication / Debugging CA / PDF page 77 / manual page 75; Troubleshooting 2.35 / PDF page 97 / manual page 95",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-23T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-debugging-ca-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 — CA — аварийный статус модуля",
+                      "summary":  "Код CA относится к наладочной информации и означает: аварийный статус модуля.",
+                      "safetyNote":  "Настройки и проверки сервисных режимов выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Используйте код как сервисную или наладочную информацию.",
+                                         "Если вместе с кодом есть авария или нарушение работы, проверяйте соответствующую карточку неисправности."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не открывать электрические отсеки.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Использовать код как наладочную или сервисную информацию; не трактовать его как самостоятельную неисправность без сопутствующей аварии.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-debugging-ca-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 — CA — аварийный статус модуля",
+                      "summary":  "Код CA относится к наладочной информации и означает: аварийный статус модуля.",
+                      "safetyNote":  "Настройки и проверки сервисных режимов выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Используйте код как сервисную или наладочную информацию.",
+                                         "Если вместе с кодом есть авария или нарушение работы, проверяйте соответствующую карточку неисправности."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Использовать код как наладочную или сервисную информацию; не трактовать его как самостоятельную неисправность без сопутствующей аварии.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-debugging-ca-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 — CA — аварийный статус модуля",
+                      "summary":  "Код CA относится к наладочной информации и означает: аварийный статус модуля.",
+                      "safetyNote":  "Настройки и проверки сервисных режимов выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Используйте код как сервисную или наладочную информацию.",
+                                         "Если вместе с кодом есть авария или нарушение работы, проверяйте соответствующую карточку неисправности."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправном компоненте только по коду.",
+                                          "Не отключать и не обходить защиты."
+                                      ],
+                      "recommendedAction":  "Использовать код как наладочную или сервисную информацию; не трактовать его как самостоятельную неисправность без сопутствующей аварии.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  }
+              ],
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Service Manual for GMV6 v_2020.09",
+                                 "documentCode":  "GC202001-I",
+                                 "sourceReference":  "глава 3 Faults / Error Indication / Debugging CA / PDF page 77 / manual page 75; Troubleshooting 2.35 / PDF page 97 / manual page 95",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv6-service-manual-2020-09",
+                                 "packageId":  "gree-gmv6-debugging-codes",
+                                 "notes":  "Primary GMV6 manual source retained for backward compatibility."
+                             },
+                             {
+                                 "sourceName":  "DC Inverter VRF System Service Manual (R410A)",
+                                 "documentCode":  null,
+                                 "sourceReference":  "Outdoor main-board status display table, PDF page 83 / manual page 79",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv-mini-service-manual",
+                                 "packageId":  "gree-gmv6-debugging-codes",
+                                 "notes":  "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
+                             }
+                         ]
 }

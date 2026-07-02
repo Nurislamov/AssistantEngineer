@@ -163,11 +163,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
 
         Assert.Contains("Gree GMV6 — C0", response.Text, StringComparison.Ordinal);
         Assert.Contains("Нарушение связи", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("линию связи GMV", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("<b>Что проверить:</b>", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Подтвердите код C0, серию GMV6 и место индикации.", response.Text, StringComparison.Ordinal);
-        Assert.Contains("Сверьте модель, условия появления и сопутствующие коды.", response.Text, StringComparison.Ordinal);
-        Assert.Contains("сервисной процедуре для этой серии", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("наладочной информации", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("классифицирован", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("связи связи", response.Text, StringComparison.OrdinalIgnoreCase);

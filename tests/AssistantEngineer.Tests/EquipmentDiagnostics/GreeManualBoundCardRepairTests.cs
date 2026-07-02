@@ -292,6 +292,12 @@ public sealed class GreeManualBoundCardRepairTests
         "nA", "nb", "nC", "nE", "nF", "nH", "nJ", "nn", "nU", "qA", "qC", "qH", "qP", "qU"
     ];
 
+    private static readonly string[] Gmv6RepairedDebuggingCodes =
+    [
+        "C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "CA", "Cb", "CC", "Cd", "CE", "CF",
+        "CH", "CJ", "CL"
+    ];
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -1085,6 +1091,25 @@ public sealed class GreeManualBoundCardRepairTests
             {
                 Assert.DoesNotContain(phrase, visible, StringComparison.OrdinalIgnoreCase);
             }
+        }
+    }
+
+    [Fact]
+    public void Gmv6RepairedDebuggingCardsRemainServiceInformationAndSafe()
+    {
+        foreach (var code in Gmv6RepairedDebuggingCodes)
+        {
+            var entry = ReadEntry("gmv6", "debugging", $"{code.ToLowerInvariant()}.json");
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    Assert.StartsWith($"Gree GMV6 — {code} —", RequiredString(text, "title"), StringComparison.Ordinal);
+                    Assert.Contains("наладочной информации", RequiredString(text, "summary"), StringComparison.OrdinalIgnoreCase);
+                    Assert.Empty(RequiredArray(text, "possibleCauses"));
+                    Assert.Equal(3, RequiredArray(text, "checkSteps").Count);
+                    Assert.Contains("не трактовать", RequiredString(text, "recommendedAction"), StringComparison.OrdinalIgnoreCase);
+                });
         }
     }
 
