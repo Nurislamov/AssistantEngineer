@@ -32,6 +32,9 @@ and marks the indoor category CLOSED with no remaining detailed or table-only ro
 ED-24SRC.13a/13b/13c repair all 43 remaining status rows as modes, settings, prompts, and operating conditions.
 Together with the existing AJ prompt guard, all 44 GMV6 status cards are CLOSED / manual-bound PASS.
 
+ED-24SRC.14a/14b repair all 38 debugging rows as service/commissioning information. ED-24SRC.14c verifies all 263
+GMV6 runtime cards and marks outdoor, indoor, status, debugging, and GMV6 overall CLOSED / manual-bound PASS.
+
 ED-24SRC.2 repairs the first detailed GMV6 batch from the same service-manual boundary: outdoor sensor/procedure cards
 `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`, `b9`, and `bA` now carry the documented 30-second sensor-detection
 condition, three possible causes, and connector -> sensor -> detection-circuit/main-board troubleshooting flow. Runtime

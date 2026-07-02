@@ -2,16 +2,12 @@
 
 ## Current stage
 
-ED-24SRC.14b - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
-ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
-ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, ED-24SRC.10a, ED-24SRC.10b, ED-24SRC.10c, and
-ED-24SRC.11a, ED-24SRC.11b-1, ED-24SRC.11b-2, ED-24SRC.12, ED-24SRC.13a, ED-24SRC.13b, and
-ED-24SRC.13c, and ED-24SRC.14a are CLOSED / pushed.
+ED-24SRC.14c - VALIDATED / commit pending. All preceding ED-24SRC stages through ED-24SRC.14b are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete ED-24SRC.14b validation and push the final debugging batch.
-2. Perform final ED-24SRC.14c GMV6 closure verification.
+1. Complete the ED-24SRC.14c final validation gate.
+2. Push final closure only if all 263 GMV6 cards and the full suite pass.
 3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -20,6 +16,13 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.14c final closure inventory reports all 263 GMV6 cards as AlreadyRepaired: outdoor 121, indoor 60,
+status 44, debugging 38. DetailedProcedureAvailable, TableOnlySafe, StatusOrPrompt, DebuggingOrCommissioning,
+Conflict, and NeedsManualReview/Unclassified are all zero. The final category-wide guard covers every visible card.
+GMV6 outdoor, indoor, status, debugging, and GMV6 overall are CLOSED / manual-bound PASS.
+Validation: restore PASS; build PASS with 0 warnings/errors; EquipmentDiagnostics 1132/1132; Telegram 641/641;
+webhook 10/10; full suite 5156/5156; `git diff --check` PASS.
 
 ED-24SRC.14b repairs the final 19 GMV6 debugging cards (`Cn`-`Uy`) as service/commissioning information while
 preserving the approved U0/U2/U3/U4/U5 titles.

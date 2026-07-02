@@ -1,5 +1,9 @@
 # Equipment Diagnostics
 
+GMV6 manual-bound closure is tracked by
+`scripts/equipment-diagnostics/invoke-gmv6-manual-bound-closure-inventory.ps1`. ED-24SRC.14c closes all 263 GMV6
+runtime cards across outdoor (121), indoor (60), status (44), and debugging (38) while preserving runtime counts.
+
 ## ED-24SRC.1 manual-bound Gree card repair
 
 ED-24SRC.1 removes import/provenance language from Telegram-visible Gree diagnostic fields and keeps provenance in

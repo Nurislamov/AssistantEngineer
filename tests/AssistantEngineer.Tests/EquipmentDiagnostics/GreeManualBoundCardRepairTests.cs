@@ -1156,6 +1156,43 @@ public sealed class GreeManualBoundCardRepairTests
     }
 
     [Fact]
+    public void Gmv6ManualBoundScopeIsClosed()
+    {
+        var gmv6Root = Path.Combine(GreeRoot, "gmv6");
+        var entries = Directory
+            .EnumerateFiles(gmv6Root, "*.json", SearchOption.AllDirectories)
+            .Order(StringComparer.Ordinal)
+            .Select(path => (Path: path, Entry: ReadObject(path)))
+            .ToArray();
+
+        Assert.Equal(263, entries.Length);
+        Assert.Equal(121, entries.Count(item => item.Path.Contains($"{Path.DirectorySeparatorChar}outdoor{Path.DirectorySeparatorChar}")));
+        Assert.Equal(60, entries.Count(item => item.Path.Contains($"{Path.DirectorySeparatorChar}indoor{Path.DirectorySeparatorChar}")));
+        Assert.Equal(44, entries.Count(item => item.Path.Contains($"{Path.DirectorySeparatorChar}status{Path.DirectorySeparatorChar}")));
+        Assert.Equal(38, entries.Count(item => item.Path.Contains($"{Path.DirectorySeparatorChar}debugging{Path.DirectorySeparatorChar}")));
+
+        foreach (var (path, entry) in entries)
+        {
+            var visible = VisibleBlob(entry);
+            Assert.False(string.IsNullOrWhiteSpace(visible), $"Visible text is empty: {path}");
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    Assert.StartsWith("Gree GMV6 —", RequiredString(text, "title"), StringComparison.Ordinal);
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "summary")));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")));
+                    Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")));
+                });
+        }
+    }
+
+    [Fact]
     public void GreeRuntimeAndSeriesCountsRemainStable()
     {
         var entries = ReadEntries().Select(item => item.Entry).ToArray();

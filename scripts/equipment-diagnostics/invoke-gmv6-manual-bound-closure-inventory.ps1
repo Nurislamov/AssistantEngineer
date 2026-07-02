@@ -585,11 +585,21 @@ $categoryRepairClassCounts = foreach ($category in $expectedCategoryCounts.Keys)
 }
 
 New-Item -ItemType Directory -Force -Path $outputRoot | Out-Null
+$categoryClosure = [ordered]@{}
+foreach ($category in $expectedCategoryCounts.Keys) {
+    $categoryClosure[$category] =
+        @($entries | Where-Object {
+            $_.category -eq $category -and $_.repairClass -ne "AlreadyRepaired"
+        }).Count -eq 0
+}
+$gmv6Closed = @($entries | Where-Object repairClass -ne "AlreadyRepaired").Count -eq 0
 $report = [pscustomobject]@{
     generatedAtUtc = [DateTime]::UtcNow.ToString("O")
-    scope = "ED-24SRC.3 GMV6 closure inventory; no runtime card repair is performed by this script."
+    scope = "ED-24SRC.14c GMV6 closure inventory; no runtime card repair is performed by this script."
     totalGmv6Cards = $entries.Count
     categoryCounts = $categoryCounts
+    categoryClosure = $categoryClosure
+    gmv6Closed = $gmv6Closed
     repairClassCounts = $repairClassCounts
     categoryRepairClassCounts = @($categoryRepairClassCounts)
     entries = $entries
@@ -642,3 +652,4 @@ Write-Output "Category counts:"
 $categoryCounts.GetEnumerator() | ForEach-Object { Write-Output "  $($_.Key): $($_.Value)" }
 Write-Output "Repair class counts:"
 $repairClassCounts | ForEach-Object { Write-Output "  $($_.repairClass): $($_.count)" }
+Write-Output "GMV6 CLOSED: $gmv6Closed"
