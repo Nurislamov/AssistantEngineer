@@ -188,6 +188,28 @@ public sealed class GreeManualBoundCardRepairTests
             ["gy.json"] = ("Gy", ["питания PV"])
         };
 
+    private static readonly Dictionary<string, (string Code, string[] RequiredPhrases)> Gmv6OutdoorTableOnlyHjpBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["h4.json"] = ("H4", ["PFC", "привода вентилятора"]),
+            ["ha.json"] = ("HA", ["чипа памяти", "инверторного наружного вентилятора"]),
+            ["he.json"] = ("HE", ["отсутствие фазы", "инверторного вентилятора"]),
+            ["hf.json"] = ("HF", ["цепи зарядки", "привода вентилятора"]),
+            ["hp.json"] = ("HP", ["инверторного вентилятора", "переменному току"]),
+            ["hu.json"] = ("HU", ["AC-напряжение", "инверторного вентилятора"]),
+            ["ja.json"] = ("JA", ["ненормального давления"]),
+            ["jc.json"] = ("JC", ["выключателя протока воды"]),
+            ["je.json"] = ("JE", ["трубы возврата масла"]),
+            ["jf.json"] = ("JF", ["утечку трубы возврата масла"]),
+            ["jl.json"] = ("JL", ["низкого высокого давления"]),
+            ["p4.json"] = ("P4", ["PFC", "привода компрессора"]),
+            ["pa.json"] = ("PA", ["чипа памяти", "привода компрессора"]),
+            ["pe.json"] = ("PE", ["отсутствие фазы", "инверторного компрессора"]),
+            ["pf.json"] = ("PF", ["цепи зарядки", "привода компрессора"]),
+            ["pp.json"] = ("PP", ["инверторного компрессора", "переменному току"]),
+            ["pu.json"] = ("PU", ["AC-напряжение", "инверторного компрессора"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -662,6 +684,56 @@ public sealed class GreeManualBoundCardRepairTests
     public void Gmv6OutdoorTableOnlyGBatchUsesOnlySafeMeaningWithoutInventedCauses()
     {
         foreach (var (fileName, expectation) in Gmv6OutdoorTableOnlyGBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains("Gree GMV6", visible, StringComparison.Ordinal);
+            Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
+            Assert.Contains($"Код {expectation.Code} означает", visible, StringComparison.Ordinal);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.DoesNotContain("замен", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("flowchart", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("раздел 2.", visible, StringComparison.OrdinalIgnoreCase);
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    var textVisible = string.Join(
+                        "\n",
+                        TelegramVisibleFields
+                            .Select(field => text[field])
+                            .Where(node => node is not null)
+                            .SelectMany(node => node is JsonArray array
+                                ? array.Select(item => item!.GetValue<string>())
+                                : [node!.GetValue<string>()]));
+
+                    Assert.Empty(RequiredArray(text, "possibleCauses"));
+                    Assert.Equal(3, RequiredArray(text, "checkSteps").Count);
+                    Assert.Contains("Зафиксируйте код", textVisible, StringComparison.OrdinalIgnoreCase);
+                    Assert.Contains("квалифицированному специалисту", textVisible, StringComparison.OrdinalIgnoreCase);
+                });
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorTableOnlyHjpBatchUsesOnlySafeMeaningWithoutInventedCauses()
+    {
+        foreach (var (fileName, expectation) in Gmv6OutdoorTableOnlyHjpBatch)
         {
             var entry = ReadEntry("gmv6", "outdoor", fileName);
             var visible = VisibleBlob(entry);

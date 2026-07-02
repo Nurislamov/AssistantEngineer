@@ -2,15 +2,15 @@
 
 ## Current stage
 
-ED-24SRC.8b - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
-ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, and ED-24SRC.8a are
-CLOSED / pushed.
+ED-24SRC.8c - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a, and
+ED-24SRC.8b are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.8b validation gate.
-2. If validation passes, commit and push ED-24SRC.8b.
-3. Continue with ED-24SRC.8c from the remaining GMV6 outdoor `TableOnlySafe` inventory.
+1. Complete the ED-24SRC.8c validation gate.
+2. If validation passes, commit and push ED-24SRC.8c.
+3. Continue with ED-24SRC.8d outdoor closure verification.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -18,6 +18,49 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.8c repairs the final GMV6 outdoor table-only H/J/P batch without changing runtime counts.
+
+ED-24SRC.8c work-log selection:
+
+- Selected codes: `H4`, `HA`, `HE`, `HF`, `HP`, `HU`, `JA`, `JC`, `JE`, `JF`, `JL`, `P4`, `PA`, `PE`, `PF`, `PP`,
+  and `PU`.
+- Manual/table references: Chapter 3 outdoor error-indication rows for the remaining fan-drive, protection, and
+  compressor-drive table-only codes.
+- Batch reason: this is the final outdoor table-only group after ED-24SRC.8a/8b. The inventory shows no fault
+  diagnosis, possible causes, troubleshooting, or flowchart for these rows, so visible text uses only the stored meaning
+  plus safe handoff steps.
+- Skipped codes: none in GMV6 outdoor `TableOnlySafe`; no indoor, status, or debugging cards were changed.
+
+ED-24SRC.8c implementation notes:
+
+- `H4`, `HA`, `HE`, `HF`, `HP`, and `HU` now use only their fan-drive table meaning in title and summary.
+- `JA`, `JC`, `JE`, `JF`, and `JL` now use only their protection/table meaning in title and summary.
+- `P4`, `PA`, `PE`, `PF`, `PP`, and `PU` now use only their compressor-drive table meaning in title and summary.
+- `possibleCauses` is empty for every ED-24SRC.8c card.
+- `checkSteps`, `recommendedAction`, `safetyNote`, and `sourceNote` are short, safe, and free of provenance wording.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` classifies the ED-24SRC.8c batch as repaired.
+- Inventory counts after script rerun: AlreadyRepaired 122; DetailedProcedureAvailable 26; TableOnlySafe 34;
+  StatusOrPrompt 43; DebuggingOrCommissioning 38.
+- Category split after script rerun: outdoor = 121 AlreadyRepaired, 0 DetailedProcedureAvailable, 0 TableOnlySafe;
+  indoor = 26 DetailedProcedureAvailable, 34 TableOnlySafe; debugging = 38 DebuggingOrCommissioning; status =
+  1 AlreadyRepaired, 43 StatusOrPrompt.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Validation:
+  - `dotnet restore .\AssistantEngineer.sln`: PASS.
+  - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 6 existing nullable warnings in architecture guard
+    tests and 0 errors.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1122/1122).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~Telegram" --logger "console;verbosity=minimal"`:
+    PASS (640/640).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnosticTelegramWebhookApiIntegrationTests" --logger "console;verbosity=minimal"`:
+    PASS (10/10).
+  - `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal"`: PASS (5146/5146).
+  - `git diff --check`: PASS.
 
 ED-24SRC.8b repairs the GMV6 outdoor G-family table-only batch without changing runtime counts.
 
