@@ -83,6 +83,19 @@ public sealed class GreeManualBoundCardRepairTests
             ["hl.json"] = ("HL", 2, ["пониженного напряжения", "ниже 320 В", "приведите напряжение к 380 В", "замените плату привода вентилятора"])
         };
 
+    private static readonly Dictionary<string, (string Code, string ComponentText, string DurationText, string[] RequiredPhrases)> Gmv6OutdoorCurrentAndShellRoofSensorBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["fh.json"] = ("FH", "датчик тока компрессора 1", "3 секунд", ["малая плата датчика тока", "цепь детекции", "замените основную плату управления"]),
+            ["fc.json"] = ("FC", "датчик тока компрессора 2", "3 секунд", ["малая плата датчика тока", "цепь детекции", "замените основную плату управления"]),
+            ["fl.json"] = ("FL", "датчик тока компрессора 3", "3 секунд", ["малая плата датчика тока", "цепь детекции", "замените основную плату управления"]),
+            ["fe.json"] = ("FE", "датчик тока компрессора 4", "3 секунд", ["малая плата датчика тока", "цепь детекции", "замените основную плату управления"]),
+            ["ff.json"] = ("FF", "датчик тока компрессора 5", "3 секунд", ["малая плата датчика тока", "цепь детекции", "замените основную плату управления"]),
+            ["fj.json"] = ("FJ", "датчик тока компрессора 6", "3 секунд", ["малая плата датчика тока", "цепь детекции", "замените основную плату управления"]),
+            ["fu.json"] = ("FU", "датчик температуры верхней части корпуса компрессора 1", "30 секунд", ["датчик температуры верхней части корпуса", "цепь детекции", "замените основную плату управления"]),
+            ["fb.json"] = ("Fb", "датчик температуры верхней части корпуса компрессора 2", "30 секунд", ["датчик температуры верхней части корпуса", "цепь детекции", "замените основную плату управления"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -306,6 +319,60 @@ public sealed class GreeManualBoundCardRepairTests
                 RequiredTexts(entry),
                 text => Assert.True(
                     RequiredArray(text, "checkSteps").Count >= 2,
+                    $"Audience {RequiredString(text, "audience")} for {expectation.Code} must retain the documented troubleshooting steps."));
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorCurrentAndShellRoofSensorBatchContainsManualDiagnosisCausesAndFlowchart()
+    {
+        foreach (var (fileName, expectation) in Gmv6OutdoorCurrentAndShellRoofSensorBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains($"Gree GMV6 — {expectation.Code} —", visible, StringComparison.Ordinal);
+            Assert.Contains(expectation.ComponentText, visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("AD-значение", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains(expectation.DurationText, visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("основная плата наружного блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("проводной контроллер внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("приёмник сигнала внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("плохой контакт", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("интерфейсом основной платы", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("посторонних предметов", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("подключите разъём плотно", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text => Assert.Equal(3, RequiredArray(text, "possibleCauses").Count));
+
+            var technicalTexts = RequiredTexts(entry)
+                .Where(text =>
+                    !string.Equals(
+                        RequiredString(text, "audience"),
+                        "Consumer",
+                        StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            Assert.NotEmpty(technicalTexts);
+            Assert.All(
+                technicalTexts,
+                text => Assert.True(
+                    RequiredArray(text, "checkSteps").Count >= 3,
                     $"Audience {RequiredString(text, "audience")} for {expectation.Code} must retain the documented troubleshooting steps."));
         }
     }

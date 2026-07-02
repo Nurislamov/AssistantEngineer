@@ -2,14 +2,14 @@
 
 ## Current stage
 
-ED-24SRC.6 - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
-ED-24SRC.4, and ED-24SRC.5 are CLOSED / pushed.
+ED-24SRC.7a - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.4, ED-24SRC.5, and ED-24SRC.6 are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.6 validation gate.
-2. If validation passes, commit and push ED-24SRC.6.
-3. Continue with ED-24SRC.7 from the remaining GMV6 outdoor `DetailedProcedureAvailable` inventory.
+1. Complete the ED-24SRC.7a validation gate.
+2. If validation passes, commit and push ED-24SRC.7a.
+3. Continue with ED-24SRC.7b from the remaining GMV6 outdoor `DetailedProcedureAvailable` inventory.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -17,6 +17,51 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.7a repairs the first split GMV6 outdoor detailed-procedure batch after ED-24SRC.6 without changing runtime
+counts.
+
+ED-24SRC.7a work-log selection:
+
+- Selected codes: `FH`, `FC`, `FL`, `FE`, `FF`, `FJ`, `FU`, and `Fb`.
+- Manual sections: 2.70-2.77 in `Service Manual for GMV6 v_2020.09.pdf`.
+- Batch reason: adjacent outdoor compressor sensor sections. `FH`/`FC`/`FL`/`FE`/`FF`/`FJ` share the current-sensor
+  flowchart for compressors 1-6, and `FU`/`Fb` are the immediately adjacent shell-roof temperature sensor sections for
+  compressors 1-2.
+- Skipped codes: `E1`-`E4`, `F0`, `F1`, `F3`, `J0`-`J9`, and `P0`-`PJ` because they are different manual structures
+  planned for later ED-24SRC.7 batches.
+
+ED-24SRC.7a implementation notes:
+
+- `FH`, `FC`, `FL`, `FE`, `FF`, and `FJ` now carry the manual display locations, 3-second AD-value condition, three
+  possible causes, and connector / current-sensor small-board / main-board troubleshooting flowchart.
+- `FU` and `Fb` now carry the manual display locations, 30-second AD-value condition, three possible causes, and
+  connector / shell-roof temperature sensor / main-board troubleshooting flowchart.
+- Telegram-visible `sourceNote` fields are neutral and do not expose section/manual/source wording.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` classifies the ED-24SRC.7a batch as repaired.
+- Inventory counts after script rerun: AlreadyRepaired 38; DetailedProcedureAvailable 56; TableOnlySafe 88;
+  StatusOrPrompt 43; DebuggingOrCommissioning 38.
+- Category split after script rerun: outdoor = 37 AlreadyRepaired, 30 DetailedProcedureAvailable, 54 TableOnlySafe;
+  indoor = 26 DetailedProcedureAvailable, 34 TableOnlySafe; debugging = 38 DebuggingOrCommissioning; status =
+  1 AlreadyRepaired, 43 StatusOrPrompt.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Validation:
+  - `dotnet restore .\AssistantEngineer.sln`: PASS.
+  - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 6 existing nullable warnings in architecture guard
+    tests and 0 errors.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1116/1116).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~Telegram" --logger "console;verbosity=minimal"`:
+    PASS (640/640).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnosticTelegramWebhookApiIntegrationTests" --logger "console;verbosity=minimal"`:
+    PASS (10/10).
+  - `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal"`: PASS (5140/5140).
+  - `git diff --check`: PASS.
+  - `git status --short`: only intended ED-24SRC.7a card, test, inventory-script, docs, and state files changed before
+    commit.
 
 ED-24SRC.6 reconciles the GMV6 manual-bound closure inventory after ED-24SRC.2a, ED-24SRC.4, and ED-24SRC.5.
 
