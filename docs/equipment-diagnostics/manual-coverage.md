@@ -19,8 +19,9 @@ manual-section repair for GMV6 `AJ` and `b1`.
 
 ED-24GMVX.1 reconciles the GMV X manual-bound closure inventory against
 `artifacts/manual-intake/sources/gree/Gree GMV X Service Manual EN.pdf`. ED-24GMVX.2 repairs the 33 GMV X
-status/prompt cards only. Snapshot after ED-24GMVX.2: GMV X 263 cards = 121 outdoor / 60 indoor / 44 status /
-38 debugging; `AlreadyRepaired` 33, `DetailedProcedureAvailable` 132, `TableOnlySafe` 92,
+status/prompt cards only. ED-24GMVX.3 repairs the first outdoor sensor batch (`b1`-`bA`, `bd`, `bJ`, `bn`) from the
+GMV X troubleshooting sections. Snapshot after ED-24GMVX.3: GMV X 263 cards = 121 outdoor / 60 indoor / 44 status /
+38 debugging; `AlreadyRepaired` 46, `DetailedProcedureAvailable` 119, `TableOnlySafe` 92,
 `ManualSectionNeedsReview` 6, `Conflict` 0, `Unclassified` 0. GMV X is not closed.
 
 ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use

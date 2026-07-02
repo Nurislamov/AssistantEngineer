@@ -65,10 +65,14 @@ $statusOrPromptCodes = @(
     "n0", "n2", "n4", "n6", "n7", "n8", "n9", "nA", "nC", "nE", "nF", "nH",
     "UC"
 )
+$repairedDetailedCodes = @(
+    "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "bA", "bd", "bJ", "bn"
+)
 $manualSectionNeedsReviewCodes = @("d5", "d8", "dE", "L2", "L6", "LH")
 
 $detailedProcedureLookup = New-Lookup -Values $detailedProcedureCodes
 $statusOrPromptLookup = New-Lookup -Values $statusOrPromptCodes
+$repairedDetailedLookup = New-Lookup -Values $repairedDetailedCodes
 $manualSectionNeedsReviewLookup = New-Lookup -Values $manualSectionNeedsReviewCodes
 
 $genericVisibleTemplatePhrases = @(
@@ -315,6 +319,9 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $gmvXRoot -Recurse -Filt
     if ($statusOrPromptLookup.ContainsKey($entry.code) -and $visibleTextFlags.Count -eq 0) {
         $repairClass = "AlreadyRepaired"
     }
+    if ($repairedDetailedLookup.ContainsKey($entry.code) -and $visibleTextFlags.Count -eq 0) {
+        $repairClass = "AlreadyRepaired"
+    }
     $sourceReferences = @($entry.sourceReferences)
     $sourceReferenceNames = @($sourceReferences | ForEach-Object { $_.sourceName } | Where-Object { $_ } | Sort-Object -Unique)
     $sourceReferenceManualIds = @($sourceReferences | ForEach-Object { $_.manualId } | Where-Object { $_ } | Sort-Object -Unique)
@@ -323,6 +330,9 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $gmvXRoot -Recurse -Filt
 
     if ($repairClass -eq "AlreadyRepaired" -and $preRepairClass -eq "StatusOrPrompt") {
         $classificationNotes += "GMV X status/prompt visible text has been repaired in ED-24GMVX.2."
+    }
+    elseif ($repairClass -eq "AlreadyRepaired" -and $preRepairClass -eq "DetailedProcedureAvailable") {
+        $classificationNotes += "GMV X detailed visible text has been repaired in a controlled GMV X batch."
     }
     elseif ($repairClass -eq "DetailedProcedureAvailable") {
         $classificationNotes += "GMV X manual inventory expects troubleshooting content; runtime visible text is not repaired in ED-24GMVX.1."

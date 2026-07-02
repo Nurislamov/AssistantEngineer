@@ -1,5 +1,10 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.3 repairs the first GMV X outdoor detailed batch: `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`,
+`b9`, `bA`, `bd`, `bJ`, and `bn`. The sensor cards use the GMV X manual AD-value / 30-second detection condition,
+sensor contact, sensor, and detection-circuit/main-board checks. `bJ` keeps the high/low pressure sensor reverse
+connection flow with voltage checks before correcting terminals. GMV X is still not closed.
+
 ED-24GMVX.2 repairs the 33 GMV X status/prompt cards from the inventory-only `StatusOrPrompt` class. These cards now
 use status, prompt, mode, setting, or commissioning wording instead of generic fault-like text; `AJ` is a filter-clean
 prompt with cleaning, reset, and next-service-cycle wording; `A0` is a to-be-commissioned state; `db` remains metadata-
@@ -16,15 +21,15 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.2 inventory snapshot:
+Current ED-24GMVX.3 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
-| outdoor | 0 | 73 | 48 | 0 | 121 |
+| outdoor | 13 | 60 | 48 | 0 | 121 |
 | indoor | 1 | 32 | 21 | 6 | 60 |
 | status | 29 | 0 | 15 | 0 | 44 |
 | debugging | 3 | 27 | 8 | 0 | 38 |
-| **Total** | **33** | **132** | **92** | **6** | **263** |
+| **Total** | **46** | **119** | **92** | **6** | **263** |
 
 Conflict count is 0 and Unclassified count is 0. The six `ManualSectionNeedsReview` rows are exactly `d5`, `d8`,
 `dE`, `L2`, `L6`, and `LH`. Remaining visible-text audit flags belong to unrepaired GMV X detailed/table/manual-review
