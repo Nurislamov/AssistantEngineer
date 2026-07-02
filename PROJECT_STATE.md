@@ -2,15 +2,15 @@
 
 ## Current stage
 
-ED-24SRC.11a - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.11b-1 - VALIDATED / commit pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
 ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, ED-24SRC.7a, ED-24SRC.7b, ED-24SRC.7c, ED-24SRC.7d, ED-24SRC.8a,
-ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, ED-24SRC.10a, ED-24SRC.10b, and ED-24SRC.10c are
-CLOSED / pushed.
+ED-24SRC.8b, ED-24SRC.8c, ED-24SRC.8d, ED-24SRC.9, ED-24SRC.10a, ED-24SRC.10b, ED-24SRC.10c, and
+ED-24SRC.11a are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.11a validation gate and commit/push the first indoor table-only batch.
-2. Continue the remaining 23 GMV6 indoor table-only cards in separate batches.
+1. Complete the ED-24SRC.11b-1 validation gate and commit/push the second indoor table-only batch.
+2. Repair the final 11 GMV6 indoor table-only cards and close indoor.
 3. Keep GMV6 outdoor untouched unless a later verification specifically requires it.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
@@ -19,6 +19,11 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.11b-1 repairs 12 more GMV6 indoor table-only cards: `LH`, `LJ`, `LL`, `LP`, `LU`, and `o0`-`o6`.
+The cards use only their mapped table meanings, keep causes empty, and use the common safe indoor handoff.
+Validation: restore PASS; build PASS with 6 existing nullable warnings and 0 errors; EquipmentDiagnostics 1128/1128;
+Telegram 641/641; webhook 10/10; full suite 5152/5152; `git diff --check` PASS.
 
 ED-24SRC.11a repairs the first 18 GMV6 indoor table-only cards without changing runtime counts.
 
