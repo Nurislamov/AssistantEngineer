@@ -1,165 +1,164 @@
 {
-    "id":  "gree-gmv6-outdoor-f3",
-    "manufacturer":  "Gree",
-    "equipmentFamily":  "VRF",
-    "equipmentType":  "OutdoorUnit",
-    "series":  "GMV6",
-    "models":  [
-                   "GMV-224WM/G-X",
-                   "GMV-280WM/G-X",
-                   "GMV-335WM/G-X",
-                   "GMV-400WM/G-X",
-                   "GMV-450WM/G-X",
-                   "GMV-504WM/G-X",
-                   "GMV-560WM/G-X",
-                   "GMV-615WM/G-X",
-                   "GMV-680WM/G-X"
-               ],
-    "code":  "F3",
-    "signalType":  "Fault",
-    "displaySource":  "OutdoorBoard",
-    "systemPart":  "Sensor",
-    "severity":  "Medium",
-    "requiresQualifiedService":  true,
-    "canCustomerContinueOperation":  false,
-    "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-    "sourceLanguage":  "en",
-    "sourceType":  "Manual",
-    "sourceName":  "Service Manual for GMV6 v_2020.09",
-    "sourceMeaning":  "Malfunction of low-pressure sensor",
-    "sourceReference":  "глава 3 Faults / Error Indication / Outdoor F3 / PDF page 75 / manual page 73; Troubleshooting 2.63 / PDF page 117 / manual page 115",
-    "confidence":  "High",
-    "verificationStatus":  "ManualVerified",
-    "createdAt":  "2026-06-20T00:00:00Z",
-    "updatedAt":  "2026-06-23T00:00:00Z",
-    "texts":  [
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Плохой контакт датчика низкого давления.",
-                                             "Повреждён кабель или разъём датчика.",
-                                             "Неисправен датчик низкого давления.",
-                                             "Неисправна цепь измерения на плате."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-20T00:00:00Z",
-                      "id":  "gree-gmv6-outdoor-f3-ru-consumer",
-                      "audience":  "Consumer",
-                      "title":  "Gree GMV F3 — неисправность датчика низкого давления",
-                      "summary":  "F3 относится к цепи датчика низкого давления. Сначала проверьте разъём, проводку и сам датчик, затем цепь измерения на плате.",
-                      "safetyNote":  "Электрические и холодильные проверки выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить разъём датчика низкого давления на главной плате.",
-                                         "Проверить проводку от датчика до платы.",
-                                         "Проверить датчик по сервисной процедуре.",
-                                         "После проверки или замены датчика убедиться, что ошибка не возвращается."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о неисправности платы до проверки датчика и проводки.",
-                                          "Не отключать и не обходить защиты."
-                                      ],
-                      "recommendedAction":  "Если датчик и проводка исправны, продолжить проверку цепи измерения на главной плате наружного блока.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.63, но его пошаговая процедура в эту запись не перенесена."
-                  },
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Плохой контакт датчика низкого давления.",
-                                             "Повреждён кабель или разъём датчика.",
-                                             "Неисправен датчик низкого давления.",
-                                             "Неисправна цепь измерения на плате."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-20T00:00:00Z",
-                      "id":  "gree-gmv6-outdoor-f3-ru-installer",
-                      "audience":  "Installer",
-                      "title":  "Gree GMV F3 — неисправность датчика низкого давления",
-                      "summary":  "При F3 проверить AD-цепь датчика низкого давления: разъём на плате, контакт, проводку, состояние датчика и вход измерения на главной плате.",
-                      "safetyNote":  "Электрические и холодильные проверки выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить разъём датчика низкого давления на главной плате.",
-                                         "Проверить проводку от датчика до платы.",
-                                         "Проверить датчик по сервисной процедуре.",
-                                         "После проверки или замены датчика убедиться, что ошибка не возвращается."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о неисправности платы до проверки датчика и проводки.",
-                                          "Не отключать и не обходить защиты."
-                                      ],
-                      "recommendedAction":  "Если датчик и проводка исправны, продолжить проверку цепи измерения на главной плате наружного блока.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.63, но его пошаговая процедура в эту запись не перенесена."
-                  },
-                  {
-                      "locale":  "ru",
-                      "possibleCauses":  [
-                                             "Плохой контакт датчика низкого давления.",
-                                             "Повреждён кабель или разъём датчика.",
-                                             "Неисправен датчик низкого давления.",
-                                             "Неисправна цепь измерения на плате."
-                                         ],
-                      "isMachineTranslated":  false,
-                      "isReviewed":  true,
-                      "createdAt":  "2026-06-20T00:00:00Z",
-                      "updatedAt":  "2026-06-20T00:00:00Z",
-                      "id":  "gree-gmv6-outdoor-f3-ru-engineer",
-                      "audience":  "Engineer",
-                      "title":  "Gree GMV F3 — неисправность датчика низкого давления",
-                      "summary":  "При F3 проверить AD-цепь датчика низкого давления: разъём на плате, контакт, проводку, состояние датчика и вход измерения на главной плате.",
-                      "safetyNote":  "Электрические и холодильные проверки выполняет квалифицированный специалист.",
-                      "checkSteps":  [
-                                         "Проверить разъём датчика низкого давления на главной плате.",
-                                         "Проверить проводку от датчика до платы.",
-                                         "Проверить датчик по сервисной процедуре.",
-                                         "После проверки или замены датчика убедиться, что ошибка не возвращается."
-                                     ],
-                      "doNotAdvise":  [
-                                          "Не делать вывод о неисправности платы до проверки датчика и проводки.",
-                                          "Не отключать и не обходить защиты."
-                                      ],
-                      "recommendedAction":  "Если датчик и проводка исправны, продолжить проверку цепи измерения на главной плате наружного блока.",
-                      "sourceNote":  "Значение перенесено из таблицы «Индикация кодов», раздел «Наружные блоки». Для кода есть отдельный раздел 2.63, но его пошаговая процедура в эту запись не перенесена."
-                  }
-              ],
-    "sourceReferences":  [
-                             {
-                                 "sourceName":  "Service Manual for GMV6 v_2020.09",
-                                 "documentCode":  "GC202001-I",
-                                 "sourceReference":  "глава 3 Faults / Error Indication / Outdoor F3 / PDF page 75 / manual page 73; Troubleshooting 2.63 / PDF page 117 / manual page 115",
-                                 "sourceType":  "Manual",
-                                 "sourceLanguage":  "en",
-                                 "verificationStatus":  "ManualVerified",
-                                 "confidence":  "High",
-                                 "manualId":  "gree-gmv6-service-manual-2020-09",
-                                 "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "Primary GMV6 manual source retained for backward compatibility."
-                             },
-                             {
-                                 "sourceName":  "DC Inverter VRF System Service Manual (R410A)",
-                                 "documentCode":  null,
-                                 "sourceReference":  "Outdoor main-board status display table, PDF page 82 / manual page 78",
-                                 "sourceType":  "Manual",
-                                 "sourceLanguage":  "en",
-                                 "verificationStatus":  "ManualVerified",
-                                 "confidence":  "High",
-                                 "manualId":  "gree-gmv-mini-service-manual",
-                                 "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
-                             },
-                             {
-                                 "sourceName":  "Gree official support error code catalog",
-                                 "documentCode":  "Gree-GMV-F3",
-                                 "sourceReference":  "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-F3.подтверждённый.json",
-                                 "sourceType":  "Manual",
-                                 "sourceLanguage":  "en",
-                                 "verificationStatus":  "ManualVerified",
-                                 "confidence":  "High",
-                                 "manualId":  "gree-official-support-error-catalog",
-                                 "packageId":  "gree-gmv6-outdoor-fault-protection-codes",
-                                 "notes":  "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/F3 GMV.PNG. Approved title: Gree GMV F3 — неисправность датчика низкого давления."
-                             }
-                         ]
+  "id": "gree-gmv6-outdoor-f3",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV6",
+  "models": [
+    "GMV-224WM/G-X",
+    "GMV-280WM/G-X",
+    "GMV-335WM/G-X",
+    "GMV-400WM/G-X",
+    "GMV-450WM/G-X",
+    "GMV-504WM/G-X",
+    "GMV-560WM/G-X",
+    "GMV-615WM/G-X",
+    "GMV-680WM/G-X"
+  ],
+  "code": "F3",
+  "signalType": "Fault",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "Sensor",
+  "severity": "Medium",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": false,
+  "packageId": "gree-gmv6-outdoor-fault-protection-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Service Manual for GMV6 v_2020.09",
+  "sourceMeaning": "Malfunction of low-pressure sensor",
+  "sourceReference": "глава 3 Faults / Error Indication / Outdoor F3 / PDF page 75 / manual page 73; Troubleshooting 2.63 / PDF page 117 / manual page 115",
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-06-20T00:00:00Z",
+  "updatedAt": "2026-06-23T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Плохой контакт между датчиком низкого давления и интерфейсом основной платы.",
+        "Плохой контакт между датчиком низкого давления и точкой измерения давления.",
+        "Неисправен датчик низкого давления.",
+        "Неисправна цепь детекции датчика низкого давления."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-06-20T00:00:00Z",
+      "id": "gree-gmv6-outdoor-f3-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV F3 — неисправность датчика низкого давления",
+      "summary": "F3 появляется, когда цепь датчика низкого давления получает AD-значение вне допустимого диапазона в течение 30 секунд. Индикация: основная плата наружного блока, проводной контроллер внутреннего блока или приёмник сигнала внутреннего блока.",
+      "safetyNote": "Не открывайте панели наружного блока и не выполняйте электрические или холодильные проверки самостоятельно.",
+      "checkSteps": [
+        "Запишите код F3, модель GMV6, место отображения кода и условия появления.",
+        "Не выполняйте проверки датчика давления или платы самостоятельно.",
+        "Передайте код квалифицированному сервисному специалисту."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о неисправности платы до проверки датчика и проводки.",
+        "Не отключать и не обходить защиты."
+      ],
+      "recommendedAction": "Если код F3 сохраняется или работа оборудования нарушена, передайте код, модель и условия появления квалифицированному сервисному специалисту.",
+      "sourceNote": "Код относится к цепи датчика низкого давления: разъём, контакт в точке измерения, датчик и цепь детекции."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Плохой контакт между датчиком низкого давления и интерфейсом основной платы.",
+        "Плохой контакт между датчиком низкого давления и точкой измерения давления.",
+        "Неисправен датчик низкого давления.",
+        "Неисправна цепь детекции датчика низкого давления."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-06-20T00:00:00Z",
+      "id": "gree-gmv6-outdoor-f3-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV F3 — неисправность датчика низкого давления",
+      "summary": "F3 появляется, когда цепь датчика низкого давления получает AD-значение вне допустимого диапазона в течение 30 секунд. Индикация: основная плата наружного блока, проводной контроллер внутреннего блока или приёмник сигнала внутреннего блока.",
+      "safetyNote": "Работы внутри наружного блока и электрического отсека выполняет квалифицированный специалист при отключённом питании.",
+      "checkSteps": [
+        "Проверьте, не ослаблен ли разъём между основной платой и датчиком низкого давления и нет ли посторонних предметов; при необходимости удалите посторонние предметы и подключите разъём плотно.",
+        "Проверьте контакт между датчиком низкого давления и точкой измерения давления; при плохом контакте удалите посторонние предметы и обеспечьте плотное соединение.",
+        "Если контакты в порядке, замените датчик низкого давления и проверьте, устранена ли неисправность.",
+        "Если после замены датчика неисправность остаётся, возможна неисправность цепи детекции. Замените основную плату управления."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о неисправности платы до проверки датчика и проводки.",
+        "Не отключать и не обходить защиты."
+      ],
+      "recommendedAction": "Если код F3 сохраняется, выполните проверки по указанной последовательности; замену компонентов выполняют только после подтверждения неисправности.",
+      "sourceNote": "Код относится к цепи датчика низкого давления: разъём, контакт в точке измерения, датчик и цепь детекции."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [
+        "Плохой контакт между датчиком низкого давления и интерфейсом основной платы.",
+        "Плохой контакт между датчиком низкого давления и точкой измерения давления.",
+        "Неисправен датчик низкого давления.",
+        "Неисправна цепь детекции датчика низкого давления."
+      ],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-06-20T00:00:00Z",
+      "updatedAt": "2026-06-20T00:00:00Z",
+      "id": "gree-gmv6-outdoor-f3-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV F3 — неисправность датчика низкого давления",
+      "summary": "F3 появляется, когда цепь датчика низкого давления получает AD-значение вне допустимого диапазона в течение 30 секунд. Индикация: основная плата наружного блока, проводной контроллер внутреннего блока или приёмник сигнала внутреннего блока.",
+      "safetyNote": "Работы внутри наружного блока и электрического отсека выполняет квалифицированный специалист при отключённом питании.",
+      "checkSteps": [
+        "Проверьте, не ослаблен ли разъём между основной платой и датчиком низкого давления и нет ли посторонних предметов; при необходимости удалите посторонние предметы и подключите разъём плотно.",
+        "Проверьте контакт между датчиком низкого давления и точкой измерения давления; при плохом контакте удалите посторонние предметы и обеспечьте плотное соединение.",
+        "Если контакты в порядке, замените датчик низкого давления и проверьте, устранена ли неисправность.",
+        "Если после замены датчика неисправность остаётся, возможна неисправность цепи детекции. Замените основную плату управления."
+      ],
+      "doNotAdvise": [
+        "Не делать вывод о неисправности платы до проверки датчика и проводки.",
+        "Не отключать и не обходить защиты."
+      ],
+      "recommendedAction": "Если код F3 сохраняется, выполните проверки по указанной последовательности; замену компонентов выполняют только после подтверждения неисправности.",
+      "sourceNote": "Код относится к цепи датчика низкого давления: разъём, контакт в точке измерения, датчик и цепь детекции."
+    }
+  ],
+  "sourceReferences": [
+    {
+      "sourceName": "Service Manual for GMV6 v_2020.09",
+      "documentCode": "GC202001-I",
+      "sourceReference": "глава 3 Faults / Error Indication / Outdoor F3 / PDF page 75 / manual page 73; Troubleshooting 2.63 / PDF page 117 / manual page 115",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv6-service-manual-2020-09",
+      "packageId": "gree-gmv6-outdoor-fault-protection-codes",
+      "notes": "Primary GMV6 manual source retained for backward compatibility."
+    },
+    {
+      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+      "documentCode": null,
+      "sourceReference": "Outdoor main-board status display table, PDF page 82 / manual page 78",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv6-outdoor-fault-protection-codes",
+      "notes": "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
+    },
+    {
+      "sourceName": "Gree official support error code catalog",
+      "documentCode": "Gree-GMV-F3",
+      "sourceReference": "data/reference/gree-official-support-error-catalog/подтверждённый/Gree-GMV-F3.подтверждённый.json",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-official-support-error-catalog",
+      "packageId": "gree-gmv6-outdoor-fault-protection-codes",
+      "notes": "Imported in ED-24GEC.6D as official support reference link. Primary сервисная карта path: data/reference/gree-official-support-error-catalog/raw/cards/Gree-GMV-F3/F3 GMV.PNG. Approved title: Gree GMV F3 — неисправность датчика низкого давления."
+    }
+  ]
 }

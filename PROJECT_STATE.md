@@ -2,14 +2,14 @@
 
 ## Current stage
 
-ED-24SRC.7a - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
-ED-24SRC.4, ED-24SRC.5, and ED-24SRC.6 are CLOSED / pushed.
+ED-24SRC.7b - IMPLEMENTED / validation pending. ED-24SRC.1, ED-24SRC.1b, ED-24SRC.2, ED-24SRC.3, ED-24SRC.2a,
+ED-24SRC.4, ED-24SRC.5, ED-24SRC.6, and ED-24SRC.7a are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.7a validation gate.
-2. If validation passes, commit and push ED-24SRC.7a.
-3. Continue with ED-24SRC.7b from the remaining GMV6 outdoor `DetailedProcedureAvailable` inventory.
+1. Complete the ED-24SRC.7b validation gate.
+2. If validation passes, commit and push ED-24SRC.7b.
+3. Continue with ED-24SRC.7c from the remaining GMV6 outdoor `DetailedProcedureAvailable` inventory.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
 
 ## Current branch
@@ -17,6 +17,59 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.7b repairs the remaining GMV6 outdoor E/F detailed-procedure batch without changing runtime counts.
+
+ED-24SRC.7b work-log selection:
+
+- Selected codes: `E1`, `E2`, `E3`, `E4`, `F0`, `F1`, and `F3`.
+- Manual sections: 2.57-2.63 in `Service Manual for GMV6 v_2020.09.pdf`.
+- Batch reason: this is the remaining adjacent E/F outdoor protection, main-board, and pressure-sensor group. It is
+  smaller than the preferred eight-card batch, but mixing in J/P compressor-drive groups would cross manual-family
+  boundaries.
+- Skipped codes: `J0`-`J9` and `P0`-`PJ` because they are separate manual structures planned for ED-24SRC.7c and
+  ED-24SRC.7d.
+
+ED-24SRC.7b implementation notes:
+
+- `E1` now carries the high-pressure display locations, >65 °C / high-pressure-switch condition, eight manual causes,
+  and the overpressure troubleshooting flow covering pressure measurement, pressure switch/sensor, valves, panels,
+  airflow, fans, louvers, expansion valves, fins, ambient temperature, clogged pipes, and excess refrigerant.
+- `E2` now carries the discharge low-temperature display locations, <10 °C condition, four manual causes, and checks for
+  discharge/shell-roof sensors, indoor/outdoor EXV reset behavior, and project refrigerant charge.
+- `E3` now carries the low-pressure display locations, -41 °C saturation condition, seven manual causes, and checks for
+  sensor/pressure, refrigerant, valves, panel, airflow, fans, louver, indoor capacity DIP switch, EXV, filter, and pipes.
+- `E4` now carries the high discharge temperature display locations, >118 °C condition, seven manual causes, and checks
+  for valves, EXV reset, fans, indoor filter/air resistance, operating limits, refrigerant charge, and pipe/EXV blockage.
+- `F0` now carries the outdoor main-board chip diagnosis, three manual causes, and CPU small-board / compressor
+  drive-board / main-control-board troubleshooting flow.
+- `F1` and `F3` now carry the pressure-sensor display locations, 30-second AD-value condition, four manual causes, and
+  connector / pressure-contact / sensor / main-control-board troubleshooting flow.
+- Telegram-visible `sourceNote` fields are neutral and do not expose section/manual/source wording.
+- `invoke-gmv6-manual-bound-closure-inventory.ps1` classifies the ED-24SRC.7b batch as repaired.
+- Inventory counts after script rerun: AlreadyRepaired 45; DetailedProcedureAvailable 49; TableOnlySafe 88;
+  StatusOrPrompt 43; DebuggingOrCommissioning 38.
+- Category split after script rerun: outdoor = 44 AlreadyRepaired, 23 DetailedProcedureAvailable, 54 TableOnlySafe;
+  indoor = 26 DetailedProcedureAvailable, 34 TableOnlySafe; debugging = 38 DebuggingOrCommissioning; status =
+  1 AlreadyRepaired, 43 StatusOrPrompt.
+- Runtime counts are unchanged: Gree 1296; GMV6 263; GMV6 outdoor 121; GMV6 indoor 60; GMV6 debugging 38; GMV6 status
+  44.
+- No PDF/manual binary, card count, package manifest, source reference, routing rule, migration, secret, or deploy file
+  changed.
+- Validation:
+  - `dotnet restore .\AssistantEngineer.sln`: PASS.
+  - `dotnet build .\AssistantEngineer.sln --no-restore`: PASS with 6 existing nullable warnings in architecture guard
+    tests and 0 errors.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnostics" --logger "console;verbosity=minimal"`:
+    PASS (1117/1117) after preserving the existing approved `Gree GMV E1` / `Gree GMV F3` title wording.
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~Telegram" --logger "console;verbosity=minimal"`:
+    PASS (640/640).
+  - `dotnet test .\AssistantEngineer.sln --filter "FullyQualifiedName~EquipmentDiagnosticTelegramWebhookApiIntegrationTests" --logger "console;verbosity=minimal"`:
+    PASS (10/10).
+  - `dotnet test .\AssistantEngineer.sln --logger "console;verbosity=minimal"`: PASS (5141/5141).
+  - `git diff --check`: PASS.
+  - `git status --short`: only intended ED-24SRC.7b card, test, inventory-script, docs, and state files changed before
+    commit.
 
 ED-24SRC.7a repairs the first split GMV6 outdoor detailed-procedure batch after ED-24SRC.6 without changing runtime
 counts.

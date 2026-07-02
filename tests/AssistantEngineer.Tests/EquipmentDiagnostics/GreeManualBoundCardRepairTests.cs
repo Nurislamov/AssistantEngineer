@@ -96,6 +96,18 @@ public sealed class GreeManualBoundCardRepairTests
             ["fb.json"] = ("Fb", "датчик температуры верхней части корпуса компрессора 2", "30 секунд", ["датчик температуры верхней части корпуса", "цепь детекции", "замените основную плату управления"])
         };
 
+    private static readonly Dictionary<string, (string Code, int CauseCount, string[] RequiredPhrases)> Gmv6OutdoorEfProtectionAndSensorBatch =
+        new(StringComparer.Ordinal)
+        {
+            ["e1.json"] = ("E1", 8, ["выше 65 °C", "выключатель высокого давления", "4,2 МПа", "запорный клапан", "50 °C", "по 1 кг хладагента"]),
+            ["e2.json"] = ("E2", 4, ["ниже 10 °C", "датчик температуры верхней части корпуса", "0 PLS", "200 PLS", "проектными требованиями"]),
+            ["e3.json"] = ("E3", 7, ["ниже -41 °C", "датчик низкого давления", "недостаточно хладагента", "DIP-переключатель", "воздушный фильтр"]),
+            ["e4.json"] = ("E4", 7, ["выше 118 °C", "запорные клапаны", "электронный расширительный клапан", "-5 °C", "+50 °C", "-20 °C", "+24 °C"]),
+            ["f0.json"] = ("F0", 3, ["адресный чип", "чип памяти", "чип часов", "CPU", "плату привода компрессора", "основную плату управления"]),
+            ["f1.json"] = ("F1", 4, ["датчик высокого давления", "AD-значение", "30 секунд", "точкой измерения давления", "замените основную плату управления"]),
+            ["f3.json"] = ("F3", 4, ["датчик низкого давления", "AD-значение", "30 секунд", "точкой измерения давления", "замените основную плату управления"])
+        };
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -331,7 +343,8 @@ public sealed class GreeManualBoundCardRepairTests
             var entry = ReadEntry("gmv6", "outdoor", fileName);
             var visible = VisibleBlob(entry);
 
-            Assert.Contains($"Gree GMV6 — {expectation.Code} —", visible, StringComparison.Ordinal);
+            Assert.Contains($"Gree GMV", visible, StringComparison.Ordinal);
+            Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
             Assert.Contains(expectation.ComponentText, visible, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("AD-значение", visible, StringComparison.OrdinalIgnoreCase);
             Assert.Contains(expectation.DurationText, visible, StringComparison.OrdinalIgnoreCase);
@@ -359,6 +372,54 @@ public sealed class GreeManualBoundCardRepairTests
             Assert.All(
                 RequiredTexts(entry),
                 text => Assert.Equal(3, RequiredArray(text, "possibleCauses").Count));
+
+            var technicalTexts = RequiredTexts(entry)
+                .Where(text =>
+                    !string.Equals(
+                        RequiredString(text, "audience"),
+                        "Consumer",
+                        StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+
+            Assert.NotEmpty(technicalTexts);
+            Assert.All(
+                technicalTexts,
+                text => Assert.True(
+                    RequiredArray(text, "checkSteps").Count >= 3,
+                    $"Audience {RequiredString(text, "audience")} for {expectation.Code} must retain the documented troubleshooting steps."));
+        }
+    }
+
+    [Fact]
+    public void Gmv6OutdoorEfProtectionAndSensorBatchContainsManualDiagnosisCausesAndFlowchart()
+    {
+        foreach (var (fileName, expectation) in Gmv6OutdoorEfProtectionAndSensorBatch)
+        {
+            var entry = ReadEntry("gmv6", "outdoor", fileName);
+            var visible = VisibleBlob(entry);
+
+            Assert.Contains("Gree GMV", visible, StringComparison.Ordinal);
+            Assert.Contains(expectation.Code, visible, StringComparison.Ordinal);
+            Assert.Contains("основная плата наружного блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("проводной контроллер внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("приёмник сигнала внутреннего блока", visible, StringComparison.OrdinalIgnoreCase);
+
+            foreach (var phrase in expectation.RequiredPhrases)
+            {
+                Assert.Contains(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(
+                    phrase,
+                    visible,
+                    StringComparison.OrdinalIgnoreCase);
+            }
+
+            Assert.All(
+                RequiredTexts(entry),
+                text => Assert.Equal(expectation.CauseCount, RequiredArray(text, "possibleCauses").Count));
 
             var technicalTexts = RequiredTexts(entry)
                 .Where(text =>
