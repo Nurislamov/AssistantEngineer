@@ -1,5 +1,10 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24SRC.16a removes the last visible wording leftovers before production review: E2 refers to the permitted
+temperature characteristic instead of a “temperature table”, and all 43 generic GMV6 status cards now state
+confidently that the code is an operating status or reminder. AJ remains unchanged as the dedicated filter-cleaning
+prompt with reminder reset and next-service-cycle guidance.
+
 ED-24SRC.16 closes the post-review wording findings: J8/J9 retain their pressure-sensor diagnostic meaning without
 visible `по таблице` wording; every GMV6 debugging card now tells the user to diagnose a concurrent malfunction
 without referring to an internal “fault card”; and the five affected indoor Consumer summaries use correct Russian

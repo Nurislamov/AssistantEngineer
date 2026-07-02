@@ -989,6 +989,42 @@ public sealed class GreeManualBoundCardRepairTests
     }
 
     [Fact]
+    public void Gmv6E2UsesUserSafeTemperatureCharacteristicWording()
+    {
+        var entry = ReadEntry("gmv6", "outdoor", "e2.json");
+        var visible = VisibleBlob(entry);
+
+        Assert.DoesNotContain("температурной таблице", visible, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("по таблице", visible, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            "допустимой температурной характеристике",
+            visible,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Gmv6StatusCardsUseConfidentStatusWording()
+    {
+        var entries = Directory
+            .EnumerateFiles(Path.Combine(GreeRoot, "gmv6", "status"), "*.json", SearchOption.TopDirectoryOnly)
+            .Order(StringComparer.Ordinal)
+            .Select(ReadObject)
+            .ToArray();
+
+        Assert.Equal(44, entries.Length);
+        foreach (var entry in entries)
+        {
+            var visible = VisibleBlob(entry);
+
+            Assert.DoesNotContain(
+                "Проверьте, является ли код рабочим статусом или напоминанием",
+                visible,
+                StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("статус", visible, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public void Gmv6J8AndJ9UseUserSafePressureSensorWording()
     {
         foreach (var code in new[] { "j8", "j9" })

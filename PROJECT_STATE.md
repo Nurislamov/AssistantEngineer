@@ -2,11 +2,11 @@
 
 ## Current stage
 
-ED-24SRC.16 - VALIDATED / commit pending. ED-24SRC.15 and all preceding GMV6 closure stages are CLOSED / pushed.
+ED-24SRC.16a - VALIDATED / commit pending. ED-24SRC.16 and all preceding GMV6 closure stages are CLOSED / pushed.
 
 Next recommended steps:
 
-1. Complete the ED-24SRC.16 review-wording validation gate.
+1. Complete the ED-24SRC.16a final visible-wording validation gate.
 2. Push only if all 263 GMV6 cards and the full suite pass.
 3. Keep all non-GMV6 series untouched.
 4. Deploy only through a separately authorized production operation; this stage performs no production deployment.
@@ -16,6 +16,14 @@ Next recommended steps:
 master
 
 ## Last completed work
+
+ED-24SRC.16a removes the final two GMV6 visible-wording leftovers without changing diagnostic meaning: E2 now
+compares sensor resistance with the permitted temperature characteristic, and the 43 generic status cards state
+confidently that the code is an operating status or reminder. AJ retains its dedicated filter-cleaning, reminder-reset,
+and next-service-cycle guidance.
+Validation: restore PASS; build PASS with 0 warnings/errors; EquipmentDiagnostics 1141/1141; Telegram 645/645;
+webhook 10/10; full suite 5165/5165; `git diff --check` PASS; EquipmentDiagnostics branch-readiness PASS with
+0 blockers (48 reviewed scope/staging warnings).
 
 ED-24SRC.16 corrects the final GMV6 review findings without changing card counts or diagnostic meaning: J8/J9 no
 longer expose `по таблице`; all 38 debugging cards use a user-facing conditional handoff instead of the internal
