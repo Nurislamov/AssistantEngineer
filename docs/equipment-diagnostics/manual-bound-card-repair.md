@@ -17,6 +17,7 @@ diagnostic chapters.
   `y7`, `y8`, and `yA`.
 - ED-24SRC.12 verifies all 60 indoor cards with no remaining detailed/table-only work. GMV6 indoor is CLOSED /
   manual-bound PASS.
+- ED-24SRC.13a repairs the first 15 status rows as modes, settings, and operating conditions rather than faults.
 - ED-24SRC.1 found the known generic import template in 235 GMV6 cards. Their Telegram-visible summaries, checks, and
   recommended actions were reduced to neutral table-only-safe wording without adding causes or component repairs.
 - GMV6 `AJ` was checked against section 2.12 and repaired as a filter-clean prompt with filter cleaning, prompt reset,

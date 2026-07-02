@@ -285,6 +285,11 @@ public sealed class GreeManualBoundCardRepairTests
             ["ya.json"] = ("yA", "неисправность IFD")
         };
 
+    private static readonly string[] Gmv6RepairedStatusCodes =
+    [
+        "A0", "A2", "A3", "A4", "A6", "A7", "A8", "A9", "Ab", "AC", "Ad", "AE", "AF", "AH", "AL"
+    ];
+
     [Fact]
     public void TelegramVisibleGreeTextsDoNotExposeImportOrProvenanceWording()
     {
@@ -1052,6 +1057,32 @@ public sealed class GreeManualBoundCardRepairTests
                     Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "recommendedAction")));
                     Assert.False(string.IsNullOrWhiteSpace(RequiredString(text, "safetyNote")));
                 });
+        }
+    }
+
+    [Fact]
+    public void Gmv6RepairedStatusCardsRemainStatusOnlyAndSafe()
+    {
+        foreach (var code in Gmv6RepairedStatusCodes)
+        {
+            var entry = ReadEntry("gmv6", "status", $"{code.ToLowerInvariant()}.json");
+            var visible = VisibleBlob(entry);
+
+            Assert.All(
+                RequiredTexts(entry),
+                text =>
+                {
+                    Assert.StartsWith($"Gree GMV6 — {code} —", RequiredString(text, "title"), StringComparison.Ordinal);
+                    Assert.Empty(RequiredArray(text, "possibleCauses"));
+                    Assert.Equal(3, RequiredArray(text, "checkSteps").Count);
+                    Assert.DoesNotContain("неисправность", RequiredString(text, "title"), StringComparison.OrdinalIgnoreCase);
+                    Assert.DoesNotContain("неисправность", RequiredString(text, "summary"), StringComparison.OrdinalIgnoreCase);
+                });
+
+            foreach (var phrase in ForbiddenVisiblePhrases)
+            {
+                Assert.DoesNotContain(phrase, visible, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 

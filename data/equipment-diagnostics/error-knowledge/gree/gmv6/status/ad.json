@@ -1,128 +1,140 @@
 {
-  "id": "gree-gmv6-status-ad",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "OutdoorUnit",
-  "series": "GMV6",
-  "models": [
-    "GMV-224WM/G-X",
-    "GMV-280WM/G-X",
-    "GMV-335WM/G-X",
-    "GMV-400WM/G-X",
-    "GMV-450WM/G-X",
-    "GMV-504WM/G-X",
-    "GMV-560WM/G-X",
-    "GMV-615WM/G-X",
-    "GMV-680WM/G-X"
-  ],
-  "code": "Ad",
-  "signalType": "Status",
-  "displaySource": "OutdoorBoard",
-  "systemPart": "Unknown",
-  "severity": "Low",
-  "requiresQualifiedService": false,
-  "canCustomerContinueOperation": null,
-  "packageId": "gree-gmv6-status-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Service Manual for GMV6 v_2020.09",
-  "sourceMeaning": "Limit operation",
-  "sourceReference": "глава 3 Faults / Error Indication / Status Ad / PDF page 77 / manual page 75; Troubleshooting 2.16 / PDF page 81 / manual page 79",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-20T00:00:00Z",
-  "updatedAt": "2026-06-23T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-status-ad-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV6 Ad — состояние оборудования",
-      "summary": "Код Ad означает: состояние оборудования. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Это информационное сообщение. Не меняйте сервисные настройки и не открывайте панели оборудования.",
-      "checkSteps": [
-        "Запишите код Ad, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не трактовать информационный код как подтверждённую неисправность."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.16, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-status-ad-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV6 Ad — состояние оборудования",
-      "summary": "Код Ad означает: состояние оборудования. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Допустимы только безопасные внешние и визуальные проверки. Работы внутри электрических отсеков выполняет квалифицированный специалист при снятом питании.",
-      "checkSteps": [
-        "Запишите код Ad, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
-        "Не обходить защитные устройства."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.16, но его пошаговая процедура в эту запись не перенесена."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-20T00:00:00Z",
-      "updatedAt": "2026-06-20T00:00:00Z",
-      "id": "gree-gmv6-status-ad-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV6 Ad — состояние оборудования",
-      "summary": "Код Ad означает: состояние оборудования. Это краткое значение кода без неподтверждённых причин.",
-      "safetyNote": "Электрические, инверторные, компрессорные и холодильные проверки выполняются квалифицированным специалистом по штатной процедуре и при соблюдении требований безопасности.",
-      "checkSteps": [
-        "Запишите код Ad, модель оборудования, место отображения и условия появления."
-      ],
-      "doNotAdvise": [
-        "Не делать вывод о неисправном компоненте только по коду.",
-        "Не отключать и не обходить защиты."
-      ],
-      "recommendedAction": "Если работа оборудования нарушена или код сохраняется, передайте код и модель квалифицированному сервисному специалисту.",
-      "sourceNote": "Значение перенесено из таблицы «Индикация кодов», раздел «Состояния». Для кода есть отдельный раздел 2.16, но его пошаговая процедура в эту запись не перенесена."
-    }
-  ],
-  "sourceReferences": [
-    {
-      "sourceName": "Service Manual for GMV6 v_2020.09",
-      "documentCode": "GC202001-I",
-      "sourceReference": "глава 3 Faults / Error Indication / Status Ad / PDF page 77 / manual page 75; Troubleshooting 2.16 / PDF page 81 / manual page 79",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv6-service-manual-2020-09",
-      "packageId": "gree-gmv6-status-codes",
-      "notes": "Primary GMV6 manual source retained for backward compatibility."
-    },
-    {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
-      "sourceReference": "Outdoor main-board status display table, PDF page 83 / manual page 79",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv-mini-service-manual",
-      "packageId": "gree-gmv6-status-codes",
-      "notes": "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
-    }
-  ]
+    "id":  "gree-gmv6-status-ad",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "OutdoorUnit",
+    "series":  "GMV6",
+    "models":  [
+                   "GMV-224WM/G-X",
+                   "GMV-280WM/G-X",
+                   "GMV-335WM/G-X",
+                   "GMV-400WM/G-X",
+                   "GMV-450WM/G-X",
+                   "GMV-504WM/G-X",
+                   "GMV-560WM/G-X",
+                   "GMV-615WM/G-X",
+                   "GMV-680WM/G-X"
+               ],
+    "code":  "Ad",
+    "signalType":  "Status",
+    "displaySource":  "OutdoorBoard",
+    "systemPart":  "Unknown",
+    "severity":  "Low",
+    "requiresQualifiedService":  false,
+    "canCustomerContinueOperation":  null,
+    "packageId":  "gree-gmv6-status-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Service Manual for GMV6 v_2020.09",
+    "sourceMeaning":  "Limit operation",
+    "sourceReference":  "глава 3 Faults / Error Indication / Status Ad / PDF page 77 / manual page 75; Troubleshooting 2.16 / PDF page 81 / manual page 79",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-20T00:00:00Z",
+    "updatedAt":  "2026-06-23T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-status-ad-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV6 — Ad — режим ограничения работы",
+                      "summary":  "Код Ad означает режим ограничения работы.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не трактовать информационный код как подтверждённую неисправность."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-status-ad-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV6 — Ad — режим ограничения работы",
+                      "summary":  "Код Ad означает режим ограничения работы.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не объявлять замену платы, двигателя, компрессора или датчика только по коду.",
+                                          "Не обходить защитные устройства."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-20T00:00:00Z",
+                      "updatedAt":  "2026-06-20T00:00:00Z",
+                      "id":  "gree-gmv6-status-ad-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV6 — Ad — режим ограничения работы",
+                      "summary":  "Код Ad означает режим ограничения работы.",
+                      "safetyNote":  "Не отключайте и не обходите защитные устройства.",
+                      "checkSteps":  [
+                                         "Зафиксируйте код и режим работы оборудования.",
+                                         "Проверьте, является ли код рабочим статусом или напоминанием.",
+                                         "Если код не исчезает после штатного действия или сопровождается неисправностью, передайте данные квалифицированному специалисту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не делать вывод о неисправном компоненте только по коду.",
+                                          "Не отключать и не обходить защиты."
+                                      ],
+                      "recommendedAction":  "Выполнить штатное действие для этого статуса или напоминания; при сомнениях передать данные специалисту.",
+                      "sourceNote":  "Если код сохраняется, передайте код, модель и условия появления квалифицированному специалисту."
+                  }
+              ],
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Service Manual for GMV6 v_2020.09",
+                                 "documentCode":  "GC202001-I",
+                                 "sourceReference":  "глава 3 Faults / Error Indication / Status Ad / PDF page 77 / manual page 75; Troubleshooting 2.16 / PDF page 81 / manual page 79",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv6-service-manual-2020-09",
+                                 "packageId":  "gree-gmv6-status-codes",
+                                 "notes":  "Primary GMV6 manual source retained for backward compatibility."
+                             },
+                             {
+                                 "sourceName":  "DC Inverter VRF System Service Manual (R410A)",
+                                 "documentCode":  null,
+                                 "sourceReference":  "Outdoor main-board status display table, PDF page 83 / manual page 79",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv-mini-service-manual",
+                                 "packageId":  "gree-gmv6-status-codes",
+                                 "notes":  "GMV Mini/System II manual gives the same code, equipment type, and source meaning; no duplicate diagnostic answer was created."
+                             }
+                         ]
 }
