@@ -72,7 +72,9 @@ $repairedDetailedCodes = @(
     "H0", "H1", "H2", "H3", "H5", "H6", "H7", "H8", "H9", "HC", "HH", "HJ", "HL",
     "J0", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9",
     "P0", "P1", "P2", "P3", "P5", "P6", "P7", "P8", "P9", "PC", "PH", "PJ", "PL",
-    "d1", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dL", "dn", "dP"
+    "d1", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dL", "dn", "dP",
+    "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LU",
+    "o3", "o7", "o8", "o9", "y7", "y8", "yA"
 )
 $manualSectionNeedsReviewCodes = @("d5", "d8", "dE", "L2", "L6", "LH")
 

@@ -1,5 +1,11 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.9 repairs the GMV X indoor detailed batch 2: `L0`, `L1`, `L3`, `L4`, `L5`, `L7`, `L9`, `LA`, `LC`,
+`LF`, `LU`, `o3`, `o7`, `o8`, `o9`, `y7`, `y8`, and `yA`. The batch preserves the exact indoor fan, drainage,
+wired-controller power, antifreeze, master-unit, grouped-control, compatibility, hydromodule, heat-recovery branch,
+external DC-fan drive, fresh-air sensor, air-box, and IFD procedures and their applicability boundaries. GMV X is
+still not closed.
+
 ED-24GMVX.8 repairs the GMV X indoor detailed batch 1: `d1`, `d3`, `d4`, `d6`, `d7`, `d9`, `dA`, `dC`, `dd`,
 `dF`, `dH`, `dL`, `dn`, and `dP`. The batch keeps indoor board, sensor, jumper, address, DIP, wired-controller IIC,
 hydromodule sensor, solar-temperature sensor, and swing-assy meanings from the GMV X manual. GMV X is still not
@@ -47,15 +53,15 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.8 inventory snapshot:
+Current ED-24GMVX.9 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
 | outdoor | 73 | 0 | 48 | 0 | 121 |
-| indoor | 15 | 18 | 21 | 6 | 60 |
+| indoor | 33 | 0 | 21 | 6 | 60 |
 | status | 29 | 0 | 15 | 0 | 44 |
 | debugging | 3 | 27 | 8 | 0 | 38 |
-| **Total** | **120** | **45** | **92** | **6** | **263** |
+| **Total** | **138** | **27** | **92** | **6** | **263** |
 
 Conflict count is 0 and Unclassified count is 0. The six `ManualSectionNeedsReview` rows are exactly `d5`, `d8`,
 `dE`, `L2`, `L6`, and `LH`. Remaining visible-text audit flags belong to unrepaired GMV X detailed/table/manual-review

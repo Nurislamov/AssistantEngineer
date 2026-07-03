@@ -26,8 +26,9 @@ GMV X troubleshooting sections. ED-24GMVX.4 repairs outdoor E/F detailed batch 1
 `H1`, `H2`, `H3`, `H5`, `H6`, `H7`, `H8`, `H9`, `HC`, `HH`, `HJ`, `HL`). ED-24GMVX.7 repairs outdoor J/P detailed
 batch (`J0`-`J9`, `P0`, `P1`, `P2`, `P3`, `P5`, `P6`, `P7`, `P8`, `P9`, `PC`, `PH`, `PJ`, `PL`). Snapshot after
 ED-24GMVX.8 repairs indoor detailed batch 1 (`d1`, `d3`, `d4`, `d6`, `d7`, `d9`, `dA`, `dC`, `dd`, `dF`, `dH`,
-`dL`, `dn`, `dP`). Snapshot after ED-24GMVX.8: GMV X
-263 cards = 121 outdoor / 60 indoor / 44 status / 38 debugging; `AlreadyRepaired` 120, `DetailedProcedureAvailable` 45, `TableOnlySafe` 92,
+`dL`, `dn`, `dP`). ED-24GMVX.9 repairs indoor detailed batch 2 (`L0`, `L1`, `L3`, `L4`, `L5`, `L7`, `L9`, `LA`,
+`LC`, `LF`, `LU`, `o3`, `o7`, `o8`, `o9`, `y7`, `y8`, `yA`). Snapshot after ED-24GMVX.9: GMV X
+263 cards = 121 outdoor / 60 indoor / 44 status / 38 debugging; `AlreadyRepaired` 138, `DetailedProcedureAvailable` 27, `TableOnlySafe` 92,
 `ManualSectionNeedsReview` 6, `Conflict` 0, `Unclassified` 0. GMV X is not closed.
 
 ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use
