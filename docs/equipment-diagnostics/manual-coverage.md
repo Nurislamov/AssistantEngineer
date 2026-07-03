@@ -22,8 +22,9 @@ ED-24GMVX.1 reconciles the GMV X manual-bound closure inventory against
 status/prompt cards only. ED-24GMVX.3 repairs the first outdoor sensor batch (`b1`-`bA`, `bd`, `bJ`, `bn`) from the
 GMV X troubleshooting sections. ED-24GMVX.4 repairs outdoor E/F detailed batch 1 (`E1`, `E2`, `E3`, `E4`, `Ed`,
 `F0`, `F1`, `F3`, `F5`, `F6`, `F7`, `F8`). ED-24GMVX.5 repairs outdoor F detailed batch 2 (`F9`, `FA`, `Fb`, `FC`,
-`Fd`, `FE`, `FF`, `FH`, `FJ`, `FL`, `Fn`, `FU`). Snapshot after ED-24GMVX.5: GMV X 263 cards = 121 outdoor /
-60 indoor / 44 status / 38 debugging; `AlreadyRepaired` 70, `DetailedProcedureAvailable` 95, `TableOnlySafe` 92,
+`Fd`, `FE`, `FF`, `FH`, `FJ`, `FL`, `Fn`, `FU`). ED-24GMVX.6 repairs outdoor H detailed fan-drive batch (`H0`,
+`H1`, `H2`, `H3`, `H5`, `H6`, `H7`, `H8`, `H9`, `HC`, `HH`, `HJ`, `HL`). Snapshot after ED-24GMVX.6: GMV X
+263 cards = 121 outdoor / 60 indoor / 44 status / 38 debugging; `AlreadyRepaired` 83, `DetailedProcedureAvailable` 82, `TableOnlySafe` 92,
 `ManualSectionNeedsReview` 6, `Conflict` 0, `Unclassified` 0. GMV X is not closed.
 
 ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use
