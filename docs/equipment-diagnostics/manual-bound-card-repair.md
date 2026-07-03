@@ -1,5 +1,10 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.4 repairs the GMV X outdoor E/F detailed batch 1: `E1`, `E2`, `E3`, `E4`, `Ed`, `F0`, `F1`, `F3`,
+`F5`, `F6`, `F7`, and `F8`. The batch uses the GMV X manual pressure/temperature protection procedures, outdoor
+main-board checks, high/low-pressure sensor checks, and compressor-specific discharge-temperature sensor procedures.
+GMV X is still not closed.
+
 ED-24GMVX.3 repairs the first GMV X outdoor detailed batch: `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`,
 `b9`, `bA`, `bd`, `bJ`, and `bn`. The sensor cards use the GMV X manual AD-value / 30-second detection condition,
 sensor contact, sensor, and detection-circuit/main-board checks. `bJ` keeps the high/low pressure sensor reverse
@@ -21,15 +26,15 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.3 inventory snapshot:
+Current ED-24GMVX.4 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
-| outdoor | 13 | 60 | 48 | 0 | 121 |
+| outdoor | 25 | 48 | 48 | 0 | 121 |
 | indoor | 1 | 32 | 21 | 6 | 60 |
 | status | 29 | 0 | 15 | 0 | 44 |
 | debugging | 3 | 27 | 8 | 0 | 38 |
-| **Total** | **46** | **119** | **92** | **6** | **263** |
+| **Total** | **58** | **107** | **92** | **6** | **263** |
 
 Conflict count is 0 and Unclassified count is 0. The six `ManualSectionNeedsReview` rows are exactly `d5`, `d8`,
 `dE`, `L2`, `L6`, and `LH`. Remaining visible-text audit flags belong to unrepaired GMV X detailed/table/manual-review

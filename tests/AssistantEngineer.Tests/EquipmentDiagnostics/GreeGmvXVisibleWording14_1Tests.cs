@@ -121,7 +121,7 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
     [InlineData("Gree GMV X E0", "неисправность наружного блока")]
     [InlineData("Gree X E0", "неисправность наружного блока")]
     [InlineData("Gree X series E0", "неисправность наружного блока")]
-    [InlineData("Gree GMV X F5", "неисправность компрессора")]
+    [InlineData("Gree GMV X F5", "температуры нагнетания компрессора 1")]
     [InlineData("Gree GMV X d9", "неисправность управления")]
     [InlineData("Gree GMV X UE", "сообщение наладки холодильного контура")]
     [InlineData("Gree GMV X qP", "настройка региона экспорта")]

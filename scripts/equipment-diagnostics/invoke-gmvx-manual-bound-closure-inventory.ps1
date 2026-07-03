@@ -66,7 +66,9 @@ $statusOrPromptCodes = @(
     "UC"
 )
 $repairedDetailedCodes = @(
-    "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "bA", "bd", "bJ", "bn"
+    "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "bA", "bd", "bJ", "bn",
+    "E1", "E2", "E3", "E4", "Ed",
+    "F0", "F1", "F3", "F5", "F6", "F7", "F8"
 )
 $manualSectionNeedsReviewCodes = @("d5", "d8", "dE", "L2", "L6", "LH")
 

@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24GMVX.3 CLOSED / outdoor sensor batch PASS
+ED-24GMVX.4 CLOSED / outdoor E/F batch 1 PASS
 
 ## Current branch
 
@@ -10,7 +10,7 @@ master
 
 ## Last completed work
 
-GMV X outdoor sensor diagnostics were repaired for the 13 ED-24GMVX.3 cards. GMV6 remains CLOSED / production PASS.
+GMV X outdoor E/F diagnostics batch 1 was repaired for the 12 ED-24GMVX.4 cards. GMV6 remains CLOSED / production PASS.
 
 Final GMV6 closure / production commits:
 
@@ -44,13 +44,13 @@ The smoke confirmed:
 
 ## Current blocker
 
-None for ED-24GMVX.3.
+None for ED-24GMVX.4.
 
 ## Important decisions
 
 - GMV6 is now considered CLOSED after full local validation, archive review, production deploy, and Telegram smoke.
 - GMV6 remains CLOSED / production PASS and is not part of the GMV X inventory stage.
-- GMV X is NOT CLOSED. ED-24GMVX.3 repairs the first outdoor sensor detailed batch only.
+- GMV X is NOT CLOSED. ED-24GMVX.4 repairs outdoor E/F detailed batch 1 only.
 - sourceNote remains non-rendered by Telegram; visible Telegram output uses card title, summary, causes, check steps, recommended action, and safety text.
 - Telegram formatter now prefers localized card CheckSteps; CompactChecks is only a fallback when a card has no check steps.
 - db keeps its existing package-compatible metadata boundary, but visible text and guards keep it as debugging/status wording rather than a normal fault.
@@ -73,6 +73,7 @@ Key recent areas:
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXManualBoundInventoryTests.cs
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXStatusPromptRepairTests.cs
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorSensorRepairTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorEFRepairTests.cs
 
 ## Validation status
 
@@ -86,15 +87,15 @@ Local final validation after ED-24SRC.16a:
 - Branch readiness: PASS, 0 blockers
 - Runtime counts unchanged: Gree 1296; GMV6 263 = 121 outdoor / 60 indoor / 44 status / 38 debugging
 
-ED-24GMVX.3 inventory snapshot:
+ED-24GMVX.4 inventory snapshot:
 
 - GMV X total: 263
 - GMV X outdoor: 121
 - GMV X indoor: 60
 - GMV X status: 44
 - GMV X debugging: 38
-- AlreadyRepaired: 46
-- DetailedProcedureAvailable: 119
+- AlreadyRepaired: 58
+- DetailedProcedureAvailable: 107
 - StatusOrPrompt: 0
 - TableOnlySafe: 92
 - ManualSectionNeedsReview: 6
@@ -102,22 +103,22 @@ ED-24GMVX.3 inventory snapshot:
 - Unclassified: 0
 - GMV X CLOSED: no
 
-Completed in ED-24GMVX.3:
+Completed in ED-24GMVX.4:
 
-- 13 GMV X outdoor sensor cards repaired: `b1`, `b2`, `b3`, `b4`, `b5`, `b6`, `b7`, `b8`, `b9`, `bA`, `bd`, `bJ`, `bn`.
-- `b1`-`bA`, `bd`, and `bn` use the GMV X manual AD-value / 30-second sensor detection flow.
-- `bJ` uses the GMV X manual high/low pressure sensor reverse-connection flow with 4.9-5.1 V input and 0.5-4.5 V output checks.
+- 12 GMV X outdoor E/F batch 1 cards repaired: `E1`, `E2`, `E3`, `E4`, `Ed`, `F0`, `F1`, `F3`, `F5`, `F6`, `F7`, `F8`.
+- `E1`-`E4` use the GMV X manual pressure and compressor discharge-temperature protection procedures.
+- `F5`-`F8` keep the exact compressor 1-4 discharge-temperature sensor meanings.
 - No GMV6, GMV6 HR, GMV Mini, GMV9 Flex, U-Match R32, or ERV B Series cards were changed.
 
-ED-24GMVX.3 local validation:
+ED-24GMVX.4 local validation:
 
 - dotnet restore .\AssistantEngineer.sln: PASS
 - dotnet build .\AssistantEngineer.sln --no-restore: PASS, 6 existing nullable warnings / 0 errors
-- GMV X inventory runner: PASS, 263 rows; AlreadyRepaired 46 / DetailedProcedureAvailable 119 / TableOnlySafe 92 / ManualSectionNeedsReview 6; StatusOrPrompt 0; GMV X CLOSED = no
-- EquipmentDiagnostics filter: PASS, 1153/1153
+- GMV X inventory runner: PASS, 263 rows; AlreadyRepaired 58 / DetailedProcedureAvailable 107 / TableOnlySafe 92 / ManualSectionNeedsReview 6; StatusOrPrompt 0; GMV X CLOSED = no
+- EquipmentDiagnostics filter: PASS, 1157/1157
 - Telegram filter: PASS, 646/646
 - EquipmentDiagnosticTelegramWebhookApiIntegrationTests filter: PASS, 10/10
-- Full suite: PASS, 5177/5177
+- Full suite: PASS, 5181/5181
 - git diff --check: PASS
 
 Final local GMV6 archive review after ED-24SRC.16a:
@@ -145,6 +146,6 @@ Migrations/env/artifacts:
 
 Recommended next stage:
 
-- ED-24GMVX.4 outdoor E/F detailed batch 1, not full GMV X closure.
+- ED-24GMVX.5 outdoor F detailed batch 2, not full GMV X closure.
 
 Do not attempt full GMV X repair in one commit. Keep GMV6 closed and out of scope.
