@@ -1,140 +1,144 @@
-{
-  "id": "gree-gmv-x-outdoor-ph",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "OutdoorUnit",
-  "series": "GMV X",
-  "models": [
-    "GMV-224WM/B-X(P)",
-    "GMV-280WM/B-X(P)",
-    "GMV-335WM/B-X(P)",
-    "GMV-400WM/B-X(P)",
-    "GMV-450WM/B-X(P)",
-    "GMV-504WM/B-X(P)",
-    "GMV-560WM/B-X(P)",
-    "GMV-615WM/B-X(P)",
-    "GMV-680WM/B-X(P)",
-    "GMV-730WM/B-X(P)",
-    "GMV-785WM/B-X(P)",
-    "GMV-850WM/B-X(P)",
-    "GMV-900WM/B-X(P)",
-    "GMV-952WM/B-X(P)",
-    "GMV-1010WM/B-X(P)"
-  ],
-  "code": "PH",
-  "signalType": "Protection",
-  "displaySource": "OutdoorBoard",
-  "systemPart": "Compressor",
-  "severity": "High",
-  "requiresQualifiedService": true,
-  "canCustomerContinueOperation": false,
-  "packageId": "gree-gmv-x-outdoor-fault-protection-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Gree GMV X DC Inverter VRF Units Service Manual",
-  "sourceMeaning": "High-voltage protection of compressor?s drive DC bus bar",
-  "sourceReference": "Chapter 3 Faults / Error Indication / Outdoor PH / PDF pages 75-76 / manual pages 73-74",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-27T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
-        "Код относится к наружному блоку; точную причину проверяют по сервисной процедуре для этой серии."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv-x-outdoor-ph-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV X PH — защита по высокому напряжению шины DC привода компрессора",
-      "summary": "Код PH для Gree GMV X относится к событию: защита по высокому напряжению шины DC привода компрессора. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
-      "safetyNote": "Не выполняйте работы внутри оборудования и не сбрасывайте защитные сообщения многократно без проверки причины.",
-      "checkSteps": [
-        "Подтвердите код PH, серию GMV X и место индикации.",
-        "Передайте код и модель оборудования специалисту сервиса."
-      ],
-      "doNotAdvise": [
-        "Не выполняйте самостоятельный ремонт по одному коду.",
-        "Не меняйте компоненты без диагностики квалифицированным специалистом.",
-        "Не обходите защитные сообщения и не запускайте оборудование принудительно."
-      ],
-      "recommendedAction": "Запишите код PH, модель и условия появления; обратитесь к квалифицированному специалисту по Gree GMV X.",
-      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
-        "Код относится к наружному блоку; точную причину проверяют по сервисной процедуре для этой серии."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv-x-outdoor-ph-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV X PH — защита по высокому напряжению шины DC привода компрессора",
-      "summary": "Код PH для Gree GMV X относится к событию: защита по высокому напряжению шины DC привода компрессора. Проверку выполняют в границах установленной модели и фактических условий работы.",
-      "safetyNote": "Проверки внутри оборудования выполняет квалифицированный специалист с соблюдением сервисной процедуры и мер электробезопасности.",
-      "checkSteps": [
-        "Подтвердите код PH, серию GMV X и место индикации.",
-        "Сверьте модель, место индикации, условия появления и сопутствующие коды.",
-        "Проверьте сопутствующие коды и фактическое состояние системы перед выводом о причине."
-      ],
-      "doNotAdvise": [
-        "Не назначайте замену платы, датчика, компрессора или двигателя только по одному коду.",
-        "Не обходите защитные устройства и не выполняйте запуск в обход защитных сообщений.",
-        "Не выполняйте работы с холодильным контуром без подтвержденной сервисной процедуры."
-      ],
-      "recommendedAction": "Сверьте код PH, модель GMV X, место индикации и сопутствующие сообщения; дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
-      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
-        "Код относится к наружному блоку; точную причину проверяют по сервисной процедуре для этой серии."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv-x-outdoor-ph-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV X PH — защита по высокому напряжению шины DC привода компрессора",
-      "summary": "Код PH для Gree GMV X относится к событию: защита по высокому напряжению шины DC привода компрессора. Проверку выполняют в границах установленной модели и фактических условий работы.",
-      "safetyNote": "Работы с силовыми цепями, холодильным контуром и защитными устройствами выполняют только квалифицированные специалисты по процедуре производителя.",
-      "checkSteps": [
-        "Подтвердите код PH, серию GMV X и место индикации.",
-        "Сверьте модель, место индикации, условия появления и сопутствующие коды.",
-        "Проверьте сопутствующие коды и фактическое состояние системы перед выводом о причине."
-      ],
-      "doNotAdvise": [
-        "Не назначайте замену платы, датчика, компрессора или двигателя только по одному коду.",
-        "Не обходите защитные устройства и не выполняйте запуск в обход защитных сообщений.",
-        "Не выполняйте работы с холодильным контуром без подтвержденной сервисной процедуры."
-      ],
-      "recommendedAction": "Сверьте код PH, модель GMV X, место индикации и сопутствующие сообщения; дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
-      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
-    }
-  ],
-  "sourceReferences": [
-    {
-      "sourceName": "Gree GMV X DC Inverter VRF Units Service Manual",
-      "documentCode": "GC202209-I",
-      "sourceReference": "Chapter 3 Faults / Error Indication / Outdoor PH / PDF pages 75-76 / manual pages 73-74",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv-x-service-manual-2022-09",
-      "packageId": "gree-gmv-x-outdoor-fault-protection-codes",
-      "notes": "GMV X service manual source for ED-24GEC.14."
-    }
-  ]
+﻿{
+    "id":  "gree-gmv-x-outdoor-ph",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "OutdoorUnit",
+    "series":  "GMV X",
+    "models":  [
+                   "GMV-224WM/B-X(P)",
+                   "GMV-280WM/B-X(P)",
+                   "GMV-335WM/B-X(P)",
+                   "GMV-400WM/B-X(P)",
+                   "GMV-450WM/B-X(P)",
+                   "GMV-504WM/B-X(P)",
+                   "GMV-560WM/B-X(P)",
+                   "GMV-615WM/B-X(P)",
+                   "GMV-680WM/B-X(P)",
+                   "GMV-730WM/B-X(P)",
+                   "GMV-785WM/B-X(P)",
+                   "GMV-850WM/B-X(P)",
+                   "GMV-900WM/B-X(P)",
+                   "GMV-952WM/B-X(P)",
+                   "GMV-1010WM/B-X(P)"
+               ],
+    "code":  "PH",
+    "signalType":  "Protection",
+    "displaySource":  "OutdoorBoard",
+    "systemPart":  "Compressor",
+    "severity":  "High",
+    "requiresQualifiedService":  true,
+    "canCustomerContinueOperation":  false,
+    "packageId":  "gree-gmv-x-outdoor-fault-protection-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Gree GMV X DC Inverter VRF Units Service Manual",
+    "sourceMeaning":  "Over voltage protection for DC bus of compressor drive",
+    "sourceReference":  "Chapter 3 Faults / 2 Troubleshooting / 2.160 PH Over Voltage Protection for DC Bus of Compressor Drive / PDF page 191 / manual page 189",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-27T00:00:00Z",
+    "updatedAt":  "2026-07-03T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Входное питание блока выше 460 V.",
+                                             "Плата привода компрессора работает ненормально."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-27T00:00:00Z",
+                      "updatedAt":  "2026-07-03T00:00:00Z",
+                      "id":  "gree-gmv-x-outdoor-ph-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV X — PH — защита DC-шины привода компрессора по высокому напряжению",
+                      "summary":  "Код PH означает, что входное питание основной платы превысило 460 V и сработала защита DC-шины привода компрессора.",
+                      "safetyNote":  "Не обходите защиты и не запускайте оборудование принудительно; работы внутри наружного блока выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Измерьте входное питание основной платы наружного блока.",
+                                         "Если напряжение выше 460 V, восстановите нормальное питание 380 V перед повторным запуском.",
+                                         "Если питание находится в норме, проверьте плату привода компрессора.",
+                                         "При подтвержденной неисправности платы установите исправную плату привода компрессора."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не назначайте замену компонентов только по одному коду.",
+                                          "Не обходите защитные сообщения и не запускайте оборудование принудительно.",
+                                          "Не выполняйте работы внутри наружного блока без отключения питания и проверки безопасности."
+                                      ],
+                      "recommendedAction":  "Проверьте входное питание наружного блока, норму 380 V и плату привода компрессора.",
+                      "sourceNote":  "Служебная заметка не выводится пользователю."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Входное питание блока выше 460 V.",
+                                             "Плата привода компрессора работает ненормально."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-27T00:00:00Z",
+                      "updatedAt":  "2026-07-03T00:00:00Z",
+                      "id":  "gree-gmv-x-outdoor-ph-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV X — PH — защита DC-шины привода компрессора по высокому напряжению",
+                      "summary":  "Код PH означает, что входное питание основной платы превысило 460 V и сработала защита DC-шины привода компрессора.",
+                      "safetyNote":  "Не обходите защиты и не запускайте оборудование принудительно; работы внутри наружного блока выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Измерьте входное питание основной платы наружного блока.",
+                                         "Если напряжение выше 460 V, восстановите нормальное питание 380 V перед повторным запуском.",
+                                         "Если питание находится в норме, проверьте плату привода компрессора.",
+                                         "При подтвержденной неисправности платы установите исправную плату привода компрессора."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не назначайте замену компонентов только по одному коду.",
+                                          "Не обходите защитные сообщения и не запускайте оборудование принудительно.",
+                                          "Не выполняйте работы внутри наружного блока без отключения питания и проверки безопасности."
+                                      ],
+                      "recommendedAction":  "Проверьте входное питание наружного блока, норму 380 V и плату привода компрессора.",
+                      "sourceNote":  "Служебная заметка не выводится пользователю."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+                                             "Входное питание блока выше 460 V.",
+                                             "Плата привода компрессора работает ненормально."
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-27T00:00:00Z",
+                      "updatedAt":  "2026-07-03T00:00:00Z",
+                      "id":  "gree-gmv-x-outdoor-ph-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV X — PH — защита DC-шины привода компрессора по высокому напряжению",
+                      "summary":  "Код PH означает, что входное питание основной платы превысило 460 V и сработала защита DC-шины привода компрессора.",
+                      "safetyNote":  "Не обходите защиты и не запускайте оборудование принудительно; работы внутри наружного блока выполняет квалифицированный специалист.",
+                      "checkSteps":  [
+                                         "Измерьте входное питание основной платы наружного блока.",
+                                         "Если напряжение выше 460 V, восстановите нормальное питание 380 V перед повторным запуском.",
+                                         "Если питание находится в норме, проверьте плату привода компрессора.",
+                                         "При подтвержденной неисправности платы установите исправную плату привода компрессора."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не назначайте замену компонентов только по одному коду.",
+                                          "Не обходите защитные сообщения и не запускайте оборудование принудительно.",
+                                          "Не выполняйте работы внутри наружного блока без отключения питания и проверки безопасности."
+                                      ],
+                      "recommendedAction":  "Проверьте входное питание наружного блока, норму 380 V и плату привода компрессора.",
+                      "sourceNote":  "Служебная заметка не выводится пользователю."
+                  }
+              ],
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Gree GMV X DC Inverter VRF Units Service Manual",
+                                 "documentCode":  "GC202209-I",
+                                 "sourceReference":  "Chapter 3 Faults / 2 Troubleshooting / 2.160 PH Over Voltage Protection for DC Bus of Compressor Drive / PDF page 191 / manual page 189",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv-x-service-manual-2022-09",
+                                 "packageId":  "gree-gmv-x-outdoor-fault-protection-codes",
+                                 "notes":  "GMV X service manual source for ED-24GMVX.7."
+                             }
+                         ]
 }

@@ -1,5 +1,10 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.7 repairs the GMV X outdoor J/P detailed batch: `J0`, `J1`, `J2`, `J3`, `J4`, `J5`, `J6`, `J7`,
+`J8`, `J9`, `P0`, `P1`, `P2`, `P3`, `P5`, `P6`, `P7`, `P8`, `P9`, `PC`, `PH`, `PJ`, and `PL`. The batch keeps
+other-module, compressor over-current, four-way valve, pressure-ratio, compressor-drive, IPM, DC-bus, and inverter
+compressor startup meanings from the GMV X manual. GMV X is still not closed.
+
 ED-24GMVX.6 repairs the GMV X outdoor H detailed batch: `H0`, `H1`, `H2`, `H3`, `H5`, `H6`, `H7`, `H8`,
 `H9`, `HC`, `HH`, `HJ`, and `HL`. The batch keeps the fan drive, IPM, inverter fan, current-detection, and
 DC-bus meanings from the GMV X manual and uses the two-digit outdoor LED routing for aggregate fan-drive cards.
@@ -37,15 +42,15 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.6 inventory snapshot:
+Current ED-24GMVX.7 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
-| outdoor | 50 | 23 | 48 | 0 | 121 |
+| outdoor | 73 | 0 | 48 | 0 | 121 |
 | indoor | 1 | 32 | 21 | 6 | 60 |
 | status | 29 | 0 | 15 | 0 | 44 |
 | debugging | 3 | 27 | 8 | 0 | 38 |
-| **Total** | **83** | **82** | **92** | **6** | **263** |
+| **Total** | **106** | **59** | **92** | **6** | **263** |
 
 Conflict count is 0 and Unclassified count is 0. The six `ManualSectionNeedsReview` rows are exactly `d5`, `d8`,
 `dE`, `L2`, `L6`, and `LH`. Remaining visible-text audit flags belong to unrepaired GMV X detailed/table/manual-review
