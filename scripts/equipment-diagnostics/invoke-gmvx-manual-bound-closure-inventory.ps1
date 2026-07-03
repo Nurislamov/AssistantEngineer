@@ -74,7 +74,8 @@ $repairedDetailedCodes = @(
     "P0", "P1", "P2", "P3", "P5", "P6", "P7", "P8", "P9", "PC", "PH", "PJ", "PL",
     "d1", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dL", "dn", "dP",
     "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LU",
-    "o3", "o7", "o8", "o9", "y7", "y8", "yA"
+    "o3", "o7", "o8", "o9", "y7", "y8", "yA",
+    "C0", "C2", "C3", "C4", "C5", "C6", "Cb", "CC", "Cd", "CE", "CF", "CH", "CJ", "CL", "Cn", "CP", "Cy"
 )
 $manualSectionNeedsReviewCodes = @("d5", "d8", "dE", "L2", "L6", "LH")
 
