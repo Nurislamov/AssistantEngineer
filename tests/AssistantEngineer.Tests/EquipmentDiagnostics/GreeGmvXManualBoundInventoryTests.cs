@@ -69,7 +69,11 @@ public sealed class GreeGmvXManualBoundInventoryTests
         "P4", "PA", "PE", "PF", "PP", "PU",
         "dy", "L8", "Lb", "LE", "LJ", "LP",
         "o0", "o1", "o2", "o4", "o5", "o6", "oA", "ob", "oC",
-        "y1", "y2"
+        "y1", "y2",
+        "A9", "AL", "An", "Ay",
+        "n1", "n3", "n5", "nb", "nJ", "nn", "nU",
+        "qA", "qC", "qH", "qP", "qU",
+        "C1", "C7", "CU", "U5", "Ud", "Un", "Uy"
     };
 
     [Fact]
@@ -95,10 +99,10 @@ public sealed class GreeGmvXManualBoundInventoryTests
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "Conflict");
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "Unclassified");
 
-        Assert.Equal(240, classifiedEntries.Count(entry => entry.RepairClass == "AlreadyRepaired"));
+        Assert.Equal(263, classifiedEntries.Count(entry => entry.RepairClass == "AlreadyRepaired"));
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "DetailedProcedureAvailable");
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "StatusOrPrompt");
-        Assert.Equal(23, classifiedEntries.Count(entry => entry.RepairClass == "TableOnlySafe"));
+        Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "TableOnlySafe");
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "ManualSectionNeedsReview");
 
         Assert.Equal(
@@ -110,7 +114,7 @@ public sealed class GreeGmvXManualBoundInventoryTests
 
         Assert.All(new[] { "A0", "A2", "A3", "A4", "AJ", "db", "UC", "b1", "bJ", "bn", "E1", "Ed", "F5", "F9", "FH", "FU", "H0", "H5", "HL", "J0", "J8", "P0", "P9", "PL", "d1", "d2", "dA", "dJ", "dP", "dU", "LL" }, code =>
             Assert.Contains(classifiedEntries, entry => entry.Code == code && entry.RepairClass == "AlreadyRepaired"));
-        Assert.All(new[] { "L1", "U0", "d5", "d8", "dE", "L2", "L6", "LH", "bb", "E0", "FP", "G0", "GJ", "Gy", "H4", "JA", "P4", "PU", "dy", "L8", "Lb", "LE", "LJ", "LP", "o0", "oA", "ob", "oC", "y1", "y2" }, code =>
+        Assert.All(new[] { "L1", "U0", "d5", "d8", "dE", "L2", "L6", "LH", "bb", "E0", "FP", "G0", "GJ", "Gy", "H4", "JA", "P4", "PU", "dy", "L8", "Lb", "LE", "LJ", "LP", "o0", "oA", "ob", "oC", "y1", "y2", "A9", "AL", "An", "Ay", "n1", "nJ", "nU", "qA", "qC", "qH", "qP", "qU", "C1", "C7", "CU", "U5", "Ud", "Un", "Uy" }, code =>
             Assert.Contains(classifiedEntries, entry => entry.Code == code && entry.RepairClass == "AlreadyRepaired"));
     }
 

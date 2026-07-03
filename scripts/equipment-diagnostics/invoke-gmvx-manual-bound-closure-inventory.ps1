@@ -114,7 +114,11 @@ $repairedTableOnlyCodes = @(
     "P4", "PA", "PE", "PF", "PP", "PU",
     "dy", "L8", "Lb", "LE", "LJ", "LP",
     "o0", "o1", "o2", "o4", "o5", "o6", "oA", "ob", "oC",
-    "y1", "y2"
+    "y1", "y2",
+    "A9", "AL", "An", "Ay",
+    "n1", "n3", "n5", "nb", "nJ", "nn", "nU",
+    "qA", "qC", "qH", "qP", "qU",
+    "C1", "C7", "CU", "U5", "Ud", "Un", "Uy"
 )
 
 $detailedProcedureLookup = New-Lookup -Values $detailedProcedureCodes

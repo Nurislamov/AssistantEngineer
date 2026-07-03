@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24GMVX.15 CLOSED / indoor remaining diagnostics PASS
+ED-24GMVX.16 CLOSED / repository PASS
 
 ## Current branch
 
@@ -10,7 +10,8 @@ master
 
 ## Last completed work
 
-GMV X indoor remaining diagnostics were repaired for the 21 ED-24GMVX.15 cards. GMV6 remains CLOSED / production PASS.
+GMV X final status/debugging table-only diagnostics were repaired for the 23 ED-24GMVX.16 cards. GMV X is CLOSED in
+the repository runtime catalog. GMV6 remains CLOSED / production PASS.
 
 Final GMV6 closure / production commits:
 
@@ -44,14 +45,15 @@ The smoke confirmed:
 
 ## Current blocker
 
-None for ED-24GMVX.15.
+None for ED-24GMVX.16.
 
 ## Important decisions
 
 - GMV6 is now considered CLOSED after full local validation, archive review, production deploy, and Telegram smoke.
 - GMV6 remains CLOSED / production PASS and is not part of the GMV X inventory stage.
-- GMV X is NOT CLOSED. ED-24GMVX.15 closes the remaining indoor cards in scope; 23 status/debugging table-only cards remain open.
+- GMV X is CLOSED in the repository runtime catalog after ED-24GMVX.16; production deploy and Telegram smoke remain ED-24GMVX.17.
 - ED-24GMVX.15 discovered that `LL` has its own GMV X troubleshooting section and repaired it as detailed hydro-box / water-flow-switch diagnostics rather than table-only text.
+- ED-24GMVX.16 keeps final status/debugging table-only cards as statuses, settings, service-process indications, or debugging indications; possible causes remain empty and no detailed troubleshooting procedure is invented.
 - sourceNote remains non-rendered by Telegram; visible Telegram output uses card title, summary, causes, check steps, recommended action, and safety text.
 - Telegram formatter now prefers localized card CheckSteps; CompactChecks is only a fallback when a card has no check steps.
 - db keeps its existing package-compatible metadata boundary, but visible text and guards keep it as debugging/status wording rather than a normal fault.
@@ -79,6 +81,8 @@ Key recent areas:
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorHRepairTests.cs
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorJPRepairTests.cs
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXIndoorDetailedBatch1RepairTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXStatusDebuggingTableOnlyRepairTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXFinalClosureTests.cs
 
 ## Validation status
 
@@ -92,39 +96,38 @@ Local final validation after ED-24SRC.16a:
 - Branch readiness: PASS, 0 blockers
 - Runtime counts unchanged: Gree 1296; GMV6 263 = 121 outdoor / 60 indoor / 44 status / 38 debugging
 
-ED-24GMVX.15 inventory snapshot:
+ED-24GMVX.16 inventory snapshot:
 
 - GMV X total: 263
 - GMV X outdoor: 121
 - GMV X indoor: 60
 - GMV X status: 44
 - GMV X debugging: 38
-- AlreadyRepaired: 240
+- AlreadyRepaired: 263
 - DetailedProcedureAvailable: 0
 - StatusOrPrompt: 0
-- TableOnlySafe: 23
+- TableOnlySafe: 0
 - ManualSectionNeedsReview: 0
 - Conflict: 0
 - Unclassified: 0
-- GMV X CLOSED: no
+- GMV X CLOSED: yes
 
-Completed in ED-24GMVX.15:
+Completed in ED-24GMVX.16:
 
-- Detailed repair: `d2`, `dJ`, `dU`, `LL`.
-- Safe table-only repair: `dy`, `L8`, `Lb`, `LE`, `LJ`, `LP`, `o0`, `o1`, `o2`, `o4`, `o5`, `o6`, `oA`, `ob`, `oC`, `y1`, `y2`.
-- `d2`, `dJ`, `dU`, and `LL` retain their hydro-box / water-loop applicability boundaries from the GMV X troubleshooting sections.
-- The 17 table-only cards retain exact Error Indication meanings with empty causes and safe service handoff.
+- Safe status table-only repair: `A9`, `AL`, `An`, `Ay`, `n1`, `n3`, `n5`, `nb`, `nJ`, `nn`, `nU`, `qA`, `qC`, `qH`, `qP`, `qU`.
+- Safe debugging table-only repair: `C1`, `C7`, `CU`, `U5`, `Ud`, `Un`, `Uy`.
+- The 23 final cards retain exact Error Indication meanings with empty causes and safe service handoff.
 - No GMV6, GMV6 HR, GMV Mini, GMV9 Flex, U-Match R32, or ERV B Series cards were changed.
 
-ED-24GMVX.15 local validation:
+ED-24GMVX.16 local validation:
 
 - dotnet restore .\AssistantEngineer.sln: PASS
-- dotnet build .\AssistantEngineer.sln --no-restore: PASS, 0 warnings / 0 errors
-- GMV X inventory runner: PASS, 263 rows; AlreadyRepaired 240 / DetailedProcedureAvailable 0 / TableOnlySafe 23 / ManualSectionNeedsReview 0; StatusOrPrompt 0; GMV X CLOSED = no
-- EquipmentDiagnostics filter: PASS, 1197/1197
+- dotnet build .\AssistantEngineer.sln --no-restore: PASS, 6 existing nullable warnings / 0 errors
+- GMV X inventory runner: PASS, 263 rows; AlreadyRepaired 263 / DetailedProcedureAvailable 0 / TableOnlySafe 0 / ManualSectionNeedsReview 0; StatusOrPrompt 0; GMV X CLOSED = yes
+- EquipmentDiagnostics filter: PASS, 1205/1205
 - Telegram filter: PASS, 646/646
 - Webhook filter: PASS, 10/10
-- Full suite: PASS, 5221/5221
+- Full suite: PASS, 5229/5229
 - git diff --check: PASS
 
 Final local GMV6 archive review after ED-24SRC.16a:
@@ -147,11 +150,12 @@ Migrations/env/artifacts:
 - Migrations: none
 - Env changes: none
 - PDF/manual binaries committed: none
+- Production deploy in ED-24GMVX.16: not performed
 
 ## Next step
 
 Recommended next stage:
 
-- ED-24GMVX.16 Repair GMV X status/debugging table-only diagnostics and close GMV X.
+- ED-24GMVX.17 production deploy from master and Telegram smoke for representative GMV X detailed, table/status, indoor, status, and debugging samples.
 
-Do not attempt full GMV X repair in one commit. Keep GMV6 closed and out of scope.
+Keep GMV6 closed and out of scope.

@@ -1,5 +1,12 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.16 closes the final GMV X status/debugging table-only diagnostics: `A9`, `AL`, `An`, `Ay`, `n1`,
+`n3`, `n5`, `nb`, `nJ`, `nn`, `nU`, `qA`, `qC`, `qH`, `qP`, `qU`, `C1`, `C7`, `CU`, `U5`, `Ud`, `Un`,
+and `Uy`. These cards preserve only their Error Indication meanings as status, setting, service-process, or
+debugging indications; possible causes remain empty and no detailed troubleshooting procedure is invented.
+GMV X is now CLOSED in the repository scope. Production deployment and Telegram smoke remain a separate
+ED-24GMVX.17 stage.
+
 ED-24GMVX.15 closes GMV X indoor remaining diagnostics for 21 cards. Detailed manual-bound diagnostics were added for
 `d2`, `dJ`, `dU`, and the discovered `LL` water-flow-switch section; all four stay bounded to the hydro-box / water
 loop applicability in the GMV X service manual. Safe indication-only text was added for `dy`, `L8`, `Lb`, `LE`, `LJ`,
@@ -93,18 +100,18 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.15 inventory snapshot:
+Current ED-24GMVX.16 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
 | outdoor | 121 | 0 | 0 | 0 | 121 |
 | indoor | 60 | 0 | 0 | 0 | 60 |
-| status | 29 | 0 | 15 | 0 | 44 |
-| debugging | 30 | 0 | 8 | 0 | 38 |
-| **Total** | **240** | **0** | **23** | **0** | **263** |
+| status | 44 | 0 | 0 | 0 | 44 |
+| debugging | 38 | 0 | 0 | 0 | 38 |
+| **Total** | **263** | **0** | **0** | **0** | **263** |
 
-Conflict count is 0, Unclassified count is 0, and `ManualSectionNeedsReview` is 0. Remaining visible-text audit flags
-belong to the 23 remaining status/debugging table-only GMV X cards and are reported until their controlled batch runs.
+Conflict count is 0, Unclassified count is 0, `ManualSectionNeedsReview` is 0, and `StatusOrPrompt` is 0.
+GMV X CLOSED = yes for the repository runtime catalog after ED-24GMVX.16.
 
 ED-24SRC.16a removes the last visible wording leftovers before production review: E2 refers to the permitted
 temperature characteristic instead of a “temperature table”, and all 43 generic GMV6 status cards now state

@@ -46,7 +46,12 @@ troubleshooting sections with hydro-box / water-loop applicability, while `dy`, 
 `o1`, `o2`, `o4`, `o5`, `o6`, `oA`, `ob`, `oC`, `y1`, and `y2` use safe indication-only text without invented
 causes. Snapshot after ED-24GMVX.15: `AlreadyRepaired` 240, `DetailedProcedureAvailable` 0, `TableOnlySafe` 23,
 `ManualSectionNeedsReview` 0, `Conflict` 0, `Unclassified` 0.
-GMV X is not closed.
+ED-24GMVX.16 closes the final status/debugging table-only diagnostics (`A9`, `AL`, `An`, `Ay`, `n1`, `n3`, `n5`,
+`nb`, `nJ`, `nn`, `nU`, `qA`, `qC`, `qH`, `qP`, `qU`, `C1`, `C7`, `CU`, `U5`, `Ud`, `Un`, `Uy`) as safe
+status, setting, service-process, or debugging indications. Snapshot after ED-24GMVX.16: `AlreadyRepaired` 263,
+`DetailedProcedureAvailable` 0, `TableOnlySafe` 0, `ManualSectionNeedsReview` 0, `StatusOrPrompt` 0, `Conflict` 0,
+`Unclassified` 0. GMV X is CLOSED in the repository runtime catalog; production deployment and Telegram smoke are
+deferred to ED-24GMVX.17.
 
 ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use
 the GMV6 series name, internal table-only `sourceNote` wording is replaced with a neutral handoff, and formatter tests
@@ -152,7 +157,7 @@ binaries or runtime Telegram bindings.
 | `gree-gmv-idu-service-manual` | `SERVICE_MANUAL_GMV_IDU.pdf` | PartiallyImported | PartialDiagnosticScopeImported | 38 existing GMV6 indoor entries received `sourceReferences[]`; 19 detailed procedure codes reviewed; 0 new entries |
 | `gree-gmv-mini-service-manual` | `SERVICE_MANUAL_GMV_MINI.pdf` | PartiallyImported | PartialDiagnosticScopeImported | ED-24H.2 selected source only; 9 new entries, 31 `sourceReferences[]`, 90 NeedsReview contexts |
 | `gree-gmv-mini-service-manual-copy-1` | `SERVICE_MANUAL_GMV_MINI (1).pdf` | NeedsReview | NeedsManualReview | Duplicate/revision candidate; not used by ED-24H.2 |
-| `gree-gmv-x-service-manual-2022-09` | `Gree GMV X Service Manual EN.pdf` | Imported | DiagnosticScopeImported | ED-24GMVX.1 inventory-only closure map; GMV X is not closed |
+| `gree-gmv-x-service-manual-2022-09` | `Gree GMV X Service Manual EN.pdf` | Imported | DiagnosticScopeImported | ED-24GMVX.16 closes GMV X repository runtime diagnostics; production smoke pending |
 | `gree-gmv-x-owner-manual` | `Owner's Manual GMV X DC Inverter VRF Units.pdf` | New | DiagnosticSectionsUnknown | Owner-level source; usefulness not yet established |
 | `gree-gmv-x-technical-sales-guide` | `Technical Sales Guide GMV X DC Inverter VRF Units.pdf` | New | DiagnosticSectionsUnknown | Do not treat as troubleshooting authority without analysis |
 | `gree-gmv6-owner-manual` | `Owners-Manual-for GMV6.pdf` | New | DiagnosticSectionsUnknown | Separate source; do not merge with service-manual meanings |
