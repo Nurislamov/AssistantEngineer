@@ -1,5 +1,10 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.11 repairs the GMV X debugging/commissioning U batch: `U0`, `U2`, `U3`, `U4`, `U6`, `U8`, `U9`,
+`UE`, `UF`, and `UL`. The cards retain warm-up, capacity DIP/jumper, phase-sequence, refrigerant-loss, commissioning
+valve prompt, indoor/outdoor pipe, automatic charging, mode-exchanger compatibility, and emergency-operation DIP
+meanings without presenting every service-process code as a standalone user fault. GMV X is still not closed.
+
 ED-24GMVX.10 repairs the GMV X debugging/commissioning C batch: `C0`, `C2`, `C3`, `C4`, `C5`, `C6`, `Cb`,
 `CC`, `Cd`, `CE`, `CF`, `CH`, `CJ`, `CL`, `Cn`, `CP`, and `Cy`. Visible text identifies these as commissioning,
 debugging, or service-process diagnostics and preserves the exact communication, module-count, capacity-ratio,
@@ -58,15 +63,15 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.10 inventory snapshot:
+Current ED-24GMVX.11 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
 | outdoor | 73 | 0 | 48 | 0 | 121 |
 | indoor | 33 | 0 | 21 | 6 | 60 |
 | status | 29 | 0 | 15 | 0 | 44 |
-| debugging | 20 | 10 | 8 | 0 | 38 |
-| **Total** | **155** | **10** | **92** | **6** | **263** |
+| debugging | 30 | 0 | 8 | 0 | 38 |
+| **Total** | **165** | **0** | **92** | **6** | **263** |
 
 Conflict count is 0 and Unclassified count is 0. The six `ManualSectionNeedsReview` rows are exactly `d5`, `d8`,
 `dE`, `L2`, `L6`, and `LH`. Remaining visible-text audit flags belong to unrepaired GMV X detailed/table/manual-review

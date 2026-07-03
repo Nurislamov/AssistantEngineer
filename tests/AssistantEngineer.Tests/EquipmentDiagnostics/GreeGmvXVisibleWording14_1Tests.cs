@@ -123,7 +123,7 @@ public sealed partial class GreeGmvXVisibleWording14_1Tests
     [InlineData("Gree X series E0", "неисправность наружного блока")]
     [InlineData("Gree GMV X F5", "температуры нагнетания компрессора 1")]
     [InlineData("Gree GMV X d9", "неисправность управления")]
-    [InlineData("Gree GMV X UE", "сообщение наладки холодильного контура")]
+    [InlineData("Gree GMV X UE", "наружная температура вышла за диапазон автоматической заправки")]
     [InlineData("Gree GMV X qP", "настройка региона экспорта")]
     [InlineData("Gree GMV X n2", "предела коэффициента соответствия")]
     public async Task TelegramGmvXSmokeAnswersUseReadableRussianWithoutQuestionMarks(
