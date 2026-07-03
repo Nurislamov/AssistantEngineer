@@ -108,7 +108,10 @@ $manualSectionNeedsReviewCodes = @()
 $repairedTableOnlyCodes = @(
     "bb", "bE", "bF", "bH", "bP", "bU", "E0", "FP",
     "G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9",
-    "GA", "Gb", "GC", "Gd", "GE", "GF", "GH", "GJ", "GL", "Gn", "GP", "GU", "Gy"
+    "GA", "Gb", "GC", "Gd", "GE", "GF", "GH", "GJ", "GL", "Gn", "GP", "GU", "Gy",
+    "H4", "HA", "HE", "HF", "HP", "HU",
+    "JA", "JC", "JE", "JF", "JL",
+    "P4", "PA", "PE", "PF", "PP", "PU"
 )
 
 $detailedProcedureLookup = New-Lookup -Values $detailedProcedureCodes

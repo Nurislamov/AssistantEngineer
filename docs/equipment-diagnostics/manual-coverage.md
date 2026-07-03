@@ -37,7 +37,11 @@ ED-24GMVX.12: GMV X 263 cards = 121 outdoor / 60 indoor / 44 status / 38 debuggi
 ED-24GMVX.13 closes outdoor table-only batch 1 (`bb`, `bE`, `bF`, `bH`, `bP`, `bU`, `E0`, `FP`, and the
 23 selected `G`-group photovoltaic/grid codes) using safe indication-only text without detailed procedures.
 Snapshot after ED-24GMVX.13: `AlreadyRepaired` 202, `DetailedProcedureAvailable` 0, `TableOnlySafe` 61,
-`ManualSectionNeedsReview` 0, `Conflict` 0, `Unclassified` 0. GMV X is not closed.
+`ManualSectionNeedsReview` 0, `Conflict` 0, `Unclassified` 0. ED-24GMVX.14 closes outdoor table-only batch 2
+(`H4`, `HA`, `HE`, `HF`, `HP`, `HU`, `JA`, `JC`, `JE`, `JF`, `JL`, `P4`, `PA`, `PE`, `PF`, `PP`, `PU`)
+with safe indication-only text and no inferred procedures. Snapshot after ED-24GMVX.14: `AlreadyRepaired` 219,
+`DetailedProcedureAvailable` 0, `TableOnlySafe` 44, `ManualSectionNeedsReview` 0, `Conflict` 0, `Unclassified` 0.
+GMV X is not closed.
 
 ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use
 the GMV6 series name, internal table-only `sourceNote` wording is replaced with a neutral handoff, and formatter tests
