@@ -1,5 +1,10 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.13 closes GMV X outdoor table-only batch 1: `bb`, `bE`, `bF`, `bH`, `bP`, `bU`, `E0`, `FP`,
+`G0`, `G1`, `G2`, `G3`, `G4`, `G5`, `G6`, `G7`, `G8`, `G9`, `GA`, `Gb`, `GC`, `Gd`, `GE`, `GF`, `GH`,
+`GJ`, `GL`, `Gn`, `GP`, `GU`, and `Gy`. These cards preserve only their outdoor Error Indication meanings and
+provide a safe service handoff; they do not claim detailed troubleshooting procedures. GMV X is still not closed.
+
 ED-24GMVX.12 resolves the six GMV X manual-section review cards: `d5`, `d8`, `dE`, `L2`, `L6`, and `LH`.
 Five reserved headings use safe no-procedure text without inferred causes. `L6` uses the documented non-fault
 mode-conflict behavior and mode-alignment action. GMV X is still not closed because 92 table-only cards remain.
@@ -77,18 +82,18 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.12 inventory snapshot:
+Current ED-24GMVX.13 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
-| outdoor | 73 | 0 | 48 | 0 | 121 |
+| outdoor | 104 | 0 | 17 | 0 | 121 |
 | indoor | 39 | 0 | 21 | 0 | 60 |
 | status | 29 | 0 | 15 | 0 | 44 |
 | debugging | 30 | 0 | 8 | 0 | 38 |
-| **Total** | **171** | **0** | **92** | **0** | **263** |
+| **Total** | **202** | **0** | **61** | **0** | **263** |
 
 Conflict count is 0, Unclassified count is 0, and `ManualSectionNeedsReview` is 0. Remaining visible-text audit flags
-belong to the 92 table-only GMV X cards and are reported until their controlled batches run.
+belong to the 61 remaining table-only GMV X cards and are reported until their controlled batches run.
 
 ED-24SRC.16a removes the last visible wording leftovers before production review: E2 refers to the permitted
 temperature characteristic instead of a “temperature table”, and all 43 generic GMV6 status cards now state

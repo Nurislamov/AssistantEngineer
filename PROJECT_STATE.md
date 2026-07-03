@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24GMVX.12 CLOSED / manual-section review PASS
+ED-24GMVX.13 CLOSED / table-only outdoor batch 1 PASS
 
 ## Current branch
 
@@ -10,7 +10,7 @@ master
 
 ## Last completed work
 
-GMV X manual-section review was resolved for the six ED-24GMVX.12 cards. GMV6 remains CLOSED / production PASS.
+GMV X outdoor table-only diagnostics batch 1 was repaired for the 31 ED-24GMVX.13 cards. GMV6 remains CLOSED / production PASS.
 
 Final GMV6 closure / production commits:
 
@@ -44,13 +44,13 @@ The smoke confirmed:
 
 ## Current blocker
 
-None for ED-24GMVX.12.
+None for ED-24GMVX.13.
 
 ## Important decisions
 
 - GMV6 is now considered CLOSED after full local validation, archive review, production deploy, and Telegram smoke.
 - GMV6 remains CLOSED / production PASS and is not part of the GMV X inventory stage.
-- GMV X is NOT CLOSED. ED-24GMVX.12 resolves all manual-review cards; 92 table-only cards remain open.
+- GMV X is NOT CLOSED. ED-24GMVX.13 closes outdoor table-only batch 1; 61 table-only cards remain open.
 - sourceNote remains non-rendered by Telegram; visible Telegram output uses card title, summary, causes, check steps, recommended action, and safety text.
 - Telegram formatter now prefers localized card CheckSteps; CompactChecks is only a fallback when a card has no check steps.
 - db keeps its existing package-compatible metadata boundary, but visible text and guards keep it as debugging/status wording rather than a normal fault.
@@ -91,38 +91,37 @@ Local final validation after ED-24SRC.16a:
 - Branch readiness: PASS, 0 blockers
 - Runtime counts unchanged: Gree 1296; GMV6 263 = 121 outdoor / 60 indoor / 44 status / 38 debugging
 
-ED-24GMVX.12 inventory snapshot:
+ED-24GMVX.13 inventory snapshot:
 
 - GMV X total: 263
 - GMV X outdoor: 121
 - GMV X indoor: 60
 - GMV X status: 44
 - GMV X debugging: 38
-- AlreadyRepaired: 171
+- AlreadyRepaired: 202
 - DetailedProcedureAvailable: 0
 - StatusOrPrompt: 0
-- TableOnlySafe: 92
+- TableOnlySafe: 61
 - ManualSectionNeedsReview: 0
 - Conflict: 0
 - Unclassified: 0
 - GMV X CLOSED: no
 
-Completed in ED-24GMVX.12:
+Completed in ED-24GMVX.13:
 
-- Six GMV X manual-section review cards resolved: `d5`, `d8`, `dE`, `L2`, `L6`, `LH`.
-- `d5`, `d8`, `dE`, `L2`, and `LH` are reserved/not-applied headings with no inferred causes or diagnostic flow.
-- `L6` is a non-fault mode-conflict condition with the documented compatible-mode action.
+- 31 GMV X outdoor table-only cards repaired: `bb`, `bE`, `bF`, `bH`, `bP`, `bU`, `E0`, `FP`, `G0`, `G1`, `G2`, `G3`, `G4`, `G5`, `G6`, `G7`, `G8`, `G9`, `GA`, `Gb`, `GC`, `Gd`, `GE`, `GF`, `GH`, `GJ`, `GL`, `Gn`, `GP`, `GU`, `Gy`.
+- The cards retain their exact indication meanings with empty causes and safe service handoff instead of inferred procedures.
 - No GMV6, GMV6 HR, GMV Mini, GMV9 Flex, U-Match R32, or ERV B Series cards were changed.
 
-ED-24GMVX.12 local validation:
+ED-24GMVX.13 local validation:
 
 - dotnet restore .\AssistantEngineer.sln: PASS
 - dotnet build .\AssistantEngineer.sln --no-restore: PASS, 0 warnings / 0 errors
-- GMV X inventory runner: PASS, 263 rows; AlreadyRepaired 171 / DetailedProcedureAvailable 0 / TableOnlySafe 92 / ManualSectionNeedsReview 0; StatusOrPrompt 0; GMV X CLOSED = no
-- EquipmentDiagnostics filter: PASS, 1185/1185
+- GMV X inventory runner: PASS, 263 rows; AlreadyRepaired 202 / DetailedProcedureAvailable 0 / TableOnlySafe 61 / ManualSectionNeedsReview 0; StatusOrPrompt 0; GMV X CLOSED = no
+- EquipmentDiagnostics filter: PASS, 1188/1188
 - Telegram filter: PASS, 646/646
 - Webhook filter: PASS, 10/10
-- Full suite: PASS, 5209/5209
+- Full suite: PASS, 5212/5212
 - git diff --check: PASS
 
 Final local GMV6 archive review after ED-24SRC.16a:
@@ -150,6 +149,6 @@ Migrations/env/artifacts:
 
 Recommended next stage:
 
-- ED-24GMVX.13 repair GMV X table-only diagnostics batch 1.
+- ED-24GMVX.14 repair GMV X table-only outdoor diagnostics batch 2.
 
 Do not attempt full GMV X repair in one commit. Keep GMV6 closed and out of scope.

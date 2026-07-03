@@ -59,6 +59,13 @@ public sealed class GreeGmvXManualBoundInventoryTests
 
     private static readonly HashSet<string> ManualSectionNeedsReviewCodes = new(StringComparer.Ordinal);
 
+    private static readonly HashSet<string> RepairedTableOnlyCodes = new(StringComparer.Ordinal)
+    {
+        "bb", "bE", "bF", "bH", "bP", "bU", "E0", "FP",
+        "G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9",
+        "GA", "Gb", "GC", "Gd", "GE", "GF", "GH", "GJ", "GL", "Gn", "GP", "GU", "Gy"
+    };
+
     [Fact]
     public void GmvXRuntimeCountsMatchManualBoundInventoryScope()
     {
@@ -82,10 +89,10 @@ public sealed class GreeGmvXManualBoundInventoryTests
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "Conflict");
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "Unclassified");
 
-        Assert.Equal(171, classifiedEntries.Count(entry => entry.RepairClass == "AlreadyRepaired"));
+        Assert.Equal(202, classifiedEntries.Count(entry => entry.RepairClass == "AlreadyRepaired"));
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "DetailedProcedureAvailable");
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "StatusOrPrompt");
-        Assert.Equal(92, classifiedEntries.Count(entry => entry.RepairClass == "TableOnlySafe"));
+        Assert.Equal(61, classifiedEntries.Count(entry => entry.RepairClass == "TableOnlySafe"));
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "ManualSectionNeedsReview");
 
         Assert.Equal(
@@ -97,7 +104,7 @@ public sealed class GreeGmvXManualBoundInventoryTests
 
         Assert.All(new[] { "A0", "A2", "A3", "A4", "AJ", "db", "UC", "b1", "bJ", "bn", "E1", "Ed", "F5", "F9", "FH", "FU", "H0", "H5", "HL", "J0", "J8", "P0", "P9", "PL", "d1", "dA", "dP" }, code =>
             Assert.Contains(classifiedEntries, entry => entry.Code == code && entry.RepairClass == "AlreadyRepaired"));
-        Assert.All(new[] { "L1", "U0", "d5", "d8", "dE", "L2", "L6", "LH" }, code =>
+        Assert.All(new[] { "L1", "U0", "d5", "d8", "dE", "L2", "L6", "LH", "bb", "E0", "FP", "G0", "GJ", "Gy" }, code =>
             Assert.Contains(classifiedEntries, entry => entry.Code == code && entry.RepairClass == "AlreadyRepaired"));
     }
 
@@ -156,7 +163,10 @@ public sealed class GreeGmvXManualBoundInventoryTests
 
     private static string Classify(string code)
     {
-        if (StatusOrPromptCodes.Contains(code) || RepairedDetailedCodes.Contains(code) || ResolvedManualReviewCodes.Contains(code))
+        if (StatusOrPromptCodes.Contains(code) ||
+            RepairedDetailedCodes.Contains(code) ||
+            ResolvedManualReviewCodes.Contains(code) ||
+            RepairedTableOnlyCodes.Contains(code))
         {
             return "AlreadyRepaired";
         }

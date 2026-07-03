@@ -105,12 +105,18 @@ $manualReviewResolutions = @{
     }
 }
 $manualSectionNeedsReviewCodes = @()
+$repairedTableOnlyCodes = @(
+    "bb", "bE", "bF", "bH", "bP", "bU", "E0", "FP",
+    "G0", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9",
+    "GA", "Gb", "GC", "Gd", "GE", "GF", "GH", "GJ", "GL", "Gn", "GP", "GU", "Gy"
+)
 
 $detailedProcedureLookup = New-Lookup -Values $detailedProcedureCodes
 $statusOrPromptLookup = New-Lookup -Values $statusOrPromptCodes
 $repairedDetailedLookup = New-Lookup -Values $repairedDetailedCodes
 $manualSectionNeedsReviewLookup = New-Lookup -Values $manualSectionNeedsReviewCodes
 $resolvedManualReviewLookup = New-Lookup -Values @($manualReviewResolutions.Keys)
+$repairedTableOnlyLookup = New-Lookup -Values $repairedTableOnlyCodes
 
 $genericVisibleTemplatePhrases = @(
     (ConvertFrom-Utf8Base64 "0J/QvtC00YLQstC10YDQtNC40YLQtSDQutC+0LQ="),
@@ -362,6 +368,9 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $gmvXRoot -Recurse -Filt
     if ($resolvedManualReviewLookup.ContainsKey($entry.code) -and $visibleTextFlags.Count -eq 0) {
         $repairClass = "AlreadyRepaired"
     }
+    if ($repairedTableOnlyLookup.ContainsKey($entry.code) -and $visibleTextFlags.Count -eq 0) {
+        $repairClass = "AlreadyRepaired"
+    }
     $sourceReferences = @($entry.sourceReferences)
     $sourceReferenceNames = @($sourceReferences | ForEach-Object { $_.sourceName } | Where-Object { $_ } | Sort-Object -Unique)
     $sourceReferenceManualIds = @($sourceReferences | ForEach-Object { $_.manualId } | Where-Object { $_ } | Sort-Object -Unique)
@@ -371,6 +380,9 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $gmvXRoot -Recurse -Filt
 
     if ($null -ne $reviewResolution) {
         $classificationNotes += $reviewResolution.note
+    }
+    elseif ($repairClass -eq "AlreadyRepaired" -and $repairedTableOnlyLookup.ContainsKey($entry.code)) {
+        $classificationNotes += "GMV X table-only visible text has been repaired without promoting a detailed troubleshooting procedure."
     }
     elseif ($repairClass -eq "AlreadyRepaired" -and $preRepairClass -eq "StatusOrPrompt") {
         $classificationNotes += "GMV X status/prompt visible text has been repaired in ED-24GMVX.2."
