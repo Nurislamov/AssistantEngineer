@@ -44,7 +44,8 @@ public sealed class GreeGmvXManualBoundInventoryTests
         "F0", "F1", "F3", "F5", "F6", "F7", "F8", "F9", "FA", "Fb", "FC", "Fd", "FE", "FF", "FH", "FJ", "FL", "Fn", "FU",
         "H0", "H1", "H2", "H3", "H5", "H6", "H7", "H8", "H9", "HC", "HH", "HJ", "HL",
         "J0", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9",
-        "P0", "P1", "P2", "P3", "P5", "P6", "P7", "P8", "P9", "PC", "PH", "PJ", "PL"
+        "P0", "P1", "P2", "P3", "P5", "P6", "P7", "P8", "P9", "PC", "PH", "PJ", "PL",
+        "d1", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dL", "dn", "dP"
     };
 
     private static readonly HashSet<string> ManualSectionNeedsReviewCodes = new(StringComparer.Ordinal)
@@ -75,8 +76,8 @@ public sealed class GreeGmvXManualBoundInventoryTests
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "Conflict");
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "Unclassified");
 
-        Assert.Equal(106, classifiedEntries.Count(entry => entry.RepairClass == "AlreadyRepaired"));
-        Assert.Equal(59, classifiedEntries.Count(entry => entry.RepairClass == "DetailedProcedureAvailable"));
+        Assert.Equal(120, classifiedEntries.Count(entry => entry.RepairClass == "AlreadyRepaired"));
+        Assert.Equal(45, classifiedEntries.Count(entry => entry.RepairClass == "DetailedProcedureAvailable"));
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "StatusOrPrompt");
         Assert.Equal(92, classifiedEntries.Count(entry => entry.RepairClass == "TableOnlySafe"));
         Assert.Equal(6, classifiedEntries.Count(entry => entry.RepairClass == "ManualSectionNeedsReview"));
@@ -88,9 +89,9 @@ public sealed class GreeGmvXManualBoundInventoryTests
                 .Select(entry => entry.Code)
                 .Order(StringComparer.Ordinal));
 
-        Assert.All(new[] { "A0", "A2", "A3", "A4", "AJ", "db", "UC", "b1", "bJ", "bn", "E1", "Ed", "F5", "F9", "FH", "FU", "H0", "H5", "HL", "J0", "J8", "P0", "P9", "PL" }, code =>
+        Assert.All(new[] { "A0", "A2", "A3", "A4", "AJ", "db", "UC", "b1", "bJ", "bn", "E1", "Ed", "F5", "F9", "FH", "FU", "H0", "H5", "HL", "J0", "J8", "P0", "P9", "PL", "d1", "dA", "dP" }, code =>
             Assert.Contains(classifiedEntries, entry => entry.Code == code && entry.RepairClass == "AlreadyRepaired"));
-        Assert.All(new[] { "L1", "d3", "U0" }, code =>
+        Assert.All(new[] { "L1", "U0" }, code =>
             Assert.Contains(classifiedEntries, entry => entry.Code == code && entry.RepairClass == "DetailedProcedureAvailable"));
     }
 
