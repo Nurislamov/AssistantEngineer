@@ -1,140 +1,135 @@
 {
-  "id": "gree-gmv-x-indoor-lh",
-  "manufacturer": "Gree",
-  "equipmentFamily": "VRF",
-  "equipmentType": "IndoorUnit",
-  "series": "GMV X",
-  "models": [
-    "GMV-224WM/B-X(P)",
-    "GMV-280WM/B-X(P)",
-    "GMV-335WM/B-X(P)",
-    "GMV-400WM/B-X(P)",
-    "GMV-450WM/B-X(P)",
-    "GMV-504WM/B-X(P)",
-    "GMV-560WM/B-X(P)",
-    "GMV-615WM/B-X(P)",
-    "GMV-680WM/B-X(P)",
-    "GMV-730WM/B-X(P)",
-    "GMV-785WM/B-X(P)",
-    "GMV-850WM/B-X(P)",
-    "GMV-900WM/B-X(P)",
-    "GMV-952WM/B-X(P)",
-    "GMV-1010WM/B-X(P)"
-  ],
-  "code": "LH",
-  "signalType": "Warning",
-  "displaySource": "IndoorUnit",
-  "systemPart": "Unknown",
-  "severity": "Medium",
-  "requiresQualifiedService": true,
-  "canCustomerContinueOperation": false,
-  "packageId": "gree-gmv-x-indoor-fault-codes",
-  "sourceLanguage": "en",
-  "sourceType": "Manual",
-  "sourceName": "Gree GMV X DC Inverter VRF Units Service Manual",
-  "sourceMeaning": "Alarm due to bad air quality",
-  "sourceReference": "Chapter 3 Faults / Error Indication / Indoor LH / PDF page 74 / manual page 72",
-  "confidence": "High",
-  "verificationStatus": "ManualVerified",
-  "createdAt": "2026-06-27T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z",
-  "texts": [
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
-        "Код относится к внутреннему блоку; точную причину проверяют по сервисной процедуре для этой серии."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv-x-indoor-lh-ru-consumer",
-      "audience": "Consumer",
-      "title": "Gree GMV X LH — предупреждение оборудования",
-      "summary": "Код LH для Gree GMV X относится к событию: предупреждение оборудования. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
-      "safetyNote": "Не выполняйте работы внутри оборудования и не сбрасывайте защитные сообщения многократно без проверки причины.",
-      "checkSteps": [
-        "Подтвердите код LH, серию GMV X и место индикации.",
-        "Передайте код и модель оборудования специалисту сервиса."
-      ],
-      "doNotAdvise": [
-        "Не выполняйте самостоятельный ремонт по одному коду.",
-        "Не меняйте компоненты без диагностики квалифицированным специалистом.",
-        "Не обходите защитные сообщения и не запускайте оборудование принудительно."
-      ],
-      "recommendedAction": "Запишите код LH, модель и условия появления; обратитесь к квалифицированному специалисту по Gree GMV X.",
-      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
-        "Код относится к внутреннему блоку; точную причину проверяют по сервисной процедуре для этой серии."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv-x-indoor-lh-ru-installer",
-      "audience": "Installer",
-      "title": "Gree GMV X LH — предупреждение оборудования",
-      "summary": "Код LH для Gree GMV X относится к событию: предупреждение оборудования. Проверку выполняют в границах установленной модели и фактических условий работы.",
-      "safetyNote": "Проверки внутри оборудования выполняет квалифицированный специалист с соблюдением сервисной процедуры и мер электробезопасности.",
-      "checkSteps": [
-        "Подтвердите код LH, серию GMV X и место индикации.",
-        "Сверьте модель, место индикации, условия появления и сопутствующие коды.",
-        "Проверьте сопутствующие коды и фактическое состояние системы перед выводом о причине."
-      ],
-      "doNotAdvise": [
-        "Не назначайте замену платы, датчика, компрессора или двигателя только по одному коду.",
-        "Не обходите защитные устройства и не выполняйте запуск в обход защитных сообщений.",
-        "Не выполняйте работы с холодильным контуром без подтвержденной сервисной процедуры."
-      ],
-      "recommendedAction": "Сверьте код LH, модель GMV X, место индикации и сопутствующие сообщения; дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
-      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
-    },
-    {
-      "locale": "ru",
-      "possibleCauses": [
-        "Условия появления зависят от модели, режима работы и сопутствующих кодов.",
-        "Код относится к внутреннему блоку; точную причину проверяют по сервисной процедуре для этой серии."
-      ],
-      "isMachineTranslated": false,
-      "isReviewed": true,
-      "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
-      "id": "gree-gmv-x-indoor-lh-ru-engineer",
-      "audience": "Engineer",
-      "title": "Gree GMV X LH — предупреждение оборудования",
-      "summary": "Код LH для Gree GMV X относится к событию: предупреждение оборудования. Проверку выполняют в границах установленной модели и фактических условий работы.",
-      "safetyNote": "Работы с силовыми цепями, холодильным контуром и защитными устройствами выполняют только квалифицированные специалисты по процедуре производителя.",
-      "checkSteps": [
-        "Подтвердите код LH, серию GMV X и место индикации.",
-        "Сверьте модель, место индикации, условия появления и сопутствующие коды.",
-        "Проверьте сопутствующие коды и фактическое состояние системы перед выводом о причине."
-      ],
-      "doNotAdvise": [
-        "Не назначайте замену платы, датчика, компрессора или двигателя только по одному коду.",
-        "Не обходите защитные устройства и не выполняйте запуск в обход защитных сообщений.",
-        "Не выполняйте работы с холодильным контуром без подтвержденной сервисной процедуры."
-      ],
-      "recommendedAction": "Сверьте код LH, модель GMV X, место индикации и сопутствующие сообщения; дальнейшие действия выполняйте по сервисной процедуре для этой серии.",
-      "sourceNote": "Основание: сервисное руководство для этой серии; точная диагностика выполняется по модели, месту индикации и сопутствующим кодам."
-    }
-  ],
-  "sourceReferences": [
-    {
-      "sourceName": "Gree GMV X DC Inverter VRF Units Service Manual",
-      "documentCode": "GC202209-I",
-      "sourceReference": "Chapter 3 Faults / Error Indication / Indoor LH / PDF page 74 / manual page 72",
-      "sourceType": "Manual",
-      "sourceLanguage": "en",
-      "verificationStatus": "ManualVerified",
-      "confidence": "High",
-      "manualId": "gree-gmv-x-service-manual-2022-09",
-      "packageId": "gree-gmv-x-indoor-fault-codes",
-      "notes": "GMV X service manual source for ED-24GEC.14."
-    }
-  ]
+    "id":  "gree-gmv-x-indoor-lh",
+    "manufacturer":  "Gree",
+    "equipmentFamily":  "VRF",
+    "equipmentType":  "IndoorUnit",
+    "series":  "GMV X",
+    "models":  [
+                   "GMV-224WM/B-X(P)",
+                   "GMV-280WM/B-X(P)",
+                   "GMV-335WM/B-X(P)",
+                   "GMV-400WM/B-X(P)",
+                   "GMV-450WM/B-X(P)",
+                   "GMV-504WM/B-X(P)",
+                   "GMV-560WM/B-X(P)",
+                   "GMV-615WM/B-X(P)",
+                   "GMV-680WM/B-X(P)",
+                   "GMV-730WM/B-X(P)",
+                   "GMV-785WM/B-X(P)",
+                   "GMV-850WM/B-X(P)",
+                   "GMV-900WM/B-X(P)",
+                   "GMV-952WM/B-X(P)",
+                   "GMV-1010WM/B-X(P)"
+               ],
+    "code":  "LH",
+    "signalType":  "Warning",
+    "displaySource":  "IndoorUnit",
+    "systemPart":  "Unknown",
+    "severity":  "Medium",
+    "requiresQualifiedService":  true,
+    "canCustomerContinueOperation":  false,
+    "packageId":  "gree-gmv-x-indoor-fault-codes",
+    "sourceLanguage":  "en",
+    "sourceType":  "Manual",
+    "sourceName":  "Gree GMV X DC Inverter VRF Units Service Manual",
+    "sourceMeaning":  "Poor Air Quality Alarm (Reserved Code, Not Yet Applied)",
+    "sourceReference":  "Chapter 3 Faults / 1 Error Indication / Indoor LH / PDF page 74 / manual page 72; 2 Troubleshooting / 2.128 LH Poor Air Quality Alarm (Reserved Code, Not Yet Applied) / PDF page 173 / manual page 171",
+    "confidence":  "High",
+    "verificationStatus":  "ManualVerified",
+    "createdAt":  "2026-06-27T00:00:00Z",
+    "updatedAt":  "2026-07-03T00:00:00Z",
+    "texts":  [
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-27T00:00:00Z",
+                      "updatedAt":  "2026-07-03T00:00:00Z",
+                      "id":  "gree-gmv-x-indoor-lh-ru-consumer",
+                      "audience":  "Consumer",
+                      "title":  "Gree GMV X — LH — зарезервированный код предупреждения о качестве воздуха",
+                      "summary":  "Код LH для Gree GMV X зарезервирован и пока не применяется. Обозначение относится к предупреждению о низком качестве воздуха; отдельная диагностическая процедура не задана.",
+                      "safetyNote":  "Не выполняйте работы внутри блока под напряжением и не обходите защитные функции оборудования.",
+                      "checkSteps":  [
+                                         "Если LH реально отображается, зафиксируйте модель внутреннего блока, место индикации и состояние системы.",
+                                         "Передайте эти сведения квалифицированному специалисту для проверки оборудования по месту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не назначайте замену компонентов только по этому коду.",
+                                          "Не переносите процедуры соседних кодов на это обозначение.",
+                                          "Не запускайте оборудование в обход защит."
+                                      ],
+                      "recommendedAction":  "Зафиксируйте модель, место индикации и состояние системы и передайте сведения квалифицированному специалисту.",
+                      "sourceNote":  "Служебная заметка не выводится пользователю."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-27T00:00:00Z",
+                      "updatedAt":  "2026-07-03T00:00:00Z",
+                      "id":  "gree-gmv-x-indoor-lh-ru-installer",
+                      "audience":  "Installer",
+                      "title":  "Gree GMV X — LH — зарезервированный код предупреждения о качестве воздуха",
+                      "summary":  "Код LH для Gree GMV X зарезервирован и пока не применяется. Обозначение относится к предупреждению о низком качестве воздуха; отдельная диагностическая процедура не задана.",
+                      "safetyNote":  "Не выполняйте работы внутри блока под напряжением и не обходите защитные функции оборудования.",
+                      "checkSteps":  [
+                                         "Если LH реально отображается, зафиксируйте модель внутреннего блока, место индикации и состояние системы.",
+                                         "Передайте эти сведения квалифицированному специалисту для проверки оборудования по месту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не назначайте замену компонентов только по этому коду.",
+                                          "Не переносите процедуры соседних кодов на это обозначение.",
+                                          "Не запускайте оборудование в обход защит."
+                                      ],
+                      "recommendedAction":  "Зафиксируйте модель, место индикации и состояние системы и передайте сведения квалифицированному специалисту.",
+                      "sourceNote":  "Служебная заметка не выводится пользователю."
+                  },
+                  {
+                      "locale":  "ru",
+                      "possibleCauses":  [
+
+                                         ],
+                      "isMachineTranslated":  false,
+                      "isReviewed":  true,
+                      "createdAt":  "2026-06-27T00:00:00Z",
+                      "updatedAt":  "2026-07-03T00:00:00Z",
+                      "id":  "gree-gmv-x-indoor-lh-ru-engineer",
+                      "audience":  "Engineer",
+                      "title":  "Gree GMV X — LH — зарезервированный код предупреждения о качестве воздуха",
+                      "summary":  "Код LH для Gree GMV X зарезервирован и пока не применяется. Обозначение относится к предупреждению о низком качестве воздуха; отдельная диагностическая процедура не задана.",
+                      "safetyNote":  "Не выполняйте работы внутри блока под напряжением и не обходите защитные функции оборудования.",
+                      "checkSteps":  [
+                                         "Если LH реально отображается, зафиксируйте модель внутреннего блока, место индикации и состояние системы.",
+                                         "Передайте эти сведения квалифицированному специалисту для проверки оборудования по месту."
+                                     ],
+                      "doNotAdvise":  [
+                                          "Не назначайте замену компонентов только по этому коду.",
+                                          "Не переносите процедуры соседних кодов на это обозначение.",
+                                          "Не запускайте оборудование в обход защит."
+                                      ],
+                      "recommendedAction":  "Зафиксируйте модель, место индикации и состояние системы и передайте сведения квалифицированному специалисту.",
+                      "sourceNote":  "Служебная заметка не выводится пользователю."
+                  }
+              ],
+    "sourceReferences":  [
+                             {
+                                 "sourceName":  "Gree GMV X DC Inverter VRF Units Service Manual",
+                                 "documentCode":  "GC202209-I",
+                                 "sourceReference":  "Chapter 3 Faults / 1 Error Indication / Indoor LH / PDF page 74 / manual page 72; 2 Troubleshooting / 2.128 LH Poor Air Quality Alarm (Reserved Code, Not Yet Applied) / PDF page 173 / manual page 171",
+                                 "sourceType":  "Manual",
+                                 "sourceLanguage":  "en",
+                                 "verificationStatus":  "ManualVerified",
+                                 "confidence":  "High",
+                                 "manualId":  "gree-gmv-x-service-manual-2022-09",
+                                 "packageId":  "gree-gmv-x-indoor-fault-codes",
+                                 "notes":  "GMV X review resolution for ED-24GMVX.12."
+                             }
+                         ]
 }

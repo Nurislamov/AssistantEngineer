@@ -1,5 +1,19 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.12 resolves the six GMV X manual-section review cards: `d5`, `d8`, `dE`, `L2`, `L6`, and `LH`.
+Five reserved headings use safe no-procedure text without inferred causes. `L6` uses the documented non-fault
+mode-conflict behavior and mode-alignment action. GMV X is still not closed because 92 table-only cards remain.
+
+Internal review dispositions:
+
+- `d5` -> `NotApplicableOrReserved` -> reserved middle-part temperature-sensor heading only.
+- `d8` -> `NotApplicableOrReserved` -> reserved water-temperature-sensor heading only.
+- `dE` -> `NotApplicableOrReserved` -> reserved indoor CO2-sensor heading only.
+- `L2` -> `NotApplicableOrReserved` -> reserved auxiliary-heater protection code, not yet applied.
+- `L6` -> `NonFaultSafe` -> troubleshooting heading is reserved; non-fault troubleshooting defines mode conflict
+  and switching the indoor unit to a mode compatible with the outdoor unit.
+- `LH` -> `NotApplicableOrReserved` -> reserved poor-air-quality warning code, not yet applied.
+
 ED-24GMVX.11 repairs the GMV X debugging/commissioning U batch: `U0`, `U2`, `U3`, `U4`, `U6`, `U8`, `U9`,
 `UE`, `UF`, and `UL`. The cards retain warm-up, capacity DIP/jumper, phase-sequence, refrigerant-loss, commissioning
 valve prompt, indoor/outdoor pipe, automatic charging, mode-exchanger compatibility, and emergency-operation DIP
@@ -63,19 +77,18 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.11 inventory snapshot:
+Current ED-24GMVX.12 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
 | outdoor | 73 | 0 | 48 | 0 | 121 |
-| indoor | 33 | 0 | 21 | 6 | 60 |
+| indoor | 39 | 0 | 21 | 0 | 60 |
 | status | 29 | 0 | 15 | 0 | 44 |
 | debugging | 30 | 0 | 8 | 0 | 38 |
-| **Total** | **165** | **0** | **92** | **6** | **263** |
+| **Total** | **171** | **0** | **92** | **0** | **263** |
 
-Conflict count is 0 and Unclassified count is 0. The six `ManualSectionNeedsReview` rows are exactly `d5`, `d8`,
-`dE`, `L2`, `L6`, and `LH`. Remaining visible-text audit flags belong to unrepaired GMV X detailed/table/manual-review
-classes and are reported only until their controlled batches run.
+Conflict count is 0, Unclassified count is 0, and `ManualSectionNeedsReview` is 0. Remaining visible-text audit flags
+belong to the 92 table-only GMV X cards and are reported until their controlled batches run.
 
 ED-24SRC.16a removes the last visible wording leftovers before production review: E2 refers to the permitted
 temperature characteristic instead of a “temperature table”, and all 43 generic GMV6 status cards now state

@@ -30,9 +30,11 @@ ED-24GMVX.8 repairs indoor detailed batch 1 (`d1`, `d3`, `d4`, `d6`, `d7`, `d9`,
 `LC`, `LF`, `LU`, `o3`, `o7`, `o8`, `o9`, `y7`, `y8`, `yA`). ED-24GMVX.10 repairs debugging/commissioning C
 diagnostics (`C0`, `C2`, `C3`, `C4`, `C5`, `C6`, `Cb`, `CC`, `Cd`, `CE`, `CF`, `CH`, `CJ`, `CL`, `Cn`, `CP`,
 `Cy`). ED-24GMVX.11 repairs debugging/commissioning U diagnostics (`U0`, `U2`, `U3`, `U4`, `U6`, `U8`, `U9`,
-`UE`, `UF`, `UL`). Snapshot after ED-24GMVX.11: GMV X
-263 cards = 121 outdoor / 60 indoor / 44 status / 38 debugging; `AlreadyRepaired` 165, `DetailedProcedureAvailable` 0, `TableOnlySafe` 92,
-`ManualSectionNeedsReview` 6, `Conflict` 0, `Unclassified` 0. GMV X is not closed.
+`UE`, `UF`, `UL`). ED-24GMVX.12 resolves the six manual-section review cards (`d5`, `d8`, `dE`, `L2`, `L6`, `LH`);
+five are reserved/not-applied headings and `L6` is closed as a non-fault mode-conflict condition. Snapshot after
+ED-24GMVX.12: GMV X 263 cards = 121 outdoor / 60 indoor / 44 status / 38 debugging; `AlreadyRepaired` 171,
+`DetailedProcedureAvailable` 0, `TableOnlySafe` 92, `ManualSectionNeedsReview` 0, `Conflict` 0, `Unclassified` 0.
+GMV X is not closed.
 
 ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use
 the GMV6 series name, internal table-only `sourceNote` wording is replaced with a neutral handoff, and formatter tests

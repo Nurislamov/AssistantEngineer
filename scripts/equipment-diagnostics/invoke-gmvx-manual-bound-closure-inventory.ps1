@@ -78,12 +78,39 @@ $repairedDetailedCodes = @(
     "C0", "C2", "C3", "C4", "C5", "C6", "Cb", "CC", "Cd", "CE", "CF", "CH", "CJ", "CL", "Cn", "CP", "Cy",
     "U0", "U2", "U3", "U4", "U6", "U8", "U9", "UE", "UF", "UL"
 )
-$manualSectionNeedsReviewCodes = @("d5", "d8", "dE", "L2", "L6", "LH")
+$manualReviewResolutions = @{
+    "d5" = [pscustomobject]@{
+        disposition = "NotApplicableOrReserved"
+        note = "Reserved heading only; no applicability, causes, or troubleshooting procedure is provided."
+    }
+    "d8" = [pscustomobject]@{
+        disposition = "NotApplicableOrReserved"
+        note = "Reserved heading only; no applicability, causes, or troubleshooting procedure is provided."
+    }
+    "dE" = [pscustomobject]@{
+        disposition = "NotApplicableOrReserved"
+        note = "Reserved heading only; no applicability, causes, or troubleshooting procedure is provided."
+    }
+    "L2" = [pscustomobject]@{
+        disposition = "NotApplicableOrReserved"
+        note = "Reserved code not yet applied; no causes or troubleshooting procedure is provided."
+    }
+    "L6" = [pscustomobject]@{
+        disposition = "NonFaultSafe"
+        note = "Troubleshooting heading is reserved, while Chapter 3 non-fault troubleshooting defines the mode-conflict behavior and safe mode-alignment action."
+    }
+    "LH" = [pscustomobject]@{
+        disposition = "NotApplicableOrReserved"
+        note = "Reserved code not yet applied; no causes or troubleshooting procedure is provided."
+    }
+}
+$manualSectionNeedsReviewCodes = @()
 
 $detailedProcedureLookup = New-Lookup -Values $detailedProcedureCodes
 $statusOrPromptLookup = New-Lookup -Values $statusOrPromptCodes
 $repairedDetailedLookup = New-Lookup -Values $repairedDetailedCodes
 $manualSectionNeedsReviewLookup = New-Lookup -Values $manualSectionNeedsReviewCodes
+$resolvedManualReviewLookup = New-Lookup -Values @($manualReviewResolutions.Keys)
 
 $genericVisibleTemplatePhrases = @(
     (ConvertFrom-Utf8Base64 "0J/QvtC00YLQstC10YDQtNC40YLQtSDQutC+0LQ="),
@@ -332,13 +359,20 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $gmvXRoot -Recurse -Filt
     if ($repairedDetailedLookup.ContainsKey($entry.code) -and $visibleTextFlags.Count -eq 0) {
         $repairClass = "AlreadyRepaired"
     }
+    if ($resolvedManualReviewLookup.ContainsKey($entry.code) -and $visibleTextFlags.Count -eq 0) {
+        $repairClass = "AlreadyRepaired"
+    }
     $sourceReferences = @($entry.sourceReferences)
     $sourceReferenceNames = @($sourceReferences | ForEach-Object { $_.sourceName } | Where-Object { $_ } | Sort-Object -Unique)
     $sourceReferenceManualIds = @($sourceReferences | ForEach-Object { $_.manualId } | Where-Object { $_ } | Sort-Object -Unique)
     $sourceReferenceDocumentCodes = @($sourceReferences | ForEach-Object { $_.documentCode } | Where-Object { $_ } | Sort-Object -Unique)
     $classificationNotes = @()
+    $reviewResolution = $manualReviewResolutions[$entry.code]
 
-    if ($repairClass -eq "AlreadyRepaired" -and $preRepairClass -eq "StatusOrPrompt") {
+    if ($null -ne $reviewResolution) {
+        $classificationNotes += $reviewResolution.note
+    }
+    elseif ($repairClass -eq "AlreadyRepaired" -and $preRepairClass -eq "StatusOrPrompt") {
         $classificationNotes += "GMV X status/prompt visible text has been repaired in ED-24GMVX.2."
     }
     elseif ($repairClass -eq "AlreadyRepaired" -and $preRepairClass -eq "DetailedProcedureAvailable") {
@@ -367,6 +401,7 @@ $entries = foreach ($file in Get-ChildItem -LiteralPath $gmvXRoot -Recurse -Filt
         signalType = $entry.signalType
         textAudiencesPresent = @($texts | ForEach-Object { $_.audience } | Where-Object { $_ } | Sort-Object -Unique)
         repairClass = $repairClass
+        reviewDisposition = if ($null -ne $reviewResolution) { $reviewResolution.disposition } else { "" }
         manualSection = Get-ManualSection -RepairClass $repairClass -Entry $entry
         manualSectionTitle = Get-ManualSectionTitle -RepairClass $repairClass -Entry $entry
         notes = $classificationNotes
@@ -478,6 +513,7 @@ $csvRows = $entries | ForEach-Object {
         signalType = $_.signalType
         textAudiencesPresent = Join-TextValues -Values $_.textAudiencesPresent
         repairClass = $_.repairClass
+        reviewDisposition = $_.reviewDisposition
         manualSection = $_.manualSection
         manualSectionTitle = $_.manualSectionTitle
         notes = Join-TextValues -Values $_.notes
