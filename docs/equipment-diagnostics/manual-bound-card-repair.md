@@ -1,5 +1,11 @@
 # ED-24SRC manual-bound Gree diagnostic card repair
 
+ED-24GMVX.15 closes GMV X indoor remaining diagnostics for 21 cards. Detailed manual-bound diagnostics were added for
+`d2`, `dJ`, `dU`, and the discovered `LL` water-flow-switch section; all four stay bounded to the hydro-box / water
+loop applicability in the GMV X service manual. Safe indication-only text was added for `dy`, `L8`, `Lb`, `LE`, `LJ`,
+`LP`, `o0`, `o1`, `o2`, `o4`, `o5`, `o6`, `oA`, `ob`, `oC`, `y1`, and `y2` without invented causes or detailed
+procedure claims. GMV X is still not closed; the remaining open class is status/debugging table-only cards.
+
 ED-24GMVX.14 closes GMV X outdoor table-only batch 2: `H4`, `HA`, `HE`, `HF`, `HP`, `HU`, `JA`, `JC`, `JE`,
 `JF`, `JL`, `P4`, `PA`, `PE`, `PF`, `PP`, and `PU`. These cards retain their exact fan-drive, pressure,
 oil-return, water-flow, and compressor-drive indication meanings with empty causes and safe service handoff.
@@ -87,18 +93,18 @@ Ignored outputs:
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.json`
 - `artifacts/verification/equipment-diagnostics/gmvx-manual-bound-closure-inventory.csv`
 
-Current ED-24GMVX.14 inventory snapshot:
+Current ED-24GMVX.15 inventory snapshot:
 
 | Category | AlreadyRepaired | DetailedProcedureAvailable | TableOnlySafe | ManualSectionNeedsReview | Total |
 |---|---:|---:|---:|---:|---:|
 | outdoor | 121 | 0 | 0 | 0 | 121 |
-| indoor | 39 | 0 | 21 | 0 | 60 |
+| indoor | 60 | 0 | 0 | 0 | 60 |
 | status | 29 | 0 | 15 | 0 | 44 |
 | debugging | 30 | 0 | 8 | 0 | 38 |
-| **Total** | **219** | **0** | **44** | **0** | **263** |
+| **Total** | **240** | **0** | **23** | **0** | **263** |
 
 Conflict count is 0, Unclassified count is 0, and `ManualSectionNeedsReview` is 0. Remaining visible-text audit flags
-belong to the 44 remaining non-outdoor table-only GMV X cards and are reported until their controlled batches run.
+belong to the 23 remaining status/debugging table-only GMV X cards and are reported until their controlled batch runs.
 
 ED-24SRC.16a removes the last visible wording leftovers before production review: E2 refers to the permitted
 temperature characteristic instead of a “temperature table”, and all 43 generic GMV6 status cards now state

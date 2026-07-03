@@ -52,8 +52,8 @@ $detailedProcedureCodes = @(
     "H0", "H1", "H2", "H3", "H5", "H6", "H7", "H8", "H9", "HC", "HH", "HJ", "HL",
     "J0", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9",
     "P0", "P1", "P2", "P3", "P5", "P6", "P7", "P8", "P9", "PC", "PH", "PJ", "PL",
-    "d1", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dL", "dn", "dP",
-    "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LU",
+    "d1", "d2", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dJ", "dL", "dn", "dP", "dU",
+    "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LL", "LU",
     "o3", "o7", "o8", "o9", "y7", "y8", "yA",
     "C0", "C2", "C3", "C4", "C5", "C6", "Cb", "CC", "Cd", "CE", "CF", "CH", "CJ", "CL", "Cn", "CP", "Cy",
     "U0", "U2", "U3", "U4", "U6", "U8", "U9", "UE", "UF", "UL"
@@ -72,8 +72,8 @@ $repairedDetailedCodes = @(
     "H0", "H1", "H2", "H3", "H5", "H6", "H7", "H8", "H9", "HC", "HH", "HJ", "HL",
     "J0", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9",
     "P0", "P1", "P2", "P3", "P5", "P6", "P7", "P8", "P9", "PC", "PH", "PJ", "PL",
-    "d1", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dL", "dn", "dP",
-    "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LU",
+    "d1", "d2", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dJ", "dL", "dn", "dP", "dU",
+    "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LL", "LU",
     "o3", "o7", "o8", "o9", "y7", "y8", "yA",
     "C0", "C2", "C3", "C4", "C5", "C6", "Cb", "CC", "Cd", "CE", "CF", "CH", "CJ", "CL", "Cn", "CP", "Cy",
     "U0", "U2", "U3", "U4", "U6", "U8", "U9", "UE", "UF", "UL"
@@ -111,7 +111,10 @@ $repairedTableOnlyCodes = @(
     "GA", "Gb", "GC", "Gd", "GE", "GF", "GH", "GJ", "GL", "Gn", "GP", "GU", "Gy",
     "H4", "HA", "HE", "HF", "HP", "HU",
     "JA", "JC", "JE", "JF", "JL",
-    "P4", "PA", "PE", "PF", "PP", "PU"
+    "P4", "PA", "PE", "PF", "PP", "PU",
+    "dy", "L8", "Lb", "LE", "LJ", "LP",
+    "o0", "o1", "o2", "o4", "o5", "o6", "oA", "ob", "oC",
+    "y1", "y2"
 )
 
 $detailedProcedureLookup = New-Lookup -Values $detailedProcedureCodes

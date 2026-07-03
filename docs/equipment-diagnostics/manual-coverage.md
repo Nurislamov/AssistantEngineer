@@ -41,6 +41,11 @@ Snapshot after ED-24GMVX.13: `AlreadyRepaired` 202, `DetailedProcedureAvailable`
 (`H4`, `HA`, `HE`, `HF`, `HP`, `HU`, `JA`, `JC`, `JE`, `JF`, `JL`, `P4`, `PA`, `PE`, `PF`, `PP`, `PU`)
 with safe indication-only text and no inferred procedures. Snapshot after ED-24GMVX.14: `AlreadyRepaired` 219,
 `DetailedProcedureAvailable` 0, `TableOnlySafe` 44, `ManualSectionNeedsReview` 0, `Conflict` 0, `Unclassified` 0.
+ED-24GMVX.15 closes indoor remaining diagnostics. `d2`, `dJ`, `dU`, and discovered `LL` use their GMV X
+troubleshooting sections with hydro-box / water-loop applicability, while `dy`, `L8`, `Lb`, `LE`, `LJ`, `LP`, `o0`,
+`o1`, `o2`, `o4`, `o5`, `o6`, `oA`, `ob`, `oC`, `y1`, and `y2` use safe indication-only text without invented
+causes. Snapshot after ED-24GMVX.15: `AlreadyRepaired` 240, `DetailedProcedureAvailable` 0, `TableOnlySafe` 23,
+`ManualSectionNeedsReview` 0, `Conflict` 0, `Unclassified` 0.
 GMV X is not closed.
 
 ED-24SRC.10c applies the same presentation boundary across all 263 GMV6 runtime cards: non-grouped visible titles use

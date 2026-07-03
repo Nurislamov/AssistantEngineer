@@ -21,8 +21,8 @@ public sealed class GreeGmvXManualBoundInventoryTests
         "H0", "H1", "H2", "H3", "H5", "H6", "H7", "H8", "H9", "HC", "HH", "HJ", "HL",
         "J0", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9",
         "P0", "P1", "P2", "P3", "P5", "P6", "P7", "P8", "P9", "PC", "PH", "PJ", "PL",
-        "d1", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dL", "dn", "dP",
-        "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LU",
+        "d1", "d2", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dJ", "dL", "dn", "dP", "dU",
+        "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LL", "LU",
         "o3", "o7", "o8", "o9", "y7", "y8", "yA",
         "C0", "C2", "C3", "C4", "C5", "C6", "Cb", "CC", "Cd", "CE", "CF", "CH", "CJ", "CL", "Cn", "CP", "Cy",
         "U0", "U2", "U3", "U4", "U6", "U8", "U9", "UE", "UF", "UL"
@@ -45,8 +45,8 @@ public sealed class GreeGmvXManualBoundInventoryTests
         "H0", "H1", "H2", "H3", "H5", "H6", "H7", "H8", "H9", "HC", "HH", "HJ", "HL",
         "J0", "J1", "J2", "J3", "J4", "J5", "J6", "J7", "J8", "J9",
         "P0", "P1", "P2", "P3", "P5", "P6", "P7", "P8", "P9", "PC", "PH", "PJ", "PL",
-        "d1", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dL", "dn", "dP",
-        "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LU",
+        "d1", "d2", "d3", "d4", "d6", "d7", "d9", "dA", "dC", "dd", "dF", "dH", "dJ", "dL", "dn", "dP", "dU",
+        "L0", "L1", "L3", "L4", "L5", "L7", "L9", "LA", "LC", "LF", "LL", "LU",
         "o3", "o7", "o8", "o9", "y7", "y8", "yA",
         "C0", "C2", "C3", "C4", "C5", "C6", "Cb", "CC", "Cd", "CE", "CF", "CH", "CJ", "CL", "Cn", "CP", "Cy",
         "U0", "U2", "U3", "U4", "U6", "U8", "U9", "UE", "UF", "UL"
@@ -66,7 +66,10 @@ public sealed class GreeGmvXManualBoundInventoryTests
         "GA", "Gb", "GC", "Gd", "GE", "GF", "GH", "GJ", "GL", "Gn", "GP", "GU", "Gy",
         "H4", "HA", "HE", "HF", "HP", "HU",
         "JA", "JC", "JE", "JF", "JL",
-        "P4", "PA", "PE", "PF", "PP", "PU"
+        "P4", "PA", "PE", "PF", "PP", "PU",
+        "dy", "L8", "Lb", "LE", "LJ", "LP",
+        "o0", "o1", "o2", "o4", "o5", "o6", "oA", "ob", "oC",
+        "y1", "y2"
     };
 
     [Fact]
@@ -92,10 +95,10 @@ public sealed class GreeGmvXManualBoundInventoryTests
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "Conflict");
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "Unclassified");
 
-        Assert.Equal(219, classifiedEntries.Count(entry => entry.RepairClass == "AlreadyRepaired"));
+        Assert.Equal(240, classifiedEntries.Count(entry => entry.RepairClass == "AlreadyRepaired"));
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "DetailedProcedureAvailable");
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "StatusOrPrompt");
-        Assert.Equal(44, classifiedEntries.Count(entry => entry.RepairClass == "TableOnlySafe"));
+        Assert.Equal(23, classifiedEntries.Count(entry => entry.RepairClass == "TableOnlySafe"));
         Assert.DoesNotContain(classifiedEntries, entry => entry.RepairClass == "ManualSectionNeedsReview");
 
         Assert.Equal(
@@ -105,9 +108,9 @@ public sealed class GreeGmvXManualBoundInventoryTests
                 .Select(entry => entry.Code)
                 .Order(StringComparer.Ordinal));
 
-        Assert.All(new[] { "A0", "A2", "A3", "A4", "AJ", "db", "UC", "b1", "bJ", "bn", "E1", "Ed", "F5", "F9", "FH", "FU", "H0", "H5", "HL", "J0", "J8", "P0", "P9", "PL", "d1", "dA", "dP" }, code =>
+        Assert.All(new[] { "A0", "A2", "A3", "A4", "AJ", "db", "UC", "b1", "bJ", "bn", "E1", "Ed", "F5", "F9", "FH", "FU", "H0", "H5", "HL", "J0", "J8", "P0", "P9", "PL", "d1", "d2", "dA", "dJ", "dP", "dU", "LL" }, code =>
             Assert.Contains(classifiedEntries, entry => entry.Code == code && entry.RepairClass == "AlreadyRepaired"));
-        Assert.All(new[] { "L1", "U0", "d5", "d8", "dE", "L2", "L6", "LH", "bb", "E0", "FP", "G0", "GJ", "Gy", "H4", "JA", "P4", "PU" }, code =>
+        Assert.All(new[] { "L1", "U0", "d5", "d8", "dE", "L2", "L6", "LH", "bb", "E0", "FP", "G0", "GJ", "Gy", "H4", "JA", "P4", "PU", "dy", "L8", "Lb", "LE", "LJ", "LP", "o0", "oA", "ob", "oC", "y1", "y2" }, code =>
             Assert.Contains(classifiedEntries, entry => entry.Code == code && entry.RepairClass == "AlreadyRepaired"));
     }
 
