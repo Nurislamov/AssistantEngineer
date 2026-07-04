@@ -1,8 +1,8 @@
-# AssistantEngineer Project State
+﻿# AssistantEngineer Project State
 
 ## Current stage
 
-ED-24GMVX.17 CLOSED / production PASS
+ED-24BOT.1 CLOSED / merged to master / CI PASS
 
 ## Current branch
 
@@ -10,67 +10,121 @@ master
 
 ## Last completed work
 
-GMV X is CLOSED / production PASS. ED-24GMVX.16 closed the repository runtime catalog, production deploy/smoke
-validated that runtime commit, and ED-24GMVX.17 fixed the local GMV X review-bundle exporter plus script inventory
-metadata without changing runtime diagnostic cards. GMV6 remains CLOSED / production PASS.
+ED-24BOT.1 completed the first Telegram handler pipeline architecture refactor and was merged to `master`.
 
-Final GMV6 closure / production commits:
+Merge commit:
 
-- 85818153 ED-24SRC.14c Close GMV6 manual-bound diagnostic cards
-- 1b5bb1bd ED-24SRC.15 Show manual-bound GMV6 check steps in Telegram
-- 704a59b ED-24SRC.16 Fix GMV6 review wording findings
-- 759fa53f ED-24SRC.16a Polish final GMV6 visible wording
+- 15fe2919 Merge pull request #48 from Nurislamov/ed-24bot-1-telegram-handler-pipeline
 
-Production Telegram smoke verified these GMV6 codes:
+Included commits:
 
-- Gree GMV6 b1
-- Gree GMV6 E1
-- Gree GMV6 E2
-- Gree GMV6 J8
-- Gree GMV6 P0
-- Gree GMV6 L1
-- Gree GMV6 d3
-- Gree GMV6 db
-- Gree GMV6 AJ
-- Gree GMV6 U0
+- 3c23b76b ED-24BOT.1 Introduce Telegram handler pipeline
+- 3895e232 ED-24BOT.1a Allow Telegram pipeline architecture readiness test
 
-The smoke confirmed:
+Previous base before ED-24BOT.1:
 
-- real card CheckSteps are rendered in Telegram instead of the old generic fallback;
-- GMV6 titles are shown as Gree GMV6, not generic Gree GMV;
-- detailed cards show manual-bound diagnostic checks;
-- table-only/status/debugging cards stay short and safe;
-- AJ is a filter-clean reminder;
-- db and U0 are shown as status/debugging or commissioning information, not standalone faults;
-- no visible manual / source / packageId / table-provenance wording leaks into Telegram.
+- 979ff00f Fix Program composition root migration command boundary
+- 99b8eef0 ED-24GMVX.17 Close production pass and fix review exporter
+
+ED-24BOT.1 changed architecture only:
+
+- `EquipmentDiagnosticTelegramAdapter` was reduced from a large coordinator/God-object into a thin pipeline runner.
+- Added deterministic Telegram update handler pipeline.
+- Extracted guard, callback, and message/diagnostic handling paths.
+- Registered handlers in DI in fixed order.
+- Added architecture tests to protect the pipeline shape.
+- Added a targeted readiness-policy allow-path for the new Telegram pipeline architecture test.
+- Preserved existing Telegram runtime behavior and expected outputs.
+
+No runtime diagnostic content was changed in ED-24BOT.1:
+
+- JSON diagnostic cards: unchanged
+- Diagnostic catalogs: unchanged
+- Manuals/manifests: unchanged
+- Production env: unchanged
+- EF migrations: unchanged
+- Generated ZIP/PDF/manual binaries: unchanged
+
+Previously closed production milestones remain closed:
+
+- GMV6: CLOSED / production PASS
+- GMV X: CLOSED / production PASS
+
+GMV X closure summary:
+
+- ED-24GMVX.16 closed the repository runtime catalog.
+- ED-24GMVX.17 fixed the local GMV X review-bundle exporter plus script inventory metadata without changing runtime diagnostic cards.
+- GMV X production deploy/smoke PASS.
+- Manual GMV X archive review PASS.
+- Runtime card count: 263/263.
+- Outdoor: 121.
+- Indoor: 60.
+- Status: 44.
+- Debugging: 38.
+
+GMV6 closure summary:
+
+- GMV6 remains CLOSED / production PASS.
+- Production Telegram smoke confirmed real card CheckSteps are rendered.
+- GMV6 titles are shown as Gree GMV6, not generic Gree GMV.
+- Table-only/status/debugging cards stay short and safe.
+- No visible manual/source/packageId/table-provenance wording leaks into Telegram.
 
 ## Current blocker
 
-None for ED-24GMVX.17.
+None.
 
 ## Important decisions
 
-- GMV6 is now considered CLOSED after full local validation, archive review, production deploy, and Telegram smoke.
-- GMV6 remains CLOSED / production PASS and is not part of the GMV X inventory stage.
-- GMV X is CLOSED / production PASS after the ED-24GMVX.16 runtime commit was deployed and smoked from master.
-- ED-24GMVX.17 is exporter/documentation/project-state only; it does not require a new production restart because runtime diagnostic cards did not change.
-- ED-24GMVX.15 discovered that `LL` has its own GMV X troubleshooting section and repaired it as detailed hydro-box / water-flow-switch diagnostics rather than table-only text.
-- ED-24GMVX.16 keeps final status/debugging table-only cards as statuses, settings, service-process indications, or debugging indications; possible causes remain empty and no detailed troubleshooting procedure is invented.
-- sourceNote remains non-rendered by Telegram; visible Telegram output uses card title, summary, causes, check steps, recommended action, and safety text.
-- Telegram formatter now prefers localized card CheckSteps; CompactChecks is only a fallback when a card has no check steps.
-- db keeps its existing package-compatible metadata boundary, but visible text and guards keep it as debugging/status wording rather than a normal fault.
-- Production did not require migrations or environment changes.
-- PDF/manual binaries were not committed.
-- Generated GMV X review archives and verification artifacts remain ignored/outside Git.
+- Telegram bot is production-ready for the current scale.
+- Do not keep expanding `EquipmentDiagnosticTelegramAdapter`.
+- Keep the current monolith for now; do not introduce Redis, Webhook migration, Hangfire, or a separate Telegram service prematurely.
+- Use KISS/SOLID inside the current monolith first.
+- Telegram adapter must remain a thin coordinator/pipeline runner.
+- New Telegram feature paths should be implemented through handlers/pipeline structure, not by growing the adapter again.
+- Branch readiness guards are useful and should remain active.
+- ED-24BOT.1a fixed a false positive in readiness policy using an exact allow-path only for `tests/AssistantEngineer.Tests/Architecture/TelegramHandlerPipelineArchitectureTests.cs`.
+- The general forbidden Telegram guard remains active.
+- Do not weaken diagnostic card evidence rules or branch scope guards just to pass CI.
+- Public documentation and UI must not claim `pyBuildingEnergy parity` or exact EnergyPlus parity.
+- Preferred public wording remains:
+  - standard-based
+  - standard-inspired
+  - external reference validation
+  - engineering-core validation
+- For Telegram diagnostic cards, visible user-facing answers must not leak internal provenance wording such as:
+  - Подтвердите код
+  - Сверьте модель
+  - по таблице
+  - основание
+  - руководство
+  - manual
+  - source
+  - packageId
+  - карточка неисправности
+- PDF/manual binaries and generated review archives must not be committed.
 
 ## Files changed recently
 
-Key recent areas:
+ED-24BOT.1 / ED-24BOT.1a key files:
+
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/EquipmentDiagnosticsModuleServiceCollectionExtensions.cs
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/EquipmentDiagnosticTelegramAdapter.cs
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/ITelegramUpdateHandler.cs
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/TelegramUpdateHandlerPipeline.cs
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/Handlers/TelegramUpdateGuardHandler.cs
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/Handlers/TelegramCallbackUpdateHandler.cs
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/Handlers/TelegramMessageUpdateHandler.cs
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Verification/BranchReadinessVerificationService.cs
+- tests/AssistantEngineer.Tests/Architecture/TelegramHandlerPipelineArchitectureTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsManualIntakePipelineTests.cs
+
+Recent GMV X / GMV6 areas kept for context:
 
 - data/equipment-diagnostics/error-knowledge/gree/gmv6/**
 - src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/EquipmentDiagnosticTelegramResponseFormatter.cs
-- 	ests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeManualBoundCardRepairTests.cs
-- 	ests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramFormatterTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeManualBoundCardRepairTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramFormatterTests.cs
 - docs/equipment-diagnostics/manual-bound-card-repair.md
 - docs/equipment-diagnostics/manual-coverage.md
 - docs/equipment-diagnostics/README.md
@@ -92,90 +146,81 @@ Key recent areas:
 
 ## Validation status
 
-Local final validation after ED-24SRC.16a:
+ED-24BOT.1 local validation before commit:
 
-- dotnet build: PASS, 0 warnings / 0 errors
-- EquipmentDiagnostics: PASS, 1141/1141
-- Telegram: PASS, 645/645
-- EquipmentDiagnosticTelegramWebhookApiIntegrationTests: PASS, 10/10
-- Full suite: PASS, 5165/5165
-- Branch readiness: PASS, 0 blockers
-- Runtime counts unchanged: Gree 1296; GMV6 263 = 121 outdoor / 60 indoor / 44 status / 38 debugging
+- Restore: PASS
+- Build: PASS, 0 warnings / 0 errors
+- Telegram focused suite: PASS, 534/534
+- New architecture tests: PASS, 4/4
+- Full backend suite: PASS, 5234/5234
+- Engineering Core V1 verification: PASS
+- git diff --check: PASS
+- JSON/cards/catalogs/manuals/env/migrations: unchanged
 
-ED-24GMVX.16 inventory snapshot:
+ED-24BOT.1a local validation:
 
-- GMV X total: 263
-- GMV X outdoor: 121
-- GMV X indoor: 60
-- GMV X status: 44
-- GMV X debugging: 38
-- AlreadyRepaired: 263
-- DetailedProcedureAvailable: 0
-- StatusOrPrompt: 0
-- TableOnlySafe: 0
-- ManualSectionNeedsReview: 0
-- Conflict: 0
-- Unclassified: 0
-- GMV X CLOSED: yes
+- Branch readiness: PASS, 0 blockers, 0 forbidden
+- Policy tests: PASS, 45/45
+- Restore: PASS
+- Build: PASS, 0 warnings / 0 errors
+- Full backend suite: PASS, 5236/5236
+- Engineering Core V1 verification: PASS
+- git diff --check: PASS
+- Runtime code, cards, JSON catalogs, manuals, manifests, env and migrations: unchanged
 
-Completed in ED-24GMVX.16:
+ED-24BOT.1 PR / CI validation:
 
-- Safe status table-only repair: `A9`, `AL`, `An`, `Ay`, `n1`, `n3`, `n5`, `nb`, `nJ`, `nn`, `nU`, `qA`, `qC`, `qH`, `qP`, `qU`.
-- Safe debugging table-only repair: `C1`, `C7`, `CU`, `U5`, `Ud`, `Un`, `Uy`.
-- The 23 final cards retain exact Error Indication meanings with empty causes and safe service handoff.
-- No GMV6, GMV6 HR, GMV Mini, GMV9 Flex, U-Match R32, or ERV B Series cards were changed.
+- PR: #48
+- GitHub Actions: PASS, 10/10 checks successful
+- EquipmentDiagnostics Branch Readiness: PASS
+- Deployment Dry Run: PASS
+- Engineering Core V1 Contracts: PASS
+- Engineering Core V1 Smoke: PASS
+- Engineering Core V1 verification: PASS
+- Engineering Core V1 Validation matrix: PASS
+- ISO52016 Matrix release-ready: PASS
 
-ED-24GMVX.16 local validation:
+ED-24GMVX.17 validation retained for historical context:
 
-- dotnet restore .\AssistantEngineer.sln: PASS
-- dotnet build .\AssistantEngineer.sln --no-restore: PASS, 6 existing nullable warnings / 0 errors
-- GMV X inventory runner: PASS, 263 rows; AlreadyRepaired 263 / DetailedProcedureAvailable 0 / TableOnlySafe 0 / ManualSectionNeedsReview 0; StatusOrPrompt 0; GMV X CLOSED = yes
+- GMV X review-bundle exporter: PASS
+- 263 cards exported
+- Counts: outdoor 121 / indoor 60 / status 44 / debugging 38
+- Parse check: PASS
+- Count check: PASS
+- Pattern flags: 0
+- Engineering Core V1 verification: PASS
+- Full backend suite: PASS, 5229/5229
+- dotnet restore: PASS
+- dotnet build: PASS, 6 existing nullable warnings / 0 errors
 - EquipmentDiagnostics filter: PASS, 1205/1205
 - Telegram filter: PASS, 646/646
-- Webhook filter: PASS, 10/10
-- Full suite: PASS, 5229/5229
-- git diff --check: PASS
 
-ED-24GMVX.17 local and CI-equivalent validation:
+Production validation retained for historical context:
 
-- GMV X review-bundle exporter: PASS; 263 cards exported, counts outdoor 121 / indoor 60 / status 44 / debugging 38, parse check PASS, count check PASS, pattern flags 0.
-- Exporter ZIP generated outside Git for manual review at `C:\Users\user\Downloads\gmvx-card-review-fixed\gmvx-card-review-20260704-130737-14ca9056.zip`.
-- Engineering Core V1 verification: PASS; exact `scripts\engineering-core\verify-engineering-core-v1.ps1` completed successfully with full backend suite 5229/5229.
-- Additional full backend test run with hang diagnostics: PASS, 5229/5229.
-- dotnet restore .\AssistantEngineer.sln: PASS.
-- dotnet build .\AssistantEngineer.sln --no-restore: PASS, 6 existing nullable warnings / 0 errors.
-- EquipmentDiagnostics filter: PASS, 1205/1205.
-- Telegram filter: PASS, 646/646.
-
-Final local GMV6 archive review after ED-24SRC.16a:
-
-- HEAD: 759fa53fa5ddce02d53f6bad3433b213e374a5ec
-- GMV6 JSON: 263
-- Russian text rows: 789
-- Flagged rows: 0
-- Inventory: gmv6Closed = true
-- RepairClass: AlreadyRepaired = 263
-
-Production validation:
-
-- VPS deployment performed from master for ED-24GMVX.16 runtime commit `14ca9056`.
-- Telegram polling: PASS.
-- Telegram smoke: PASS for the selected detailed, table/status, indoor, status, and debugging GMV X samples.
-- Manual GMV X archive review: PASS, 263/263 cards; outdoor 121 / indoor 60 / status 44 / debugging 38.
-- Known non-blocking UX follow-up: long detailed steps in E1/E2-style cards can still be visually long in Telegram; no diagnostic correctness issue remains.
-
-Migrations/env/artifacts:
-
+- GMV6 production deploy/smoke: PASS
+- GMV X production deploy/smoke: PASS
+- Telegram polling: PASS
+- Manual GMV X archive review: PASS, 263/263 cards
 - Migrations: none
 - Env changes: none
 - PDF/manual binaries committed: none
-- Runtime diagnostic card changes in ED-24GMVX.17: none
 - Generated ZIP/manual-review artifacts committed: none
 
 ## Next step
 
-Recommended next stage:
+Recommended next stages:
 
-- No blocking GMV X closure work remains. Optional next stage: monitor CI after the ED-24GMVX.17 exporter/doc/state commit reaches `origin/master`.
+1. ED-24CI.1 — Stabilize branch readiness diagnostics.
+   - Make readiness failures easier to understand directly from CI console output.
+   - Print blocker code, file, reason, and suggested fix without requiring manual inspection of a huge JSON report.
+   - Keep guards strict; improve diagnostics rather than weakening policy.
 
-Keep GMV6 closed and out of scope.
+2. ED-24GMVFLEX.1 — GMV Flex / GMV9 Flex inventory.
+   - Start in a separate branch.
+   - Inventory first, runtime cards later.
+   - Do not mix Flex/Mini/LCAC in one branch.
+
+3. ED-24GMVMINI.1 — GMV Mini inventory.
+   - Separate branch after Flex inventory or after CI diagnostics stabilization.
+
+Keep GMV6 and GMV X closed and out of scope unless a production regression appears.
