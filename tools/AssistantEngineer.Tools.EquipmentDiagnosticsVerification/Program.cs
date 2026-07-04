@@ -342,13 +342,20 @@ internal static class Program
             EquipmentDiagnosticsReport: equipmentReport,
             Commands: commands));
         var paths = BranchReadinessReportWriter.Write(repoRoot, options.OutputDirectory, report);
+        var relativeReportPath = Path.GetRelativePath(repoRoot, paths.JsonPath).Replace('\\', '/');
 
         Console.WriteLine(report.Passed ? "PASS" : "FAIL");
-        Console.WriteLine($"Report: {Path.GetRelativePath(repoRoot, paths.JsonPath).Replace('\\', '/')}");
         Console.WriteLine($"Blockers: {report.BlockersCount}; warnings: {report.WarningsCount}; changed files: {report.ChangedFilesSummary.Total}");
-        foreach (var command in report.Commands.Where(command => !command.Passed))
+        if (report.Passed)
         {
-            Console.WriteLine($"Failed command: {command.Command}");
+            Console.WriteLine($"Report: {relativeReportPath}");
+        }
+        else
+        {
+            foreach (var line in BranchReadinessFailureSummaryFormatter.Format(report, relativeReportPath))
+            {
+                Console.WriteLine(line);
+            }
         }
 
         return report.Passed ? 0 : 1;
