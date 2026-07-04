@@ -461,6 +461,45 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
     }
 
     [Fact]
+    public void BranchReadinessFailureSummaryShowsActionableChangedPathDetails()
+    {
+        const string path =
+            "tests/AssistantEngineer.Tests/Architecture/TelegramUnexpectedArchitectureTests.cs";
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(
+                    path,
+                    "Added",
+                    true,
+                    false,
+                    false,
+                    false,
+                    "Synthetic architecture guard.")
+            ]));
+
+        var lines = BranchReadinessFailureSummaryFormatter.Format(
+            report,
+            "artifacts/verification/branch-readiness/branch-readiness-report.json");
+        var summary = string.Join(Environment.NewLine, lines);
+
+        Assert.False(report.Passed);
+        Assert.Contains("scope 'EquipmentDiagnostics'", summary, StringComparison.Ordinal);
+        Assert.Contains("severity=Error", summary, StringComparison.Ordinal);
+        Assert.Contains("code=ForbiddenChangedPath", summary, StringComparison.Ordinal);
+        Assert.Contains($"path={path}", summary, StringComparison.Ordinal);
+        Assert.Contains("message=Path matches forbidden EquipmentDiagnostics scope fragment 'Telegram'.", summary, StringComparison.Ordinal);
+        Assert.Contains("scopeClassification=Forbidden", summary, StringComparison.Ordinal);
+        Assert.Contains("scopeReason=Path matches forbidden EquipmentDiagnostics scope fragment 'Telegram'.", summary, StringComparison.Ordinal);
+        Assert.Contains("Suggested next actions:", summary, StringComparison.Ordinal);
+        Assert.Contains("Remove forbidden scope changes", summary, StringComparison.Ordinal);
+        Assert.Contains(
+            "Full report: artifacts/verification/branch-readiness/branch-readiness-report.json",
+            summary,
+            StringComparison.Ordinal);
+        Assert.True(lines.Count <= 10, "Synthetic one-blocker summary should remain concise.");
+    }
+
+    [Fact]
     public void BranchReadinessFailsWhenCommandCheckFails()
     {
         var report = CreateBranchReadinessService().Verify(CreateBranchInput(
