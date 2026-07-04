@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `99`
+- `PowerShell` scripts reviewed: `100`
 - `CSharpTool` projects reviewed: `14`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `121`
+- Total reviewed entries: `122`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
@@ -68,6 +68,9 @@ planning reports under `artifacts/verification/equipment-diagnostics/`, and does
 
 ED-24GMVX.1 adds one ignored-artifact GMV X closure inventory producer. It reads runtime JSON and package metadata,
 writes planning reports under `artifacts/verification/equipment-diagnostics/`, and does not edit diagnostic cards.
+
+ED-24GMVX.17 adds one ignored-artifact GMV X review-bundle exporter. It reads runtime JSON, validates GMV X counts,
+renders review markdown/CSV reports, writes ZIP bundles outside Git by operator choice, and does not edit diagnostic cards.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 

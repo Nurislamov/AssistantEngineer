@@ -2,7 +2,7 @@
 
 ## Current stage
 
-ED-24GMVX.16 CLOSED / repository PASS
+ED-24GMVX.17 CLOSED / production PASS
 
 ## Current branch
 
@@ -10,8 +10,9 @@ master
 
 ## Last completed work
 
-GMV X final status/debugging table-only diagnostics were repaired for the 23 ED-24GMVX.16 cards. GMV X is CLOSED in
-the repository runtime catalog. GMV6 remains CLOSED / production PASS.
+GMV X is CLOSED / production PASS. ED-24GMVX.16 closed the repository runtime catalog, production deploy/smoke
+validated that runtime commit, and ED-24GMVX.17 fixed the local GMV X review-bundle exporter plus script inventory
+metadata without changing runtime diagnostic cards. GMV6 remains CLOSED / production PASS.
 
 Final GMV6 closure / production commits:
 
@@ -45,13 +46,14 @@ The smoke confirmed:
 
 ## Current blocker
 
-None for ED-24GMVX.16.
+None for ED-24GMVX.17.
 
 ## Important decisions
 
 - GMV6 is now considered CLOSED after full local validation, archive review, production deploy, and Telegram smoke.
 - GMV6 remains CLOSED / production PASS and is not part of the GMV X inventory stage.
-- GMV X is CLOSED in the repository runtime catalog after ED-24GMVX.16; production deploy and Telegram smoke remain ED-24GMVX.17.
+- GMV X is CLOSED / production PASS after the ED-24GMVX.16 runtime commit was deployed and smoked from master.
+- ED-24GMVX.17 is exporter/documentation/project-state only; it does not require a new production restart because runtime diagnostic cards did not change.
 - ED-24GMVX.15 discovered that `LL` has its own GMV X troubleshooting section and repaired it as detailed hydro-box / water-flow-switch diagnostics rather than table-only text.
 - ED-24GMVX.16 keeps final status/debugging table-only cards as statuses, settings, service-process indications, or debugging indications; possible causes remain empty and no detailed troubleshooting procedure is invented.
 - sourceNote remains non-rendered by Telegram; visible Telegram output uses card title, summary, causes, check steps, recommended action, and safety text.
@@ -59,6 +61,7 @@ None for ED-24GMVX.16.
 - db keeps its existing package-compatible metadata boundary, but visible text and guards keep it as debugging/status wording rather than a normal fault.
 - Production did not require migrations or environment changes.
 - PDF/manual binaries were not committed.
+- Generated GMV X review archives and verification artifacts remain ignored/outside Git.
 
 ## Files changed recently
 
@@ -73,6 +76,9 @@ Key recent areas:
 - docs/equipment-diagnostics/README.md
 - scripts/equipment-diagnostics/invoke-gmv6-manual-bound-closure-inventory.ps1
 - scripts/equipment-diagnostics/invoke-gmvx-manual-bound-closure-inventory.ps1
+- scripts/equipment-diagnostics/export-gmvx-card-review-bundle.ps1
+- docs/architecture/scripts-tools-inventory.json
+- docs/architecture/scripts-tools-inventory.md
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXManualBoundInventoryTests.cs
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXStatusPromptRepairTests.cs
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorSensorRepairTests.cs
@@ -130,6 +136,17 @@ ED-24GMVX.16 local validation:
 - Full suite: PASS, 5229/5229
 - git diff --check: PASS
 
+ED-24GMVX.17 local and CI-equivalent validation:
+
+- GMV X review-bundle exporter: PASS; 263 cards exported, counts outdoor 121 / indoor 60 / status 44 / debugging 38, parse check PASS, count check PASS, pattern flags 0.
+- Exporter ZIP generated outside Git for manual review at `C:\Users\user\Downloads\gmvx-card-review-fixed\gmvx-card-review-20260704-130737-14ca9056.zip`.
+- Engineering Core V1 verification: PASS; exact `scripts\engineering-core\verify-engineering-core-v1.ps1` completed successfully with full backend suite 5229/5229.
+- Additional full backend test run with hang diagnostics: PASS, 5229/5229.
+- dotnet restore .\AssistantEngineer.sln: PASS.
+- dotnet build .\AssistantEngineer.sln --no-restore: PASS, 6 existing nullable warnings / 0 errors.
+- EquipmentDiagnostics filter: PASS, 1205/1205.
+- Telegram filter: PASS, 646/646.
+
 Final local GMV6 archive review after ED-24SRC.16a:
 
 - HEAD: 759fa53fa5ddce02d53f6bad3433b213e374a5ec
@@ -141,8 +158,10 @@ Final local GMV6 archive review after ED-24SRC.16a:
 
 Production validation:
 
-- VPS deployment performed from master.
-- Telegram smoke: PASS for the selected detailed, table/status, indoor, status, and debugging samples.
+- VPS deployment performed from master for ED-24GMVX.16 runtime commit `14ca9056`.
+- Telegram polling: PASS.
+- Telegram smoke: PASS for the selected detailed, table/status, indoor, status, and debugging GMV X samples.
+- Manual GMV X archive review: PASS, 263/263 cards; outdoor 121 / indoor 60 / status 44 / debugging 38.
 - Known non-blocking UX follow-up: long detailed steps in E1/E2-style cards can still be visually long in Telegram; no diagnostic correctness issue remains.
 
 Migrations/env/artifacts:
@@ -150,12 +169,13 @@ Migrations/env/artifacts:
 - Migrations: none
 - Env changes: none
 - PDF/manual binaries committed: none
-- Production deploy in ED-24GMVX.16: not performed
+- Runtime diagnostic card changes in ED-24GMVX.17: none
+- Generated ZIP/manual-review artifacts committed: none
 
 ## Next step
 
 Recommended next stage:
 
-- ED-24GMVX.17 production deploy from master and Telegram smoke for representative GMV X detailed, table/status, indoor, status, and debugging samples.
+- No blocking GMV X closure work remains. Optional next stage: monitor CI after the ED-24GMVX.17 exporter/doc/state commit reaches `origin/master`.
 
 Keep GMV6 closed and out of scope.

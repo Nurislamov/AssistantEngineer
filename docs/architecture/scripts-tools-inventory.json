@@ -1599,6 +1599,22 @@
                         "riskIfChanged":  "Inventory drift can misclassify GMV X closure status, hide source-boundary conflicts, or plan unsafe repair batches."
                     },
                     {
+                        "id":  "SCR-099",
+                        "path":  "scripts/equipment-diagnostics/export-gmvx-card-review-bundle.ps1",
+                        "type":  "PowerShell",
+                        "category":  "GeneratedArtifactProducer",
+                        "purpose":  "Generate ignored GMV X card review bundles with raw JSON, rendered card markdown, count checks, parse checks, and review reports.",
+                        "invokedBy":  [
+                                          "LocalManualOrCI"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the exporter Windows PowerShell 5.1 compatible, runtime-read-only, and aligned with GMV X count and visible-wording guards.",
+                        "proposedStage":  "ED-24GMVX.17",
+                        "riskIfChanged":  "Exporter drift can create false archive-review failures, miss visible wording leaks, or package misleading GMV X review evidence."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
