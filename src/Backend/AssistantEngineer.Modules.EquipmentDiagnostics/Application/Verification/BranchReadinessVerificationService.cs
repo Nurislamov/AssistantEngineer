@@ -72,6 +72,11 @@ public sealed class BranchReadinessVerificationService
         "docs/equipment-diagnostics/telegram-"
     ];
 
+    private static readonly string[] AllowedExactTelegramPaths =
+    [
+        "tests/AssistantEngineer.Tests/Architecture/TelegramHandlerPipelineArchitectureTests.cs"
+    ];
+
     private static readonly string[] AllowedOperationsPathPrefixes =
     [
         "docs/operations/",
@@ -191,7 +196,8 @@ public sealed class BranchReadinessVerificationService
                 "Generated verification/build artifacts must remain ignored and uncommitted.");
         }
 
-        if (AllowedTelegramPathPrefixes.Any(prefix =>
+        if (AllowedExactTelegramPaths.Contains(path, StringComparer.OrdinalIgnoreCase) ||
+            AllowedTelegramPathPrefixes.Any(prefix =>
                 path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
         {
             return (

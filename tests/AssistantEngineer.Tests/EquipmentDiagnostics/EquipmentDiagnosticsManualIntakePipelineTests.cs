@@ -403,6 +403,45 @@ public class EquipmentDiagnosticsManualIntakePipelineTests
     }
 
     [Fact]
+    public void BranchReadinessAllowsExactTelegramHandlerPipelineArchitectureTest()
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(
+                    "tests/AssistantEngineer.Tests/Architecture/TelegramHandlerPipelineArchitectureTests.cs",
+                    "Added",
+                    true,
+                    false,
+                    false,
+                    false,
+                    "Telegram handler pipeline architecture guard.")
+            ]));
+
+        Assert.True(report.Passed);
+        Assert.Equal(1, report.ChangedFilesSummary.Allowed);
+        Assert.Empty(report.Issues);
+    }
+
+    [Fact]
+    public void BranchReadinessStillBlocksOtherTelegramArchitectureTests()
+    {
+        var report = CreateBranchReadinessService().Verify(CreateBranchInput(
+            [
+                new BranchReadinessFileInput(
+                    "tests/AssistantEngineer.Tests/Architecture/TelegramRuntimeArchitectureTests.cs",
+                    "Added",
+                    true,
+                    false,
+                    false,
+                    false,
+                    "Synthetic architecture guard.")
+            ]));
+
+        Assert.False(report.Passed);
+        Assert.Contains(report.Issues, issue => issue.Code == "ForbiddenChangedPath");
+    }
+
+    [Fact]
     public void BranchReadinessStillBlocksTelegramTransportOutsideSkeletonAllowlist()
     {
         var report = CreateBranchReadinessService().Verify(CreateBranchInput(
