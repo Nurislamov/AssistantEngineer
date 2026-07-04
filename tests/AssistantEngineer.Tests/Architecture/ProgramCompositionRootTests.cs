@@ -10,52 +10,7 @@ public class ProgramCompositionRootTests
         var programText = ReadProgramFile();
 
         Assert.Contains(
-            "builder.Configuration.AddApiConfiguration()",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "builder.ConfigureRequestLimits()",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "builder.ConfigureApiHardening()",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "builder.ConfigureDataProtection()",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "builder.Services.AddApiPresentation()",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment)",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "builder.Services.AddApiVersioningSupport()",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "builder.Services.AddApiDocumentation()",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "builder.Services.AddAssistantEngineerModules(",
-            programText,
-            StringComparison.Ordinal);
-
-        Assert.Contains(
-            "app.UseApiPipeline()",
+            "return await AssistantEngineerApiHost.RunAsync(args);",
             programText,
             StringComparison.Ordinal);
 
@@ -63,6 +18,40 @@ public class ProgramCompositionRootTests
             "public partial class Program",
             programText,
             StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ApiHostOwnsEstablishedCompositionSequence()
+    {
+        var hostText = ReadApiHostFile();
+
+        var expectedFragments = new[]
+        {
+            "PostgresMigrationCommand.IsMigrationCommand(args)",
+            "return await PostgresMigrationCommand.RunAsync(args);",
+            "var builder = WebApplication.CreateBuilder(args);",
+            "builder.Configuration.AddApiConfiguration();",
+            "builder.ConfigureRequestLimits();",
+            "builder.ConfigureApiHardening();",
+            "builder.ConfigureDataProtection();",
+            "builder.Services.AddApiPresentation();",
+            "builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment);",
+            "builder.Services.AddApiVersioningSupport();",
+            "builder.Services.AddApiDocumentation();",
+            "builder.Services.AddAssistantEngineerModules(",
+            "var app = builder.Build();",
+            "app.UseApiPipeline();",
+            "app.Run();",
+            "return 0;"
+        };
+
+        Assert.All(
+            expectedFragments,
+            fragment => Assert.Contains(fragment, hostText, StringComparison.Ordinal));
+
+        Assert.True(
+            hostText.IndexOf("PostgresMigrationCommand.IsMigrationCommand(args)", StringComparison.Ordinal) <
+            hostText.IndexOf("WebApplication.CreateBuilder(args)", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -165,21 +154,7 @@ public class ProgramCompositionRootTests
 
         var allowedFragments = new[]
         {
-            "var builder = WebApplication.CreateBuilder(args);",
-            "builder.Configuration.AddApiConfiguration();",
-            "builder.ConfigureRequestLimits();",
-            "builder.ConfigureApiHardening();",
-            "builder.ConfigureDataProtection();",
-            "builder.Services.AddApiPresentation();",
-            "builder.Services.AddApiAuthentication(builder.Configuration, builder.Environment);",
-            "builder.Services.AddApiVersioningSupport();",
-            "builder.Services.AddApiDocumentation();",
-            "builder.Services.AddAssistantEngineerModules(",
-            "builder.Configuration,",
-            "builder.Environment.EnvironmentName);",
-            "var app = builder.Build();",
-            "app.UseApiPipeline();",
-            "app.Run();",
+            "return await AssistantEngineerApiHost.RunAsync(args);",
             "public partial class Program;"
         };
 
@@ -203,6 +178,17 @@ public class ProgramCompositionRootTests
             "Program.cs");
 
         return File.ReadAllText(programPath);
+    }
+
+    private static string ReadApiHostFile()
+    {
+        var apiProjectPath = global::AssistantEngineer.Tests.TestPaths.ApiProjectPath;
+
+        var hostPath = Path.Combine(
+            apiProjectPath,
+            "AssistantEngineerApiHost.cs");
+
+        return File.ReadAllText(hostPath);
     }
 
     private static void AssertDoesNotContainAny(

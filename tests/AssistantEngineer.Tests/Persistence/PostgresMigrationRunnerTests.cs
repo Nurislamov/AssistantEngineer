@@ -96,14 +96,15 @@ public sealed class PostgresMigrationRunnerTests
             "Services",
             "DatabaseMigrations",
             "PostgresMigrationCommand.cs");
-        var programPath = Path.Combine(TestPaths.ApiProjectPath, "Program.cs");
+        var hostPath = Path.Combine(TestPaths.ApiProjectPath, "AssistantEngineerApiHost.cs");
         var commandSource = File.ReadAllText(commandPath);
-        var programSource = File.ReadAllText(programPath);
+        var hostSource = File.ReadAllText(hostPath);
 
-        Assert.Contains("PostgresMigrationCommand.IsMigrationCommand(args)", programSource, StringComparison.Ordinal);
+        Assert.Contains("PostgresMigrationCommand.IsMigrationCommand(args)", hostSource, StringComparison.Ordinal);
+        Assert.Contains("return await PostgresMigrationCommand.RunAsync(args);", hostSource, StringComparison.Ordinal);
         Assert.True(
-            programSource.IndexOf("PostgresMigrationCommand.IsMigrationCommand(args)", StringComparison.Ordinal) <
-            programSource.IndexOf("WebApplication.CreateBuilder(args)", StringComparison.Ordinal));
+            hostSource.IndexOf("PostgresMigrationCommand.IsMigrationCommand(args)", StringComparison.Ordinal) <
+            hostSource.IndexOf("WebApplication.CreateBuilder(args)", StringComparison.Ordinal));
         Assert.DoesNotContain("AddAssistantEngineerModules", commandSource, StringComparison.Ordinal);
         Assert.DoesNotContain("AddHostedService", commandSource, StringComparison.Ordinal);
         Assert.DoesNotContain(".Run()", commandSource, StringComparison.Ordinal);
