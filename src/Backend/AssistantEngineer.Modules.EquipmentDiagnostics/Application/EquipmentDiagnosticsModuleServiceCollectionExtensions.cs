@@ -59,7 +59,13 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<EquipmentDiagnosticTelegramMessageParser>();
         services.AddSingleton<EquipmentDiagnosticTelegramResponseFormatter>();
         services.AddSingleton<TelegramDiagnosticConversationService>();
-        services.AddSingleton<IEquipmentDiagnosticTelegramAdapter, EquipmentDiagnosticTelegramAdapter>();
+        services.AddSingleton<ITelegramUpdateHandler, TelegramUpdateGuardHandler>();
+        services.AddSingleton<ITelegramUpdateHandler, TelegramCallbackUpdateHandler>();
+        services.AddSingleton<ITelegramUpdateHandler, TelegramMessageUpdateHandler>();
+        services.AddSingleton<TelegramUpdateHandlerPipeline>();
+        services.AddSingleton<IEquipmentDiagnosticTelegramAdapter>(serviceProvider =>
+            new EquipmentDiagnosticTelegramAdapter(
+                serviceProvider.GetRequiredService<TelegramUpdateHandlerPipeline>()));
         services.AddSingleton(new EquipmentDiagnosticTelegramWebhookOptions());
         services.AddSingleton<EquipmentDiagnosticTelegramWebhookSecurityPolicy>();
         services.AddSingleton<EquipmentDiagnosticTelegramOperationalCounters>();
