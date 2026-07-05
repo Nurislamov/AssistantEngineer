@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ public sealed partial class GreeGmv9FlexImport15Tests
 {
     private const string ManualId = "gree-gmv9-flex-service-manual-2025-12";
     private const string DocumentCode = "GC202512-I";
+    private const string ModelCode = "GMV-450WML/A-X(D)";
 
     private static readonly string ReportDirectory = Path.Combine(
         TestPaths.RepoRoot,
@@ -125,6 +127,52 @@ public sealed partial class GreeGmv9FlexImport15Tests
         Assert.Equal("High", RequiredString(entry, "confidence"));
         Assert.Equal(ManualId, RequiredString(entry, "sourceReferences", 0, "manualId"));
         Assert.Equal(DocumentCode, RequiredString(entry, "sourceReferences", 0, "documentCode"));
+        Assert.Contains(ModelCode, RequiredArray(entry, "models").Select(node => node!.GetValue<string>()));
+    }
+
+    [Fact]
+    public void CardsDistinguishTroubleshootingSectionsFromErrorIndicationOnlyEvidence()
+    {
+        var entries = Directory
+            .GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv9-flex"), "*.json", SearchOption.AllDirectories)
+            .Select(ReadObject)
+            .ToArray();
+
+        Assert.Equal(173, entries.Count(entry =>
+            RequiredString(entry, "sourceReference").Contains(
+                "Chapter 3 Faults / Troubleshooting /",
+                StringComparison.Ordinal)));
+        Assert.Equal(87, entries.Count(entry =>
+            RequiredString(entry, "sourceReference").Contains(
+                "Chapter 3 Faults / Error Indication /",
+                StringComparison.Ordinal)));
+    }
+
+    [Theory]
+    [InlineData("A0", "status", "2.1 A0", "PDF page 71", "manual page 69")]
+    [InlineData("A2", "status", "2.2 A2", "PDF page 71", "manual page 69")]
+    [InlineData("bJ", "outdoor", "2.28 bJ", "PDF page 85", "manual page 83")]
+    [InlineData("bn", "outdoor", "2.29 bn", "PDF page 86", "manual page 84")]
+    [InlineData("C0", "debugging", "2.30 C0", "PDF page 86-87", "manual page 84-85")]
+    public void SelectedCardsReferenceTheirTroubleshootingSections(
+        string code,
+        string category,
+        string section,
+        string pdfPage,
+        string manualPage)
+    {
+        var entry = ReadObject(Path.Combine(
+            GreeRuntimeDirectory,
+            "gmv9-flex",
+            category,
+            $"{code.ToLowerInvariant()}.json"));
+        var reference = RequiredString(entry, "sourceReference");
+
+        Assert.Contains("Chapter 3 Faults / Troubleshooting /", reference, StringComparison.Ordinal);
+        Assert.Contains(section, reference, StringComparison.Ordinal);
+        Assert.Contains(pdfPage, reference, StringComparison.Ordinal);
+        Assert.Contains(manualPage, reference, StringComparison.Ordinal);
+        Assert.Equal(reference, RequiredString(entry, "sourceReferences", 0, "sourceReference"));
     }
 
     [Fact]
@@ -150,6 +198,13 @@ public sealed partial class GreeGmv9FlexImport15Tests
     [InlineData("Gree GMV9 H5", "Gree GMV9 Flex — H5")]
     [InlineData("Gree 9 series Flex C0", "Gree GMV9 Flex — C0")]
     [InlineData("Gree 9-Flex A0", "Gree GMV9 Flex — A0")]
+    [InlineData("Gree GMV9 Flex A2", "Gree GMV9 Flex — A2")]
+    [InlineData("Gree GMV9 Flex bJ", "Gree GMV9 Flex — bJ")]
+    [InlineData("Gree GMV9 Flex BJ", "Gree GMV9 Flex — bJ")]
+    [InlineData("Gree GMV9 Flex bj", "Gree GMV9 Flex — bJ")]
+    [InlineData("Gree GMV9 Flex bn", "Gree GMV9 Flex — bn")]
+    [InlineData("Gree GMV9 Flex BN", "Gree GMV9 Flex — bn")]
+    [InlineData("Gree GMV9 Flex GMV-450WML/A-X(D) C0", "Gree GMV9 Flex — C0")]
     public async Task ExplicitGmv9FlexQueriesResolveGmv9FlexCards(string query, string expectedTitle)
     {
         using var provider = CreateProvider();
@@ -163,6 +218,62 @@ public sealed partial class GreeGmv9FlexImport15Tests
         Assert.DoesNotContain("Gree GMV6 HR", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV Mini", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("Gree GMV X", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ExactGmv9FlexModelMatchesRuntimeCardModelFilter()
+    {
+        using var provider = CreateProvider();
+        var bot = provider.GetRequiredService<IEquipmentDiagnosticBotService>();
+
+        var response = await bot.DiagnoseAsync(new EquipmentDiagnosticBotRequest(
+            Manufacturer: "Gree",
+            Code: "C0",
+            Series: "GMV9 Flex",
+            ModelCode: ModelCode));
+        var unmatched = await bot.DiagnoseAsync(new EquipmentDiagnosticBotRequest(
+            Manufacturer: "Gree",
+            Code: "C0",
+            Series: "GMV9 Flex",
+            ModelCode: "GMV-UNKNOWN"));
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, response.Status);
+        Assert.Equal("C0", response.ObservedCode.Code);
+        Assert.NotNull(response.EquipmentContext);
+        Assert.NotEqual(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, unmatched.Status);
+    }
+
+    [Theory]
+    [InlineData("Gree GMV9 Flex A0", "информационное состояние")]
+    [InlineData("Gree GMV9 Flex A2", "информационное состояние")]
+    [InlineData("Gree GMV9 Flex bJ", "4,9-5,1 В")]
+    [InlineData("Gree GMV9 Flex bn", "клемму датчика")]
+    [InlineData("Gree GMV9 Flex C0", "адреса проводных пультов")]
+    public async Task SelectedTelegramAnswersArePracticalAndHideInternalEvidence(
+        string query,
+        string expectedText)
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains(expectedText, response.Text, StringComparison.OrdinalIgnoreCase);
+        foreach (var forbidden in ForbiddenVisiblePhrases)
+            Assert.DoesNotContain(forbidden, response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task LastPreservesCanonicalGmv9FlexMixedCaseCode()
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        await adapter.HandleAsync(Update("Gree GMV9 Flex BJ"));
+        var last = await adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains("Gree bJ", last.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -211,6 +322,8 @@ public sealed partial class GreeGmv9FlexImport15Tests
                     Assert.DoesNotContain("sourceMeaning", visible, StringComparison.OrdinalIgnoreCase);
                     Assert.DoesNotContain("runtime", visible, StringComparison.OrdinalIgnoreCase);
                     Assert.DoesNotContain("staging", visible, StringComparison.OrdinalIgnoreCase);
+                    foreach (var forbidden in ForbiddenVisiblePhrases)
+                        Assert.DoesNotContain(forbidden, visible, StringComparison.OrdinalIgnoreCase);
                     Assert.True(
                         CountCyrillic(visible) >= 8,
                         $"Visible text must contain readable Cyrillic wording: {file}: {visible}");
@@ -230,6 +343,24 @@ public sealed partial class GreeGmv9FlexImport15Tests
                 }
             }
         }
+    }
+
+    [Fact]
+    public void EquipmentCatalogMarksGmv9FlexImportedAndRegistersModelAlias()
+    {
+        var registry = ReadObject(Path.Combine(
+            TestPaths.RepoRoot,
+            "data",
+            "equipment-diagnostics",
+            "equipment-catalog",
+            "gree-vrf-equipment-map.json"));
+        var series = RequiredArray(registry, "series").OfType<JsonObject>().ToArray();
+        var gmv9Flex = Assert.Single(series, item => RequiredString(item, "id") == "gmv9_flex");
+        var backlog = RequiredArray(registry, "manualSearchBacklog").OfType<JsonObject>().ToArray();
+
+        Assert.Equal("Imported", RequiredString(gmv9Flex, "coverageStatus"));
+        Assert.Contains(ModelCode, RequiredArray(gmv9Flex, "aliases").Select(node => node!.GetValue<string>()));
+        Assert.DoesNotContain(backlog, item => RequiredString(item, "id") == "gmv9_flex_service_manual");
     }
 
     private static void AssertPackageCount(string packageFileName, int expected)
@@ -259,6 +390,19 @@ public sealed partial class GreeGmv9FlexImport15Tests
                 yield return Assert.IsAssignableFrom<JsonValue>(node).GetValue<string>();
         }
     }
+
+    private static readonly string[] ForbiddenVisiblePhrases =
+    [
+        "Подтвердите код",
+        "Сверьте модель",
+        "по таблице",
+        "основание",
+        "руководство",
+        "manual",
+        "source",
+        "packageId",
+        "карточка неисправности"
+    ];
 
     private static string StripAllowedTechnicalTerms(string value) =>
         value

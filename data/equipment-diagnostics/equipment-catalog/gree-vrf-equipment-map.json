@@ -38,6 +38,7 @@
   "coverageNotes": [
     "No diagnostic error codes or diagnostic entries are imported by this map.",
     "GMV6 is already partially Imported through service-manual-backed error knowledge: 4 packages and 253 entries.",
+    "GMV9 Flex is Imported through service-manual-backed runtime error knowledge: 4 packages and 260 entries.",
     "SERVICE_MANUAL_GMV_IDU.pdf was analyzed in ED-24F.1, but import stopped because all 38 identified indoor codes overlap existing GMV6 indoor entries and need reviewed multi-source diagnostic references instead of silent source selection."
   ],
   "series": [
@@ -105,13 +106,17 @@
     {
       "id": "gmv9_flex",
       "displayName": "GMV9 Flex",
-      "aliases": ["GMV 9 Flex"],
+      "aliases": ["GMV 9 Flex", "GMV-450WML/A-X(D)"],
       "equipmentFamily": "VRF",
       "equipmentTypes": ["outdoor_unit"],
       "sourceCatalogIds": ["gree-vrf-catalog-141367-ru"],
-      "coverageStatus": "CatalogIdentified",
-      "notes": ["The broad Russian catalogue identifies GMV9 Flex compact/front-discharge modular outdoor units."],
-      "relatedManualNeeds": ["GMV9 Flex service manual", "GMV9 Flex installation/owner manuals"]
+      "coverageStatus": "Imported",
+      "notes": [
+        "The broad Russian catalogue identifies GMV9 Flex compact/front-discharge modular outdoor units.",
+        "Runtime error knowledge contains 260 entries backed by service manual GC202512-I.",
+        "GMV-450WML/A-X(D) is a 16 HP GMV9 Flex basic module in the service manual unit list."
+      ],
+      "relatedManualNeeds": ["GMV9 Flex installation/owner manuals"]
     },
     {
       "id": "gmv5_max",
@@ -534,16 +539,6 @@
       "relatedSeriesIds": ["gmv6", "gmv6_hr", "gmv_x"],
       "relatedDeviceIds": ["portable_commissioning_tools", "pc_debugging_software"],
       "desiredManualType": "CommissioningToolManual",
-      "status": "Needed"
-    },
-    {
-      "id": "gmv9_flex_service_manual",
-      "priority": 2,
-      "target": "GMV9 Flex service manual",
-      "reason": "Catalogues identify GMV9 Flex as a separate outdoor series.",
-      "relatedSeriesIds": ["gmv9_flex"],
-      "relatedDeviceIds": [],
-      "desiredManualType": "ServiceManual",
       "status": "Needed"
     },
     {
