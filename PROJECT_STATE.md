@@ -2,151 +2,164 @@
 
 ## Current stage
 
-ED-24GMVFLEX.5 — PROJECT_STATE checkpoint after GMV9 Flex production pass.
+ED-24GMVMINI CLOSED / production PASS.
 
-GMV9 Flex diagnostics are CLOSED / production PASS.
+GMV Mini diagnostics audit, function-setting wording hotfix, CI and production Telegram smoke are completed.
 
 ## Current branch
 
 master
 
-## Current commits
-
-- Current master: bb57ebaa
-- PR #51 merge commit: bb57ebaa
-- Implementation commit: 69c04ca2
-- Previous stable master before GMV9 Flex merge: 6de11046
-
 ## Last completed work
 
-ED-24GMVFLEX.1-3 was completed, merged to master, and passed CI.
+ED-24GMVMINI.1-2 was merged through PR #52.
 
-Scope:
-- Audited and normalized existing GMV9 Flex diagnostic knowledge.
-- Preserved GMV9 Flex package counts:
-  - outdoor: 120
-  - indoor: 60
-  - status: 43
-  - debugging: 37
-  - total: 260
-- Removed forbidden visible service/source wording from GMV9 Flex Telegram diagnostic answers.
-- A0 and A2 were normalized as neutral status/informational answers.
-- bJ, bn, and C0 received practical troubleshooting checks from the GMV9 Flex service manual troubleshooting section.
-- 173 cards are linked to Troubleshooting evidence.
-- 87 cards remain Error Indication only.
-- ManualVerified / High metadata, manualId, and document code GC202512-I were preserved.
-- GMV-450WML/A-X(D) model coverage was added for GMV9 Flex.
-- Equipment map was synchronized to the existing Imported convention.
-- Runtime code was not changed; GMV9 Flex was already active through embedded JSON glob and EquipmentDiagnosticsJsonKnowledgeSource.
-- GMV6, GMV X, and GMV Mini diagnostic content were not changed.
+- Merge commit: b781d872
+- Implementation commit: 27ec74a0
+- GMV Mini cards: 136 -> 148
+- Indoor: 27
+- Outdoor: 62
+- Status: 47 -> 59
+- Added GMV Mini function/status codes:
+  - qd
+  - n3
+  - n5
+  - nL
+  - nU
+  - q7
+  - q8
+  - q9
+  - qF
+  - qL
+  - qn
+  - qU
+- Added model applicability:
+  - GMV-180WL/C-X(D)
+  - GMV-280WL/C1-X
+  - GMV-335WL/C1-X
+  - GMV-280WL/C1-X(S)
+  - GMV-335WL/C1-X(S)
 
-ED-24GMVFLEX.4 was completed on production.
+ED-24GMVMINI.3 production smoke passed.
 
-Production:
-- VPS: assistantengineer-beta-01
-- Production repo path: /opt/assistantengineer
-- Production commit: bb57ebaa
-- API container recreated and running.
-- Telegram polling started.
-- Telegram deleteWebhook on startup succeeded.
-- Production logs were clean during smoke: no unhandled exception, JSON parse error, duplicate key error, or polling failure observed.
+ED-24GMVMINI.4 fixed visible wording for GMV Mini q/n function-setting cards.
 
-Telegram production smoke PASS:
-- Gree GMV9 Flex A0
-- Gree GMV9 Flex A2
-- Gree GMV9 Flex bJ
-- Gree GMV9 Flex BJ
-- Gree GMV9 Flex bj
-- Gree GMV9 Flex bn
-- Gree GMV9 Flex BN
-- Gree GMV9 Flex C0
-- Gree GMV9 Flex GMV-450WML/A-X(D) C0
-- /last checked after C0
+- PR: #53
+- Merge commit: 4de47413
+- Implementation commit: f6e04698
+- Replaced confusing hardcoded GMV-141WL/C-T visible instruction with model-safe wording.
+- qL/qF/q/n codes remain service/function settings, not component faults.
+- Production smoke passed for:
+  - Gree GMV Mini GMV-224WL/C1-X qL
+  - Gree GMV Mini GMV-280WL/C1-X qL
+  - Gree GMV Mini GMV-141WL/C-T qL
 
 ## Current blocker
 
-None for GMV9 Flex production close.
-
-## Known follow-up notes
-
-1. /last preserves the last code C0, but the display currently shows it as "Gree C0" without the matched GMV9 Flex series label.
-   Suggested backlog:
-   ED-24UX.LAST — Improve /last display to preserve matched series/model label.
-
-2. VPS repository has old untracked env backup files under deploy/:
-   - deploy/.env.before-ed-24ops2-20260630T021054Z
-   - deploy/.env.before-operator-inbox-20260630T021726Z
-
-   These files did not block GMV9 Flex deployment because they are old backup files and not runtime code.
-   Suggested backlog:
-   ED-24OPS.CLEANUP — Move VPS env backups outside repo or ignore backup pattern safely.
+None.
 
 ## Important decisions
 
-- GMV9 Flex was not imported again from scratch.
-- Existing 260 GMV9 Flex cards were normalized and tested.
-- Manual evidence was aligned against the GMV9 Flex service manual Chapter 3:
-  - Error Indication
-  - Troubleshooting
-  - Common Malfunctions reviewed but not used as code-specific evidence
-- No PDF/manual binaries were committed.
-- No generated ZIP/manual-review artifacts were committed.
-- No production env changes were made.
-- No migrations were added.
-- No deployment scripts were changed.
-- PROJECT_STATE.md is updated only after production PASS.
+GMV Mini function-setting/status codes must stay non-alarming.
+
+For q/n service function codes, visible wording must not imply that the requested model is wrong just because the source function list was associated with GMV-141WL/C-T.
+
+Preferred wording:
+
+"Для некоторых моделей GMV Mini набор сервисных функций отличается. Перед изменением настройки проверьте доступность этой функции для конкретной модели наружного блока."
+
+Do not use public/user-visible provenance wording such as:
+
+- manual
+- source
+- packageId
+- карточка неисправности
+- по таблице
+- основание
+- руководство
 
 ## Files changed recently
 
-ED-24GMVFLEX.1-3 changed:
-- data/equipment-diagnostics/error-knowledge/gree/gmv9-flex/**
-- data/equipment-diagnostics/equipment-catalog/gree-vrf-equipment-map.json
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmv9FlexImport15Tests.cs
+ED-24GMVMINI.1-2:
 
-ED-24GMVFLEX.5 changes:
-- PROJECT_STATE.md
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/**
+- data/equipment-diagnostics/error-knowledge/packages/gree-gmv-mini-vrf-*.json
+- data/equipment-diagnostics/equipment-catalog/gree-vrf-equipment-map.json
+- data/equipment-diagnostics/manual-library/manuals.json
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/**
+
+ED-24GMVMINI.4:
+
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/n3.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/n5.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/nl.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/nu.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/q7.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/q8.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/q9.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/qd.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/qf.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/ql.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/qn.json
+- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/qu.json
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvMiniVisibleWording12_2Tests.cs
+
+No production env changes.
+No EF migrations.
+No generated artifacts committed.
 
 ## Validation status
 
-CI on PR #51:
-- 7/7 checks PASS.
-- Engineering Core V1 PASS.
-- Engineering Core V1 Contracts PASS.
-- Engineering Core V1 Smoke PASS.
-- Engineering Core V1 Validation PASS.
-- ISO52016 Matrix release-ready PASS.
-- EquipmentDiagnostics Branch Readiness PASS.
+ED-24GMVMINI.1-2:
 
-Master after merge:
-- master at bb57ebaa.
-- origin/master at bb57ebaa.
-- master push checks PASS.
+- Focused diagnostics/Telegram: 1352/1352 PASS
+- Branch readiness: PASS
+- Restore: PASS
+- Build: PASS, 0 warnings
+- Full suite: 5314/5314 PASS
+- Engineering Core V1: PASS
+- PR checks: 7/7 PASS
+- Master CI after merge: PASS
+- Production smoke: PASS
 
-Local validation reported before merge:
-- Restore PASS.
-- Build PASS with existing nullable warnings.
-- GMV9 focused tests PASS: 39/39.
-- Telegram/JSON/catalog focused tests PASS: 176/176.
-- Full backend PASS: 5258/5258.
-- Branch readiness PASS.
-- git diff --check PASS.
-- Engineering Core verifier PASS in CI.
+ED-24GMVMINI.4:
 
-Production validation:
-- Deploy PASS.
-- API container running.
-- Telegram polling clean.
-- Telegram GMV9 Flex smoke PASS.
-- Logs clean for the smoke window.
+- GMV Mini focused: 91/91 PASS
+- Restore: PASS
+- Build: PASS, 0 warnings
+- Full suite: 5319/5319 PASS
+- Engineering Core V1: PASS
+- git diff --check: PASS
+- PR checks: 7/7 PASS
+- Production smoke: PASS
+- Production logs: clean
+- GMV Mini counts unchanged: 148 total, 27 indoor, 62 outdoor, 59 status
+- Gree runtime count unchanged: 1308
+- GMV6, GMV X and GMV9 Flex runtime JSON unchanged
+
+## Known backlog
+
+ED-24UX.LAST — Improve /last display to preserve matched series/model label.
+
+Current behavior:
+
+- /last works and preserves the latest code.
+- It may display `Gree C0` instead of preserving the matched series/model label such as `Gree GMV Mini C0`.
+
+This is not a production blocker.
+
+ED-24OPS.CLEANUP — Move VPS env backups outside repo or ignore safe backup pattern.
+
+CI maintenance:
+
+- Node.js 20 deprecation warning remains future maintenance.
 
 ## Next step
 
 Recommended next stage:
 
-ED-24GMVFLEX.6 — Optional final GMV9 Flex review archive / documentation checkpoint
+ED-24UX.LAST — improve /last display to preserve matched series/model label.
 
-or move directly to the next diagnostic/manual series after confirming priority.
+Alternative:
 
-Backlog candidates:
-- ED-24UX.LAST — Improve /last display to preserve matched series/model label.
-- ED-24OPS.CLEANUP — Move VPS env backups outside repo or ignore backup pattern safely.
+ED-24OPS.CLEANUP — cleanup VPS env backup handling.
