@@ -1980,6 +1980,70 @@
       }
     },
     {
+      "manualId": "gree-umatch-r32-service-manual",
+      "fileName": "Gree U-Match R32 Service Manual EN 3.5-16kW.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/Gree U-Match R32 Service Manual EN 3.5-16kW.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "SemiIndustrial",
+      "equipmentType": "UMatchSystem",
+      "series": "U-Match R32",
+      "modelScope": "U-Match R32 outdoor units GUD35-160W1/NhB-S and GUD125-160W1/NhB-X with cassette, duct, and floor-ceiling indoor units GUD35-160.",
+      "documentTitle": "U-MATCH DC INVERTER UNIT",
+      "documentCode": "GC202209-I",
+      "sourceLanguage": "en",
+      "sourceKind": "ServiceManual",
+      "fileFormat": "PDF",
+      "importStatus": "Imported",
+      "coverageStatus": "DiagnosticScopeImported",
+      "diagnosticUsefulness": "High",
+      "importedPackageIds": [
+        "gree-umatch-r32-error-codes"
+      ],
+      "entriesImported": 107,
+      "categoriesImported": [
+        "Fault",
+        "Protection",
+        "Status",
+        "Communication"
+      ],
+      "knownSmokeCodes": [
+        "Gree U-Match E0",
+        "Gree U-Match E6",
+        "Gree U-Match H5",
+        "Gree U-Match Fo"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "RuntimeImported",
+      "recommendedNext": false,
+      "notes": "ED-24UMATCH.1-2 audited all 107 table codes and aligned 22 detailed troubleshooting cards with sections 3.3 and 3.4.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Diagnostic evidence is imported, but production Telegram file bindings remain server-local."
+      },
+      "analysis": {
+        "analysisStage": "ED-24UMATCH.1-2",
+        "pageCount": 188,
+        "identifiedCodeCount": 107,
+        "entriesImported": 107,
+        "detailedTroubleshootingCodeCount": 22,
+        "diagnosticSections": [
+          "Error Code, PDF pages 51-54",
+          "Troubleshooting, PDF pages 55-72"
+        ],
+        "importDecision": "FullRuntimeAudit"
+      }
+    },
+    {
       "manualId": "gree-unit-control-reference",
       "fileName": "Unit Control.pdf",
       "relativeSourcePath": "artifacts/manual-intake/sources/gree/Unit Control.pdf",
