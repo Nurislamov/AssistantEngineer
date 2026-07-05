@@ -50,7 +50,7 @@ public sealed class ManualCoverageRegistryTests
             "futureTelegramManualLibrary"
         };
 
-        Assert.Equal(52, manuals.Length);
+        Assert.Equal(53, manuals.Length);
         Assert.DoesNotContain(manualIds, string.IsNullOrWhiteSpace);
         Assert.Equal(manualIds.Length, manualIds.Distinct(StringComparer.Ordinal).Count());
         Assert.All(manuals, manual =>
@@ -157,7 +157,7 @@ public sealed class ManualCoverageRegistryTests
     }
 
     [Fact]
-    public void ImportedManualStatusesRecordGmv6IduAndGmvMiniCoverage()
+    public void ImportedManualStatusesRecordGmvAndUMatchCoverage()
     {
         using var document = LoadRegistry();
         var manuals = document.RootElement.GetProperty("manuals").EnumerateArray().ToArray();
@@ -176,7 +176,8 @@ public sealed class ManualCoverageRegistryTests
                 "gree-gmv-x-service-manual-2022-09",
                 "gree-gmv6-hr-service-manual-2025-07",
                 "gree-gmv6-service-manual-2020-09",
-                "gree-gmv9-flex-service-manual-2025-12"
+                "gree-gmv9-flex-service-manual-2025-12",
+                "gree-umatch-r32-service-manual"
             ],
             imported
                 .Select(manual => manual.GetProperty("manualId").GetString()!)

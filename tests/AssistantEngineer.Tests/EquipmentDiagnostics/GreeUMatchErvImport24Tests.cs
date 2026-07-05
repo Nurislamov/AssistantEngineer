@@ -110,7 +110,7 @@ public sealed class GreeUMatchErvImport24Tests
 
         var response = await adapter.HandleAsync(Update("Gree U-Match E0"));
 
-        Assert.Contains("Gree U-Match R32 — E0 — неисправность вентилятора", response.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree U-Match R32 — E0 — ошибка вентилятора внутреннего блока", response.Text, StringComparison.Ordinal);
         Assert.Contains("питание", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("вентилятор", response.Text, StringComparison.OrdinalIgnoreCase);
         AssertVisibleTelegramTextDoesNotLeakEvidence(response.Text);
