@@ -2,57 +2,104 @@
 
 ## Current stage
 
-ED-24GMVMINI CLOSED / production PASS.
+ED-24UMATCH.3 CLOSED / production PASS.
 
-GMV Mini diagnostics audit, function-setting wording hotfix, CI and production Telegram smoke are completed.
+Gree U-Match R32 diagnostics audit, CI validation, production deployment and Telegram smoke are completed.
 
 ## Current branch
 
 master
 
+Latest known master commit:
+
+- 4159818d Merge pull request #54 from Nurislamov/ed-24umatch-1-2-diagnostics-audit
+
 ## Last completed work
 
-ED-24GMVMINI.1-2 was merged through PR #52.
+### ED-24GMVMINI
 
+ED-24GMVMINI is closed.
+
+ED-24GMVMINI.1-2 audited GMV Mini diagnostics and runtime baseline.
+
+- PR: #52
 - Merge commit: b781d872
 - Implementation commit: 27ec74a0
-- GMV Mini cards: 136 -> 148
+- GMV Mini cards: 148 total
 - Indoor: 27
 - Outdoor: 62
-- Status: 47 -> 59
-- Added GMV Mini function/status codes:
-  - qd
-  - n3
-  - n5
-  - nL
-  - nU
-  - q7
-  - q8
-  - q9
-  - qF
-  - qL
-  - qn
-  - qU
-- Added model applicability:
-  - GMV-180WL/C-X(D)
-  - GMV-280WL/C1-X
-  - GMV-335WL/C1-X
-  - GMV-280WL/C1-X(S)
-  - GMV-335WL/C1-X(S)
-
-ED-24GMVMINI.3 production smoke passed.
+- Status: 59
+- Production smoke: PASS
 
 ED-24GMVMINI.4 fixed visible wording for GMV Mini q/n function-setting cards.
 
 - PR: #53
 - Merge commit: 4de47413
 - Implementation commit: f6e04698
-- Replaced confusing hardcoded GMV-141WL/C-T visible instruction with model-safe wording.
-- qL/qF/q/n codes remain service/function settings, not component faults.
-- Production smoke passed for:
-  - Gree GMV Mini GMV-224WL/C1-X qL
-  - Gree GMV Mini GMV-280WL/C1-X qL
-  - Gree GMV Mini GMV-141WL/C-T qL
+- State update commit: f8c5bbb6
+- Production smoke: PASS
+- Production logs: clean
+
+### ED-24UMATCH
+
+ED-24UMATCH.1-2 audited Gree U-Match R32 diagnostics against the U-Match DC Inverter Unit service manual.
+
+- PR: #54
+- Merge commit: 4159818d
+- Implementation commit: abdd72a0
+- Manual identity:
+  - U-MATCH DC INVERTER UNIT
+  - GC202209-I
+  - R32
+  - 3.5kW~16.0kW
+  - Operation range: -15℃~48℃
+- U-Match runtime count: 107 cards
+- Gree runtime count: 1308
+- All 107 U-Match R32 cards were normalized under:
+  - data/equipment-diagnostics/error-knowledge/gree/umatch-r32/system/**
+- Package metadata updated:
+  - data/equipment-diagnostics/error-knowledge/packages/gree-umatch-r32-error-codes.json
+- Manual registry updated:
+  - data/equipment-diagnostics/manual-library/manuals.json
+- Focused tests added/updated:
+  - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeUMatchManualAudit1_2Tests.cs
+  - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeUMatchErvImport24Tests.cs
+  - tests/AssistantEngineer.Tests/EquipmentDiagnostics/ManualCoverageRegistryTests.cs
+
+ED-24UMATCH.3 deployed U-Match R32 diagnostics to production and passed Telegram smoke.
+
+Smoke checked:
+
+- Gree U-Match E0
+- Gree U-Match E1
+- Gree U-Match E2
+- Gree U-Match E3
+- Gree U-Match E4
+- Gree U-Match E6
+- Gree U-Match E9
+- Gree U-Match C0
+- Gree U-Match C6
+- Gree U-Match F3
+- Gree U-Match H5
+- Gree U-Match HC
+- Gree U-Match Lc
+- Gree U-Match U7
+- Gree U-Match qC
+- Gree U-Match PA
+- Gree U-Match PL
+- Gree U-Match PH
+- Gree U-Match C8
+- Gree U-Match EL
+- Gree U-Match Fo
+- Gree U-Match H1
+- Gree U-Match CL
+- Gree U-Match d1
+- Gree U-Match GUD125W1/NhB-S E1
+- Gree U-Match GUD160PHS1/B-S E0
+- Gree U-Match GUD71PH1/B-S E9
+- /last
+
+Production logs were clean. Telegram updates 41768405 through 41768417 were processed successfully.
 
 ## Current blocker
 
@@ -60,15 +107,30 @@ None.
 
 ## Important decisions
 
-GMV Mini function-setting/status codes must stay non-alarming.
+U-Match R32 is a semi-commercial split product family, not GMV/VRF.
 
-For q/n service function codes, visible wording must not imply that the requested model is wrong just because the source function list was associated with GMV-141WL/C-T.
+Do not mix U-Match runtime cards with:
 
-Preferred wording:
+- GMV6
+- GMV X
+- GMV Mini
+- GMV9 Flex
 
-"Для некоторых моделей GMV Mini набор сервисных функций отличается. Перед изменением настройки проверьте доступность этой функции для конкретной модели наружного блока."
+U-Match status/mode codes must remain non-alarming:
 
-Do not use public/user-visible provenance wording such as:
+- Fo — refrigerant recovery/service mode, not a component fault
+- H1 — ordinary defrosting, not a component fault
+- CL — automatic cleaning, not a component fault
+- d1/d2/d3 — DRED demand response modes, not component faults
+
+U-Match communication codes must stay distinct:
+
+- E6 — outdoor unit and indoor unit communication error
+- C0 — wired controller and indoor unit communication failure
+
+U-Match E1/E3 pressure protection wording may mention that pressure switch protection applies to 125/140/160 outdoor units where relevant.
+
+Visible Telegram answers must not leak internal/provenance terms such as:
 
 - manual
 - source
@@ -77,32 +139,21 @@ Do not use public/user-visible provenance wording such as:
 - по таблице
 - основание
 - руководство
+- Подтвердите код
+- Сверьте модель
+
+Do not use public claims about exact external parity.
 
 ## Files changed recently
 
-ED-24GMVMINI.1-2:
+ED-24UMATCH.1-2:
 
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/**
-- data/equipment-diagnostics/error-knowledge/packages/gree-gmv-mini-vrf-*.json
-- data/equipment-diagnostics/equipment-catalog/gree-vrf-equipment-map.json
+- data/equipment-diagnostics/error-knowledge/gree/umatch-r32/system/**
+- data/equipment-diagnostics/error-knowledge/packages/gree-umatch-r32-error-codes.json
 - data/equipment-diagnostics/manual-library/manuals.json
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/**
-
-ED-24GMVMINI.4:
-
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/n3.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/n5.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/nl.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/nu.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/q7.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/q8.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/q9.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/qd.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/qf.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/ql.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/qn.json
-- data/equipment-diagnostics/error-knowledge/gree/gmv-mini/status/qu.json
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvMiniVisibleWording12_2Tests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeUMatchManualAudit1_2Tests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeUMatchErvImport24Tests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/ManualCoverageRegistryTests.cs
 
 No production env changes.
 No EF migrations.
@@ -110,32 +161,23 @@ No generated artifacts committed.
 
 ## Validation status
 
-ED-24GMVMINI.1-2:
+ED-24UMATCH.1-2:
 
-- Focused diagnostics/Telegram: 1352/1352 PASS
-- Branch readiness: PASS
-- Restore: PASS
-- Build: PASS, 0 warnings
-- Full suite: 5314/5314 PASS
-- Engineering Core V1: PASS
+- Focused U-Match tests: 66/66 PASS
+- Full suite: 5353/5353 PASS
+- Engineering Core V1 verifier: PASS
 - PR checks: 7/7 PASS
 - Master CI after merge: PASS
-- Production smoke: PASS
-
-ED-24GMVMINI.4:
-
-- GMV Mini focused: 91/91 PASS
-- Restore: PASS
-- Build: PASS, 0 warnings
-- Full suite: 5319/5319 PASS
-- Engineering Core V1: PASS
 - git diff --check: PASS
-- PR checks: 7/7 PASS
-- Production smoke: PASS
+- Non-U-Match Gree runtime JSON changes: none
+- U-Match runtime count: 107
+- Gree runtime count: 1308
+
+ED-24UMATCH.3:
+
+- VPS deploy: PASS
+- Telegram smoke: PASS
 - Production logs: clean
-- GMV Mini counts unchanged: 148 total, 27 indoor, 62 outdoor, 59 status
-- Gree runtime count unchanged: 1308
-- GMV6, GMV X and GMV9 Flex runtime JSON unchanged
 
 ## Known backlog
 
@@ -143,8 +185,8 @@ ED-24UX.LAST — Improve /last display to preserve matched series/model label.
 
 Current behavior:
 
-- /last works and preserves the latest code.
-- It may display `Gree C0` instead of preserving the matched series/model label such as `Gree GMV Mini C0`.
+- /last works and preserves the latest code and meaning.
+- It may display a short label such as `Gree E9` instead of preserving the matched series/model label such as `Gree U-Match R32 E9` or `Gree GMV Mini C0`.
 
 This is not a production blocker.
 
@@ -153,6 +195,11 @@ ED-24OPS.CLEANUP — Move VPS env backups outside repo or ignore safe backup pat
 CI maintenance:
 
 - Node.js 20 deprecation warning remains future maintenance.
+
+Flaky/infrastructure watch:
+
+- SQLite idempotency integration test has historical flakiness:
+  - EngineeringWorkflowSqliteProviderPersistsIdempotencyAcrossFactoryRestart
 
 ## Next step
 
