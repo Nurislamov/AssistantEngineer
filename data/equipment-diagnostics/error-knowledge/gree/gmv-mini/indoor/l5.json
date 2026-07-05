@@ -24,12 +24,17 @@
     "GMV-120WL/C-X",
     "GMV-140WL/C-X",
     "GMV-160WL/C-X",
+    "GMV-180WL/C-X(D)",
     "GMV-H224WL/A-X",
     "GMV-H280WL/A-X",
     "GMV-H335WL/A-X",
     "GMV-224WL/C-X",
     "GMV-280WL/C-X",
-    "GMV-335WL/C-X"
+    "GMV-335WL/C-X",
+    "GMV-280WL/C1-X",
+    "GMV-335WL/C1-X",
+    "GMV-280WL/C1-X(S)",
+    "GMV-335WL/C1-X(S)"
   ],
   "code": "L5",
   "signalType": "Protection",
@@ -41,13 +46,13 @@
   "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
   "sourceLanguage": "en",
   "sourceType": "Manual",
-  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
   "sourceMeaning": "Freeze prevention protection",
   "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
   "sourceReferences": [
     {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
       "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
       "sourceType": "Manual",
       "sourceLanguage": "en",
@@ -61,7 +66,7 @@
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-27T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z",
+  "updatedAt": "2026-07-05T00:00:00Z",
   "texts": [
     {
       "locale": "ru",
@@ -69,7 +74,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-l5-ru-consumer",
       "audience": "Consumer",
       "title": "Gree GMV Mini L5 — защита от замерзания",
@@ -84,8 +89,8 @@
         "Не делайте вывод о замене компонента только по коду L5.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и сопутствующими кодами.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     },
     {
       "locale": "ru",
@@ -93,7 +98,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-l5-ru-installer",
       "audience": "Installer",
       "title": "Gree GMV Mini L5 — защита от замерзания",
@@ -108,8 +113,8 @@
         "Не делайте вывод о замене компонента только по коду L5.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и сопутствующими кодами.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     },
     {
       "locale": "ru",
@@ -117,7 +122,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-l5-ru-engineer",
       "audience": "Engineer",
       "title": "Gree GMV Mini L5 — защита от замерзания",
@@ -132,8 +137,8 @@
         "Не делайте вывод о замене компонента только по коду L5.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и сопутствующими кодами.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     }
   ]
 }

@@ -36,6 +36,80 @@ public sealed class GreeGmvMiniRouting12_1Tests
         Assert.DoesNotContain("не нашёл точную расшифровку", response.Text, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Theory]
+    [InlineData("Gree GMV Mini C0", "Gree GMV Mini — C0")]
+    [InlineData("Gree GMV Mini E1", "Gree GMV Mini — E1")]
+    [InlineData("Gree GMV Mini E3", "Gree GMV Mini — E3")]
+    [InlineData("Gree GMV Mini E4", "Gree GMV Mini — E4")]
+    [InlineData("Gree GMV Mini F1", "Gree GMV Mini — F1")]
+    [InlineData("Gree GMV Mini F3", "Gree GMV Mini — F3")]
+    [InlineData("Gree GMV Mini qL", "Gree GMV Mini — qL")]
+    [InlineData("Gree GMV Mini QL", "Gree GMV Mini — qL")]
+    [InlineData("Gree GMV Mini qF", "Gree GMV Mini — qF")]
+    [InlineData("Gree GMV Mini QF", "Gree GMV Mini — qF")]
+    [InlineData("Gree GMV Mini GMV-141WL/C-T qL", "Gree GMV Mini — qL")]
+    [InlineData("Gree GMV Mini GMV-180WL/C-X(D) E1", "Gree GMV Mini — E1")]
+    [InlineData("Gree GMV Mini GMV-280WL/C1-X qL", "Gree GMV Mini — qL")]
+    [InlineData("Gree GMV Mini GMV-335WL/C1-X(S) C0", "Gree GMV Mini — C0")]
+    public async Task AuditedMiniQueriesUseExpectedSeriesAndCodeCasing(
+        string query,
+        string expected)
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains(expected, response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree GMV6", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree GMV X", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree GMV9 Flex", response.Text, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Gmv141FunctionCodeHonorsRuntimeModelFilter()
+    {
+        using var provider = CreateProvider();
+        var bot = provider.GetRequiredService<IEquipmentDiagnosticBotService>();
+
+        var matched = await bot.DiagnoseAsync(new EquipmentDiagnosticBotRequest(
+            Manufacturer: "Gree",
+            Code: "qL",
+            Series: "GMV Mini",
+            ModelCode: "GMV-141WL/C-T"));
+        var unmatched = await bot.DiagnoseAsync(new EquipmentDiagnosticBotRequest(
+            Manufacturer: "Gree",
+            Code: "qL",
+            Series: "GMV Mini",
+            ModelCode: "GMV-280WL/C1-X"));
+
+        Assert.Equal(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, matched.Status);
+        Assert.NotEqual(EquipmentDiagnosticBotResponseStatus.ReferenceOnly, unmatched.Status);
+    }
+
+    [Theory]
+    [InlineData("Gree GMV Mini C0", "кабел")]
+    [InlineData("Gree GMV Mini E1", "манометр")]
+    [InlineData("Gree GMV Mini E3", "герметич")]
+    [InlineData("Gree GMV Mini E4", "сопротивление датчика")]
+    [InlineData("Gree GMV Mini F1", "постоянного напряжения")]
+    [InlineData("Gree GMV Mini P8", "крепление модулей IPM")]
+    [InlineData("Gree GMV Mini PH", "185-264 В")]
+    [InlineData("Gree GMV Mini C2", "процессорной платы")]
+    public async Task AuditedFaultAnswersContainFlowchartBasedChecks(string query, string expected)
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains(expected, response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.All(ForbiddenVisiblePhrases, fragment =>
+            Assert.DoesNotContain(fragment, response.Text, StringComparison.OrdinalIgnoreCase));
+    }
+
     [Fact]
     public async Task ExplicitMiniQueryDoesNotFallbackToGmv6WhenMiniCodeIsMissing()
     {
@@ -123,4 +197,17 @@ public sealed class GreeGmvMiniRouting12_1Tests
 
     private static EquipmentDiagnosticTelegramUpdate Update(string text) =>
         new(UpdateId: 1, ChatId: 7, Username: "operator", Text: text, UserId: 11);
+
+    private static readonly string[] ForbiddenVisiblePhrases =
+    [
+        "Подтвердите код",
+        "Сверьте модель",
+        "по таблице",
+        "основани",
+        "руководств",
+        "manual",
+        "source",
+        "packageId",
+        "карточка неисправности"
+    ];
 }

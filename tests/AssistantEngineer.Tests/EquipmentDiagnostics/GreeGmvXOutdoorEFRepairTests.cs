@@ -101,7 +101,7 @@ public sealed class GreeGmvXOutdoorEFRepairTests
         Assert.Equal(58, alreadyRepaired);
         Assert.Equal(107, detailedRemaining);
         Assert.Equal(263, entries.Length);
-        Assert.Equal(1296, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1308, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(121, Directory.GetFiles(OutdoorRoot, "*.json").Length);
         Assert.Equal(60, Directory.GetFiles(Path.Combine(GmvXRoot, "indoor"), "*.json").Length);
         Assert.Equal(44, Directory.GetFiles(Path.Combine(GmvXRoot, "status"), "*.json").Length);

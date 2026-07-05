@@ -24,12 +24,17 @@
     "GMV-120WL/C-X",
     "GMV-140WL/C-X",
     "GMV-160WL/C-X",
+    "GMV-180WL/C-X(D)",
     "GMV-H224WL/A-X",
     "GMV-H280WL/A-X",
     "GMV-H335WL/A-X",
     "GMV-224WL/C-X",
     "GMV-280WL/C-X",
-    "GMV-335WL/C-X"
+    "GMV-335WL/C-X",
+    "GMV-280WL/C1-X",
+    "GMV-335WL/C1-X",
+    "GMV-280WL/C1-X(S)",
+    "GMV-335WL/C1-X(S)"
   ],
   "code": "AJ",
   "signalType": "Maintenance",
@@ -41,13 +46,13 @@
   "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
   "sourceLanguage": "en",
   "sourceType": "Manual",
-  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
   "sourceMeaning": "Clean alarming for filter",
   "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
   "sourceReferences": [
     {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
       "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
       "sourceType": "Manual",
       "sourceLanguage": "en",
@@ -58,8 +63,8 @@
       "notes": "Primary GMV Mini/System II source for this entry."
     },
     {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
       "sourceReference": "Outdoor main-board status display table, PDF pages 82-83 / manual pages 78-79",
       "sourceType": "Manual",
       "sourceLanguage": "en",
@@ -73,7 +78,7 @@
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-23T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z",
+  "updatedAt": "2026-07-05T00:00:00Z",
   "texts": [
     {
       "locale": "ru",
@@ -81,7 +86,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-aj-ru-consumer",
       "audience": "Consumer",
       "title": "Gree GMV Mini AJ — предупреждение о необходимости очистки фильтра",
@@ -97,7 +102,7 @@
         "Не меняйте параметры платы только по этому коду."
       ],
       "recommendedAction": "Если это штатный режим просмотра или настройки, отдельное действие не требуется; при жалобе на работу нужна сервисная диагностика.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     },
     {
       "locale": "ru",
@@ -105,7 +110,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-aj-ru-installer",
       "audience": "Installer",
       "title": "Gree GMV Mini AJ — предупреждение о необходимости очистки фильтра",
@@ -121,7 +126,7 @@
         "Не меняйте параметры платы только по этому коду."
       ],
       "recommendedAction": "Если это штатный режим просмотра или настройки, отдельное действие не требуется; при жалобе на работу нужна сервисная диагностика.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     },
     {
       "locale": "ru",
@@ -129,7 +134,7 @@
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-aj-ru-engineer",
       "audience": "Engineer",
       "title": "Gree GMV Mini AJ — предупреждение о необходимости очистки фильтра",
@@ -145,7 +150,7 @@
         "Не меняйте параметры платы только по этому коду."
       ],
       "recommendedAction": "Если это штатный режим просмотра или настройки, отдельное действие не требуется; при жалобе на работу нужна сервисная диагностика.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     }
   ]
 }

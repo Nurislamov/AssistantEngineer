@@ -39,7 +39,16 @@ public sealed partial class GreeGmvMiniVisibleWording12_2Tests
         "Detect indoor",
         "неисправность for",
         "неисправность of",
-        "защита for"
+        "защита for",
+        "Подтвердите код",
+        "Сверьте модель",
+        "по таблице",
+        "основани",
+        "руководств",
+        "manual",
+        "source",
+        "packageId",
+        "карточка неисправности"
     ];
 
     private static readonly string[] SmokeQueries =
@@ -53,14 +62,20 @@ public sealed partial class GreeGmvMiniVisibleWording12_2Tests
         "Gree GMV Mini b1",
         "Gree GMV Mini E0",
         "Gree GMV Mini P0",
-        "Gree GMV Mini n2"
+        "Gree GMV Mini n2",
+        "Gree GMV Mini C0",
+        "Gree GMV Mini E1",
+        "Gree GMV Mini E3",
+        "Gree GMV Mini E4",
+        "Gree GMV Mini qL",
+        "Gree GMV Mini qF"
     ];
 
     [Fact]
     public void AllGmvMiniVisibleTextsUsePolishedRussianWording()
     {
         var files = Directory.GetFiles(MiniRuntimeDirectory, "*.json", SearchOption.AllDirectories);
-        Assert.Equal(136, files.Length);
+        Assert.Equal(148, files.Length);
 
         foreach (var file in files)
         {

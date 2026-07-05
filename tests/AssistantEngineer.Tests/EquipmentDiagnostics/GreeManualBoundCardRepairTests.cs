@@ -1299,14 +1299,14 @@ public sealed class GreeManualBoundCardRepairTests
         {
             ["GMV6 HR"] = 262,
             ["GMV6"] = 263,
-            ["GMV Mini"] = 136,
+            ["GMV Mini"] = 148,
             ["GMV X"] = 263,
             ["GMV9 Flex"] = 260,
             ["U-Match R32"] = 107,
             ["ERV B Series"] = 5
         };
 
-        Assert.Equal(1296, entries.Length);
+        Assert.Equal(1308, entries.Length);
         foreach (var (series, expectedCount) in expectedSeriesCounts)
         {
             Assert.Equal(

@@ -181,7 +181,7 @@ public sealed class GreeGmvXIndoorRemainingRepairTests
                 Category: new DirectoryInfo(Path.GetDirectoryName(path)!).Name))
             .ToArray();
 
-        Assert.Equal(1296, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1308, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(263, entries.Length);
         Assert.Equal(121, entries.Count(entry => entry.Category == "outdoor"));
         Assert.Equal(60, entries.Count(entry => entry.Category == "indoor"));

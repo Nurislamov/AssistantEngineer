@@ -7,7 +7,7 @@
   "description": "Manual-bound outdoor main-board status, commissioning, debug, and function entries from the GMV Mini/System II service manual.",
   "sourceLanguage": "en",
   "sourceType": "Manual",
-  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
   "sourceReference": "Outdoor main-board status display table, PDF page 83 / manual page 79",
   "verificationStatus": "ManualVerified",
   "confidence": "High",
@@ -25,8 +25,8 @@
   "intendedDisplaySources": [
     "OutdoorBoard"
   ],
-  "entryCountExpected": 47,
-  "notes": "One-manual source boundary: SERVICE_MANUAL_GMV_MINI.pdf only. These codes are status/function displays, not standalone fault conclusions.",
+  "entryCountExpected": 59,
+  "notes": "GMV Mini slim side-outlet manual boundary; document code GC202510-XIX. These codes are status/function displays, not standalone fault conclusions.",
   "createdAt": "2026-06-23T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z"
+  "updatedAt": "2026-07-05T00:00:00Z"
 }

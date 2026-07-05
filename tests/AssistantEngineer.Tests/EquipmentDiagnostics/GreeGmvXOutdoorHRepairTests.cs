@@ -86,7 +86,7 @@ public sealed class GreeGmvXOutdoorHRepairTests
     [Fact]
     public void StageHRuntimeCountsRemainStable()
     {
-        Assert.Equal(1296, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1308, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(263, Directory.GetFiles(GmvXRoot, "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(121, Directory.GetFiles(OutdoorRoot, "*.json").Length);
         Assert.Equal(60, Directory.GetFiles(Path.Combine(GmvXRoot, "indoor"), "*.json").Length);
