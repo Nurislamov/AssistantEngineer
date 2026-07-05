@@ -2,225 +2,151 @@
 
 ## Current stage
 
-ED-24BOT.1 CLOSED / merged to master / CI PASS
+ED-24GMVFLEX.5 — PROJECT_STATE checkpoint after GMV9 Flex production pass.
+
+GMV9 Flex diagnostics are CLOSED / production PASS.
 
 ## Current branch
 
 master
 
+## Current commits
+
+- Current master: bb57ebaa
+- PR #51 merge commit: bb57ebaa
+- Implementation commit: 69c04ca2
+- Previous stable master before GMV9 Flex merge: 6de11046
+
 ## Last completed work
 
-ED-24BOT.1 completed the first Telegram handler pipeline architecture refactor and was merged to `master`.
+ED-24GMVFLEX.1-3 was completed, merged to master, and passed CI.
 
-Merge commit:
+Scope:
+- Audited and normalized existing GMV9 Flex diagnostic knowledge.
+- Preserved GMV9 Flex package counts:
+  - outdoor: 120
+  - indoor: 60
+  - status: 43
+  - debugging: 37
+  - total: 260
+- Removed forbidden visible service/source wording from GMV9 Flex Telegram diagnostic answers.
+- A0 and A2 were normalized as neutral status/informational answers.
+- bJ, bn, and C0 received practical troubleshooting checks from the GMV9 Flex service manual troubleshooting section.
+- 173 cards are linked to Troubleshooting evidence.
+- 87 cards remain Error Indication only.
+- ManualVerified / High metadata, manualId, and document code GC202512-I were preserved.
+- GMV-450WML/A-X(D) model coverage was added for GMV9 Flex.
+- Equipment map was synchronized to the existing Imported convention.
+- Runtime code was not changed; GMV9 Flex was already active through embedded JSON glob and EquipmentDiagnosticsJsonKnowledgeSource.
+- GMV6, GMV X, and GMV Mini diagnostic content were not changed.
 
-- 15fe2919 Merge pull request #48 from Nurislamov/ed-24bot-1-telegram-handler-pipeline
+ED-24GMVFLEX.4 was completed on production.
 
-Included commits:
+Production:
+- VPS: assistantengineer-beta-01
+- Production repo path: /opt/assistantengineer
+- Production commit: bb57ebaa
+- API container recreated and running.
+- Telegram polling started.
+- Telegram deleteWebhook on startup succeeded.
+- Production logs were clean during smoke: no unhandled exception, JSON parse error, duplicate key error, or polling failure observed.
 
-- 3c23b76b ED-24BOT.1 Introduce Telegram handler pipeline
-- 3895e232 ED-24BOT.1a Allow Telegram pipeline architecture readiness test
-
-Previous base before ED-24BOT.1:
-
-- 979ff00f Fix Program composition root migration command boundary
-- 99b8eef0 ED-24GMVX.17 Close production pass and fix review exporter
-
-ED-24BOT.1 changed architecture only:
-
-- `EquipmentDiagnosticTelegramAdapter` was reduced from a large coordinator/God-object into a thin pipeline runner.
-- Added deterministic Telegram update handler pipeline.
-- Extracted guard, callback, and message/diagnostic handling paths.
-- Registered handlers in DI in fixed order.
-- Added architecture tests to protect the pipeline shape.
-- Added a targeted readiness-policy allow-path for the new Telegram pipeline architecture test.
-- Preserved existing Telegram runtime behavior and expected outputs.
-
-No runtime diagnostic content was changed in ED-24BOT.1:
-
-- JSON diagnostic cards: unchanged
-- Diagnostic catalogs: unchanged
-- Manuals/manifests: unchanged
-- Production env: unchanged
-- EF migrations: unchanged
-- Generated ZIP/PDF/manual binaries: unchanged
-
-Previously closed production milestones remain closed:
-
-- GMV6: CLOSED / production PASS
-- GMV X: CLOSED / production PASS
-
-GMV X closure summary:
-
-- ED-24GMVX.16 closed the repository runtime catalog.
-- ED-24GMVX.17 fixed the local GMV X review-bundle exporter plus script inventory metadata without changing runtime diagnostic cards.
-- GMV X production deploy/smoke PASS.
-- Manual GMV X archive review PASS.
-- Runtime card count: 263/263.
-- Outdoor: 121.
-- Indoor: 60.
-- Status: 44.
-- Debugging: 38.
-
-GMV6 closure summary:
-
-- GMV6 remains CLOSED / production PASS.
-- Production Telegram smoke confirmed real card CheckSteps are rendered.
-- GMV6 titles are shown as Gree GMV6, not generic Gree GMV.
-- Table-only/status/debugging cards stay short and safe.
-- No visible manual/source/packageId/table-provenance wording leaks into Telegram.
+Telegram production smoke PASS:
+- Gree GMV9 Flex A0
+- Gree GMV9 Flex A2
+- Gree GMV9 Flex bJ
+- Gree GMV9 Flex BJ
+- Gree GMV9 Flex bj
+- Gree GMV9 Flex bn
+- Gree GMV9 Flex BN
+- Gree GMV9 Flex C0
+- Gree GMV9 Flex GMV-450WML/A-X(D) C0
+- /last checked after C0
 
 ## Current blocker
 
-None.
+None for GMV9 Flex production close.
+
+## Known follow-up notes
+
+1. /last preserves the last code C0, but the display currently shows it as "Gree C0" without the matched GMV9 Flex series label.
+   Suggested backlog:
+   ED-24UX.LAST — Improve /last display to preserve matched series/model label.
+
+2. VPS repository has old untracked env backup files under deploy/:
+   - deploy/.env.before-ed-24ops2-20260630T021054Z
+   - deploy/.env.before-operator-inbox-20260630T021726Z
+
+   These files did not block GMV9 Flex deployment because they are old backup files and not runtime code.
+   Suggested backlog:
+   ED-24OPS.CLEANUP — Move VPS env backups outside repo or ignore backup pattern safely.
 
 ## Important decisions
 
-- Telegram bot is production-ready for the current scale.
-- Do not keep expanding `EquipmentDiagnosticTelegramAdapter`.
-- Keep the current monolith for now; do not introduce Redis, Webhook migration, Hangfire, or a separate Telegram service prematurely.
-- Use KISS/SOLID inside the current monolith first.
-- Telegram adapter must remain a thin coordinator/pipeline runner.
-- New Telegram feature paths should be implemented through handlers/pipeline structure, not by growing the adapter again.
-- Branch readiness guards are useful and should remain active.
-- ED-24BOT.1a fixed a false positive in readiness policy using an exact allow-path only for `tests/AssistantEngineer.Tests/Architecture/TelegramHandlerPipelineArchitectureTests.cs`.
-- The general forbidden Telegram guard remains active.
-- Do not weaken diagnostic card evidence rules or branch scope guards just to pass CI.
-- Public documentation and UI must not claim `pyBuildingEnergy parity` or exact EnergyPlus parity.
-- Preferred public wording remains:
-  - standard-based
-  - standard-inspired
-  - external reference validation
-  - engineering-core validation
-- For Telegram diagnostic cards, visible user-facing answers must not leak internal provenance wording such as:
-  - Подтвердите код
-  - Сверьте модель
-  - по таблице
-  - основание
-  - руководство
-  - manual
-  - source
-  - packageId
-  - карточка неисправности
-- PDF/manual binaries and generated review archives must not be committed.
+- GMV9 Flex was not imported again from scratch.
+- Existing 260 GMV9 Flex cards were normalized and tested.
+- Manual evidence was aligned against the GMV9 Flex service manual Chapter 3:
+  - Error Indication
+  - Troubleshooting
+  - Common Malfunctions reviewed but not used as code-specific evidence
+- No PDF/manual binaries were committed.
+- No generated ZIP/manual-review artifacts were committed.
+- No production env changes were made.
+- No migrations were added.
+- No deployment scripts were changed.
+- PROJECT_STATE.md is updated only after production PASS.
 
 ## Files changed recently
 
-ED-24BOT.1 / ED-24BOT.1a key files:
+ED-24GMVFLEX.1-3 changed:
+- data/equipment-diagnostics/error-knowledge/gree/gmv9-flex/**
+- data/equipment-diagnostics/equipment-catalog/gree-vrf-equipment-map.json
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmv9FlexImport15Tests.cs
 
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/EquipmentDiagnosticsModuleServiceCollectionExtensions.cs
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/EquipmentDiagnosticTelegramAdapter.cs
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/ITelegramUpdateHandler.cs
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/TelegramUpdateHandlerPipeline.cs
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/Handlers/TelegramUpdateGuardHandler.cs
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/Handlers/TelegramCallbackUpdateHandler.cs
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/Handlers/TelegramMessageUpdateHandler.cs
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Verification/BranchReadinessVerificationService.cs
-- tests/AssistantEngineer.Tests/Architecture/TelegramHandlerPipelineArchitectureTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticsManualIntakePipelineTests.cs
-
-Recent GMV X / GMV6 areas kept for context:
-
-- data/equipment-diagnostics/error-knowledge/gree/gmv6/**
-- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/EquipmentDiagnosticTelegramResponseFormatter.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeManualBoundCardRepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramFormatterTests.cs
-- docs/equipment-diagnostics/manual-bound-card-repair.md
-- docs/equipment-diagnostics/manual-coverage.md
-- docs/equipment-diagnostics/README.md
-- scripts/equipment-diagnostics/invoke-gmv6-manual-bound-closure-inventory.ps1
-- scripts/equipment-diagnostics/invoke-gmvx-manual-bound-closure-inventory.ps1
-- scripts/equipment-diagnostics/export-gmvx-card-review-bundle.ps1
-- docs/architecture/scripts-tools-inventory.json
-- docs/architecture/scripts-tools-inventory.md
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXManualBoundInventoryTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXStatusPromptRepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorSensorRepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorEFRepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorFRepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorHRepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXOutdoorJPRepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXIndoorDetailedBatch1RepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXStatusDebuggingTableOnlyRepairTests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmvXFinalClosureTests.cs
+ED-24GMVFLEX.5 changes:
+- PROJECT_STATE.md
 
 ## Validation status
 
-ED-24BOT.1 local validation before commit:
+CI on PR #51:
+- 7/7 checks PASS.
+- Engineering Core V1 PASS.
+- Engineering Core V1 Contracts PASS.
+- Engineering Core V1 Smoke PASS.
+- Engineering Core V1 Validation PASS.
+- ISO52016 Matrix release-ready PASS.
+- EquipmentDiagnostics Branch Readiness PASS.
 
-- Restore: PASS
-- Build: PASS, 0 warnings / 0 errors
-- Telegram focused suite: PASS, 534/534
-- New architecture tests: PASS, 4/4
-- Full backend suite: PASS, 5234/5234
-- Engineering Core V1 verification: PASS
-- git diff --check: PASS
-- JSON/cards/catalogs/manuals/env/migrations: unchanged
+Master after merge:
+- master at bb57ebaa.
+- origin/master at bb57ebaa.
+- master push checks PASS.
 
-ED-24BOT.1a local validation:
+Local validation reported before merge:
+- Restore PASS.
+- Build PASS with existing nullable warnings.
+- GMV9 focused tests PASS: 39/39.
+- Telegram/JSON/catalog focused tests PASS: 176/176.
+- Full backend PASS: 5258/5258.
+- Branch readiness PASS.
+- git diff --check PASS.
+- Engineering Core verifier PASS in CI.
 
-- Branch readiness: PASS, 0 blockers, 0 forbidden
-- Policy tests: PASS, 45/45
-- Restore: PASS
-- Build: PASS, 0 warnings / 0 errors
-- Full backend suite: PASS, 5236/5236
-- Engineering Core V1 verification: PASS
-- git diff --check: PASS
-- Runtime code, cards, JSON catalogs, manuals, manifests, env and migrations: unchanged
-
-ED-24BOT.1 PR / CI validation:
-
-- PR: #48
-- GitHub Actions: PASS, 10/10 checks successful
-- EquipmentDiagnostics Branch Readiness: PASS
-- Deployment Dry Run: PASS
-- Engineering Core V1 Contracts: PASS
-- Engineering Core V1 Smoke: PASS
-- Engineering Core V1 verification: PASS
-- Engineering Core V1 Validation matrix: PASS
-- ISO52016 Matrix release-ready: PASS
-
-ED-24GMVX.17 validation retained for historical context:
-
-- GMV X review-bundle exporter: PASS
-- 263 cards exported
-- Counts: outdoor 121 / indoor 60 / status 44 / debugging 38
-- Parse check: PASS
-- Count check: PASS
-- Pattern flags: 0
-- Engineering Core V1 verification: PASS
-- Full backend suite: PASS, 5229/5229
-- dotnet restore: PASS
-- dotnet build: PASS, 6 existing nullable warnings / 0 errors
-- EquipmentDiagnostics filter: PASS, 1205/1205
-- Telegram filter: PASS, 646/646
-
-Production validation retained for historical context:
-
-- GMV6 production deploy/smoke: PASS
-- GMV X production deploy/smoke: PASS
-- Telegram polling: PASS
-- Manual GMV X archive review: PASS, 263/263 cards
-- Migrations: none
-- Env changes: none
-- PDF/manual binaries committed: none
-- Generated ZIP/manual-review artifacts committed: none
+Production validation:
+- Deploy PASS.
+- API container running.
+- Telegram polling clean.
+- Telegram GMV9 Flex smoke PASS.
+- Logs clean for the smoke window.
 
 ## Next step
 
-Recommended next stages:
+Recommended next stage:
 
-1. ED-24CI.1 — Stabilize branch readiness diagnostics.
-   - Make readiness failures easier to understand directly from CI console output.
-   - Print blocker code, file, reason, and suggested fix without requiring manual inspection of a huge JSON report.
-   - Keep guards strict; improve diagnostics rather than weakening policy.
+ED-24GMVFLEX.6 — Optional final GMV9 Flex review archive / documentation checkpoint
 
-2. ED-24GMVFLEX.1 — GMV Flex / GMV9 Flex inventory.
-   - Start in a separate branch.
-   - Inventory first, runtime cards later.
-   - Do not mix Flex/Mini/LCAC in one branch.
+or move directly to the next diagnostic/manual series after confirming priority.
 
-3. ED-24GMVMINI.1 — GMV Mini inventory.
-   - Separate branch after Flex inventory or after CI diagnostics stabilization.
-
-Keep GMV6 and GMV X closed and out of scope unless a production regression appears.
+Backlog candidates:
+- ED-24UX.LAST — Improve /last display to preserve matched series/model label.
+- ED-24OPS.CLEANUP — Move VPS env backups outside repo or ignore backup pattern safely.
