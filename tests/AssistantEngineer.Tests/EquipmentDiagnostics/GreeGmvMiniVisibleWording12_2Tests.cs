@@ -16,6 +16,24 @@ public sealed partial class GreeGmvMiniVisibleWording12_2Tests
         "gree",
         "gmv-mini");
 
+    private static readonly string GreeRuntimeDirectory = Path.GetDirectoryName(MiniRuntimeDirectory)!;
+
+    private static readonly string[] FunctionSettingCardFiles =
+    [
+        "qd.json",
+        "n3.json",
+        "n5.json",
+        "nl.json",
+        "nu.json",
+        "q7.json",
+        "q8.json",
+        "q9.json",
+        "qf.json",
+        "ql.json",
+        "qn.json",
+        "qu.json"
+    ];
+
     private static readonly string[] ForbiddenFragments =
     [
         " - ",
@@ -76,6 +94,10 @@ public sealed partial class GreeGmvMiniVisibleWording12_2Tests
     {
         var files = Directory.GetFiles(MiniRuntimeDirectory, "*.json", SearchOption.AllDirectories);
         Assert.Equal(148, files.Length);
+        Assert.Equal(27, Directory.GetFiles(Path.Combine(MiniRuntimeDirectory, "indoor"), "*.json").Length);
+        Assert.Equal(62, Directory.GetFiles(Path.Combine(MiniRuntimeDirectory, "outdoor"), "*.json").Length);
+        Assert.Equal(59, Directory.GetFiles(Path.Combine(MiniRuntimeDirectory, "status"), "*.json").Length);
+        Assert.Equal(1308, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
 
         foreach (var file in files)
         {
@@ -96,6 +118,42 @@ public sealed partial class GreeGmvMiniVisibleWording12_2Tests
                         Assert.DoesNotContain(fragment, visible, StringComparison.OrdinalIgnoreCase));
                     Assert.DoesNotMatch(ForbiddenEnglishTechnicalWordPattern(), visible);
                 }
+            }
+        }
+    }
+
+    [Theory]
+    [InlineData("Gree GMV Mini GMV-224WL/C1-X qL")]
+    [InlineData("Gree GMV Mini GMV-280WL/C1-X qL")]
+    [InlineData("Gree GMV Mini GMV-141WL/C-T qL")]
+    [InlineData("Gree GMV Mini qF")]
+    public async Task FunctionSettingAnswersUseModelSafeNonAlarmingWording(string query)
+    {
+        using var provider = CreateProvider();
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update(query));
+
+        Assert.Equal(EquipmentDiagnosticTelegramResponseKind.Reply, response.ResponseKind);
+        Assert.Contains("сервисную настройку", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("не признак отказа компонента", response.Text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("для модели GMV-141WL/C-T", response.Text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void FunctionSettingCardsDoNotExposeHardcodedModelInstructions()
+    {
+        foreach (var fileName in FunctionSettingCardFiles)
+        {
+            var root = ReadObject(Path.Combine(MiniRuntimeDirectory, "status", fileName));
+
+            foreach (var text in RequiredArray(root, "texts").OfType<JsonObject>())
+            {
+                Assert.All(VisibleValues(text), visible =>
+                    Assert.DoesNotContain(
+                        "для модели GMV-141WL/C-T",
+                        visible,
+                        StringComparison.OrdinalIgnoreCase));
             }
         }
     }
