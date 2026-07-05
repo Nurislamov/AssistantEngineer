@@ -86,7 +86,7 @@ public sealed class GreeGmvXManualBoundInventoryTests
         Assert.Equal(60, entries.Count(entry => entry.Category == "indoor"));
         Assert.Equal(44, entries.Count(entry => entry.Category == "status"));
         Assert.Equal(38, entries.Count(entry => entry.Category == "debugging"));
-        Assert.Equal(1296, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1308, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
     }
 
     [Fact]

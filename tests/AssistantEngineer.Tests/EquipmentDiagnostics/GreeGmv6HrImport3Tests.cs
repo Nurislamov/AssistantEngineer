@@ -22,10 +22,10 @@ public sealed class GreeGmv6HrImport3Tests
     {
         Assert.Equal(263, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv6"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(262, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv6-hr"), "*.json", SearchOption.AllDirectories).Length);
-        Assert.Equal(136, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-mini"), "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(148, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-mini"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(263, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv-x"), "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(260, Directory.GetFiles(Path.Combine(GreeRuntimeDirectory, "gmv9-flex"), "*.json", SearchOption.AllDirectories).Length);
-        Assert.Equal(1296, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1308, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
 
         AssertPackageCount("gree-gmv6-hr-indoor-fault-codes.json", 60);
         AssertPackageCount("gree-gmv6-hr-outdoor-fault-protection-codes.json", 120);

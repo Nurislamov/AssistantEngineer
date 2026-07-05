@@ -1540,9 +1540,9 @@
       "equipmentFamily": "VRF",
       "equipmentType": "VRFSystem",
       "series": "GMV Mini",
-      "modelScope": "DC Inverter Multi VRF System II / GMV Mini outdoor-unit model families listed in SERVICE_MANUAL_GMV_MINI.pdf: GMV-80/100/121/141/120/140/160 WL variants and GMV-H224/H280/H335 WL variants.",
-      "documentTitle": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
+      "modelScope": "GMV Mini slim side-outlet outdoor units from 8.0 to 33.5 kW, including GMV-180WL/C-X(D), GMV-280/335WL/C1-X and C1-X(S) variants.",
+      "documentTitle": "DC INVERTER VRF SYSTEM (R410A)",
+      "documentCode": "GC202510-XIX",
       "sourceLanguage": "en",
       "sourceKind": "ServiceManual",
       "fileFormat": "PDF",
@@ -1554,7 +1554,7 @@
         "gree-gmv-mini-vrf-outdoor-protection-codes",
         "gree-gmv-mini-vrf-status-codes"
       ],
-      "entriesImported": 136,
+      "entriesImported": 148,
       "categoriesImported": [
         "IndoorSourceReferences",
         "OutdoorSourceReferences",
@@ -1570,13 +1570,15 @@
         "Gree GMV Mini C0",
         "Gree GMV Mini EC",
         "Gree GMV Mini A1",
-        "Gree GMV Mini E0"
+        "Gree GMV Mini E0",
+        "Gree GMV Mini qL",
+        "Gree GMV Mini qF"
       ],
       "sourceCommit": null,
       "latestQualityCommit": null,
       "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "ED-24GEC.12 used only SERVICE_MANUAL_GMV_MINI.pdf and imported the complete extracted GMV Mini diagnostic/status/debugging table set. The duplicate/revision candidate SERVICE_MANUAL_GMV_MINI (1).pdf was not used as import evidence.",
+      "notes": "ED-24GEC.12 imported the original table set; SERVICE_MANUAL_GMV_MINI (1).pdf was not used. ED-24GMVMINI.1 audited the cards against GC202510-XIX, added 12 GMV-141WL/C-T function-setting codes, and aligned practical checks with the generic troubleshooting flowcharts.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [

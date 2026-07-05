@@ -45,11 +45,11 @@ public sealed class GreeDiagnosticsQualityBaselineTests
                 StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.Count(), StringComparer.Ordinal);
 
-        Assert.Equal(1296, entries.Count);
+        Assert.Equal(1308, entries.Count);
         Assert.Equal(7, countsBySeries.Count);
         Assert.Equal(263, countsBySeries["GMV6"]);
         Assert.Equal(262, countsBySeries["GMV6 HR"]);
-        Assert.Equal(136, countsBySeries["GMV Mini"]);
+        Assert.Equal(148, countsBySeries["GMV Mini"]);
         Assert.Equal(263, countsBySeries["GMV X"]);
         Assert.Equal(260, countsBySeries["GMV9 Flex"]);
         Assert.Equal(107, countsBySeries["U-Match R32"]);

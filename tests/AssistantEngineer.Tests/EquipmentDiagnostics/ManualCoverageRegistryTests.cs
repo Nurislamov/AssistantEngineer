@@ -189,7 +189,7 @@ public sealed class ManualCoverageRegistryTests
         Assert.Equal(38, gmvIdu.GetProperty("entriesReferenced").GetInt32());
         Assert.Equal("Imported", gmvMini.GetProperty("importStatus").GetString());
         Assert.Equal("DiagnosticScopeImported", gmvMini.GetProperty("coverageStatus").GetString());
-        Assert.Equal(136, gmvMini.GetProperty("entriesImported").GetInt32());
+        Assert.Equal(148, gmvMini.GetProperty("entriesImported").GetInt32());
         Assert.Equal(31, gmvMini.GetProperty("entriesReferenced").GetInt32());
         Assert.Single(gmvMini.GetProperty("needsReviewCodes").EnumerateArray());
     }
@@ -274,7 +274,8 @@ public sealed class ManualCoverageRegistryTests
         Assert.Equal("en", manual.GetProperty("sourceLanguage").GetString());
         Assert.Equal("Imported", manual.GetProperty("importStatus").GetString());
         Assert.Equal("DiagnosticScopeImported", manual.GetProperty("coverageStatus").GetString());
-        Assert.Equal(136, manual.GetProperty("entriesImported").GetInt32());
+        Assert.Equal(148, manual.GetProperty("entriesImported").GetInt32());
+        Assert.Equal("GC202510-XIX", manual.GetProperty("documentCode").GetString());
         Assert.Equal(31, manual.GetProperty("entriesReferenced").GetInt32());
         Assert.Single(manual.GetProperty("needsReviewCodes").EnumerateArray());
         Assert.Equal(

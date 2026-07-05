@@ -89,7 +89,7 @@ public sealed class GreeGmvXIndoorDetailedBatch2RepairTests
     [Fact]
     public void StageRuntimeCountsRemainStableAndGmv6IsUntouched()
     {
-        Assert.Equal(1296, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1308, Directory.GetFiles(GreeRoot, "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(263, Directory.GetFiles(GmvXRoot, "*.json", SearchOption.AllDirectories).Length);
         Assert.Equal(121, Directory.GetFiles(Path.Combine(GmvXRoot, "outdoor"), "*.json").Length);
         Assert.Equal(60, Directory.GetFiles(IndoorRoot, "*.json").Length);

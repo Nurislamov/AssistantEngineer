@@ -24,12 +24,17 @@
     "GMV-120WL/C-X",
     "GMV-140WL/C-X",
     "GMV-160WL/C-X",
+    "GMV-180WL/C-X(D)",
     "GMV-H224WL/A-X",
     "GMV-H280WL/A-X",
     "GMV-H335WL/A-X",
     "GMV-224WL/C-X",
     "GMV-280WL/C-X",
-    "GMV-335WL/C-X"
+    "GMV-335WL/C-X",
+    "GMV-280WL/C1-X",
+    "GMV-335WL/C1-X",
+    "GMV-280WL/C1-X(S)",
+    "GMV-335WL/C1-X(S)"
   ],
   "code": "PC",
   "signalType": "Fault",
@@ -41,13 +46,13 @@
   "packageId": "gree-gmv-mini-vrf-outdoor-protection-codes",
   "sourceLanguage": "en",
   "sourceType": "Manual",
-  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
   "sourceMeaning": "Circuit malfunction of driven current detection for compressor",
   "sourceReference": "Outdoor main-board status display table, PDF pages 82-83 / manual pages 78-79",
   "sourceReferences": [
     {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
       "sourceReference": "Outdoor main-board status display table, PDF pages 82-83 / manual pages 78-79",
       "sourceType": "Manual",
       "sourceLanguage": "en",
@@ -56,84 +61,104 @@
       "manualId": "gree-gmv-mini-service-manual",
       "packageId": "gree-gmv-mini-vrf-outdoor-protection-codes",
       "notes": "Primary GMV Mini/System II source for this entry."
+    },
+    {
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
+      "sourceReference": "Troubleshooting principle / Drive current detection group, PDF page 96 / manual page 93",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv-mini-vrf-outdoor-protection-codes",
+      "notes": "Drive/compressor group flowchart used for practical checks."
     }
   ],
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-27T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z",
+  "updatedAt": "2026-07-05T00:00:00Z",
   "texts": [
     {
       "locale": "ru",
-      "possibleCauses": [],
+      "possibleCauses": [
+        "Нарушено соединение в цепи привода или компрессора.",
+        "Неисправна плата привода, основная плата или компрессор."
+      ],
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-outdoor-pc-ru-consumer",
       "audience": "Consumer",
       "title": "Gree GMV Mini PC — неисправность цепи контроля тока привода компрессора",
       "summary": "Код PC для GMV Mini относится к событию: неисправность цепи контроля тока привода компрессора. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
       "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
       "checkSteps": [
-        "Зафиксируйте код PC, модель оборудования и место отображения.",
-        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
-        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+        "Зафиксируйте код PC, модель и место отображения.",
+        "Передайте код и условия появления квалифицированному специалисту."
       ],
       "doNotAdvise": [
         "Не делайте вывод о замене компонента только по коду PC.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Не вскрывайте оборудование; передайте код и наблюдаемые симптомы квалифицированному специалисту.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     },
     {
       "locale": "ru",
-      "possibleCauses": [],
+      "possibleCauses": [
+        "Нарушено соединение в цепи привода или компрессора.",
+        "Неисправна плата привода, основная плата или компрессор."
+      ],
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-outdoor-pc-ru-installer",
       "audience": "Installer",
       "title": "Gree GMV Mini PC — неисправность цепи контроля тока привода компрессора",
       "summary": "Код PC для GMV Mini относится к событию: неисправность цепи контроля тока привода компрессора. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
       "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
       "checkSteps": [
-        "Зафиксируйте код PC, модель оборудования и место отображения.",
-        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
-        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+        "Зафиксируйте код PC, модель и место отображения.",
+        "Проверьте соединения платы привода и цепи, относящиеся к отображаемому коду.",
+        "После исключения соединений проверьте основную плату."
       ],
       "doNotAdvise": [
         "Не делайте вывод о замене компонента только по коду PC.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Сначала устраните дефекты соединений; замену платы или компрессора рассматривайте только после предусмотренных проверок.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     },
     {
       "locale": "ru",
-      "possibleCauses": [],
+      "possibleCauses": [
+        "Нарушено соединение в цепи привода или компрессора.",
+        "Неисправна плата привода, основная плата или компрессор."
+      ],
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-27T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-outdoor-pc-ru-engineer",
       "audience": "Engineer",
       "title": "Gree GMV Mini PC — неисправность цепи контроля тока привода компрессора",
       "summary": "Код PC для GMV Mini относится к событию: неисправность цепи контроля тока привода компрессора. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
       "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
       "checkSteps": [
-        "Зафиксируйте код PC, модель оборудования и место отображения.",
-        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
-        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+        "Зафиксируйте код PC, модель и место отображения.",
+        "Проверьте соединения платы привода и цепи, относящиеся к отображаемому коду.",
+        "После исключения соединений проверьте основную плату."
       ],
       "doNotAdvise": [
         "Не делайте вывод о замене компонента только по коду PC.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Сначала устраните дефекты соединений; замену платы или компрессора рассматривайте только после предусмотренных проверок.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     }
   ]
 }

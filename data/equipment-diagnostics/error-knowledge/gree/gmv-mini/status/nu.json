@@ -1,0 +1,115 @@
+{
+  "id": "gree-gmv-mini-status-nu",
+  "manufacturer": "Gree",
+  "equipmentFamily": "VRF",
+  "equipmentType": "OutdoorUnit",
+  "series": "GMV Mini",
+  "models": [
+    "GMV-141WL/C-T"
+  ],
+  "code": "nU",
+  "signalType": "Status",
+  "displaySource": "OutdoorBoard",
+  "systemPart": "Controller",
+  "severity": "Info",
+  "requiresQualifiedService": true,
+  "canCustomerContinueOperation": null,
+  "packageId": "gree-gmv-mini-vrf-status-codes",
+  "sourceLanguage": "en",
+  "sourceType": "Manual",
+  "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+  "sourceMeaning": "Clearing IDU remote shield",
+  "sourceReference": "Function setting of outdoor unit / GMV-141WL/C-T, PDF page 87 / manual page 84",
+  "sourceReferences": [
+    {
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
+      "sourceReference": "Function setting of outdoor unit / GMV-141WL/C-T, PDF page 87 / manual page 84",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv-mini-vrf-status-codes",
+      "notes": "GMV-141WL/C-T-specific outdoor-unit function setting."
+    }
+  ],
+  "confidence": "High",
+  "verificationStatus": "ManualVerified",
+  "createdAt": "2026-07-05T00:00:00Z",
+  "updatedAt": "2026-07-05T00:00:00Z",
+  "texts": [
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-05T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
+      "id": "gree-gmv-mini-status-nu-ru-consumer",
+      "audience": "Consumer",
+      "title": "Gree GMV Mini nU — настройка: сброс удаленной блокировки внутренних блоков",
+      "summary": "Код nU обозначает сервисную настройку наружного блока: сброс удаленной блокировки внутренних блоков. Это не признак отказа компонента.",
+      "safetyNote": "Не изменяйте сервисные параметры без нужной квалификации и подтвержденной процедуры.",
+      "checkSteps": [
+        "Зафиксируйте код nU и текущее значение.",
+        "Убедитесь, что настройка выполняется для модели GMV-141WL/C-T.",
+        "После настройки проверьте возврат к штатной индикации."
+      ],
+      "doNotAdvise": [
+        "Не считайте этот код аварией.",
+        "Не изменяйте значение без понимания влияния на работу системы."
+      ],
+      "recommendedAction": "Оставьте параметр без изменения, если настройка не входит в подтвержденную сервисную задачу.",
+      "sourceNote": "Учитывайте модель, текущее значение и режим настройки при проверке."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-05T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
+      "id": "gree-gmv-mini-status-nu-ru-installer",
+      "audience": "Installer",
+      "title": "Gree GMV Mini nU — настройка: сброс удаленной блокировки внутренних блоков",
+      "summary": "Код nU обозначает сервисную настройку наружного блока: сброс удаленной блокировки внутренних блоков. Это не признак отказа компонента.",
+      "safetyNote": "Не изменяйте сервисные параметры без нужной квалификации и подтвержденной процедуры.",
+      "checkSteps": [
+        "Зафиксируйте код nU и текущее значение.",
+        "Убедитесь, что настройка выполняется для модели GMV-141WL/C-T.",
+        "После настройки проверьте возврат к штатной индикации."
+      ],
+      "doNotAdvise": [
+        "Не считайте этот код аварией.",
+        "Не изменяйте значение без понимания влияния на работу системы."
+      ],
+      "recommendedAction": "Оставьте параметр без изменения, если настройка не входит в подтвержденную сервисную задачу.",
+      "sourceNote": "Учитывайте модель, текущее значение и режим настройки при проверке."
+    },
+    {
+      "locale": "ru",
+      "possibleCauses": [],
+      "isMachineTranslated": false,
+      "isReviewed": true,
+      "createdAt": "2026-07-05T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
+      "id": "gree-gmv-mini-status-nu-ru-engineer",
+      "audience": "Engineer",
+      "title": "Gree GMV Mini nU — настройка: сброс удаленной блокировки внутренних блоков",
+      "summary": "Код nU обозначает сервисную настройку наружного блока: сброс удаленной блокировки внутренних блоков. Это не признак отказа компонента.",
+      "safetyNote": "Не изменяйте сервисные параметры без нужной квалификации и подтвержденной процедуры.",
+      "checkSteps": [
+        "Зафиксируйте код nU и текущее значение.",
+        "Убедитесь, что настройка выполняется для модели GMV-141WL/C-T.",
+        "После настройки проверьте возврат к штатной индикации."
+      ],
+      "doNotAdvise": [
+        "Не считайте этот код аварией.",
+        "Не изменяйте значение без понимания влияния на работу системы."
+      ],
+      "recommendedAction": "Оставьте параметр без изменения, если настройка не входит в подтвержденную сервисную задачу.",
+      "sourceNote": "Учитывайте модель, текущее значение и режим настройки при проверке."
+    }
+  ]
+}

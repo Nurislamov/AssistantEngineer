@@ -24,12 +24,17 @@
     "GMV-120WL/C-X",
     "GMV-140WL/C-X",
     "GMV-160WL/C-X",
+    "GMV-180WL/C-X(D)",
     "GMV-H224WL/A-X",
     "GMV-H280WL/A-X",
     "GMV-H335WL/A-X",
     "GMV-224WL/C-X",
     "GMV-280WL/C-X",
-    "GMV-335WL/C-X"
+    "GMV-335WL/C-X",
+    "GMV-280WL/C1-X",
+    "GMV-335WL/C1-X",
+    "GMV-280WL/C1-X(S)",
+    "GMV-335WL/C1-X(S)"
   ],
   "code": "C0",
   "signalType": "Communication",
@@ -41,14 +46,14 @@
   "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
   "sourceLanguage": "en",
   "sourceType": "Manual",
-  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
   "sourceMeaning": "Communication malfunction",
   "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
   "meaningGroupId": "gree-vrf-gmv-communication-c0",
   "sourceReferences": [
     {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
       "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
       "sourceType": "Manual",
       "sourceLanguage": "en",
@@ -59,8 +64,8 @@
       "notes": "Primary GMV Mini/System II source for this entry."
     },
     {
-      "sourceName": "DC Inverter VRF System Service Manual (R410A)",
-      "documentCode": null,
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
       "sourceReference": "Outdoor main-board status display table, PDF pages 82-83 / manual pages 78-79",
       "sourceType": "Manual",
       "sourceLanguage": "en",
@@ -69,84 +74,106 @@
       "manualId": "gree-gmv-mini-service-manual",
       "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
       "notes": "Outdoor main-board table uses the same visible code; kept on the existing GMV Mini card to avoid duplicate answers."
+    },
+    {
+      "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
+      "documentCode": "GC202510-XIX",
+      "sourceReference": "Troubleshooting principle / Communication malfunction, PDF page 91 / manual page 88",
+      "sourceType": "Manual",
+      "sourceLanguage": "en",
+      "verificationStatus": "ManualVerified",
+      "confidence": "High",
+      "manualId": "gree-gmv-mini-service-manual",
+      "packageId": "gree-gmv-mini-vrf-indoor-controller-codes",
+      "notes": "Generic communication malfunction flowchart used for practical checks."
     }
   ],
   "confidence": "High",
   "verificationStatus": "ManualVerified",
   "createdAt": "2026-06-23T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z",
+  "updatedAt": "2026-07-05T00:00:00Z",
   "texts": [
     {
       "locale": "ru",
-      "possibleCauses": [],
+      "possibleCauses": [
+        "Отсутствует питание внутреннего или наружного блока.",
+        "Кабель связи подключен неверно или поврежден."
+      ],
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-c0-ru-consumer",
       "audience": "Consumer",
       "title": "Gree GMV Mini C0 — нарушение связи",
       "summary": "Код C0 для GMV Mini относится к событию: нарушение связи. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
       "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
       "checkSteps": [
-        "Зафиксируйте код C0, модель оборудования и место отображения.",
-        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
-        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+        "Зафиксируйте код C0 и убедитесь, что внутренний и наружный блоки включены.",
+        "Не вскрывая оборудование, передайте код специалисту для проверки линии связи."
       ],
       "doNotAdvise": [
         "Не делайте вывод о замене компонента только по коду C0.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Не вскрывайте оборудование; передайте код и наблюдаемые симптомы квалифицированному специалисту.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     },
     {
       "locale": "ru",
-      "possibleCauses": [],
+      "possibleCauses": [
+        "Отсутствует питание внутреннего или наружного блока.",
+        "Кабель связи подключен неверно или поврежден."
+      ],
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-c0-ru-installer",
       "audience": "Installer",
       "title": "Gree GMV Mini C0 — нарушение связи",
       "summary": "Код C0 для GMV Mini относится к событию: нарушение связи. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
       "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
       "checkSteps": [
-        "Зафиксируйте код C0, модель оборудования и место отображения.",
-        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
-        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+        "Зафиксируйте код C0, модель и место отображения.",
+        "Убедитесь, что внутренний и наружный блоки получают питание.",
+        "Проверьте правильность подключения кабеля связи между блоками.",
+        "Проверьте кабель связи; при повреждении замените его."
       ],
       "doNotAdvise": [
         "Не делайте вывод о замене компонента только по коду C0.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Восстановите питание или правильное подключение; поврежденный кабель связи замените.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     },
     {
       "locale": "ru",
-      "possibleCauses": [],
+      "possibleCauses": [
+        "Отсутствует питание внутреннего или наружного блока.",
+        "Кабель связи подключен неверно или поврежден."
+      ],
       "isMachineTranslated": false,
       "isReviewed": true,
       "createdAt": "2026-06-23T00:00:00Z",
-      "updatedAt": "2026-06-27T00:00:00Z",
+      "updatedAt": "2026-07-05T00:00:00Z",
       "id": "gree-gmv-mini-indoor-c0-ru-engineer",
       "audience": "Engineer",
       "title": "Gree GMV Mini C0 — нарушение связи",
       "summary": "Код C0 для GMV Mini относится к событию: нарушение связи. Точная причина зависит от модели, условий появления и сопутствующих кодов.",
       "safetyNote": "Проверки внутри электрических отсеков и холодильного контура выполняет квалифицированный специалист.",
       "checkSteps": [
-        "Зафиксируйте код C0, модель оборудования и место отображения.",
-        "Проверьте, нет ли рядом других кодов и не менялись ли условия работы системы.",
-        "Передайте сервисному специалисту код, модель и обстоятельства появления."
+        "Зафиксируйте код C0, модель и место отображения.",
+        "Убедитесь, что внутренний и наружный блоки получают питание.",
+        "Проверьте правильность подключения кабеля связи между блоками.",
+        "Проверьте кабель связи; при повреждении замените его."
       ],
       "doNotAdvise": [
         "Не делайте вывод о замене компонента только по коду C0.",
         "Не выполняйте повторные сбросы, если код возвращается."
       ],
-      "recommendedAction": "Обратитесь в квалифицированный сервис и сопоставьте код с фактическими симптомами и таблицей руководства.",
-      "sourceNote": "Данные сверены с сервисным руководством GMV Mini."
+      "recommendedAction": "Восстановите питание или правильное подключение; поврежденный кабель связи замените.",
+      "sourceNote": "Учитывайте модель, место отображения и сопутствующие коды при проверке."
     }
   ]
 }

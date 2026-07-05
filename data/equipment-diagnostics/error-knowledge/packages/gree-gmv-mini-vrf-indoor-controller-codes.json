@@ -7,7 +7,7 @@
   "description": "Manual-bound indoor wired-controller and engineering-debugging entries from the GMV Mini/System II service manual.",
   "sourceLanguage": "en",
   "sourceType": "Manual",
-  "sourceName": "DC Inverter VRF System Service Manual (R410A)",
+  "sourceName": "Gree GMV Mini Slim Side Outlet Service Manual",
   "sourceReference": "Malfunction list for wired controller, PDF page 81 / manual page 77",
   "verificationStatus": "ManualVerified",
   "confidence": "High",
@@ -28,7 +28,7 @@
     "OutdoorBoard"
   ],
   "entryCountExpected": 27,
-  "notes": "One-manual source boundary: SERVICE_MANUAL_GMV_MINI.pdf only. Duplicate/revision candidates were not used in ED-24H.2.",
+  "notes": "GMV Mini slim side-outlet manual boundary; document code GC202510-XIX.",
   "createdAt": "2026-06-23T00:00:00Z",
-  "updatedAt": "2026-06-27T00:00:00Z"
+  "updatedAt": "2026-07-05T00:00:00Z"
 }

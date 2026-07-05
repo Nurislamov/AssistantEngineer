@@ -19,12 +19,12 @@ public sealed class GreeUMatchErvImport24Tests
     {
         Assert.Equal(262, Count("gmv6-hr"));
         Assert.Equal(263, Count("gmv6"));
-        Assert.Equal(136, Count("gmv-mini"));
+        Assert.Equal(148, Count("gmv-mini"));
         Assert.Equal(263, Count("gmv-x"));
         Assert.Equal(260, Count("gmv9-flex"));
         Assert.Equal(107, Count("umatch-r32"));
         Assert.Equal(5, Count("erv-b-series"));
-        Assert.Equal(1296, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
+        Assert.Equal(1308, Directory.GetFiles(GreeRuntimeDirectory, "*.json", SearchOption.AllDirectories).Length);
 
         AssertPackageCount("gree-umatch-r32-error-codes.json", 107);
         AssertPackageCount("gree-erv-b-series-diagnostics.json", 5);
