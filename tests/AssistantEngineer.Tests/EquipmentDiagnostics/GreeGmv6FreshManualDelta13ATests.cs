@@ -117,6 +117,26 @@ public sealed class GreeGmv6FreshManualDelta13ATests
     }
 
     [Fact]
+    public void ManualRegistryRecordsExactDeltaImportAndPendingProductionSmokeStatus()
+    {
+        var registry = ReadObject(Path.Combine(
+            TestPaths.RepoRoot,
+            "data",
+            "equipment-diagnostics",
+            "manual-library",
+            "manuals.json"));
+        var manual = Assert.Single(
+            RequiredArray(registry, "manuals").OfType<JsonObject>(),
+            item => RequiredString(item, "manualId") == FreshManualId);
+
+        Assert.Equal(8, RequiredInt(manual, "entriesImported"));
+        Assert.Equal("PartiallyImported", RequiredString(manual, "importStatus"));
+        Assert.Equal("PartialDiagnosticScopeImported", RequiredString(manual, "coverageStatus"));
+        Assert.Equal("DeltaImportedPendingProductionSmoke", RequiredString(manual, "productionStatus"));
+        Assert.False(Assert.IsAssignableFrom<JsonValue>(manual["recommendedNext"]).GetValue<bool>());
+    }
+
+    [Fact]
     public void StageDoesNotChangeMiniOrAlternateFlexRuntimeScope()
     {
         foreach (var folder in new[] { "x-series", "9-series-flex", "flex" })
