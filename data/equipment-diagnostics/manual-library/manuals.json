@@ -24,6 +24,8 @@
     ],
     "productionStatus": [
       "NotImported",
+      "RuntimeImported",
+      "DeltaImportedPendingProductionSmoke",
       "DeployedAndSmokeVerified"
     ]
   },
@@ -1842,9 +1844,9 @@
       ],
       "sourceCommit": null,
       "latestQualityCommit": null,
-      "productionStatus": "NotImported",
+      "productionStatus": "RuntimeImported",
       "recommendedNext": false,
-      "notes": "Imported in ED-24GEC.14 from local service manual GC202209-I. Scope is GMV X only; do not mix with GMV6, GMV Mini, or GMV9 Flex.",
+      "notes": "Imported in ED-24GEC.14 from local service manual GC202209-I. ED-24QUAL.X1 cleaned the remaining 24 user-facing wording issues. Scope is GMV X only; do not mix with GMV6, GMV Mini, or GMV9 Flex. Production smoke is not yet confirmed.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
@@ -2014,9 +2016,9 @@
       ],
       "sourceCommit": null,
       "latestQualityCommit": null,
-      "productionStatus": "RuntimeImported",
+      "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "ED-24UMATCH.1-2 audited all 107 table codes and aligned 22 detailed troubleshooting cards with sections 3.3 and 3.4.",
+      "notes": "ED-24UMATCH.1-2 audited all 107 table codes and aligned 22 detailed troubleshooting cards with sections 3.3 and 3.4. ED-24UMATCH.3 production smoke passed.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
@@ -2444,6 +2446,144 @@
       }
     },
     {
+      "manualId": "gree-erv-b-series-service-manual",
+      "fileName": "Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/Gree ERV B Series Service Manual EN FHBQG-D3.5B-D60B.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "ERV",
+      "equipmentType": "EnergyRecoveryVentilator",
+      "series": "ERV B Series",
+      "modelScope": "B Series ERV models FHBQG-D3.5B-K through FHBQG-D60B-M.",
+      "documentTitle": "Gree ERV B Series Service Manual",
+      "documentCode": "Not stated",
+      "sourceLanguage": "en",
+      "sourceKind": "ServiceManual",
+      "fileFormat": "PDF",
+      "importStatus": "PartiallyImported",
+      "coverageStatus": "PartialDiagnosticScopeImported",
+      "diagnosticUsefulness": "High",
+      "importedPackageIds": [
+        "gree-erv-b-series-diagnostics"
+      ],
+      "entriesImported": 2,
+      "categoriesImported": [
+        "System"
+      ],
+      "knownSmokeCodes": [
+        "Gree ERV E6",
+        "Gree ERV L0"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "RuntimeImported",
+      "recommendedNext": false,
+      "notes": "E6 and L0 runtime diagnostics are bound to this ERV B Series service manual. ED-24QUAL.ERV1 cleaned all five ERV user-facing cards; production smoke remains pending.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Runtime diagnostic evidence is imported; manual delivery remains a separate access-controlled workflow."
+      }
+    },
+    {
+      "manualId": "gree-erv-wired-controller-owner-manual",
+      "fileName": "Gree ERV Wired Controller Owner Manual EN.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/Gree ERV Wired Controller Owner Manual EN.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "ERV",
+      "equipmentType": "ControllerGuide",
+      "series": "ERV B Series",
+      "modelScope": "Wired controller used with Gree ERV B Series equipment.",
+      "documentTitle": "Gree ERV Wired Controller Owner Manual",
+      "documentCode": "Not stated",
+      "sourceLanguage": "en",
+      "sourceKind": "OwnerManual",
+      "fileFormat": "PDF",
+      "importStatus": "PartiallyImported",
+      "coverageStatus": "PartialDiagnosticScopeImported",
+      "diagnosticUsefulness": "High",
+      "importedPackageIds": [
+        "gree-erv-b-series-diagnostics"
+      ],
+      "entriesImported": 3,
+      "categoriesImported": [
+        "Controller"
+      ],
+      "knownSmokeCodes": [
+        "Gree ERV dF",
+        "Gree ERV dH",
+        "Gree ERV L9"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "RuntimeImported",
+      "recommendedNext": false,
+      "notes": "dF, dH, and L9 runtime diagnostics are bound to this ERV wired-controller manual. ED-24QUAL.ERV1 cleaned all five ERV user-facing cards; production smoke remains pending.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "Runtime diagnostic evidence is imported; owner-manual delivery remains a separate access-controlled workflow."
+      }
+    },
+    {
+      "manualId": "gree-erv-b-series-installation-startup-maintenance",
+      "fileName": "Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf",
+      "relativeSourcePath": "artifacts/manual-intake/sources/gree/Gree ERV B Series Installation Startup Maintenance Manual EN FHBQG-D3.5B-D60B.pdf",
+      "manufacturer": "Gree",
+      "equipmentFamily": "ERV",
+      "equipmentType": "EnergyRecoveryVentilator",
+      "series": "ERV B Series",
+      "modelScope": "B Series ERV models FHBQG-D3.5B-K through FHBQG-D60B-M.",
+      "documentTitle": "Gree ERV B Series Installation, Startup and Maintenance Manual",
+      "documentCode": "Not stated",
+      "sourceLanguage": "en",
+      "sourceKind": "InstallationMaintenanceManual",
+      "fileFormat": "PDF",
+      "importStatus": "Analyzed",
+      "coverageStatus": "DiagnosticSectionsIdentified",
+      "diagnosticUsefulness": "Medium",
+      "importedPackageIds": [],
+      "entriesImported": 0,
+      "categoriesImported": [],
+      "knownSmokeCodes": [
+        "Gree ERV E6",
+        "Gree ERV L0"
+      ],
+      "sourceCommit": null,
+      "latestQualityCommit": null,
+      "productionStatus": "NotImported",
+      "recommendedNext": false,
+      "notes": "Reviewed as supporting troubleshooting context for E6 and L0. No runtime card is directly source-bound to this manual.",
+      "futureTelegramManualLibrary": {
+        "eligibleForTelegramLibrary": false,
+        "allowedRoles": [
+          "Installer",
+          "Engineer",
+          "Admin",
+          "Owner"
+        ],
+        "deniedRoles": [
+          "Consumer"
+        ],
+        "reason": "The manual is analyzed but not imported as runtime diagnostic evidence; file delivery remains access controlled."
+      }
+    },
+    {
       "manualId": "gree-gmv9-flex-service-manual-2025-12",
       "fileName": "JF00305819, export T3R410AGMV9 Flex GMV Service Manual (Middle East energy-inefficient), B .2.pdf",
       "relativeSourcePath": "artifacts/manual-intake/sources/gree/JF00305819,_export_T3R410AGMV9_Flex_GMV_Service_Manual_Middle_East.pdf",
@@ -2481,9 +2621,9 @@
       ],
       "sourceCommit": null,
       "latestQualityCommit": null,
-      "productionStatus": "NotImported",
+      "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "Imported in ED-24GEC.15 from local service manual GC202512-I. Scope is GMV9 Flex only; do not mix with GMV6, GMV Mini, or GMV X.",
+      "notes": "Imported in ED-24GEC.15 from local service manual GC202512-I. Card quality and production smoke are closed. Scope is GMV9 Flex only; do not mix with GMV6, GMV Mini, or GMV X.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
@@ -2537,9 +2677,9 @@
       ],
       "sourceCommit": null,
       "latestQualityCommit": null,
-      "productionStatus": "NotImported",
+      "productionStatus": "RuntimeImported",
       "recommendedNext": false,
-      "notes": "Imported in ED-24E.3 from local GMV6 HR service manual. Scope is GMV6 HR only; do not mix with plain GMV6, GMV X, GMV9 Flex, or GMV Mini. Includes n2 from troubleshooting section 2.135 outside the Error Indication table.",
+      "notes": "Imported in ED-24E.3 from local GMV6 HR service manual. ED-24QUAL.HR1 cleaned all 262 user-facing cards; production smoke remains pending. Scope is GMV6 HR only; do not mix with plain GMV6, GMV X, GMV9 Flex, or GMV Mini. Includes n2 from troubleshooting section 2.135 outside the Error Indication table.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
