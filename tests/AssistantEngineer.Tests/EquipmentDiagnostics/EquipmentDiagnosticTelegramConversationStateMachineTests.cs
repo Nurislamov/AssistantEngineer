@@ -539,6 +539,57 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         Assert.Contains("точная расшифровка не найдена", notFound.Text, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("U-Match R32", "E9", "Gree U-Match R32 E9")]
+    [InlineData("GMV Mini", "C0", "Gree GMV Mini C0")]
+    [InlineData("GMV9 Flex", "C0", "Gree GMV9 Flex C0")]
+    public async Task LastPreservesMatchedSeriesLabel(
+        string series,
+        string code,
+        string expectedTitle)
+    {
+        var harness = CreateHarness([]);
+        var user = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
+        var history = CreateHistoryService(harness.HistoryStore);
+
+        await history.RecordCompletedAsync(
+            Access(user),
+            null,
+            Response("Gree", series, code, "Saved short summary."),
+            "Gree",
+            code,
+            null,
+            null,
+            1);
+
+        var response = await harness.Adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains(expectedTitle, response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            $"Gree {code}",
+            response.Text.Replace(expectedTitle, string.Empty, StringComparison.Ordinal),
+            StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task LastFallsBackToManufacturerAndCodeForLegacyHistoryRecord()
+    {
+        var harness = CreateHarness([]);
+        var user = await harness.UserStore.GetOrCreateConsumerAsync(Update("/start"));
+        await CreateCaseAsync(
+            harness.HistoryStore,
+            user,
+            TelegramDiagnosticCaseStatus.Completed,
+            "E9",
+            "Gree",
+            "Legacy summary.",
+            FixedNowUtc);
+
+        var response = await harness.Adapter.HandleAsync(Update("/last"));
+
+        Assert.Contains("Gree E9", response.Text, StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task ConsumerLastHidesStoredEnglishTechnicalSummaryAndFormatsLocalTime()
     {
@@ -808,13 +859,28 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
         string manufacturer,
         string code,
         string summary) =>
+        Response(manufacturer, series: null, code, summary);
+
+    private static EquipmentDiagnosticBotResponse Response(
+        string manufacturer,
+        string? series,
+        string code,
+        string summary) =>
         new(
             EquipmentDiagnosticBotResponseStatus.Answer,
             $"{manufacturer} {code}",
             "Short diagnostic message.",
             manufacturer,
             code,
-            null,
+            series is null
+                ? null
+                : new EquipmentDiagnosticBotEquipmentContext(
+                    manufacturer,
+                    series,
+                    null,
+                    EquipmentCategory.VrfOutdoorUnit,
+                    EquipmentDiagnosticBotEquipmentSide.Outdoor,
+                    EquipmentDiagnosticBotDisplayContext.OduMainBoardLed),
             new EquipmentDiagnosticBotObservedCodeContext(code, code, null),
             new EquipmentDiagnosticBotAnswerCard(
                 $"{manufacturer} {code}",
