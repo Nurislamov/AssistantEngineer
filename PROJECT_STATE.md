@@ -2,7 +2,18 @@
 
 ## Current stage
 
-ED-24QUAL.PROD1 CLOSED / production PASS.
+ED-24LIB.ACCESS1 CLOSED / local validation PASS.
+
+Telegram manual-library access policy is documented and guarded by focused tests.
+
+Accepted product policy:
+
+- If a Telegram user is granted access to the manual library, that user is considered a trusted library user.
+- The manual library is not split internally by Installer/Engineer role.
+- Installer/Engineer/Admin/Owner role should not further restrict library browsing once explicit library access is granted.
+- A user without explicit library access may still receive manuals through the diagnostic flow when a manual is linked to a diagnostic code.
+
+Previous production context:
 
 PR #56 was merged to master, deployed to the VPS, and passed production Telegram smoke for the newly quality-closed Gree diagnostic scopes.
 
@@ -14,7 +25,7 @@ PR #56 was merged to master, deployed to the VPS, and passed production Telegram
 
 ## Current branch
 
-ed-24qual-prod1-state-registry
+ed-24lib-access1-policy
 
 Target branch: master
 
@@ -23,6 +34,19 @@ Latest known deployed master commit:
 - 35741920
 
 ## Last completed work
+
+### ED-24LIB.ACCESS1
+
+ED-24LIB.ACCESS1 is closed locally.
+
+The Telegram manual-library access policy is now documented in `docs/equipment-diagnostics/telegram-manual-library-plan.md` and protected by tests.
+
+Implementation outcome:
+
+- General manual-library browsing and file delivery are controlled by explicit library access, active/enabled user state, active binding state, library visibility, and visible document type.
+- Once explicit library access is granted, the library does not apply an additional Installer/Engineer subdivision for active visible files.
+- `MinRole` remains stored as legacy binding metadata/upload default, but is not a second authorization split inside the general library after explicit library access is granted.
+- Diagnostic guide delivery remains separate and OwnerManual-only; users without general library access can still receive eligible linked diagnostic manuals through the diagnostic context.
 
 ### ED-24UX.LAST
 
@@ -87,7 +111,7 @@ If a user is granted Telegram library access, that user is considered a trusted 
 
 The Telegram manual library is not split internally by Installer/Engineer role.
 
-An installer without Telegram library access can still receive manuals through the diagnostic flow when a manual is linked to a diagnostic code.
+A user without Telegram library access can still receive manuals through the diagnostic flow when a manual is linked to a diagnostic code.
 
 Gree product-family boundaries remain strict. Do not mix:
 
@@ -124,13 +148,21 @@ ED-24QUAL.PROD1:
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeDiagnosticManualRegistryReconciliationTests.cs
 - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmv6FreshManualDelta13ATests.cs
 
+ED-24LIB.ACCESS1:
+
+- src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/Manuals/TelegramManualLibraryService.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticTelegramManualLibraryTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/TelegramUserRolePolicyTests.cs
+- docs/equipment-diagnostics/telegram-manual-library-plan.md
+- PROJECT_STATE.md
+
 Scope guard:
 
-- No diagnostic card JSON changes.
-- No src runtime code changes.
+- No diagnostic card JSON changes for ED-24LIB.ACCESS1.
 - No EF migrations.
+- No manual registry status changes.
 - No package metadata changes.
-- No GMV Mini, U-Match R32, or GMV9 Flex card folder changes.
+- No GMV Mini, U-Match R32, GMV9 Flex, GMV6, GMV6 HR, GMV X, or ERV card folder changes.
 
 ## Validation status
 
@@ -146,6 +178,13 @@ Production validation:
 - VPS deploy: PASS at 35741920
 - Telegram smoke: PASS for ERV B Series, GMV X, GMV6 HR, GMV6 delta, and /last
 - VPS logs: clean
+
+ED-24LIB.ACCESS1 local validation:
+
+- Telegram/manual-library/access focused tests: 135/135 PASS
+- `dotnet build .\AssistantEngineer.sln`: PASS, 0 warnings, 0 errors
+- `dotnet test .\AssistantEngineer.sln`: PASS, 5389/5389
+- `git diff --check`: PASS
 
 ## Known backlog
 

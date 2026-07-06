@@ -2157,8 +2157,7 @@ public sealed class TelegramManualLibraryService
         TelegramUserAccessResult access,
         TelegramManualFileBinding binding) =>
         access.User is { IsEnabled: true, IsBlocked: false } &&
-        access.CanAccessLibrary &&
-        TelegramUserRolePolicy.HasAtLeastRole(access.Role, binding.MinRole);
+        access.CanAccessLibrary;
 
     private static bool CanSendLibraryBinding(
         TelegramManualFileBinding? binding,

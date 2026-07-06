@@ -117,6 +117,78 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("Запросить доступ", string.Join(" ", InlineButtons(adminLibrary)), StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData(TelegramUserRole.Installer)]
+    [InlineData(TelegramUserRole.Engineer)]
+    public async Task GrantedTechnicalUserCanBrowseAndFetchLibraryServiceManualsWithoutInstallerEngineerSubdivision(
+        TelegramUserRole role)
+    {
+        using var provider = CreateProvider(TempBindingPath());
+        await AllowAsync(provider, role);
+        await SetRoleAndGrantLibraryAsync(provider, role);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+        var bindingStore = provider.GetRequiredService<ITelegramManualFileBindingStore>();
+        await SeedIndoorBindingAsync(
+            bindingStore,
+            "trusted-service",
+            "telegram-file-id-trusted-service",
+            "Gree_GMV_Indoor_Units_Service_Manual_EN_GC202603_I_1_5_79kW_R410A.pdf",
+            TelegramLibraryDocumentType.ServiceManual,
+            TelegramUserRole.Engineer);
+
+        var home = await adapter.HandleAsync(Update("/library"));
+        var gree = await adapter.HandleAsync(LibraryCallback("lib:brand:gree"));
+        var indoor = await adapter.HandleAsync(LibraryCallback("lib:gree:section:indoor"));
+        var serviceBucket = await adapter.HandleAsync(LibraryCallback("lib:i:svc"));
+        var fileCallback = Assert.Single(
+            InlineButtonsWithCallbacks(serviceBucket),
+            button => button.CallbackData.StartsWith("lib:f:", StringComparison.Ordinal)).CallbackData;
+        var file = await adapter.HandleAsync(LibraryCallback(fileCallback));
+
+        Assert.Contains("Gree", InlineButtons(home), StringComparer.Ordinal);
+        Assert.Contains("Внутренние", InlineButtons(gree), StringComparer.Ordinal);
+        Assert.Contains("Сервисные мануалы", string.Join(" ", InlineButtons(indoor)), StringComparison.Ordinal);
+        Assert.Contains("Gree_GMV_Indoor_Units_Service_Manual", serviceBucket.Text, StringComparison.Ordinal);
+        Assert.Contains(
+            "telegram-file-id-trusted-service",
+            file.OutboundMessages.Select(message => message.DocumentFileId),
+            StringComparer.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(TelegramUserRole.Installer)]
+    [InlineData(TelegramUserRole.Engineer)]
+    [InlineData(TelegramUserRole.Admin)]
+    public async Task TechnicalUserWithoutLibraryGrantCannotBrowseGeneralLibrary(TelegramUserRole role)
+    {
+        using var provider = CreateProvider();
+        await AllowAsync(provider, role);
+        var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
+
+        var response = await adapter.HandleAsync(Update("/library"));
+
+        Assert.Contains("Доступ к библиотеке файлов не выдан", response.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree", InlineButtons(response), StringComparer.Ordinal);
+        Assert.DoesNotContain(response.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+    }
+
+    [Fact]
+    public void ManualLibraryDocumentationRecordsTrustedLibraryUserPolicy()
+    {
+        var doc = File.ReadAllText(Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "equipment-diagnostics",
+            "telegram-manual-library-plan.md"));
+
+        Assert.Contains("ED-24LIB.ACCESS1", doc, StringComparison.Ordinal);
+        Assert.Contains("trusted library user", doc, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not split internally between `Installer` and `Engineer`", doc, StringComparison.Ordinal);
+        Assert.Contains("Installer with grant can fetch active visible library service manuals", doc, StringComparison.Ordinal);
+        Assert.Contains("user without general library access can still receive an eligible linked `OwnerManual`", doc, StringComparison.Ordinal);
+        Assert.DoesNotContain("Installer with grant cannot fetch", doc, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Fact]
     public async Task FreshLibraryNavigationCallbacksDoNotReturnStaleAction()
     {
@@ -420,7 +492,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
-    public async Task DiagnosticGuideActionSendsOwnerManualBindingWithProtectContent()
+    public async Task UserWithoutLibraryAccessCanReceiveDiagnosticOwnerManualBindingWithProtectContent()
     {
         using var provider = CreateProvider(TempBindingPath());
         var adapter = provider.GetRequiredService<IEquipmentDiagnosticTelegramAdapter>();
@@ -1030,7 +1102,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
     }
 
     [Fact]
-    public async Task TypedLibraryFileDeliveryRechecksActiveVisibleAndRoleBeforeSend()
+    public async Task TypedLibraryFileDeliveryRechecksActiveVisibleAndExplicitLibraryGrantBeforeSend()
     {
         using var provider = CreateProvider(TempBindingPath());
         await AllowAsync(provider, TelegramUserRole.Owner);
@@ -1067,7 +1139,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
 
         var ownerSent = await adapter.HandleAsync(LibraryCallback(ownerFileCallback));
         await SetRoleAndGrantLibraryAsync(provider, TelegramUserRole.Installer);
-        var serviceDeniedForInstaller = await adapter.HandleAsync(LibraryCallback(serviceFileCallback));
+        var serviceSentForInstaller = await adapter.HandleAsync(LibraryCallback(serviceFileCallback));
         var controllerSentForInstaller = await adapter.HandleAsync(LibraryCallback(controllerFileCallback));
         await SetRoleAndGrantLibraryAsync(provider, TelegramUserRole.Engineer);
         var serviceSentForEngineer = await adapter.HandleAsync(LibraryCallback(serviceFileCallback));
@@ -1077,7 +1149,7 @@ public sealed class EquipmentDiagnosticTelegramManualLibraryTests
         Assert.Contains("telegram-file-id-owner", ownerSent.OutboundMessages.Select(message => message.DocumentFileId), StringComparer.Ordinal);
         Assert.DoesNotContain("Inactive.pdf", ownerList.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Hidden.pdf", ownerList.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain(serviceDeniedForInstaller.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
+        Assert.Contains("telegram-file-id-service", serviceSentForInstaller.OutboundMessages.Select(message => message.DocumentFileId), StringComparer.Ordinal);
         Assert.Contains("telegram-file-id-controller", controllerSentForInstaller.OutboundMessages.Select(message => message.DocumentFileId), StringComparer.Ordinal);
         Assert.Contains("telegram-file-id-service", serviceSentForEngineer.OutboundMessages.Select(message => message.DocumentFileId), StringComparer.Ordinal);
         Assert.DoesNotContain(ownerDeniedForConsumer.OutboundMessages, message => !string.IsNullOrWhiteSpace(message.DocumentFileId));
