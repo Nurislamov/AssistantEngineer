@@ -2,6 +2,7 @@ using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Diagnostics;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
@@ -65,8 +66,9 @@ public sealed class EquipmentDiagnosticBotServiceTests
             Summary("C5", "GMV", EquipmentCategory.VrfOutdoorUnit)
         };
         var service = new EquipmentDiagnosticBotService(
-            new FakeDiagnosticsService(summaries),
-            new JsonErrorKnowledgeLocalizationSource());
+            new EquipmentDiagnosticCore(
+                new FakeDiagnosticsService(summaries),
+                new JsonErrorKnowledgeLocalizationSource()));
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "C5"));
 
@@ -96,8 +98,9 @@ public sealed class EquipmentDiagnosticBotServiceTests
             }
         };
         var service = new EquipmentDiagnosticBotService(
-            new FakeDiagnosticsService([Summary("H5", "GMV", EquipmentCategory.VrfOutdoorUnit)], verifiedCase),
-            new JsonErrorKnowledgeLocalizationSource());
+            new EquipmentDiagnosticCore(
+                new FakeDiagnosticsService([Summary("H5", "GMV", EquipmentCategory.VrfOutdoorUnit)], verifiedCase),
+                new JsonErrorKnowledgeLocalizationSource()));
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "H5", Series: "GMV"));
 
@@ -133,8 +136,9 @@ public sealed class EquipmentDiagnosticBotServiceTests
     public async Task ReferenceOnlyPatternsAreNotPresentedAsFaultDiagnosis(string code)
     {
         var service = new EquipmentDiagnosticBotService(
-            new FakeDiagnosticsService([]),
-            new JsonErrorKnowledgeLocalizationSource());
+            new EquipmentDiagnosticCore(
+                new FakeDiagnosticsService([]),
+                new JsonErrorKnowledgeLocalizationSource()));
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", code));
 
@@ -150,8 +154,9 @@ public sealed class EquipmentDiagnosticBotServiceTests
     public async Task ControllerModelNamesAreNotParsedAsFaultCodes(string code)
     {
         var service = new EquipmentDiagnosticBotService(
-            new FakeDiagnosticsService([]),
-            new JsonErrorKnowledgeLocalizationSource());
+            new EquipmentDiagnosticCore(
+                new FakeDiagnosticsService([]),
+                new JsonErrorKnowledgeLocalizationSource()));
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", code));
 
@@ -176,7 +181,7 @@ public sealed class EquipmentDiagnosticBotServiceTests
         Assert.DoesNotContain(after.Codes, code => code.Confidence == DiagnosticConfidence.ManualVerified);
         var constructor = Assert.Single(typeof(EquipmentDiagnosticBotService).GetConstructors());
         Assert.Equal(
-            [typeof(IEquipmentDiagnosticsService), typeof(IErrorKnowledgeLocalizationSource)],
+            [typeof(IEquipmentDiagnosticCore)],
             constructor.GetParameters().Select(parameter => parameter.ParameterType));
     }
 
@@ -283,13 +288,22 @@ public sealed class EquipmentDiagnosticBotServiceTests
     }
 
     [Fact]
-    public void BotServiceSourceDoesNotLoadStagingCodebookOrPreviewArtifacts()
+    public void DiagnosticSemanticPipelineDoesNotLoadStagingCodebookOrPreviewArtifacts()
     {
-        var path = Path.Combine(
+        var moduleRoot = Path.Combine(
             TestPaths.RepoRoot,
-            "src", "Backend", "AssistantEngineer.Modules.EquipmentDiagnostics",
-            "Application", "Bot", "EquipmentDiagnosticBotService.cs");
-        var source = File.ReadAllText(path);
+            "src", "Backend", "AssistantEngineer.Modules.EquipmentDiagnostics");
+        var source = string.Join(
+            Environment.NewLine,
+            File.ReadAllText(Path.Combine(
+                moduleRoot,
+                "Application", "Bot", "EquipmentDiagnosticBotService.cs")),
+            File.ReadAllText(Path.Combine(
+                moduleRoot,
+                "Application", "Diagnostics", "EquipmentDiagnosticCoreEngine.cs")),
+            File.ReadAllText(Path.Combine(
+                moduleRoot,
+                "Application", "Diagnostics", "EquipmentDiagnosticCore.cs")));
 
         Assert.DoesNotContain("manual-codebook", source, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("staging-candidate", source, StringComparison.OrdinalIgnoreCase);

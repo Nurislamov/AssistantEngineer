@@ -1,4 +1,5 @@
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Diagnostics;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
@@ -25,7 +26,10 @@ public static class EquipmentDiagnosticsModuleServiceCollectionExtensions
         services.AddSingleton<IEquipmentDiagnosticsKnowledgeSource, EquipmentDiagnosticsJsonKnowledgeSource>();
         services.AddSingleton<IErrorKnowledgeLocalizationSource, JsonErrorKnowledgeLocalizationSource>();
         services.AddSingleton<IEquipmentDiagnosticsService, InMemoryEquipmentDiagnosticsService>();
-        services.AddSingleton<IEquipmentDiagnosticBotService, EquipmentDiagnosticBotService>();
+        services.AddSingleton<IEquipmentDiagnosticCore, EquipmentDiagnosticCore>();
+        services.AddSingleton<IEquipmentDiagnosticBotService>(serviceProvider =>
+            new EquipmentDiagnosticBotService(
+                serviceProvider.GetRequiredService<IEquipmentDiagnosticCore>()));
         services.AddSingleton<IEquipmentDiagnosticsFacade, EquipmentDiagnosticsFacade>();
         services.AddSingleton<IEquipmentDiagnosticBotFacade, EquipmentDiagnosticBotFacade>();
         services.AddSingleton(new EquipmentDiagnosticTelegramOptions());
