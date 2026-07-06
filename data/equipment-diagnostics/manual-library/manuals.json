@@ -1290,13 +1290,17 @@
         "Gree GMV6 A9",
         "Gree GMV6 n1",
         "Gree GMV6 qA",
+        "Gree GMV6 qC",
+        "Gree GMV6 qH",
+        "Gree GMV6 qP",
+        "Gree GMV6 qU",
         "Gree GMV6 Uy"
       ],
       "sourceCommit": null,
-      "latestQualityCommit": null,
-      "productionStatus": "DeltaImportedPendingProductionSmoke",
+      "latestQualityCommit": "7ddca4fa",
+      "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "ED-24GEC.13A imported only GC202203-IV delta codes absent from the previous GMV6 runtime. The binary PDF remains ignored and uncommitted.",
+      "notes": "ED-24GEC.13A imported only GC202203-IV delta codes absent from the previous GMV6 runtime. ED-24QUAL.PROD1 production smoke passed for A9, n1, qA, qC, qH, qP, qU, Uy, and /last after PR #56 was deployed. The binary PDF remains ignored and uncommitted.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
@@ -1837,16 +1841,18 @@
         "status"
       ],
       "knownSmokeCodes": [
-        "E1",
-        "H5",
-        "C0",
-        "A0"
+        "Gree GMV X C1",
+        "Gree GMV X C7",
+        "Gree GMV X CU",
+        "Gree GMV X U5",
+        "Gree GMV X o1",
+        "Gree GMV X oC"
       ],
       "sourceCommit": null,
-      "latestQualityCommit": null,
-      "productionStatus": "RuntimeImported",
+      "latestQualityCommit": "7ddca4fa",
+      "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "Imported in ED-24GEC.14 from local service manual GC202209-I. ED-24QUAL.X1 cleaned the remaining 24 user-facing wording issues. Scope is GMV X only; do not mix with GMV6, GMV Mini, or GMV9 Flex. Production smoke is not yet confirmed.",
+      "notes": "Imported in ED-24GEC.14 from local service manual GC202209-I. ED-24QUAL.X1 cleaned the remaining 24 user-facing wording issues. ED-24QUAL.PROD1 production smoke passed for C1, C7, CU, U5, o1, oC, and /last after PR #56 was deployed. Scope is GMV X only; do not mix with GMV6, GMV Mini, or GMV9 Flex.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
@@ -2470,14 +2476,18 @@
         "System"
       ],
       "knownSmokeCodes": [
+        "Gree ERV dF",
+        "Gree ERV dH",
         "Gree ERV E6",
-        "Gree ERV L0"
+        "Gree ERV L0",
+        "Gree ERV L9",
+        "Gree ERV FHBQG-D10B-K E6"
       ],
       "sourceCommit": null,
-      "latestQualityCommit": null,
-      "productionStatus": "RuntimeImported",
+      "latestQualityCommit": "7ddca4fa",
+      "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "E6 and L0 runtime diagnostics are bound to this ERV B Series service manual. ED-24QUAL.ERV1 cleaned all five ERV user-facing cards; production smoke remains pending.",
+      "notes": "E6 and L0 runtime diagnostics are bound to this ERV B Series service manual. ED-24QUAL.ERV1 cleaned all five ERV user-facing cards. ED-24QUAL.PROD1 production smoke passed for ERV B Series dF, dH, E6, L0, L9, FHBQG-D10B-K E6, and /last after PR #56 was deployed.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
@@ -2519,13 +2529,16 @@
       "knownSmokeCodes": [
         "Gree ERV dF",
         "Gree ERV dH",
-        "Gree ERV L9"
+        "Gree ERV E6",
+        "Gree ERV L0",
+        "Gree ERV L9",
+        "Gree ERV FHBQG-D10B-K E6"
       ],
       "sourceCommit": null,
-      "latestQualityCommit": null,
-      "productionStatus": "RuntimeImported",
+      "latestQualityCommit": "7ddca4fa",
+      "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "dF, dH, and L9 runtime diagnostics are bound to this ERV wired-controller manual. ED-24QUAL.ERV1 cleaned all five ERV user-facing cards; production smoke remains pending.",
+      "notes": "dF, dH, and L9 runtime diagnostics are bound to this ERV wired-controller manual. ED-24QUAL.ERV1 cleaned all five ERV user-facing cards. ED-24QUAL.PROD1 production smoke passed for ERV B Series dF, dH, E6, L0, L9, FHBQG-D10B-K E6, and /last after PR #56 was deployed.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [
@@ -2669,17 +2682,24 @@
         "status"
       ],
       "knownSmokeCodes": [
-        "E0",
-        "U4",
-        "C2",
-        "n2",
-        "A9"
+        "Gree GMV6 HR C0",
+        "Gree GMV6 HR C2",
+        "Gree GMV6 HR C3",
+        "Gree GMV6 HR CH",
+        "Gree GMV6 HR CL",
+        "Gree GMV6 HR U4",
+        "Gree GMV6 HR U6",
+        "Gree GMV6 HR U8",
+        "Gree GMV6 HR U9",
+        "Gree GMV6 HR n0",
+        "Gree GMV6 HR n7",
+        "Gree GMV6 HR A2"
       ],
       "sourceCommit": null,
-      "latestQualityCommit": null,
-      "productionStatus": "RuntimeImported",
+      "latestQualityCommit": "7ddca4fa",
+      "productionStatus": "DeployedAndSmokeVerified",
       "recommendedNext": false,
-      "notes": "Imported in ED-24E.3 from local GMV6 HR service manual. ED-24QUAL.HR1 cleaned all 262 user-facing cards; production smoke remains pending. Scope is GMV6 HR only; do not mix with plain GMV6, GMV X, GMV9 Flex, or GMV Mini. Includes n2 from troubleshooting section 2.135 outside the Error Indication table.",
+      "notes": "Imported in ED-24E.3 from local GMV6 HR service manual. ED-24QUAL.HR1 cleaned all 262 user-facing cards. ED-24QUAL.PROD1 production smoke passed for C0, C2, C3, CH, CL, U4, U6, U8, U9, n0, n7, A2, and /last after PR #56 was deployed. Scope is GMV6 HR only; do not mix with plain GMV6, GMV X, GMV9 Flex, or GMV Mini. Includes n2 from troubleshooting section 2.135 outside the Error Indication table.",
       "futureTelegramManualLibrary": {
         "eligibleForTelegramLibrary": false,
         "allowedRoles": [

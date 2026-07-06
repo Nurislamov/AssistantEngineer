@@ -1,105 +1,81 @@
-﻿# AssistantEngineer Project State
+# AssistantEngineer Project State
 
 ## Current stage
 
-ED-24UMATCH.3 CLOSED / production PASS.
+ED-24QUAL.PROD1 CLOSED / production PASS.
 
-Gree U-Match R32 diagnostics audit, CI validation, production deployment and Telegram smoke are completed.
+PR #56 was merged to master, deployed to the VPS, and passed production Telegram smoke for the newly quality-closed Gree diagnostic scopes.
+
+- PR: #56
+- Merge commit: 35741920
+- Implementation commit: 7ddca4fa
+- VPS deployed commit: 35741920
+- VPS logs: clean; only Telegram polling, Sending Telegram response, and Status: Processed messages were observed.
 
 ## Current branch
 
-master
+ed-24qual-prod1-state-registry
 
-Latest known master commit:
+Target branch: master
 
-- 4159818d Merge pull request #54 from Nurislamov/ed-24umatch-1-2-diagnostics-audit
+Latest known deployed master commit:
+
+- 35741920
 
 ## Last completed work
 
-### ED-24GMVMINI
+### ED-24UX.LAST
 
-ED-24GMVMINI is closed.
+ED-24UX.LAST is closed.
 
-ED-24GMVMINI.1-2 audited GMV Mini diagnostics and runtime baseline.
+/last now preserves the matched diagnostic family/model label from the original Telegram lookup result.
 
-- PR: #52
-- Merge commit: b781d872
-- Implementation commit: 27ec74a0
-- GMV Mini cards: 148 total
-- Indoor: 27
-- Outdoor: 62
-- Status: 59
-- Production smoke: PASS
+Production smoke confirmed /last after the relevant diagnostic checks, including:
 
-ED-24GMVMINI.4 fixed visible wording for GMV Mini q/n function-setting cards.
+- ERV B Series
+- GMV X
+- GMV6 HR
+- GMV6 delta
 
-- PR: #53
-- Merge commit: 4de47413
-- Implementation commit: f6e04698
-- State update commit: f8c5bbb6
-- Production smoke: PASS
-- Production logs: clean
+### ED-24QUAL / ED-24GMV6 / ED-24REG
 
-### ED-24UMATCH
+PR #56 closed the quality and registry stages:
 
-ED-24UMATCH.1-2 audited Gree U-Match R32 diagnostics against the U-Match DC Inverter Unit service manual.
+- ED-24QUAL.ERV1 — cleaned ERV B Series visible diagnostic wording.
+- ED-24QUAL.X1 — cleaned the remaining GMV X visible diagnostic wording.
+- ED-24GMV6.DELTA — confirmed the eight GC202203-IV GMV6 delta cards.
+- ED-24QUAL.HR1 — cleaned all GMV6 HR visible diagnostic wording.
+- ED-24QUAL.HR2 — prepared and then production-smoked the GMV6 HR Telegram flow.
+- ED-24REG.1 — reconciled manual registry statuses before production smoke.
+- ED-24QUAL.PROD1 — promoted conservative manual registry production statuses after successful production smoke.
 
-- PR: #54
-- Merge commit: 4159818d
-- Implementation commit: abdd72a0
-- Manual identity:
-  - U-MATCH DC INVERTER UNIT
-  - GC202209-I
-  - R32
-  - 3.5kW~16.0kW
-  - Operation range: -15℃~48℃
-- U-Match runtime count: 107 cards
-- Gree runtime count: 1308
-- All 107 U-Match R32 cards were normalized under:
-  - data/equipment-diagnostics/error-knowledge/gree/umatch-r32/system/**
-- Package metadata updated:
-  - data/equipment-diagnostics/error-knowledge/packages/gree-umatch-r32-error-codes.json
-- Manual registry updated:
-  - data/equipment-diagnostics/manual-library/manuals.json
-- Focused tests added/updated:
-  - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeUMatchManualAudit1_2Tests.cs
-  - tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeUMatchErvImport24Tests.cs
-  - tests/AssistantEngineer.Tests/EquipmentDiagnostics/ManualCoverageRegistryTests.cs
+Runtime diagnostic counts remain:
 
-ED-24UMATCH.3 deployed U-Match R32 diagnostics to production and passed Telegram smoke.
+- Gree total: 1308
+- ERV B Series: 5
+- GMV X: 263
+- GMV6: 263
+- GMV6 HR: 262
+- GMV Mini: 148
+- U-Match R32: 107
+- GMV9 Flex: 260
 
-Smoke checked:
+Production smoke passed:
 
-- Gree U-Match E0
-- Gree U-Match E1
-- Gree U-Match E2
-- Gree U-Match E3
-- Gree U-Match E4
-- Gree U-Match E6
-- Gree U-Match E9
-- Gree U-Match C0
-- Gree U-Match C6
-- Gree U-Match F3
-- Gree U-Match H5
-- Gree U-Match HC
-- Gree U-Match Lc
-- Gree U-Match U7
-- Gree U-Match qC
-- Gree U-Match PA
-- Gree U-Match PL
-- Gree U-Match PH
-- Gree U-Match C8
-- Gree U-Match EL
-- Gree U-Match Fo
-- Gree U-Match H1
-- Gree U-Match CL
-- Gree U-Match d1
-- Gree U-Match GUD125W1/NhB-S E1
-- Gree U-Match GUD160PHS1/B-S E0
-- Gree U-Match GUD71PH1/B-S E9
-- /last
+- ERV B Series: dF, dH, E6, L0, L9, FHBQG-D10B-K E6, /last
+- GMV X: C1, C7, CU, U5, o1, oC, /last
+- GMV6 HR: C0, C2, C3, CH, CL, U4, U6, U8, U9, n0, n7, A2, /last
+- GMV6 delta: A9, n1, qA, qC, qH, qP, qU, Uy, /last
 
-Production logs were clean. Telegram updates 41768405 through 41768417 were processed successfully.
+Manual registry production statuses promoted to `DeployedAndSmokeVerified` for the smoke-validated imported scopes:
+
+- `gree-erv-b-series-service-manual`
+- `gree-erv-wired-controller-owner-manual`
+- `gree-gmv-x-service-manual-2022-09`
+- `gree-gmv6-hr-service-manual-2025-07`
+- `gree-gmv6-service-manual-2022-03`
+
+The ERV installation/startup/maintenance manual remains analyzed but not runtime-imported.
 
 ## Current blocker
 
@@ -107,28 +83,23 @@ None.
 
 ## Important decisions
 
-U-Match R32 is a semi-commercial split product family, not GMV/VRF.
+If a user is granted Telegram library access, that user is considered a trusted library user.
 
-Do not mix U-Match runtime cards with:
+The Telegram manual library is not split internally by Installer/Engineer role.
+
+An installer without Telegram library access can still receive manuals through the diagnostic flow when a manual is linked to a diagnostic code.
+
+Gree product-family boundaries remain strict. Do not mix:
 
 - GMV6
+- GMV6 HR
 - GMV X
 - GMV Mini
 - GMV9 Flex
+- U-Match R32
+- ERV B Series
 
-U-Match status/mode codes must remain non-alarming:
-
-- Fo — refrigerant recovery/service mode, not a component fault
-- H1 — ordinary defrosting, not a component fault
-- CL — automatic cleaning, not a component fault
-- d1/d2/d3 — DRED demand response modes, not component faults
-
-U-Match communication codes must stay distinct:
-
-- E6 — outdoor unit and indoor unit communication error
-- C0 — wired controller and indoor unit communication failure
-
-U-Match E1/E3 pressure protection wording may mention that pressure switch protection applies to 125/140/160 outdoor units where relevant.
+Status, query, commissioning, mode, and function-setting codes must not be presented as independent component failures.
 
 Visible Telegram answers must not leak internal/provenance terms such as:
 
@@ -146,51 +117,39 @@ Do not use public claims about exact external parity.
 
 ## Files changed recently
 
-ED-24UMATCH.1-2:
+ED-24QUAL.PROD1:
 
-- data/equipment-diagnostics/error-knowledge/gree/umatch-r32/system/**
-- data/equipment-diagnostics/error-knowledge/packages/gree-umatch-r32-error-codes.json
+- PROJECT_STATE.md
 - data/equipment-diagnostics/manual-library/manuals.json
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeUMatchManualAudit1_2Tests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeUMatchErvImport24Tests.cs
-- tests/AssistantEngineer.Tests/EquipmentDiagnostics/ManualCoverageRegistryTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeDiagnosticManualRegistryReconciliationTests.cs
+- tests/AssistantEngineer.Tests/EquipmentDiagnostics/GreeGmv6FreshManualDelta13ATests.cs
 
-No production env changes.
-No EF migrations.
-No generated artifacts committed.
+Scope guard:
+
+- No diagnostic card JSON changes.
+- No src runtime code changes.
+- No EF migrations.
+- No package metadata changes.
+- No GMV Mini, U-Match R32, or GMV9 Flex card folder changes.
 
 ## Validation status
 
-ED-24UMATCH.1-2:
+ED-24QUAL.PROD1 local validation:
 
-- Focused U-Match tests: 66/66 PASS
-- Full suite: 5353/5353 PASS
-- Engineering Core V1 verifier: PASS
-- PR checks: 7/7 PASS
-- Master CI after merge: PASS
-- git diff --check: PASS
-- Non-U-Match Gree runtime JSON changes: none
-- U-Match runtime count: 107
-- Gree runtime count: 1308
+- Manual registry focused tests: 17/17 PASS
+- `dotnet build .\AssistantEngineer.sln`: PASS, 0 warnings, 0 errors
+- `dotnet test .\AssistantEngineer.sln`: PASS, 5375/5375
+- `git diff --check`: PASS
 
-ED-24UMATCH.3:
+Production validation:
 
-- VPS deploy: PASS
-- Telegram smoke: PASS
-- Production logs: clean
+- VPS deploy: PASS at 35741920
+- Telegram smoke: PASS for ERV B Series, GMV X, GMV6 HR, GMV6 delta, and /last
+- VPS logs: clean
 
 ## Known backlog
 
-ED-24UX.LAST — Improve /last display to preserve matched series/model label.
-
-Current behavior:
-
-- /last works and preserves the latest code and meaning.
-- It may display a short label such as `Gree E9` instead of preserving the matched series/model label such as `Gree U-Match R32 E9` or `Gree GMV Mini C0`.
-
-This is not a production blocker.
-
-ED-24OPS.CLEANUP — Move VPS env backups outside repo or ignore safe backup pattern.
+ED-24OPS.CLEANUP — move VPS env backups outside repo or ignore safe backup pattern.
 
 CI maintenance:
 
@@ -204,9 +163,5 @@ Flaky/infrastructure watch:
 ## Next step
 
 Recommended next stage:
-
-ED-24UX.LAST — improve /last display to preserve matched series/model label.
-
-Alternative:
 
 ED-24OPS.CLEANUP — cleanup VPS env backup handling.
