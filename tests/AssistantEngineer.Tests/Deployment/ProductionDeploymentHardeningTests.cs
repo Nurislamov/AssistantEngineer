@@ -203,6 +203,59 @@ public sealed class ProductionDeploymentHardeningTests
     }
 
     [Fact]
+    public void EnvironmentBackupsAreIgnoredAndOperatorRunbookMovesThemOutsideRepository()
+    {
+        var deployIgnore = ReadDeploy(".gitignore");
+        var runbook = File.ReadAllText(Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "operations",
+            "production-compose-hygiene.md"));
+
+        Assert.Contains(".env.before-*", deployIgnore, StringComparison.Ordinal);
+        Assert.Contains("/opt/assistantengineer-runtime-backups/env", runbook, StringComparison.Ordinal);
+        Assert.Contains(
+            "mv /opt/assistantengineer/deploy/.env.before-* /opt/assistantengineer-runtime-backups/env/",
+            runbook,
+            StringComparison.Ordinal);
+        Assert.Contains("confirm each matched file is a backup copy", runbook, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("is not the active", runbook, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("rm /opt/assistantengineer/deploy/.env.before-", runbook, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ProductionOrphanRunbookRequiresInspectionAndNoAutomaticRemoval()
+    {
+        var runbook = File.ReadAllText(Path.Combine(
+            TestPaths.RepoRoot,
+            "docs",
+            "operations",
+            "production-compose-hygiene.md"));
+
+        Assert.Contains(
+            "docker compose --env-file .env -f docker-compose.yml ps",
+            runbook,
+            StringComparison.Ordinal);
+        Assert.Contains("docker ps --filter \"name=postgres\"", runbook, StringComparison.Ordinal);
+        Assert.Contains("docker inspect assistantengineer-postgres-1", runbook, StringComparison.Ordinal);
+        Assert.Contains("docker volume ls", runbook, StringComparison.Ordinal);
+        Assert.Contains("production data-bearing infrastructure", runbook, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Do not add or run", runbook, StringComparison.Ordinal);
+        Assert.Contains("`--remove-orphans`", runbook, StringComparison.Ordinal);
+
+        var productionScripts = Directory.GetFiles(
+                DeploymentScriptsRoot,
+                "*",
+                SearchOption.AllDirectories)
+            .Concat(Directory.GetFiles(
+                Path.Combine(TestPaths.RepoRoot, "scripts", "operations"),
+                "*",
+                SearchOption.AllDirectories));
+        Assert.All(productionScripts, path =>
+            Assert.DoesNotContain("--remove-orphans", File.ReadAllText(path), StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void DeploymentScaffoldAndScriptsContainNoTokenLikeValuesOrPdfFiles()
     {
         var files = Directory.GetFiles(DeployRoot, "*", SearchOption.AllDirectories)

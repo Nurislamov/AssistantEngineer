@@ -2,16 +2,17 @@
 
 ## Current stage
 
-ED-24LIB.ACCESS1 CLOSED / local validation PASS.
+ED-24OPS.CLEANUP CLOSED / local validation PASS.
 
-Telegram manual-library access policy is documented and guarded by focused tests.
+Safe operations hygiene for the production Compose orphan-Postgres warning and VPS environment backup files.
 
-Accepted product policy:
+Stage boundaries:
 
-- If a Telegram user is granted access to the manual library, that user is considered a trusted library user.
-- The manual library is not split internally by Installer/Engineer role.
-- Installer/Engineer/Admin/Owner role should not further restrict library browsing once explicit library access is granted.
-- A user without explicit library access may still receive manuals through the diagnostic flow when a manual is linked to a diagnostic code.
+- The healthy `assistantengineer-postgres-1` container is treated as production data-bearing infrastructure.
+- No container, database, volume, or environment backup deletion/removal is included.
+- Production scripts do not use `docker compose --remove-orphans`.
+- Existing `deploy/.env.before-*` files are ignored and may be moved outside the working tree only after operator
+  confirmation that they are backup copies rather than the active `.env`.
 
 Previous production context:
 
@@ -25,7 +26,7 @@ PR #56 was merged to master, deployed to the VPS, and passed production Telegram
 
 ## Current branch
 
-ed-24lib-access1-policy
+ed-24ops-cleanup-orphans-env-backups
 
 Target branch: master
 
@@ -34,6 +35,29 @@ Latest known deployed master commit:
 - 35741920
 
 ## Last completed work
+
+### ED-24OPS.CLEANUP
+
+ED-24OPS.CLEANUP is closed locally.
+
+Repository investigation found:
+
+- The tracked `deploy/docker-compose.yml` has used the fixed project name `assistantengineer` since its initial
+  commit and has never contained a PostgreSQL service.
+- The current Compose file therefore reports `assistantengineer-postgres-1` as an orphan because that container
+  belongs to an earlier or VPS-local Compose definition for the same project whose `postgres` service is not in
+  the tracked file.
+- No tracked deployment or operations script creates `deploy/.env.before-*`; those files came from an
+  external/manual VPS procedure.
+
+Chosen handling:
+
+- `deploy/.gitignore` ignores only `.env.before-*` backup copies in addition to the already ignored active `.env`.
+- `docs/operations/production-compose-hygiene.md` documents non-destructive Postgres inspection and prohibits
+  automatic orphan removal.
+- Future environment backups should use `/opt/assistantengineer-runtime-backups/env`; moving existing backups is
+  a manual operator step after confirming they are not the active `.env`.
+- No production deployment script was changed.
 
 ### ED-24LIB.ACCESS1
 
@@ -186,9 +210,14 @@ ED-24LIB.ACCESS1 local validation:
 - `dotnet test .\AssistantEngineer.sln`: PASS, 5389/5389
 - `git diff --check`: PASS
 
-## Known backlog
+ED-24OPS.CLEANUP local validation:
 
-ED-24OPS.CLEANUP — move VPS env backups outside repo or ignore safe backup pattern.
+- Deployment/operations/scripts/GitIgnore/Docker focused tests: 143/143 PASS
+- `dotnet build .\AssistantEngineer.sln`: PASS, 0 warnings, 0 errors
+- `dotnet test .\AssistantEngineer.sln`: PASS, 5391/5391
+- `git diff --check`: PASS
+
+## Known backlog
 
 CI maintenance:
 
@@ -203,4 +232,4 @@ Flaky/infrastructure watch:
 
 Recommended next stage:
 
-ED-24OPS.CLEANUP — cleanup VPS env backup handling.
+Operator review and merge of ED-24OPS.CLEANUP; no automatic production cleanup is required.

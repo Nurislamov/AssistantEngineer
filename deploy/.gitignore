@@ -1,3 +1,4 @@
 .env
+.env.before-*
 docker-compose.override.yml
 *.local.yml

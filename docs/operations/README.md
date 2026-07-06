@@ -18,6 +18,7 @@ This section documents the current provider-neutral operational foundation:
 - [runtime observability](runtime-observability.md);
 - [operational diagnostics](operational-diagnostics.md);
 - [request correlation and logging](request-correlation-and-logging.md);
+- [production Compose and environment-backup hygiene](production-compose-hygiene.md);
 - [incident runbooks](incidents/);
 - sanitized log collection with `scripts/operations/collect-sanitized-logs.ps1`.
 
