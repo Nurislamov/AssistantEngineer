@@ -167,7 +167,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.DoesNotContain("Категория:", response.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("классифицирован", response.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("связи связи", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Gree C0", last.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 C0", last.Text, StringComparison.Ordinal);
         Assert.DoesNotContain("связи связи", last.Text, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -236,7 +236,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         await adapter.HandleAsync(Update("Gree GMV6 U0"));
         var last = await adapter.HandleAsync(Update("/last"));
 
-        Assert.Contains("Gree U0", last.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 U0", last.Text, StringComparison.Ordinal);
         Assert.Contains("прогрева", last.Text, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -249,7 +249,7 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         await adapter.HandleAsync(Update("Gree GMV6 U3"));
         var last = await adapter.HandleAsync(Update("/last"));
 
-        Assert.Contains("Gree U3", last.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 U3", last.Text, StringComparison.Ordinal);
         Assert.Contains("трёхфазн", last.Text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("фазиров", last.Text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("классифицирован", last.Text, StringComparison.OrdinalIgnoreCase);
@@ -301,8 +301,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         await adapter.HandleAsync(Update("Gree GMV6 O1"));
         var last = await adapter.HandleAsync(Update("/last"));
 
-        Assert.Contains("Gree o1", last.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("Gree O1", last.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV6 o1", last.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree GMV6 O1", last.Text, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -317,8 +317,8 @@ public sealed class EquipmentDiagnosticTelegramAdapterTests
         Assert.DoesNotContain("Gree GMV o1", response.Text, StringComparison.Ordinal);
         Assert.Contains("Gree GMV Mini — 01", response.Text, StringComparison.Ordinal);
         Assert.Contains("назначение главного блока", response.Text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Gree 01", last.Text, StringComparison.Ordinal);
-        Assert.DoesNotContain("Gree o1", last.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV Mini 01", last.Text, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gree GMV Mini o1", last.Text, StringComparison.Ordinal);
     }
 
     [Theory]

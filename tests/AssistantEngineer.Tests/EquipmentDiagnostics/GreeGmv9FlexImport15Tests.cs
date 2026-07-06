@@ -273,7 +273,7 @@ public sealed partial class GreeGmv9FlexImport15Tests
         await adapter.HandleAsync(Update("Gree GMV9 Flex BJ"));
         var last = await adapter.HandleAsync(Update("/last"));
 
-        Assert.Contains("Gree bJ", last.Text, StringComparison.Ordinal);
+        Assert.Contains("Gree GMV9 Flex bJ", last.Text, StringComparison.Ordinal);
     }
 
     [Fact]

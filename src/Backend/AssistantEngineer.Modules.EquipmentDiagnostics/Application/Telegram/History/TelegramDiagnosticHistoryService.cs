@@ -168,10 +168,35 @@ public sealed class TelegramDiagnosticHistoryService
     private static string EmptyHistoryText() =>
         "История пока пустая. Отправьте код ошибки, например: Gree H5.";
 
-    private static string FormatCaseTitle(TelegramDiagnosticCaseSnapshot diagnosticCase) =>
-        string.IsNullOrWhiteSpace(diagnosticCase.Manufacturer)
-            ? diagnosticCase.Code
-            : $"{diagnosticCase.Manufacturer} {diagnosticCase.Code}";
+    private static string FormatCaseTitle(TelegramDiagnosticCaseSnapshot diagnosticCase)
+    {
+        var series = ReadSeries(diagnosticCase.NormalizedRequestJson);
+        return string.Join(
+            " ",
+            new[] { diagnosticCase.Manufacturer, series, diagnosticCase.Code }
+                .Where(value => !string.IsNullOrWhiteSpace(value)));
+    }
+
+    private static string? ReadSeries(string? normalizedRequestJson)
+    {
+        if (string.IsNullOrWhiteSpace(normalizedRequestJson))
+        {
+            return null;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(normalizedRequestJson);
+            return document.RootElement.TryGetProperty("series", out var series) &&
+                   series.ValueKind == JsonValueKind.String
+                ? SafeText(series.GetString(), 128)
+                : null;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
 
     private static string ConsumerSafeSummary() =>
         "Сработала защита оборудования. Точное значение зависит от модели и места отображения ошибки.";
