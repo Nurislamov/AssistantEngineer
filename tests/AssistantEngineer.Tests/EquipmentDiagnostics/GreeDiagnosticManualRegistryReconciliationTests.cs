@@ -14,11 +14,11 @@ public sealed class GreeDiagnosticManualRegistryReconciliationTests
     [Theory]
     [InlineData("gree-umatch-r32-service-manual", 107, "DeployedAndSmokeVerified")]
     [InlineData("gree-gmv9-flex-service-manual-2025-12", 260, "DeployedAndSmokeVerified")]
-    [InlineData("gree-gmv-x-service-manual-2022-09", 263, "RuntimeImported")]
-    [InlineData("gree-gmv6-hr-service-manual-2025-07", 262, "RuntimeImported")]
-    [InlineData("gree-erv-b-series-service-manual", 2, "RuntimeImported")]
-    [InlineData("gree-erv-wired-controller-owner-manual", 3, "RuntimeImported")]
-    [InlineData("gree-gmv6-service-manual-2022-03", 8, "DeltaImportedPendingProductionSmoke")]
+    [InlineData("gree-gmv-x-service-manual-2022-09", 263, "DeployedAndSmokeVerified")]
+    [InlineData("gree-gmv6-hr-service-manual-2025-07", 262, "DeployedAndSmokeVerified")]
+    [InlineData("gree-erv-b-series-service-manual", 2, "DeployedAndSmokeVerified")]
+    [InlineData("gree-erv-wired-controller-owner-manual", 3, "DeployedAndSmokeVerified")]
+    [InlineData("gree-gmv6-service-manual-2022-03", 8, "DeployedAndSmokeVerified")]
     public void RegistryMatchesProvenImportAndProductionState(
         string manualId,
         int entriesImported,

@@ -132,7 +132,7 @@ public sealed class GreeGmv6FreshManualDelta13ATests
         Assert.Equal(8, RequiredInt(manual, "entriesImported"));
         Assert.Equal("PartiallyImported", RequiredString(manual, "importStatus"));
         Assert.Equal("PartialDiagnosticScopeImported", RequiredString(manual, "coverageStatus"));
-        Assert.Equal("DeltaImportedPendingProductionSmoke", RequiredString(manual, "productionStatus"));
+        Assert.Equal("DeployedAndSmokeVerified", RequiredString(manual, "productionStatus"));
         Assert.False(Assert.IsAssignableFrom<JsonValue>(manual["recommendedNext"]).GetValue<bool>());
     }
 
