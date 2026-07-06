@@ -2,36 +2,116 @@
 
 ## Current stage
 
-ED-24BOT.CORE1 — CLOSED locally / validation PASS / awaiting Telegram smoke before merge
+ED-24BOT.CORE1 — CLOSED / production PASS.
+
+Bot architecture audit and first behavior-preserving channel-neutral diagnostic core extraction are merged to master and deployed to production.
+
+Production context:
+
+```text
+PR: #60
+Merge commit: 52ca74a8
+Audit commit: 2a056480
+Core extraction commit: 118009fc
+State checkpoint commit before production smoke: d4437864
+VPS deployed commit: 52ca74a8
+```
 ## Current branch
 
-ed-24bot-architecture-core
+master
 ## Last completed work
 
-ED-24BOT.AUDIT1 completed as documentation-only architecture audit.
+### ED-24BOT.AUDIT1
 
-ED-24BOT.CORE1 completed with commit:
+ED-24BOT.AUDIT1 is closed.
+
+The architecture audit documented the current Telegram bot / equipment diagnostics flow, identified channel-neutral diagnostic core boundaries, Telegram adapter boundaries, web-reuse candidates, missing tests, and production risks.
+
+Audit report:
+
+```text
+docs/engineering/ED-24BOT-AUDIT1-bot-architecture-audit.md
+```
+
+Commit:
+
+```text
+2a056480 ED-24BOT.AUDIT1 Document bot architecture audit
+```
+
+### ED-24BOT.CORE1
+
+ED-24BOT.CORE1 is closed and production-smoked.
+
+Implementation commit:
 
 ```text
 118009fc ED-24BOT.CORE1 Extract channel-neutral diagnostic core
+```
+
+State checkpoint commit:
+
+```text
+d4437864 ED-24BOT.CORE1 Update project state
+```
+
+Merge commit:
+
+```text
+52ca74a8 Merge pull request #60 from Nurislamov/ed-24bot-architecture-core
 ```
 
 Implemented first behavior-preserving channel-neutral diagnostic core slice:
 
 ```text
 - added neutral IEquipmentDiagnosticCore;
-- added EquipmentDiagnosticCore and internal core engine;
+- added EquipmentDiagnosticCore and internal EquipmentDiagnosticCoreEngine;
 - added DiagnosticCoreRequest / DiagnosticCoreResult and neutral diagnostic contracts;
+- added neutral identity, ambiguity, audience, guidance, source and safety contracts;
 - added EquipmentDiagnosticBotCompatibilityMapper;
 - EquipmentDiagnosticBotService now delegates through the compatibility adapter;
-- existing public bot DTO/API shape preserved;
-- no new public endpoint added.
+- existing /api/v1/equipment-diagnostics/bot/diagnose route and bot DTO JSON shape preserved;
+- no new public endpoint added;
+- no Telegram runtime files changed.
+```
+
+Production deploy:
+
+```text
+VPS: assistantengineer-beta-01
+Repository path: /opt/assistantengineer
+Deploy path: /opt/assistantengineer/deploy
+API container: assistantengineer-assistantengineer-api-1
+Deployed commit: 52ca74a8
+API rebuild/recreate: PASS
+Telegram polling startup: PASS
+```
+
+Production Telegram smoke passed for:
+
+```text
+Gree GMV6 HR C0
+Gree GMV6 HR A2
+Gree GMV X oC
+Gree ERV FHBQG-D10B-K E6
+Gree GMV6 Uy
+Gree U-Match GUD71PH1/B-S E9
+/last
+```
+
+Smoke log range:
+
+```text
+UpdateId 41768632–41768638
+Sending Telegram response: observed
+Telegram polling update processed: observed
+Status: Processed
 ```
 ## Current blocker
 
-No code blocker.
+None.
 
-Manual Telegram smoke is required before merge.
+ED-24BOT.CORE1 is production PASS.
 ## Important decisions
 
 CORE1 is compatibility-first.
@@ -43,7 +123,17 @@ Telegram runtime code was intentionally not changed in CORE1.
 Manual library, service requests, Telegram history extraction, parser delegation, and web API work remain out of scope for CORE1.
 
 The internal core engine still reuses legacy bot semantic types to guarantee exact first-slice compatibility. Deeper cleanup must be a separately reviewed stage.
+
+Do not use `docker compose --remove-orphans` on production automatically. The healthy `assistantengineer-postgres-1` orphan warning is known and treated as production data-bearing infrastructure unless separately reviewed.
 ## Files changed recently
+
+ED-24BOT.AUDIT1:
+
+```text
+docs/engineering/ED-24BOT-AUDIT1-bot-architecture-audit.md
+```
+
+ED-24BOT.CORE1:
 
 ```text
 src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Diagnostics/**
@@ -54,10 +144,34 @@ tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticCoreArchit
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticCoreCompatibilityTests.cs
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticBotServiceTests.cs
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/MultiSourceDiagnosticReferenceTests.cs
+PROJECT_STATE.md
+```
+
+Protected scope unchanged:
+
+```text
+src/Backend/AssistantEngineer.Modules.EquipmentDiagnostics/Application/Telegram/**
+data/equipment-diagnostics/error-knowledge/gree/**
+data/equipment-diagnostics/manual-library/manuals.json
+src/Backend/AssistantEngineer.Infrastructure/Persistence/Migrations/**
+deploy/**
+scripts/deployment/**
+scripts/operations/**
+runtime config/env files
 ```
 ## Validation status
 
-ED-24BOT.CORE1 validation:
+ED-24BOT.AUDIT1 validation:
+
+```text
+Build: PASS, 0 warnings/errors
+Tests: PASS, 5391/5391
+git diff --check: PASS
+Scope checks: PASS
+Runtime, Telegram, diagnostics JSON, manuals, migrations and deployment unchanged
+```
+
+ED-24BOT.CORE1 local/CI validation:
 
 ```text
 Restore: PASS
@@ -68,11 +182,39 @@ Full test suite: 5411/5411 PASS
 git diff --check: PASS
 Scope checks: PASS
 Architecture guard: PASS
-Telegram runtime files: unchanged
-diagnostics JSON/manuals/migrations/deployment/config/env: unchanged
+PR #60 checks: PASS, 10/10 successful
 ```
 
-Manual Telegram smoke: not run yet. Required before merge to master.
+ED-24BOT.CORE1 production validation:
+
+```text
+VPS deployed commit: 52ca74a8
+API rebuild/recreate: PASS
+Container status: Up
+Telegram command menu synchronized: PASS
+Telegram polling started: PASS
+Telegram deleteWebhook on startup succeeded: PASS
+Telegram smoke logs: PASS
+Updates processed: 41768632–41768638
+```
+
+Expected known production warnings:
+
+```text
+docker compose orphan warning for assistantengineer-postgres-1: known, do not auto-remove
+Microsoft.AspNetCore.Hosting.Diagnostics[15] HTTP_PORTS/URLS warning: known, non-blocking
+```
+
+No observed production smoke errors:
+
+```text
+InvalidOperationException: not observed
+Telegram polling batch failed: not observed
+error/exception: not observed
+duplicate skipped: not observed
+```
+
+Visual Telegram smoke: PASS.
 ## Known backlog
 
 CI maintenance:
@@ -86,27 +228,27 @@ Flaky/infrastructure watch:
 
 ## Next step
 
-Run manual Telegram smoke on branch build before merging to master:
+Recommended next stage:
 
 ```text
-Gree GMV6 HR C0
-Gree GMV6 HR A2
-Gree GMV X oC
-Gree ERV FHBQG-D10B-K E6
-Gree GMV6 Uy
-Gree U-Match GUD71PH1/B-S E9
-/last
+ED-24BOT.CORE2 or ED-24BOT.CORE1.POST — small follow-up only after separate review
 ```
 
-Check:
+Possible follow-ups, do not start automatically:
 
 ```text
-matched series/model label is preserved;
-/last works;
-manual diagnostic flow works;
-library access policy is not regressed;
-old production-visible phrases do not return:
-- "подтвердите код"
-- "Сверьте модель"
-- "карточка применима"
+- reduce internal dependency of EquipmentDiagnosticCoreEngine on legacy bot semantic types;
+- add neutral diagnostic text interpreter only after separate parser-delegation stage;
+- design neutral history event projection only after separate history stage;
+- keep MANUAL1, REQUEST1 and WEB1 out of scope until separately planned.
+```
+
+For a new chat, start from this checkpoint:
+
+```text
+ED-24BOT.AUDIT1 — CLOSED
+ED-24BOT.CORE1 — CLOSED / production PASS
+master top after PR #60: 52ca74a8
+production VPS deployed commit: 52ca74a8
+Telegram smoke: PASS
 ```
