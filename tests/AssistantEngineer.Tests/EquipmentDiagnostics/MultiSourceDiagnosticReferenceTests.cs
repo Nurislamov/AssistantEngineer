@@ -2,6 +2,7 @@ using System.Text.Json;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Bot;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Contracts;
+using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Diagnostics;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Knowledge.Localization;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Services;
 using AssistantEngineer.Modules.EquipmentDiagnostics.Application.Telegram;
@@ -84,11 +85,12 @@ public sealed class MultiSourceDiagnosticReferenceTests
     public async Task DifferentEquipmentMeaningAsksEquipmentClarificationNotManualSelection()
     {
         var service = new EquipmentDiagnosticBotService(
-            new FakeDiagnosticsService([
-                Summary("E1", "GMV6", EquipmentCategory.VrfIndoorUnit, "Indoor E1"),
-                Summary("E1", "GMV6", EquipmentCategory.VrfOutdoorUnit, "Outdoor E1")
-            ]),
-            new MultiSourceLocalizationSource());
+            new EquipmentDiagnosticCore(
+                new FakeDiagnosticsService([
+                    Summary("E1", "GMV6", EquipmentCategory.VrfIndoorUnit, "Indoor E1"),
+                    Summary("E1", "GMV6", EquipmentCategory.VrfOutdoorUnit, "Outdoor E1")
+                ]),
+                new MultiSourceLocalizationSource()));
         var formatter = new EquipmentDiagnosticTelegramResponseFormatter(new MultiSourceLocalizationSource());
 
         var response = await service.DiagnoseAsync(new EquipmentDiagnosticBotRequest("Gree", "E1"));
