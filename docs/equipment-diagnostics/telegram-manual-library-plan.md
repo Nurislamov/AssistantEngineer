@@ -27,11 +27,15 @@ grants and requests, and allows diagnostic document delivery only from `OwnerMan
 
 ## Library access
 
-Library access is separate from Telegram role.
+Library access is separate from Telegram role. ED-24LIB.ACCESS1 defines the accepted product policy: once a
+technical Telegram user has an explicit active library grant, that user is treated as a trusted library user for
+general library browsing and file delivery. The library is not split internally between `Installer` and `Engineer`.
 
 - `Owner` has implicit full library access and can grant/revoke access.
 - `Admin` does not manage the library automatically and does not receive library access by role alone.
 - `Admin`, `Engineer`, and `Installer` can use the library only when Owner has issued an active grant.
+- With an active grant, `Admin`, `Engineer`, and `Installer` can browse and fetch active visible library files without
+  an additional Installer/Engineer subdivision inside the library.
 - `Consumer`, disabled, blocked, and unknown users cannot open or fetch library files.
 - Every library command, callback, access request, grant/revoke action, and file-fetch callback re-checks role,
   enabled/blocked state, and active grant.
@@ -91,10 +95,12 @@ ED-24MAN.2 exposes the first structured Gree catalog:
   `lib:f:<bindingId>` callbacks.
 - `Gree -> Аксессуары и прочее` remains a free section and paginates when the list is long.
 - File visibility requires `IsLibraryVisible = true`.
-- File fetch requires active library access and `role >= MinRole`.
+- File fetch requires active general library access, active binding state, visible library state, and an allowed visible
+  document type. It does not apply a second `Installer`/`Engineer` role subdivision after explicit library access is
+  granted.
 - Owner sees all active visible files.
-- Engineer with grant can fetch `MinRole = Engineer` files.
-- Installer with grant cannot fetch `MinRole = Engineer` service manuals.
+- Engineer with grant can fetch active visible library service manuals.
+- Installer with grant can fetch active visible library service manuals.
 
 Existing Gree service bindings for GMV9 Flex, GMV X, GMV6, and GMV Mini remain visible under
 `Gree -> Наружные -> <product> -> 📕 Сервисные мануалы`.
@@ -123,10 +129,15 @@ Telegram file ids.
 
 Stored document policy:
 
-- `ServiceManual`: `MinRole = Engineer`, library-only, `CanUseForDiagnostics = false`.
+- `ServiceManual`: stored with legacy `MinRole = Engineer` metadata, library-only, `CanUseForDiagnostics = false`.
 - `OwnerManual`: `MinRole = Consumer`, can be used by diagnostics only for outdoor product lines.
 - `InstallationManual`: `MinRole = Installer`, internal/library-only, hidden from visible Telegram library/upload menus.
 - `ControllerGuide`: `MinRole = Installer`, library-only.
+
+`MinRole` is retained as binding metadata for existing rows and upload defaults. It is not a second authorization split
+inside the general manual library once explicit library access has been granted. Diagnostic guide delivery remains a
+separate flow: a user without general library access can still receive an eligible linked `OwnerManual` through the
+diagnostic context, while service manuals never become diagnostic-guide fallbacks.
 
 Visible document-type labels:
 
