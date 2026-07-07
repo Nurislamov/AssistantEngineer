@@ -146,3 +146,32 @@ artifacts/gree-alice/snapshots/
 ```
 
 The snapshot intentionally excludes token, password, and raw device key values. It keeps only safe identifiers, masked values, classification, normalized kind, candidate control target, and raw field names for future capability mapping.
+
+## Safe raw status and capability fields
+
+`GREE-ALICE-05` prepares the live status/capability investigation.
+
+Cloud discovery reports now include `SafeRawProperties` for each device. Sensitive values such as token, password, raw device key, MAC-like identifiers, email, phone, and barcode-like fields are masked.
+
+This is useful when the physical AC is online:
+
+```powershell
+$env:GREE_ALICE_GREE_USERNAME = "your_gree_plus_login"
+$env:GREE_ALICE_GREE_PASSWORD = "your_gree_plus_password"
+$env:GREE_ALICE_GREE_REGION = "Ouzbekistan"
+
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer"
+
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --normalize-latest-report
+```
+
+If the physical unit is offline, the probe should still complete when Gree+ Cloud returns metadata, but live status fields may be missing or stale.
+
+For this project, `Ouzbekistan` / `Ouzbékistan` is validated against:
+
+```text
+East South Asia / https://hkgrih.gree.com
+```

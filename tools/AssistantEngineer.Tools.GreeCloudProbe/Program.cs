@@ -9,7 +9,7 @@ namespace AssistantEngineer.Tools.GreeCloudProbe;
 
 internal static class Program
 {
-    private const string StageName = "GREE-ALICE-03";
+    private const string StageName = "GREE-ALICE-05";
 
     private static readonly JsonSerializerOptions ReportJsonOptions = new()
     {
@@ -628,7 +628,8 @@ internal static class Program
         bool KeyProvided,
         string? KeyMasked,
         string Classification,
-        IReadOnlyList<string> RawFieldNames);
+        IReadOnlyList<string> RawFieldNames,
+        IReadOnlyDictionary<string, object?> SafeRawProperties);
 
     private sealed record EndpointTrace(
         string Endpoint,
@@ -828,7 +829,8 @@ internal static class Program
                 KeyProvided: !string.IsNullOrWhiteSpace(key),
                 KeyMasked: string.IsNullOrWhiteSpace(key) ? null : MaskLongValue(key, options.MaskSecrets),
                 Classification: "unknown",
-                RawFieldNames: rawFieldNames);
+                RawFieldNames: rawFieldNames,
+                SafeRawProperties: JsonHelpers.CreateSafePropertyMap(device, options.MaskSecrets));
 
             return probeDevice with { Classification = ClassifyDevice(probeDevice) };
         }
@@ -1234,6 +1236,7 @@ internal static class Program
                 IdentityConfidence: identityConfidence,
                 NeedsManualConfirmation: true,
                 CapabilityDraft: capabilityDraft,
+                SafeRawProperties: GetObjectMap(device, "SafeRawProperties"),
                 RawFieldNames: rawFieldNames,
                 Notes: BuildDeviceNotes(normalizedKind, cloudClassification, rawFieldNames));
         }
@@ -1357,7 +1360,7 @@ internal static class Program
             CloudDeviceSnapshotReport snapshot)
         {
             Console.WriteLine("AssistantEngineer Gree Cloud device snapshot");
-            Console.WriteLine("Stage: GREE-ALICE-04");
+            Console.WriteLine("Stage: GREE-ALICE-05");
             Console.WriteLine($"Input report: {inputReportPath}");
             Console.WriteLine($"Output snapshot: {outputPath}");
             Console.WriteLine($"Region: {DisplayValue(snapshot.Region)}");
@@ -1471,6 +1474,37 @@ internal static class Program
             };
         }
 
+        private static IReadOnlyDictionary<string, object?> GetObjectMap(JsonElement element, string name)
+        {
+            var result = new SortedDictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+
+            if (!TryGetProperty(element, name, out var property) ||
+                property.ValueKind != JsonValueKind.Object)
+            {
+                return result;
+            }
+
+            foreach (var item in property.EnumerateObject())
+                result[item.Name] = ToSnapshotSafeValue(item.Value);
+
+            return result;
+        }
+
+        private static object? ToSnapshotSafeValue(JsonElement value)
+        {
+            return value.ValueKind switch
+            {
+                JsonValueKind.String => value.GetString(),
+                JsonValueKind.Number => value.GetRawText(),
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.Null => null,
+                JsonValueKind.Undefined => null,
+                JsonValueKind.Array => $"<array:{value.GetArrayLength()}>",
+                JsonValueKind.Object => "<object>",
+                _ => value.GetRawText()
+            };
+        }
         private static IReadOnlyList<string> GetStringArray(JsonElement element, string name)
         {
             if (!TryGetProperty(element, name, out var property) ||
@@ -1540,6 +1574,7 @@ internal static class Program
             string IdentityConfidence,
             bool NeedsManualConfirmation,
             CloudCapabilityDraft CapabilityDraft,
+            IReadOnlyDictionary<string, object?> SafeRawProperties,
             IReadOnlyList<string> RawFieldNames,
             IReadOnlyList<string> Notes);
 
@@ -1695,6 +1730,42 @@ internal static class Program
         }
 
 
+        public static IReadOnlyDictionary<string, object?> CreateSafePropertyMap(JsonElement element, bool maskSecrets)
+        {
+            var result = new SortedDictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+
+            if (element.ValueKind != JsonValueKind.Object)
+                return result;
+
+            foreach (var property in element.EnumerateObject())
+            {
+                if (maskSecrets && IsSensitiveName(property.Name))
+                {
+                    result[property.Name] = "<masked>";
+                    continue;
+                }
+
+                result[property.Name] = ConvertToSafeRawValue(property.Value);
+            }
+
+            return result;
+        }
+
+        private static object? ConvertToSafeRawValue(JsonElement value)
+        {
+            return value.ValueKind switch
+            {
+                JsonValueKind.String => value.GetString(),
+                JsonValueKind.Number => value.GetRawText(),
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.Null => null,
+                JsonValueKind.Undefined => null,
+                JsonValueKind.Array => $"<array:{value.GetArrayLength()}>",
+                JsonValueKind.Object => "<object>",
+                _ => value.GetRawText()
+            };
+        }
         public static string GetRootFieldNames(JsonElement element)
         {
             if (element.ValueKind != JsonValueKind.Object)
@@ -1795,6 +1866,8 @@ internal static class Program
                    name.Contains("phone", StringComparison.OrdinalIgnoreCase) ||
                    name.Contains("mail", StringComparison.OrdinalIgnoreCase) ||
                    name.Contains("email", StringComparison.OrdinalIgnoreCase) ||
+                   name.Contains("mac", StringComparison.OrdinalIgnoreCase) ||
+                   name.Contains("barcode", StringComparison.OrdinalIgnoreCase) ||
                    name.Equals("user", StringComparison.OrdinalIgnoreCase) ||
                    name.Equals("username", StringComparison.OrdinalIgnoreCase);
         }
