@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,7 +9,7 @@ namespace AssistantEngineer.Tools.GreeCloudProbe;
 
 internal static class Program
 {
-    private const string StageName = "GREE-ALICE-07";
+    private const string StageName = "GREE-ALICE-03";
 
     private static readonly JsonSerializerOptions ReportJsonOptions = new()
     {
@@ -136,6 +136,7 @@ internal static class Program
         Console.WriteLine($"  Rooms: {report.Summary.RoomsCount}");
         Console.WriteLine($"  Devices: {report.Summary.DevicesCount}");
         Console.WriteLine($"  Split candidates: {report.Summary.SplitCandidatesCount}");
+        Console.WriteLine($"  Cloud AC candidates: {report.Summary.CloudAcCandidatesCount}");
         Console.WriteLine($"  VRF gateway candidates: {report.Summary.VrfGatewayCandidatesCount}");
         Console.WriteLine($"  VRF child-unit candidates: {report.Summary.VrfChildUnitCandidatesCount}");
         Console.WriteLine($"  Offline devices: {report.Summary.OfflineDevicesCount}");
@@ -579,6 +580,7 @@ internal static class Program
         int RoomsCount,
         int DevicesCount,
         int SplitCandidatesCount,
+        int CloudAcCandidatesCount,
         int VrfGatewayCandidatesCount,
         int VrfChildUnitCandidatesCount,
         int OfflineDevicesCount,
@@ -589,6 +591,7 @@ internal static class Program
             RoomsCount: 0,
             DevicesCount: 0,
             SplitCandidatesCount: 0,
+            CloudAcCandidatesCount: 0,
             VrfGatewayCandidatesCount: 0,
             VrfChildUnitCandidatesCount: 0,
             OfflineDevicesCount: 0,
@@ -607,6 +610,7 @@ internal static class Program
                 RoomsCount: roomKeys,
                 DevicesCount: devices.Count,
                 SplitCandidatesCount: devices.Count(static device => device.Classification == "split-candidate"),
+                CloudAcCandidatesCount: devices.Count(static device => device.Classification == "cloud-ac-candidate"),
                 VrfGatewayCandidatesCount: devices.Count(static device => device.Classification == "vrf-gateway-candidate"),
                 VrfChildUnitCandidatesCount: devices.Count(static device => device.Classification == "vrf-child-unit-candidate"),
                 OfflineDevicesCount: devices.Count(static device => device.Online == false),
@@ -829,11 +833,11 @@ internal static class Program
                 DeviceType: JsonHelpers.TryGetString(device, "type", "devType", "deviceType", "category"),
                 DeviceModel: JsonHelpers.TryGetString(device, "model", "devModel"),
                 Version: JsonHelpers.TryGetString(device, "ver", "version"),
-                Mac: MaskLongValue(mac, options.MaskSecrets),
+                Mac: string.IsNullOrWhiteSpace(mac) ? null : MaskLongValue(mac, options.MaskSecrets),
                 ParentId: JsonHelpers.TryGetString(device, "parentId", "pid"),
-                ParentMac: MaskLongValue(parentMac, options.MaskSecrets),
+                ParentMac: string.IsNullOrWhiteSpace(parentMac) ? null : MaskLongValue(parentMac, options.MaskSecrets),
                 ChildId: JsonHelpers.TryGetString(device, "childId", "cid"),
-                ChildMac: MaskLongValue(childMac, options.MaskSecrets),
+                ChildMac: string.IsNullOrWhiteSpace(childMac) ? null : MaskLongValue(childMac, options.MaskSecrets),
                 Online: online,
                 KeyProvided: !string.IsNullOrWhiteSpace(key),
                 KeyMasked: string.IsNullOrWhiteSpace(key) ? null : MaskLongValue(key, options.MaskSecrets),
@@ -862,13 +866,14 @@ internal static class Program
                 .Concat(device.RawFieldNames))
                 .ToLowerInvariant();
 
-            if (!string.IsNullOrWhiteSpace(device.ParentId) ||
-                !string.IsNullOrWhiteSpace(device.ParentMac) ||
-                !string.IsNullOrWhiteSpace(device.ChildId) ||
-                !string.IsNullOrWhiteSpace(device.ChildMac))
-            {
+            var hasParentOrChildLink =
+                IsMeaningfulCloudValue(device.ParentId) ||
+                IsMeaningfulCloudValue(device.ParentMac) ||
+                IsMeaningfulCloudValue(device.ChildId) ||
+                IsMeaningfulCloudValue(device.ChildMac);
+
+            if (hasParentOrChildLink)
                 return "vrf-child-unit-candidate";
-            }
 
             if (haystack.Contains("vrf", StringComparison.Ordinal) ||
                 haystack.Contains("gmv", StringComparison.Ordinal) ||
@@ -880,16 +885,27 @@ internal static class Program
             }
 
             if (device.KeyProvided ||
+                haystack.Contains("u-wb", StringComparison.Ordinal) ||
                 haystack.Contains("split", StringComparison.Ordinal) ||
                 haystack.Contains("air", StringComparison.Ordinal) ||
                 haystack.Contains("conditioner", StringComparison.Ordinal) ||
                 haystack.Contains("climate", StringComparison.Ordinal) ||
                 haystack.Contains("gwh", StringComparison.Ordinal))
             {
-                return "split-candidate";
+                return "cloud-ac-candidate";
             }
 
             return "unknown";
+        }
+
+        private static bool IsMeaningfulCloudValue(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            return !value.Equals("<not set>", StringComparison.OrdinalIgnoreCase) &&
+                   !value.Equals("<masked>", StringComparison.OrdinalIgnoreCase) &&
+                   !value.Equals("null", StringComparison.OrdinalIgnoreCase);
         }
 
         private async Task<string> SendEncryptedRequestAsync(

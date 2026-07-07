@@ -1,4 +1,4 @@
-# AssistantEngineer.Tools.GreeCloudProbe
+﻿# AssistantEngineer.Tools.GreeCloudProbe
 
 Console tool for the GREE-ALICE cloud probe.
 
@@ -122,7 +122,7 @@ East South Asia / https://hkgrih.gree.com
 
 ## Normalize latest probe report
 
-`GREE-ALICE-04` adds a safe local normalization mode. It reads the latest masked probe report and writes a normalized device snapshot.
+`GREE-ALICE-03` adds a safe local normalization mode. It reads the latest masked probe report and writes a normalized device snapshot.
 
 ```powershell
 dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
@@ -149,7 +149,7 @@ The snapshot intentionally excludes token, password, and raw device key values. 
 
 ## Safe raw status and capability fields
 
-`GREE-ALICE-05` prepares the live status/capability investigation.
+`GREE-ALICE-03` prepares the live status/capability investigation.
 
 Cloud discovery reports now include `SafeRawProperties` for each device. Sensitive values such as token, password, raw device key, MAC-like identifiers, email, phone, and barcode-like fields are masked.
 
@@ -178,7 +178,7 @@ East South Asia / https://hkgrih.gree.com
 
 ## Read-only live status endpoint probe
 
-`GREE-ALICE-06` adds a read-only live-status investigation mode.
+`GREE-ALICE-03` adds a read-only live-status investigation mode.
 
 It logs in to Gree+ Cloud, discovers homes/devices, then probes candidate `Get...` endpoints with masked reports. It does not send control commands.
 
@@ -212,7 +212,7 @@ The report stores masked endpoint attempts and highlights candidate fields such 
 
 ## Capture summary for live/control channel investigation
 
-`GREE-ALICE-07` adds an offline summarizer for exported Gree+ app traffic observations.
+`GREE-ALICE-03` adds an offline summarizer for exported Gree+ app traffic observations.
 
 It does not capture traffic, log in, or control devices. It reads a user-provided text/CSV/log export, masks sensitive values, and extracts host/path/protocol hints.
 
@@ -228,3 +228,18 @@ Default output:
 ```text
 artifacts/gree-alice/channel-investigation/
 ```
+
+## Current validated cloud result
+
+A real Gree+ account test for this project confirmed:
+
+```text
+Region: Ouzbekistan
+Server URL: https://hkgrih.gree.com
+Login: succeeded
+Homes: 1
+Rooms: 1
+Devices: 1
+```
+
+The first observed device was a Gree cloud AC device with a Wi-Fi module signature and masked local key. It is treated as `cloud-ac-candidate` unless future raw fields prove a VRF parent/child relationship.
