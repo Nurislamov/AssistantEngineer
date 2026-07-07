@@ -1,38 +1,78 @@
 ﻿# AssistantEngineer.Tools.GreeCloudProbe
 
-Scaffold console tool for the GREE-ALICE cloud probe.
+Console tool for the GREE-ALICE cloud probe.
 
 ## Purpose
 
-This tool prepares the local diagnostic flow for checking Gree+ Cloud account, region, homes, rooms, devices, split AC candidates, and VRF candidates.
+This tool checks whether a Gree+ Cloud account can be used for the future Alice / Yandex Smart Home bridge.
 
-In `GREE-ALICE-02` it does not call Gree Cloud yet. It only validates configuration, masks sensitive values, and writes a local diagnostic report under ignored `artifacts/`.
+It validates:
 
-## Usage
+- selected region / server URL;
+- Gree+ Cloud login;
+- homes;
+- rooms;
+- devices;
+- split AC candidates;
+- VRF gateway / child-unit candidates;
+- masked diagnostic output.
+
+The tool is intentionally isolated from production runtime. It does not touch `AssistantEngineer.Api`, Telegram bot, deployment files, runtime database, or migrations.
+
+## Safe local run
+
+Set credentials only in the current PowerShell session:
+
+```powershell
+cd D:\Project\AssistantEngineer
+
+$env:GREE_ALICE_GREE_USERNAME = "your_gree_plus_login"
+$env:GREE_ALICE_GREE_PASSWORD = "your_gree_plus_password"
+$env:GREE_ALICE_GREE_REGION = "Ouzbekistan"
+
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer"
+```
+
+Clear local variables after the run:
+
+```powershell
+Remove-Item Env:\GREE_ALICE_GREE_USERNAME -ErrorAction SilentlyContinue
+Remove-Item Env:\GREE_ALICE_GREE_PASSWORD -ErrorAction SilentlyContinue
+Remove-Item Env:\GREE_ALICE_GREE_REGION -ErrorAction SilentlyContinue
+```
+
+## Configuration-only run
+
+Use this mode to verify local configuration and artifact writing without cloud login:
 
 ```powershell
 dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
   --repo-root "D:\Project\AssistantEngineer" `
-  --region "MiddleEast" `
-  --username "user@example.com"
+  --configuration-only
 ```
 
-Password can be provided through an environment variable:
+## Region / server override
 
-```powershell
-$env:GREE_ALICE_GREE_PASSWORD = "..."
-```
-
-Supported environment variables:
+Default region for this project is:
 
 ```text
-GREE_ALICE_GREE_REGION
-GREE_ALICE_GREE_USERNAME
-GREE_ALICE_GREE_PASSWORD
-GREE_ALICE_OUTPUT_DIR
-GREE_ALICE_TIMEOUT_SECONDS
-GREE_ALICE_SAVE_RAW_RESPONSE
-GREE_ALICE_MASK_SECRETS
+Ouzbekistan
+```
+
+The current validated mapping for this project is East South Asia Gree+ Cloud server.
+
+If required, override the exact server URL:
+
+```powershell
+$env:GREE_ALICE_GREE_SERVER_URL = "https://hkgrih.gree.com"
+```
+
+or:
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --server-url "https://hkgrih.gree.com"
 ```
 
 ## Output
@@ -45,8 +85,37 @@ artifacts/gree-alice/probe/
 
 The `artifacts/` folder is ignored by Git.
 
+The report masks sensitive values by default.
+
+## Supported environment variables
+
+```text
+GREE_ALICE_GREE_REGION
+GREE_ALICE_GREE_SERVER_URL
+GREE_ALICE_GREE_USERNAME
+GREE_ALICE_GREE_PASSWORD
+GREE_ALICE_OUTPUT_DIR
+GREE_ALICE_TIMEOUT_SECONDS
+GREE_ALICE_SAVE_RAW_RESPONSE
+GREE_ALICE_MASK_SECRETS
+```
+
 ## Current stage
 
-`GREE-ALICE-02` is a scaffold-only stage.
+`GREE-ALICE-03` adds real Gree+ Cloud login and device discovery to the probe tool.
 
-The next stage should add actual Gree Cloud login and device discovery.
+The next stage should use the probe output to define the first internal device model for split and VRF candidates.
+
+## Validated project region mapping
+
+In the Gree+ app the Russian UI can show Uzbekistan, while the selected value can later be displayed as:
+
+```text
+Ouzbékistan
+```
+
+Validated cloud server for this account:
+
+```text
+East South Asia / https://hkgrih.gree.com
+```
