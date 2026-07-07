@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,7 +9,7 @@ namespace AssistantEngineer.Tools.GreeCloudProbe;
 
 internal static class Program
 {
-    private const string StageName = "GREE-ALICE-06";
+    private const string StageName = "GREE-ALICE-07";
 
     private static readonly JsonSerializerOptions ReportJsonOptions = new()
     {
@@ -35,6 +35,8 @@ internal static class Program
         {
             if (args.Any(static arg => arg.Equals("--probe-live-status", StringComparison.OrdinalIgnoreCase)))
                 return await LiveStatusProbeCommand.RunAsync(args);
+            if (args.Any(static arg => arg.Equals("--summarize-capture", StringComparison.OrdinalIgnoreCase)))
+                return CaptureSummaryCommand.Run(args);
 
             if (args.Any(static arg => arg.Equals("--normalize-latest-report", StringComparison.OrdinalIgnoreCase)))
                 return NormalizeReportCommand.Run(args);
@@ -91,6 +93,8 @@ internal static class Program
         Console.WriteLine("  --no-mask-secrets");
         Console.WriteLine("  --configuration-only");
         Console.WriteLine("  --normalize-latest-report");
+        Console.WriteLine("  --summarize-capture");
+        Console.WriteLine("  --capture-input <path>");
         Console.WriteLine("  --probe-live-status");
         Console.WriteLine("  --max-attempts <number>");
         Console.WriteLine("  --input-report <path>");

@@ -1,4 +1,4 @@
-﻿# AssistantEngineer.Tools.GreeCloudProbe
+# AssistantEngineer.Tools.GreeCloudProbe
 
 Console tool for the GREE-ALICE cloud probe.
 
@@ -208,3 +208,23 @@ artifacts/gree-alice/live-status/
 ```
 
 The report stores masked endpoint attempts and highlights candidate fields such as `Pow`, `Mod`, `SetTem`, `WdSpd`, temperature, fan, swing, and status-like fields when they appear.
+
+
+## Capture summary for live/control channel investigation
+
+`GREE-ALICE-07` adds an offline summarizer for exported Gree+ app traffic observations.
+
+It does not capture traffic, log in, or control devices. It reads a user-provided text/CSV/log export, masks sensitive values, and extracts host/path/protocol hints.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --summarize-capture `
+  --capture-input "C:\path\to\gree-plus-capture-export.txt"
+```
+
+Default output:
+
+```text
+artifacts/gree-alice/channel-investigation/
+```

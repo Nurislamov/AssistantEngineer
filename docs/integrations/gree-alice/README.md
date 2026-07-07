@@ -1,4 +1,4 @@
-﻿# GREE-ALICE Bridge
+# GREE-ALICE Bridge
 
 ## Goal
 
@@ -130,3 +130,7 @@ dotnet test .\AssistantEngineer.sln
 GREE-ALICE-00 is a documentation-only placement stage.
 
 No runtime code, migrations, Telegram handlers, diagnostics catalog, production deploy files, or Yandex/Gree credentials are added in this stage.
+
+## Current investigation
+
+- [Live/control channel investigation](./live-control-channel-investigation.md)

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,7 +9,7 @@ namespace AssistantEngineer.Tools.GreeCloudProbe;
 
 internal static class LiveStatusProbeCommand
 {
-    private const string StageName = "GREE-ALICE-06";
+    private const string StageName = "GREE-ALICE-07";
     private const string ModeName = "live-status-probe";
 
     private static readonly JsonSerializerOptions ReportJsonOptions = new()
