@@ -9,7 +9,7 @@ namespace AssistantEngineer.Tools.GreeCloudProbe;
 
 internal static class Program
 {
-    private const string StageName = "GREE-ALICE-05";
+    private const string StageName = "GREE-ALICE-06";
 
     private static readonly JsonSerializerOptions ReportJsonOptions = new()
     {
@@ -33,6 +33,9 @@ internal static class Program
 
         try
         {
+            if (args.Any(static arg => arg.Equals("--probe-live-status", StringComparison.OrdinalIgnoreCase)))
+                return await LiveStatusProbeCommand.RunAsync(args);
+
             if (args.Any(static arg => arg.Equals("--normalize-latest-report", StringComparison.OrdinalIgnoreCase)))
                 return NormalizeReportCommand.Run(args);
 
@@ -88,6 +91,8 @@ internal static class Program
         Console.WriteLine("  --no-mask-secrets");
         Console.WriteLine("  --configuration-only");
         Console.WriteLine("  --normalize-latest-report");
+        Console.WriteLine("  --probe-live-status");
+        Console.WriteLine("  --max-attempts <number>");
         Console.WriteLine("  --input-report <path>");
         Console.WriteLine();
         Console.WriteLine("Environment variables:");

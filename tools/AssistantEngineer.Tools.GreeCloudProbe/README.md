@@ -175,3 +175,36 @@ For this project, `Ouzbekistan` / `Ouzbékistan` is validated against:
 ```text
 East South Asia / https://hkgrih.gree.com
 ```
+
+## Read-only live status endpoint probe
+
+`GREE-ALICE-06` adds a read-only live-status investigation mode.
+
+It logs in to Gree+ Cloud, discovers homes/devices, then probes candidate `Get...` endpoints with masked reports. It does not send control commands.
+
+```powershell
+$env:GREE_ALICE_GREE_USERNAME = "your_gree_plus_login"
+$env:GREE_ALICE_GREE_PASSWORD = "your_gree_plus_password"
+$env:GREE_ALICE_GREE_REGION = "Ouzbekistan"
+
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --probe-live-status
+```
+
+Optional limit:
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --probe-live-status `
+  --max-attempts 40
+```
+
+Default output directory:
+
+```text
+artifacts/gree-alice/live-status/
+```
+
+The report stores masked endpoint attempts and highlights candidate fields such as `Pow`, `Mod`, `SetTem`, `WdSpd`, temperature, fan, swing, and status-like fields when they appear.
