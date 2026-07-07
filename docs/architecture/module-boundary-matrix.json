@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 1,
   "lastReviewedDate": "2026-06-06",
   "stage": "P8-02",
@@ -251,6 +251,18 @@
         "AssistantEngineer.Api.",
         "AssistantEngineer.Tools."
       ],
+      "knownExceptions": []
+    },
+    {
+      "project": "AssistantEngineer.Tools.GreeCloudProbe",
+      "assembly": "AssistantEngineer.Tools.GreeCloudProbe",
+      "layer": "Tool",
+      "allowedDependencies": [],
+      "forbiddenDependencies": [],
+      "allowedNamespacePrefixes": [
+        "AssistantEngineer.Tools.GreeCloudProbe."
+      ],
+      "forbiddenNamespacePrefixes": [],
       "knownExceptions": []
     },
     {

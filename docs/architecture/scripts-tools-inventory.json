@@ -1,4 +1,4 @@
-{
+﻿{
     "version":  2,
     "lastReviewedDate":  "2026-06-14",
     "stage":  "P8-06",
@@ -1853,6 +1853,21 @@
                         "riskIfChanged":  "Verifier drift can admit duplicate, unsafe, weakly sourced, promotion-ineligible diagnostic knowledge, or unsupported goal-run evidence."
                     },
                     {
+                        "id":  "TOOL-015",
+                        "path":  "tools/AssistantEngineer.Tools.GreeCloudProbe/AssistantEngineer.Tools.GreeCloudProbe.csproj",
+                        "type":  "CSharpTool",
+                        "category":  "ToolingCritical",
+                        "purpose":  "Console probe scaffold for validating Gree+ Cloud account, region, device discovery, and masked diagnostic output before adding any runtime bridge service.",
+                        "invokedBy":  [
+                                          "LocalManual"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the probe disconnected from production runtime and preserve secret masking by default.",
+                        "proposedStage":  "GREE-ALICE-02",
+                        "riskIfChanged":  "Probe drift can expose credentials in logs/artifacts or make cloud-device validation unreliable before Yandex Smart Home integration."
+                    },                    {
                         "id":  "WF-001",
                         "path":  ".github/workflows/engineering-core-v1.yml",
                         "type":  "GitHubWorkflow",
