@@ -243,3 +243,20 @@ Devices: 1
 ```
 
 The first observed device was a Gree cloud AC device with a Wi-Fi module signature and masked local key. It is treated as `cloud-ac-candidate` unless future raw fields prove a VRF parent/child relationship.
+
+## Internal device model
+
+`GREE-ALICE-04` defines safe internal records for future bridge work:
+
+```text
+Models/GreeCloudDeviceClassifications.cs
+Models/GreeCloudSafeDeviceSnapshot.cs
+Models/GreeCloudDeviceStateSnapshot.cs
+Models/GreeCloudObservedEndpoint.cs
+```
+
+The detailed model contract is documented in:
+
+```text
+docs/integrations/gree-alice/device-state-model.md
+```
