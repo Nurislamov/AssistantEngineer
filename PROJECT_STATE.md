@@ -1,4 +1,114 @@
-# AssistantEngineer Project State
+﻿# AssistantEngineer Project State
+
+<!-- GREE-ALICE-STATE:START -->
+## GREE-ALICE current checkpoint
+
+### Current stage
+
+GREE-ALICE-06 — CLOSED / pushed.
+
+Latest commit:
+
+`	ext
+62e7f646 GREE-ALICE-06 Add read-only live status probe
+`
+
+### Completed stages
+
+`	ext
+GREE-ALICE-00 — CLOSED / pushed — bridge placement decision
+GREE-ALICE-01 — CLOSED / pushed — cloud probe plan
+GREE-ALICE-02 — CLOSED / pushed — Gree Cloud probe tool scaffold
+GREE-ALICE-03 — CLOSED / pushed — Gree+ Cloud login and discovery
+GREE-ALICE-04 — CLOSED / pushed — normalized Gree Cloud device snapshot
+GREE-ALICE-05 — CLOSED / pushed — safe raw cloud properties snapshot
+GREE-ALICE-06 — CLOSED / pushed — read-only live status probe
+`
+
+### Validation status
+
+`	ext
+dotnet test .\AssistantEngineer.sln --no-build
+Result: PASS
+Tests: 5411/5411
+`
+
+### Cloud validation
+
+`	ext
+Gree+ Cloud login: PASS
+Region shown by app/account: Ouzbekistan / Ouzbékistan
+Validated server: https://hkgrih.gree.com
+Homes: 1
+Rooms: 1
+Devices: 1
+Device: AC3167
+Device version: V3.4.M
+Device key: provided
+Sensitive fields: masked in reports
+`
+
+### Device classification
+
+`	ext
+Cloud classification: vrf-child-unit-candidate
+Normalized kind: gree-vrf-child-unit
+Candidate control target: room-climate-unit
+`
+
+### GREE-ALICE-06 findings
+
+`	ext
+Read-only live status probe tool: implemented
+Live probe login/discovery: PASS
+Candidate REST endpoints attempted: 32
+Result: all attempted /App/Get... live-status endpoints returned HTTP 404
+Live capability fields found: none
+Missing fields: Pow / Mod / SetTem / WdSpd / temperature / fan / swing
+`
+
+Conclusion:
+
+`	ext
+GetDevsInRoomsOfHomeV2 provides metadata only.
+Live status/control is not exposed through the simple /App/GetDeviceStatus / GetDevStatus / GetDevAttrs style endpoints on hkgrih.gree.com.
+Next step is to find the actual Gree+ live/control channel.
+`
+
+### Important decisions
+
+`	ext
+Keep GREE-ALICE isolated in tools/AssistantEngineer.Tools.GreeCloudProbe for now.
+Do not wire into AssistantEngineer.Api, Telegram, deployment, migrations, or runtime config yet.
+Do not commit local artifacts under artifacts/gree-alice/.
+Do not store Gree+ credentials in files or repository.
+Use masked reports only.
+Control commands are still out of scope until live-status/control channel is confirmed.
+`
+
+### Files changed recently
+
+`	ext
+tools/AssistantEngineer.Tools.GreeCloudProbe/Program.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/README.md
+tools/AssistantEngineer.Tools.GreeCloudProbe/LiveStatusProbeCommand.cs
+`
+
+### Next step
+
+GREE-ALICE-07 — Find actual live/control channel.
+
+Planned scope:
+
+`	ext
+- stop guessing simple /App/Get... live endpoints;
+- investigate actual channel used by Gree+ for live status/control;
+- look for MQTT/WebSocket/IoT endpoint candidates;
+- prepare safe traffic-capture workflow for Gree+ app without storing passwords;
+- keep all actions read-only until the real status/control protocol is known.
+`
+<!-- GREE-ALICE-STATE:END -->
+
 
 ## Current stage
 
