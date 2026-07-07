@@ -119,3 +119,30 @@ Validated cloud server for this account:
 ```text
 East South Asia / https://hkgrih.gree.com
 ```
+
+## Normalize latest probe report
+
+`GREE-ALICE-04` adds a safe local normalization mode. It reads the latest masked probe report and writes a normalized device snapshot.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --normalize-latest-report
+```
+
+Optional explicit input:
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --normalize-latest-report `
+  --input-report ".\artifacts\gree-alice\probe\gree-cloud-probe-YYYYMMDD-HHMMSS.json"
+```
+
+Default snapshot output directory:
+
+```text
+artifacts/gree-alice/snapshots/
+```
+
+The snapshot intentionally excludes token, password, and raw device key values. It keeps only safe identifiers, masked values, classification, normalized kind, candidate control target, and raw field names for future capability mapping.

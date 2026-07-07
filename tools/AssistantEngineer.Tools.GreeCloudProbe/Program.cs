@@ -33,6 +33,9 @@ internal static class Program
 
         try
         {
+            if (args.Any(static arg => arg.Equals("--normalize-latest-report", StringComparison.OrdinalIgnoreCase)))
+                return NormalizeReportCommand.Run(args);
+
             var options = ProbeOptions.Parse(args);
             Directory.CreateDirectory(options.OutputDirectory);
 
@@ -84,6 +87,8 @@ internal static class Program
         Console.WriteLine("  --save-raw-response");
         Console.WriteLine("  --no-mask-secrets");
         Console.WriteLine("  --configuration-only");
+        Console.WriteLine("  --normalize-latest-report");
+        Console.WriteLine("  --input-report <path>");
         Console.WriteLine();
         Console.WriteLine("Environment variables:");
         Console.WriteLine("  GREE_ALICE_GREE_REGION");
@@ -1021,6 +1026,531 @@ internal static class Program
             value.Length <= maxLength ? value : value[..maxLength] + "...<truncated>";
     }
 
+
+    private static class NormalizeReportCommand
+    {
+        private const string SnapshotSchemaVersion = "gree-alice-cloud-device-snapshot-v1";
+
+        private static readonly JsonSerializerOptions SnapshotJsonOptions = new()
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        public static int Run(string[] args)
+        {
+            var options = Parse(args);
+            Directory.CreateDirectory(options.OutputDirectory);
+
+            var inputReport = ResolveInputReport(options);
+            var snapshot = CreateSnapshot(inputReport, options);
+
+            var outputPath = Path.Combine(
+                options.OutputDirectory,
+                $"gree-cloud-device-snapshot-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}.json");
+
+            File.WriteAllText(outputPath, JsonSerializer.Serialize(snapshot, SnapshotJsonOptions));
+
+            PrintSnapshotSummary(inputReport, outputPath, snapshot);
+
+            return 0;
+        }
+
+        private static NormalizeOptions Parse(string[] args)
+        {
+            var values = ReadArgs(args);
+
+            var repoRoot = GetOption(values, "repo-root") ?? ResolveRepositoryRoot();
+            repoRoot = Path.GetFullPath(repoRoot);
+
+            var inputReport = GetOption(values, "input-report");
+            var outputDir = GetOption(values, "output-dir");
+
+            if (string.IsNullOrWhiteSpace(outputDir))
+                outputDir = Path.Combine(repoRoot, "artifacts", "gree-alice", "snapshots");
+
+            return new NormalizeOptions(
+                repoRoot,
+                string.IsNullOrWhiteSpace(inputReport) ? null : Path.GetFullPath(inputReport),
+                Path.GetFullPath(outputDir));
+        }
+
+        private static Dictionary<string, string?> ReadArgs(string[] args)
+        {
+            var result = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+
+            for (var index = 0; index < args.Length; index++)
+            {
+                var arg = args[index];
+
+                if (arg.Equals("--normalize-latest-report", StringComparison.OrdinalIgnoreCase))
+                {
+                    result["normalize-latest-report"] = null;
+                    continue;
+                }
+
+                if (!arg.StartsWith("--", StringComparison.Ordinal))
+                    throw new ArgumentException($"Unexpected argument: {arg}");
+
+                var keyValue = arg[2..];
+                var equalsIndex = keyValue.IndexOf('=');
+                if (equalsIndex >= 0)
+                {
+                    result[keyValue[..equalsIndex]] = keyValue[(equalsIndex + 1)..];
+                    continue;
+                }
+
+                if (index + 1 < args.Length && !args[index + 1].StartsWith("--", StringComparison.Ordinal))
+                {
+                    result[keyValue] = args[index + 1];
+                    index++;
+                    continue;
+                }
+
+                result[keyValue] = null;
+            }
+
+            return result;
+        }
+
+        private static string? GetOption(IReadOnlyDictionary<string, string?> values, string name)
+        {
+            return values.TryGetValue(name, out var value) && !string.IsNullOrWhiteSpace(value)
+                ? value
+                : null;
+        }
+
+        private static string ResolveRepositoryRoot()
+        {
+            var current = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (current is not null)
+            {
+                if (File.Exists(Path.Combine(current.FullName, "AssistantEngineer.sln")))
+                    return current.FullName;
+
+                current = current.Parent;
+            }
+
+            throw new InvalidOperationException("Repository root with AssistantEngineer.sln was not found.");
+        }
+
+        private static string ResolveInputReport(NormalizeOptions options)
+        {
+            if (!string.IsNullOrWhiteSpace(options.InputReportPath))
+            {
+                if (!File.Exists(options.InputReportPath))
+                    throw new FileNotFoundException("Input probe report was not found.", options.InputReportPath);
+
+                return options.InputReportPath;
+            }
+
+            var probeDirectory = Path.Combine(options.RepositoryRoot, "artifacts", "gree-alice", "probe");
+            if (!Directory.Exists(probeDirectory))
+                throw new DirectoryNotFoundException($"Probe artifact directory was not found: {probeDirectory}");
+
+            var latest = Directory
+                .GetFiles(probeDirectory, "gree-cloud-probe-*.json")
+                .OrderByDescending(File.GetLastWriteTimeUtc)
+                .FirstOrDefault();
+
+            if (latest is null)
+                throw new FileNotFoundException($"No Gree Cloud probe reports were found in: {probeDirectory}");
+
+            return latest;
+        }
+
+        private static CloudDeviceSnapshotReport CreateSnapshot(string inputReportPath, NormalizeOptions options)
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(inputReportPath));
+            var root = document.RootElement;
+            var generatedAtUtc = DateTimeOffset.UtcNow;
+
+            var devices = new List<CloudDeviceSnapshot>();
+            if (TryGetProperty(root, "Devices", out var devicesElement) &&
+                devicesElement.ValueKind == JsonValueKind.Array)
+            {
+                var index = 0;
+                foreach (var device in devicesElement.EnumerateArray())
+                {
+                    devices.Add(CreateDeviceSnapshot(device, index));
+                    index++;
+                }
+            }
+
+            return new CloudDeviceSnapshotReport(
+                SchemaVersion: SnapshotSchemaVersion,
+                GeneratedAtUtc: generatedAtUtc,
+                SourceReportFileName: Path.GetFileName(inputReportPath),
+                SourceStage: GetString(root, "Stage"),
+                SourceMode: GetString(root, "Mode"),
+                SourceTimestampUtc: GetString(root, "TimestampUtc"),
+                Region: GetNestedString(root, "Inputs", "Region"),
+                ServerUrl: GetNestedString(root, "Inputs", "ServerUrl"),
+                HomesCount: GetNestedInt(root, "Summary", "HomesCount"),
+                RoomsCount: GetNestedInt(root, "Summary", "RoomsCount"),
+                DevicesCount: GetNestedInt(root, "Summary", "DevicesCount"),
+                Devices: devices,
+                Notes: new[]
+                {
+                    "Snapshot is generated from a masked probe report.",
+                    "Token, password, and raw device key values are intentionally not included.",
+                    "Normalized capabilities are candidates and must be confirmed before runtime control is added."
+                });
+        }
+
+        private static CloudDeviceSnapshot CreateDeviceSnapshot(JsonElement device, int index)
+        {
+            var rawFieldNames = GetStringArray(device, "RawFieldNames");
+            var cloudClassification = GetString(device, "Classification") ?? "unknown";
+            var normalizedKind = DetermineNormalizedKind(device, cloudClassification, rawFieldNames);
+            var displayName = FirstNonEmpty(
+                GetString(device, "DeviceName"),
+                GetString(device, "DeviceModel"),
+                GetString(device, "DeviceId"),
+                $"Gree device {index + 1}");
+
+            var identityConfidence = DetermineIdentityConfidence(device, normalizedKind, rawFieldNames);
+            var capabilityDraft = BuildCapabilityDraft(normalizedKind, rawFieldNames);
+
+            return new CloudDeviceSnapshot(
+                Index: index,
+                DisplayName: displayName,
+                HomeName: GetString(device, "HomeName"),
+                RoomName: GetString(device, "RoomName"),
+                CloudDeviceName: GetString(device, "DeviceName"),
+                CloudDeviceId: GetString(device, "DeviceId"),
+                CloudDeviceType: GetString(device, "DeviceType"),
+                CloudDeviceModel: GetString(device, "DeviceModel"),
+                Version: GetString(device, "Version"),
+                MacMasked: GetString(device, "Mac"),
+                ParentId: GetString(device, "ParentId"),
+                ParentMacMasked: GetString(device, "ParentMac"),
+                ChildId: GetString(device, "ChildId"),
+                ChildMacMasked: GetString(device, "ChildMac"),
+                Online: GetNullableBool(device, "Online"),
+                KeyProvided: GetBool(device, "KeyProvided"),
+                CloudClassification: cloudClassification,
+                NormalizedKind: normalizedKind,
+                IdentityConfidence: identityConfidence,
+                NeedsManualConfirmation: true,
+                CapabilityDraft: capabilityDraft,
+                RawFieldNames: rawFieldNames,
+                Notes: BuildDeviceNotes(normalizedKind, cloudClassification, rawFieldNames));
+        }
+
+        private static string DetermineNormalizedKind(
+            JsonElement device,
+            string cloudClassification,
+            IReadOnlyList<string> rawFieldNames)
+        {
+            var haystack = string.Join(
+                " ",
+                new[]
+                {
+                    cloudClassification,
+                    GetString(device, "DeviceName"),
+                    GetString(device, "DeviceType"),
+                    GetString(device, "DeviceModel"),
+                    GetString(device, "Version"),
+                    GetString(device, "ParentId"),
+                    GetString(device, "ChildId")
+                }.Where(static value => !string.IsNullOrWhiteSpace(value))
+                .Concat(rawFieldNames))
+                .ToLowerInvariant();
+
+            if (cloudClassification.Equals("vrf-child-unit-candidate", StringComparison.OrdinalIgnoreCase) ||
+                haystack.Contains("child", StringComparison.Ordinal) ||
+                haystack.Contains("parent", StringComparison.Ordinal))
+            {
+                return "gree-vrf-child-unit";
+            }
+
+            if (cloudClassification.Equals("vrf-gateway-candidate", StringComparison.OrdinalIgnoreCase) ||
+                haystack.Contains("vrf", StringComparison.Ordinal) ||
+                haystack.Contains("gmv", StringComparison.Ordinal) ||
+                haystack.Contains("gateway", StringComparison.Ordinal))
+            {
+                return "gree-vrf-gateway";
+            }
+
+            if (cloudClassification.Equals("split-candidate", StringComparison.OrdinalIgnoreCase) ||
+                GetBool(device, "KeyProvided"))
+            {
+                return "gree-split-or-cloud-ac";
+            }
+
+            return "unknown-gree-cloud-device";
+        }
+
+        private static string DetermineIdentityConfidence(
+            JsonElement device,
+            string normalizedKind,
+            IReadOnlyList<string> rawFieldNames)
+        {
+            var hasName = !string.IsNullOrWhiteSpace(GetString(device, "DeviceName"));
+            var hasKey = GetBool(device, "KeyProvided");
+            var hasVersion = !string.IsNullOrWhiteSpace(GetString(device, "Version"));
+            var hasUsefulFields = rawFieldNames.Count >= 5;
+
+            if (normalizedKind.StartsWith("gree-vrf", StringComparison.OrdinalIgnoreCase) &&
+                hasName &&
+                hasKey &&
+                hasVersion &&
+                hasUsefulFields)
+            {
+                return "medium";
+            }
+
+            if (hasName && hasKey)
+                return "medium-low";
+
+            if (hasName)
+                return "low";
+
+            return "unknown";
+        }
+
+        private static CloudCapabilityDraft BuildCapabilityDraft(
+            string normalizedKind,
+            IReadOnlyList<string> rawFieldNames)
+        {
+            var fieldSet = rawFieldNames.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return new CloudCapabilityDraft(
+                Power: HasAny(fieldSet, "Pow", "power", "pwr", "onOff", "switch") ? "observed-field-candidate" : "not-observed-yet",
+                Mode: HasAny(fieldSet, "Mod", "mode", "workMode") ? "observed-field-candidate" : "not-observed-yet",
+                TargetTemperature: HasAny(fieldSet, "SetTem", "setTemp", "temperature", "temp") ? "observed-field-candidate" : "not-observed-yet",
+                FanSpeed: HasAny(fieldSet, "WdSpd", "fan", "fanSpeed", "windSpeed") ? "observed-field-candidate" : "not-observed-yet",
+                Swing: HasAny(fieldSet, "SwUpDn", "SwLfRig", "swing", "swingVertical", "swingHorizontal") ? "observed-field-candidate" : "not-observed-yet",
+                CandidateControlTarget: normalizedKind switch
+                {
+                    "gree-vrf-child-unit" => "room-climate-unit",
+                    "gree-vrf-gateway" => "vrf-gateway",
+                    "gree-split-or-cloud-ac" => "room-climate-unit",
+                    _ => "unknown"
+                });
+        }
+
+        private static IReadOnlyList<string> BuildDeviceNotes(
+            string normalizedKind,
+            string cloudClassification,
+            IReadOnlyList<string> rawFieldNames)
+        {
+            var notes = new List<string>
+            {
+                $"Cloud classification: {cloudClassification}.",
+                $"Normalized kind: {normalizedKind}."
+            };
+
+            if (normalizedKind == "gree-vrf-child-unit")
+                notes.Add("Treat as a room-level climate candidate until parent/gateway relationship is confirmed.");
+
+            if (rawFieldNames.Count > 0)
+                notes.Add("Raw field names are kept for future capability mapping; raw values are not copied to this snapshot.");
+
+            return notes;
+        }
+
+        private static void PrintSnapshotSummary(
+            string inputReportPath,
+            string outputPath,
+            CloudDeviceSnapshotReport snapshot)
+        {
+            Console.WriteLine("AssistantEngineer Gree Cloud device snapshot");
+            Console.WriteLine("Stage: GREE-ALICE-04");
+            Console.WriteLine($"Input report: {inputReportPath}");
+            Console.WriteLine($"Output snapshot: {outputPath}");
+            Console.WriteLine($"Region: {DisplayValue(snapshot.Region)}");
+            Console.WriteLine($"Server URL: {DisplayValue(snapshot.ServerUrl)}");
+            Console.WriteLine($"Homes: {snapshot.HomesCount}");
+            Console.WriteLine($"Rooms: {snapshot.RoomsCount}");
+            Console.WriteLine($"Devices: {snapshot.Devices.Count}");
+            Console.WriteLine();
+
+            foreach (var device in snapshot.Devices)
+            {
+                Console.WriteLine($"Device[{device.Index}]: {device.DisplayName}");
+                Console.WriteLine($"  Home/Room: {DisplayValue(device.HomeName)} / {DisplayValue(device.RoomName)}");
+                Console.WriteLine($"  Version: {DisplayValue(device.Version)}");
+                Console.WriteLine($"  Key provided: {ToYesNo(device.KeyProvided)}");
+                Console.WriteLine($"  Cloud classification: {device.CloudClassification}");
+                Console.WriteLine($"  Normalized kind: {device.NormalizedKind}");
+                Console.WriteLine($"  Identity confidence: {device.IdentityConfidence}");
+                Console.WriteLine($"  Candidate control target: {device.CapabilityDraft.CandidateControlTarget}");
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("Snapshot generated without token/password/raw key values.");
+        }
+
+        private static bool TryGetProperty(JsonElement element, string name, out JsonElement property)
+        {
+            if (element.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var item in element.EnumerateObject())
+                {
+                    if (item.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        property = item.Value;
+                        return true;
+                    }
+                }
+            }
+
+            property = default;
+            return false;
+        }
+
+        private static string? GetString(JsonElement element, string name)
+        {
+            if (!TryGetProperty(element, name, out var property))
+                return null;
+
+            return property.ValueKind switch
+            {
+                JsonValueKind.String => property.GetString(),
+                JsonValueKind.Number => property.GetRawText(),
+                JsonValueKind.True => "true",
+                JsonValueKind.False => "false",
+                _ => null
+            };
+        }
+
+        private static string? GetNestedString(JsonElement element, string objectName, string propertyName)
+        {
+            return TryGetProperty(element, objectName, out var nested)
+                ? GetString(nested, propertyName)
+                : null;
+        }
+
+        private static int GetNestedInt(JsonElement element, string objectName, string propertyName)
+        {
+            if (!TryGetProperty(element, objectName, out var nested) ||
+                !TryGetProperty(nested, propertyName, out var property))
+            {
+                return 0;
+            }
+
+            if (property.ValueKind == JsonValueKind.Number && property.TryGetInt32(out var number))
+                return number;
+
+            if (property.ValueKind == JsonValueKind.String &&
+                int.TryParse(property.GetString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out number))
+            {
+                return number;
+            }
+
+            return 0;
+        }
+
+        private static bool GetBool(JsonElement element, string name)
+        {
+            if (!TryGetProperty(element, name, out var property))
+                return false;
+
+            return property.ValueKind switch
+            {
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.String when bool.TryParse(property.GetString(), out var value) => value,
+                _ => false
+            };
+        }
+
+        private static bool? GetNullableBool(JsonElement element, string name)
+        {
+            if (!TryGetProperty(element, name, out var property))
+                return null;
+
+            return property.ValueKind switch
+            {
+                JsonValueKind.True => true,
+                JsonValueKind.False => false,
+                JsonValueKind.String when bool.TryParse(property.GetString(), out var value) => value,
+                _ => null
+            };
+        }
+
+        private static IReadOnlyList<string> GetStringArray(JsonElement element, string name)
+        {
+            if (!TryGetProperty(element, name, out var property) ||
+                property.ValueKind != JsonValueKind.Array)
+            {
+                return Array.Empty<string>();
+            }
+
+            return property
+                .EnumerateArray()
+                .Select(static item => item.ValueKind == JsonValueKind.String ? item.GetString() : item.GetRawText())
+                .Where(static value => !string.IsNullOrWhiteSpace(value))
+                .Select(static value => value!)
+                .OrderBy(static value => value, StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+
+        private static bool HasAny(IReadOnlySet<string> fields, params string[] candidates)
+        {
+            return candidates.Any(fields.Contains);
+        }
+
+        private static string FirstNonEmpty(params string?[] values)
+        {
+            return values.FirstOrDefault(static value => !string.IsNullOrWhiteSpace(value)) ?? "Gree device";
+        }
+
+        private sealed record NormalizeOptions(
+            string RepositoryRoot,
+            string? InputReportPath,
+            string OutputDirectory);
+
+        private sealed record CloudDeviceSnapshotReport(
+            string SchemaVersion,
+            DateTimeOffset GeneratedAtUtc,
+            string SourceReportFileName,
+            string? SourceStage,
+            string? SourceMode,
+            string? SourceTimestampUtc,
+            string? Region,
+            string? ServerUrl,
+            int HomesCount,
+            int RoomsCount,
+            int DevicesCount,
+            IReadOnlyList<CloudDeviceSnapshot> Devices,
+            IReadOnlyList<string> Notes);
+
+        private sealed record CloudDeviceSnapshot(
+            int Index,
+            string DisplayName,
+            string? HomeName,
+            string? RoomName,
+            string? CloudDeviceName,
+            string? CloudDeviceId,
+            string? CloudDeviceType,
+            string? CloudDeviceModel,
+            string? Version,
+            string? MacMasked,
+            string? ParentId,
+            string? ParentMacMasked,
+            string? ChildId,
+            string? ChildMacMasked,
+            bool? Online,
+            bool KeyProvided,
+            string CloudClassification,
+            string NormalizedKind,
+            string IdentityConfidence,
+            bool NeedsManualConfirmation,
+            CloudCapabilityDraft CapabilityDraft,
+            IReadOnlyList<string> RawFieldNames,
+            IReadOnlyList<string> Notes);
+
+        private sealed record CloudCapabilityDraft(
+            string Power,
+            string Mode,
+            string TargetTemperature,
+            string FanSpeed,
+            string Swing,
+            string CandidateControlTarget);
+    }
     private static class JsonHelpers
     {
         public static string? TryGetString(JsonElement element, params string[] names)
