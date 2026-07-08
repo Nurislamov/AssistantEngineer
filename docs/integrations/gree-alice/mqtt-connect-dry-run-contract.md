@@ -97,3 +97,9 @@ GREE-ALICE-20 — Dry-run contract tests and masked output checks
 ```
 
 That future stage should add tests around the dry-run command and still avoid live MQTT CONNECT.
+
+## GREE-ALICE-20 follow-up
+
+`GREE-ALICE-20` adds repository guard tests for the dry-run command contract and masked-output requirements.
+
+The tests still do not implement MQTT `CONNECT`, do not open network connections, do not subscribe, do not publish, and do not control a device.

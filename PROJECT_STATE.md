@@ -5,7 +5,7 @@
 
 ### Current stage
 
-GREE-ALICE-19 — APPLIED locally / validation pending.
+GREE-ALICE-20 — APPLIED locally / validation pending.
 
 Latest pushed commit:
 
@@ -16,7 +16,7 @@ f2595145 GREE-ALICE-16 Add MQTT evidence gate decision
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-19 Add CONNECT-only dry-run command contract
+GREE-ALICE-20 Add CONNECT-only dry-run guard tests
 ```
 
 ### Completed stages
@@ -41,6 +41,7 @@ GREE-ALICE-15 — CLOSED / pushed — masked MQTT evidence inventory
 GREE-ALICE-16 — CLOSED / pushed — MQTT evidence gate decision
 GREE-ALICE-17 — CLOSED / pushed — MQTT CONNECT-only safety specification
 GREE-ALICE-18 — CLOSED / pushed — CONNECT-only input contract guard tests
+GREE-ALICE-19 — CLOSED / pushed — CONNECT-only dry-run command contract
 ```
 
 ### Validation status
@@ -154,6 +155,19 @@ No MQTT SUBSCRIBE.
 No MQTT PUBLISH.
 No device control.
 ```
+### GREE-ALICE-20 local scope
+
+```text
+Adds repository guard tests for dry-run command and masked-output contract.
+Tests fail if dry-run command contains live MQTT/network implementation markers.
+Tests fail if dry-run no longer masks provided values.
+Tests fail if dry-run docs no longer keep CONNECT/SUBSCRIBE/PUBLISH/control blocked.
+No MQTT CONNECT implementation.
+No TCP/TLS/MQTT network connection.
+No MQTT SUBSCRIBE.
+No MQTT PUBLISH.
+No device control.
+```
 ### Important decisions
 
 ```text
@@ -185,7 +199,9 @@ docs/integrations/gree-alice/mqtt-evidence-gate-decision.md
 docs/integrations/gree-alice/mqtt-connect-only-safety-specification.md
 docs/integrations/gree-alice/mqtt-connect-input-contract-tests.md
 docs/integrations/gree-alice/mqtt-connect-dry-run-contract.md
+docs/integrations/gree-alice/mqtt-connect-dry-run-contract-tests.md
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectDryRunContractSafetyTests.cs
 PROJECT_STATE.md
 ```
 
@@ -204,7 +220,7 @@ dotnet test .\AssistantEngineer.sln --no-build
 Recommended commit:
 
 ```text
-GREE-ALICE-19 Add CONNECT-only dry-run command contract
+GREE-ALICE-20 Add CONNECT-only dry-run guard tests
 ```
 
 After GREE-ALICE-17 is pushed, the next possible stage is:
@@ -362,6 +378,7 @@ tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticCoreCompat
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticBotServiceTests.cs
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/MultiSourceDiagnosticReferenceTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectDryRunContractSafetyTests.cs
 PROJECT_STATE.md
 ```
 

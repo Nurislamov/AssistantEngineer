@@ -478,3 +478,13 @@ Details:
 ```text
 docs/integrations/gree-alice/mqtt-connect-dry-run-contract.md
 ```
+
+## CONNECT-only dry-run guard tests
+
+`GREE-ALICE-20` adds repository guard tests for the offline dry-run command and masked-output contract.
+
+```text
+docs/integrations/gree-alice/mqtt-connect-dry-run-contract-tests.md
+```
+
+The tests are offline. They do not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
