@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-12 — CLOSED / pushed.
+GREE-ALICE-13 — CLOSED / pushed.
 
 Latest commit:
 
 ```text
-7968141c GREE-ALICE-12 Add MQTT CONNECT input validation scaffold
+38eb9ee1 GREE-ALICE-13 Add control action capture evidence summary
 ```
 
 State checkpoint to commit next:
 
 ```text
-GREE-ALICE-12.STATE — Update project state after MQTT input validation scaffold
+GREE-ALICE-13.STATE — Update project state after control action evidence
 ```
 
 ### Completed stages
@@ -35,6 +35,7 @@ GREE-ALICE-09 — CLOSED / pushed — offline MQTT auth/topic model draft
 GREE-ALICE-10 — CLOSED / pushed — MQTT CONNECT-only safety review
 GREE-ALICE-11 — CLOSED / pushed — MQTT CONNECT input contract
 GREE-ALICE-12 — CLOSED / pushed — MQTT CONNECT input validation scaffold
+GREE-ALICE-13 — CLOSED / pushed — control action capture evidence summary
 ```
 
 ### Validation status
@@ -283,7 +284,7 @@ Raw credentials stored: no
 No TCP/TLS/MQTT network connection opened
 ```
 
-### Latest private capture evidence
+### GREE-ALICE-13 findings
 
 New PCAPdroid export captured real Gree+ control actions:
 
@@ -292,15 +293,51 @@ Action sequence: off/on and setpoint 24 -> 23 -> 24
 App: GREE+
 Package: com.gree.greeplus
 Capture file: PCAPdroid_08_июл._15_58_15.csv
+Capture rows: 59
+Capture window: 2026-07-08T15:57:32.463+05:00 -> 2026-07-08T15:58:07.261+05:00
 ```
 
-Important private finding to document in the next stage:
+Observed during control action window:
 
 ```text
-During the control action window, Gree+ used mqtt-hk.gree.com:1994 over TLS.
-The same capture also showed HTTPS traffic to hkgrih.gree.com:443 and local UDP 7000 activity.
-The CSV itself is private diagnostic material and must not be committed.
+MQTT/TLS control candidate observed: yes
+REST discovery traffic observed: yes
+UDP 7000 LAN activity observed: yes
+Internal vocabulary items: 14
+MQTT auth/topic status: unknown
 ```
+
+Internal vocabulary candidates kept for future mapping:
+
+```text
+Pow
+Mod
+SetTem
+TemUn
+WdSpd
+SwUpDn
+SwingLfRig
+Quiet
+Tur
+Lig
+t=status
+t=cmd
+opt
+p
+```
+
+Safety result:
+
+```text
+MQTT CONNECT implementation included: no
+MQTT CONNECT sent: no
+MQTT SUBSCRIBE sent: no
+MQTT PUBLISH sent: no
+Device control sent: no
+Private capture committed: no
+```
+
+The CSV itself is private diagnostic material and must not be committed.
 
 ### Important decisions
 
@@ -316,7 +353,8 @@ MQTT investigation must remain read-only until the protocol, auth model, topics,
 Do not start MQTT CONNECT/SUBSCRIBE/PUBLISH/control work without an explicit safety stage.
 Future MQTT CONNECT implementation is blocked until client id/auth inputs are known and guard rails are documented.
 Future MQTT CONNECT input validation must fail closed and must not open a MQTT connection.
-Open-source Gree LAN protocol projects may inform payload names, but they do not by themselves prove Gree+ Cloud MQTT auth/topics.
+Internal vocabulary candidates are not proof of Gree+ Cloud MQTT auth, topic, QoS, or payload envelope.
+Do not mention third-party protocol sources in GREE-ALICE project docs unless explicitly requested later.
 ```
 
 ### Files changed recently
@@ -330,29 +368,30 @@ tools/AssistantEngineer.Tools.GreeCloudProbe/MqttModelDraftCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectSafetyReviewCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectInputContractCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectInputValidationCommand.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/ControlActionEvidenceCommand.cs
 docs/integrations/gree-alice/live-control-channel-investigation.md
 docs/integrations/gree-alice/mqtt-channel-handshake.md
 docs/integrations/gree-alice/mqtt-auth-topic-model.md
 docs/integrations/gree-alice/mqtt-connect-safety-review.md
 docs/integrations/gree-alice/mqtt-connect-input-contract.md
 docs/integrations/gree-alice/mqtt-connect-input-validation.md
+docs/integrations/gree-alice/control-action-capture-evidence.md
 PROJECT_STATE.md
 ```
 
 ### Next step
 
-GREE-ALICE-13 — Control action capture and reference evidence.
+GREE-ALICE-14 — MQTT auth/topic evidence acquisition plan.
 
 Planned scope:
 
 ```text
-- document the new Gree+ control-action capture in masked form;
-- document that mqtt-hk.gree.com:1994 TLS traffic is active during off/on and setpoint changes;
-- document parallel hkgrih.gree.com:443 HTTPS and UDP 7000 LAN activity;
-- review open-source Gree protocol references as inspiration only;
-- separate LAN UDP/7000 protocol evidence from Gree+ Cloud MQTT evidence;
-- identify which payload names are reusable as model vocabulary: Pow, Mod, SetTem, WdSpd, swing fields;
-- explicitly state what remains unknown: MQTT client id, username, password/token, topics, QoS, payload encryption/signature;
+- define safe ways to obtain MQTT client id/auth/topic evidence without sending commands;
+- keep the plan based on our own capture and local evidence only;
+- keep third-party source names out of project docs;
+- document acceptable evidence sources: masked app traffic summaries, local artifacts, decompiled string inventory if done later, manual user-provided non-secret observations;
+- document forbidden evidence handling: raw credentials, raw tokens, raw device keys, raw MACs, private PCAP/CSV commits;
+- define whether CONNECT-only can remain blocked or move to a future explicit safety stage;
 - no MQTT CONNECT implementation yet;
 - no TCP/TLS/MQTT network connection;
 - no MQTT SUBSCRIBE;
