@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-23 — CLOSED / full validation PASS / awaiting push.
+GREE-ALICE-24 — APPLIED locally / validation pending.
 
-Latest pushed commit before GREE-ALICE-23:
+Latest pushed commit before GREE-ALICE-24:
 
 ```text
-21f44f15 GREE-ALICE-22a Fix PROJECT_STATE checkpoint encoding
+48a11f1c GREE-ALICE-23 Add CONNECT-only human safety review checklist
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-23 Add CONNECT-only human safety review checklist
+GREE-ALICE-24 Add CONNECT-only safety review decision record
 ```
 
 ### Completed stages
@@ -45,21 +45,21 @@ GREE-ALICE-19 — CLOSED / pushed — CONNECT-only dry-run command contract
 GREE-ALICE-20 — CLOSED / pushed — CONNECT-only dry-run guard tests
 GREE-ALICE-21 — CLOSED / pushed — CONNECT-only dry-run operator guide
 GREE-ALICE-22 — CLOSED / pushed — MQTT CONNECT readiness gate
-GREE-ALICE-23 — CLOSED / full validation PASS — CONNECT-only human safety review checklist
+GREE-ALICE-23 — CLOSED / pushed — CONNECT-only human safety review checklist
 ```
 
 ### Validation status
 
 ```text
-Latest full validation for GREE-ALICE-22:
+Latest full validation for GREE-ALICE-23:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5426/5426
+Tests: 5431/5431
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit f3c0d1a0
+master == origin/master after commit 48a11f1c
 ```
 
 ### Safety boundary
@@ -80,47 +80,46 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-22 scope
+### GREE-ALICE-24 local scope
 
 ```text
-Added offline MQTT CONNECT readiness gate.
-Reads masked dry-run report only.
-Allows only ready-for-human-live-safety-review decision, not live CONNECT approval.
-Keeps live CONNECT blocked pending explicit human approval.
+Adds documentation-only CONNECT safety review decision record.
+Records blocked-review-incomplete as the only current decision.
+Keeps live CONNECT blocked.
+Keeps SUBSCRIBE blocked.
+Keeps PUBLISH blocked.
+Keeps device control blocked.
+Adds guard tests for the decision record.
 No MQTT CONNECT implementation.
 No DNS/TCP/TLS/MQTT network operation.
 No MQTT SUBSCRIBE.
 No MQTT PUBLISH.
 No device control.
+No API/Telegram/runtime/deployment/migration changes.
 ```
 
-### Files changed by GREE-ALICE-22
+### Files changed by GREE-ALICE-24
 
 ```text
-tools/AssistantEngineer.Tools.GreeCloudProbe/Program.cs
-tools/AssistantEngineer.Tools.GreeCloudProbe/README.md
-tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectReadinessGateCommand.cs
-docs/integrations/gree-alice/mqtt-connect-readiness-gate.md
-docs/integrations/gree-alice/mqtt-connect-dry-run-operator-guide.md
-tests/AssistantEngineer.Tests/GreeAlice/MqttConnectReadinessGateSafetyTests.cs
-docs/integrations/gree-alice/mqtt-connect-human-safety-review-checklist.md
-tests/AssistantEngineer.Tests/GreeAlice/MqttConnectHumanSafetyReviewChecklistTests.cs
+docs/integrations/gree-alice/mqtt-connect-safety-review-decision-record.md
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectSafetyReviewDecisionRecordTests.cs
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for GREE-ALICE-22.
+None for local GREE-ALICE-24 validation.
+Live MQTT remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-24 — CONNECT-only safety review decision record
+GREE-ALICE-25 — CONNECT-only operator sign-off template
 ```
 
-GREE-ALICE-24 should record a CONNECT-only safety review decision only. It should still not implement live MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, API integration, Telegram integration, runtime config, deployment, or migrations.
+GREE-ALICE-25 may add an operator sign-off template only. It should still not implement live MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, API integration, Telegram integration, runtime config, deployment, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 
