@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-08 — CLOSED / pushed.
+GREE-ALICE-09 — CLOSED / pushed.
 
 Latest commit:
 
 ```text
-c5e484a1 GREE-ALICE-08 Add read-only MQTT channel probe
+8290fc91 GREE-ALICE-09 Add offline MQTT auth topic model draft
 ```
 
 State checkpoint to commit next:
 
 ```text
-GREE-ALICE-08.STATE — Update project state after MQTT channel probe
+GREE-ALICE-09.STATE — Update project state after MQTT auth/topic model draft
 ```
 
 ### Completed stages
@@ -31,6 +31,7 @@ GREE-ALICE-05 — CLOSED / pushed — safe raw cloud properties snapshot
 GREE-ALICE-06 — CLOSED / pushed — read-only live status probe
 GREE-ALICE-07 — CLOSED / pushed — live/control channel findings
 GREE-ALICE-08 — CLOSED / pushed — read-only MQTT channel probe
+GREE-ALICE-09 — CLOSED / pushed — offline MQTT auth/topic model draft
 ```
 
 ### Validation status
@@ -125,6 +126,50 @@ MQTT PUBLISH sent: no
 Control command sent: no
 ```
 
+### GREE-ALICE-09 findings
+
+```text
+Offline MQTT auth/topic model draft: implemented
+Discovery report found: yes
+MQTT channel report found: yes
+Transport host: mqtt-hk.gree.com
+Transport port: 1994
+TLS authenticated: yes
+TLS protocol: Tls12
+Device signals: 1
+Device key presence count: 1
+Masked MAC signal count: 1
+Auth model status: unknown-read-only
+Topic model status: unknown-read-only
+```
+
+Safety result:
+
+```text
+MQTT CONNECT sent: no
+MQTT SUBSCRIBE sent: no
+MQTT PUBLISH sent: no
+Device control sent: no
+Raw credentials stored: no
+Raw device keys stored: no
+Raw MACs stored: no
+```
+
+Known unknowns after GREE-ALICE-09:
+
+```text
+MQTT client id format
+MQTT username format
+MQTT password/token format
+Whether MQTT auth uses cloud uid/token, device mac/key, app token, region secret, or another signed payload
+Status topic naming
+Command topic naming
+Account/home/device topic prefixes
+QoS level
+Payload encryption/signature shape
+Whether status is pushed only after subscription
+```
+
 ### Important decisions
 
 ```text
@@ -135,6 +180,7 @@ Do not store Gree+ credentials in files or repository.
 Use masked reports only.
 Control commands are still out of scope until live-status/control channel auth/topic model is confirmed.
 MQTT investigation must remain read-only until the protocol, auth model, topics, and payload safety are understood.
+Do not start MQTT CONNECT/SUBSCRIBE/PUBLISH/control work without an explicit safety stage.
 ```
 
 ### Files changed recently
@@ -144,23 +190,28 @@ tools/AssistantEngineer.Tools.GreeCloudProbe/Program.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/README.md
 tools/AssistantEngineer.Tools.GreeCloudProbe/LiveStatusProbeCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttChannelProbeCommand.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/MqttModelDraftCommand.cs
 docs/integrations/gree-alice/live-control-channel-investigation.md
 docs/integrations/gree-alice/mqtt-channel-handshake.md
+docs/integrations/gree-alice/mqtt-auth-topic-model.md
 PROJECT_STATE.md
 ```
 
 ### Next step
 
-GREE-ALICE-09 — MQTT authentication/topic model discovery.
+GREE-ALICE-10 — MQTT CONNECT-only safety review.
 
 Planned scope:
 
 ```text
-- keep MQTT work read-only;
-- investigate authentication/client identity/topic model;
-- do not publish commands;
-- do not subscribe to unknown topics until topic safety is understood;
-- do not wire into production bridge;
+- review whether a connection-only MQTT test is justified;
+- no MQTT SUBSCRIBE;
+- no MQTT PUBLISH;
+- no wildcard topics;
+- no device control payloads;
+- no production bridge;
+- no persistent credential storage;
+- decide required credentials/client id inputs before any CONNECT attempt;
 - keep all outputs masked and local under artifacts/.
 ```
 <!-- GREE-ALICE-STATE:END -->
