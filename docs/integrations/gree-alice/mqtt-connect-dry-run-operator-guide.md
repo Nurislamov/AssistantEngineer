@@ -156,3 +156,9 @@ raw account identifiers
 ## Next step
 
 A future stage may add more guard tests around sample matrix output. Live MQTT CONNECT still requires a separate explicit safety approval.
+
+## GREE-ALICE-22 follow-up
+
+`GREE-ALICE-22` adds an offline readiness gate that reads a masked dry-run report and decides whether a separate human live-safety review may be considered.
+
+The readiness gate still does not implement MQTT `CONNECT`, open network connections, subscribe, publish, or control a device.

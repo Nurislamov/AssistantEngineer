@@ -1,48 +1,49 @@
-# AssistantEngineer Project State
+﻿# AssistantEngineer Project State
 
 <!-- GREE-ALICE-STATE:START -->
 ## GREE-ALICE current checkpoint
 
 ### Current stage
 
-GREE-ALICE-21 — APPLIED locally / validation pending.
+GREE-ALICE-22 вЂ” APPLIED locally / validation pending.
 
-Latest pushed commit:
+Latest pushed commit before GREE-ALICE-22:
 
 ```text
-f2595145 GREE-ALICE-16 Add MQTT evidence gate decision
+3c938189 GREE-ALICE-21 Add CONNECT-only dry-run operator guide
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-21 Add CONNECT-only dry-run operator guide
+GREE-ALICE-22 Add MQTT CONNECT readiness gate
 ```
 
 ### Completed stages
 
 ```text
-GREE-ALICE-00 — CLOSED / pushed — bridge placement decision
-GREE-ALICE-01 — CLOSED / pushed — cloud probe plan
-GREE-ALICE-02 — CLOSED / pushed — Gree Cloud probe tool scaffold
-GREE-ALICE-03 — CLOSED / pushed — Gree+ Cloud login and discovery
-GREE-ALICE-04 — CLOSED / pushed — normalized Gree Cloud device snapshot
-GREE-ALICE-05 — CLOSED / pushed — safe raw cloud properties snapshot
-GREE-ALICE-06 — CLOSED / pushed — read-only live status probe
-GREE-ALICE-07 — CLOSED / pushed — live/control channel findings
-GREE-ALICE-08 — CLOSED / pushed — read-only MQTT channel probe
-GREE-ALICE-09 — CLOSED / pushed — offline MQTT auth/topic model draft
-GREE-ALICE-10 — CLOSED / pushed — MQTT CONNECT-only safety review
-GREE-ALICE-11 — CLOSED / pushed — MQTT CONNECT input contract
-GREE-ALICE-12 — CLOSED / pushed — MQTT CONNECT input validation scaffold
-GREE-ALICE-13 — CLOSED / pushed — control action capture evidence summary
-GREE-ALICE-14 — CLOSED / pushed — MQTT auth/topic evidence acquisition plan
-GREE-ALICE-15 — CLOSED / pushed — masked MQTT evidence inventory
-GREE-ALICE-16 — CLOSED / pushed — MQTT evidence gate decision
-GREE-ALICE-17 — CLOSED / pushed — MQTT CONNECT-only safety specification
-GREE-ALICE-18 — CLOSED / pushed — CONNECT-only input contract guard tests
-GREE-ALICE-19 — CLOSED / pushed — CONNECT-only dry-run command contract
-GREE-ALICE-20 — CLOSED / pushed — CONNECT-only dry-run guard tests
+GREE-ALICE-00 вЂ” CLOSED / pushed вЂ” bridge placement decision
+GREE-ALICE-01 вЂ” CLOSED / pushed вЂ” cloud probe plan
+GREE-ALICE-02 вЂ” CLOSED / pushed вЂ” Gree Cloud probe tool scaffold
+GREE-ALICE-03 вЂ” CLOSED / pushed вЂ” Gree+ Cloud login and discovery
+GREE-ALICE-04 вЂ” CLOSED / pushed вЂ” normalized Gree Cloud device snapshot
+GREE-ALICE-05 вЂ” CLOSED / pushed вЂ” safe raw cloud properties snapshot
+GREE-ALICE-06 вЂ” CLOSED / pushed вЂ” read-only live status probe
+GREE-ALICE-07 вЂ” CLOSED / pushed вЂ” live/control channel findings
+GREE-ALICE-08 вЂ” CLOSED / pushed вЂ” read-only MQTT channel probe
+GREE-ALICE-09 вЂ” CLOSED / pushed вЂ” offline MQTT auth/topic model draft
+GREE-ALICE-10 вЂ” CLOSED / pushed вЂ” MQTT CONNECT-only safety review
+GREE-ALICE-11 вЂ” CLOSED / pushed вЂ” MQTT CONNECT input contract
+GREE-ALICE-12 вЂ” CLOSED / pushed вЂ” MQTT CONNECT input validation scaffold
+GREE-ALICE-13 вЂ” CLOSED / pushed вЂ” control action capture evidence summary
+GREE-ALICE-14 вЂ” CLOSED / pushed вЂ” MQTT auth/topic evidence acquisition plan
+GREE-ALICE-15 вЂ” CLOSED / pushed вЂ” masked MQTT evidence inventory
+GREE-ALICE-16 вЂ” CLOSED / pushed вЂ” MQTT evidence gate decision
+GREE-ALICE-17 вЂ” CLOSED / pushed вЂ” MQTT CONNECT-only safety specification
+GREE-ALICE-18 вЂ” CLOSED / pushed вЂ” CONNECT-only input contract guard tests
+GREE-ALICE-19 вЂ” CLOSED / pushed вЂ” CONNECT-only dry-run command contract
+GREE-ALICE-20 вЂ” CLOSED / pushed вЂ” CONNECT-only dry-run guard tests
+GREE-ALICE-21 вЂ” CLOSED / pushed вЂ” CONNECT-only dry-run operator guide
 ```
 
 ### Validation status
@@ -182,6 +183,19 @@ No MQTT PUBLISH.
 No device control.
 No raw credentials committed.
 ```
+### GREE-ALICE-22 local scope
+
+```text
+Adds offline readiness gate for future MQTT CONNECT-only live-safety review.
+Reads masked dry-run report only.
+Allows only ready-for-human-live-safety-review decision, not live CONNECT approval.
+Keeps live CONNECT blocked pending explicit human approval.
+No MQTT CONNECT implementation.
+No DNS/TCP/TLS/MQTT network operation.
+No MQTT SUBSCRIBE.
+No MQTT PUBLISH.
+No device control.
+```
 ### Important decisions
 
 ```text
@@ -207,6 +221,7 @@ tools/AssistantEngineer.Tools.GreeCloudProbe/README.md
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttEvidenceInventoryCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttEvidenceGateDecisionCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectDryRunCommand.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectReadinessGateCommand.cs
 docs/integrations/gree-alice/mqtt-auth-topic-evidence-plan.md
 docs/integrations/gree-alice/mqtt-evidence-inventory.md
 docs/integrations/gree-alice/mqtt-evidence-gate-decision.md
@@ -216,8 +231,10 @@ docs/integrations/gree-alice/mqtt-connect-dry-run-contract.md
 docs/integrations/gree-alice/mqtt-connect-dry-run-contract-tests.md
 docs/integrations/gree-alice/mqtt-connect-dry-run-operator-guide.md
 docs/integrations/gree-alice/mqtt-connect-dry-run-sample-matrix.md
+docs/integrations/gree-alice/mqtt-connect-readiness-gate.md
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectDryRunContractSafetyTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectReadinessGateSafetyTests.cs
 PROJECT_STATE.md
 ```
 
@@ -236,13 +253,13 @@ dotnet test .\AssistantEngineer.sln --no-build
 Recommended commit:
 
 ```text
-GREE-ALICE-21 Add CONNECT-only dry-run operator guide
+GREE-ALICE-22 Add MQTT CONNECT readiness gate
 ```
 
-After GREE-ALICE-17 is pushed, the next possible stage is:
+After GREE-ALICE-22 is pushed, the next possible stage is:
 
 ```text
-GREE-ALICE-19 — CONNECT-only dry-run command contract
+GREE-ALICE-19 вЂ” CONNECT-only dry-run command contract
 ```
 
 GREE-ALICE-19 should define a dry-run command contract only. It should still not implement live MQTT CONNECT.
@@ -251,7 +268,7 @@ GREE-ALICE-19 should define a dry-run command contract only. It should still not
 
 ## Current stage
 
-ED-24BOT.CORE1 — CLOSED / production PASS.
+ED-24BOT.CORE1 вЂ” CLOSED / production PASS.
 
 Bot architecture audit and first behavior-preserving channel-neutral diagnostic core extraction are merged to master and deployed to production.
 
@@ -351,7 +368,7 @@ Gree U-Match GUD71PH1/B-S E9
 Smoke log range:
 
 ```text
-UpdateId 41768632–41768638
+UpdateId 41768632вЂ“41768638
 Sending Telegram response: observed
 Telegram polling update processed: observed
 Status: Processed
@@ -395,6 +412,7 @@ tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticBotService
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/MultiSourceDiagnosticReferenceTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectDryRunContractSafetyTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectReadinessGateSafetyTests.cs
 PROJECT_STATE.md
 ```
 
@@ -446,7 +464,7 @@ Telegram command menu synchronized: PASS
 Telegram polling started: PASS
 Telegram deleteWebhook on startup succeeded: PASS
 Telegram smoke logs: PASS
-Updates processed: 41768632–41768638
+Updates processed: 41768632вЂ“41768638
 ```
 
 Expected known production warnings:
@@ -482,7 +500,7 @@ Flaky/infrastructure watch:
 Recommended next stage:
 
 ```text
-ED-24BOT.CORE2 or ED-24BOT.CORE1.POST — small follow-up only after separate review
+ED-24BOT.CORE2 or ED-24BOT.CORE1.POST вЂ” small follow-up only after separate review
 ```
 
 Possible follow-ups, do not start automatically:
@@ -497,9 +515,10 @@ Possible follow-ups, do not start automatically:
 For a new chat, start from this checkpoint:
 
 ```text
-ED-24BOT.AUDIT1 — CLOSED
-ED-24BOT.CORE1 — CLOSED / production PASS
+ED-24BOT.AUDIT1 вЂ” CLOSED
+ED-24BOT.CORE1 вЂ” CLOSED / production PASS
 master top after PR #60: 52ca74a8
 production VPS deployed commit: 52ca74a8
 Telegram smoke: PASS
 ```
+

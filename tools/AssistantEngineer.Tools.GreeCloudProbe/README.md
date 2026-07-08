@@ -499,3 +499,21 @@ docs/integrations/gree-alice/mqtt-connect-dry-run-sample-matrix.md
 ```
 
 The scenarios use dummy values only and do not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+## CONNECT-only readiness gate
+
+`GREE-ALICE-22` adds an offline readiness gate for the MQTT CONNECT-only live-safety review.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --mqtt-connect-readiness-gate
+```
+
+The gate reads masked dry-run evidence only. It does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-connect-readiness-gate.md
+```

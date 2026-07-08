@@ -62,6 +62,9 @@ internal static class Program
 
             if (args.Any(static arg => arg.Equals("--mqtt-connect-dry-run", StringComparison.OrdinalIgnoreCase)))
                 return MqttConnectDryRunCommand.Run(args);
+
+            if (args.Any(static arg => arg.Equals("--mqtt-connect-readiness-gate", StringComparison.OrdinalIgnoreCase)))
+                return MqttConnectReadinessGateCommand.Run(args);
             if (args.Any(static arg => arg.Equals("--summarize-capture", StringComparison.OrdinalIgnoreCase)))
                 return CaptureSummaryCommand.Run(args);
 
@@ -132,6 +135,7 @@ internal static class Program
         Console.WriteLine("  --inventory-mqtt-evidence");
         Console.WriteLine("  --decide-mqtt-evidence-gate");
         Console.WriteLine("  --mqtt-connect-dry-run");
+        Console.WriteLine("  --mqtt-connect-readiness-gate");
         Console.WriteLine("  --inventory-report <path>");
         Console.WriteLine("  --inventory-dir <path>");
         Console.WriteLine("  --artifacts-root <path>");
