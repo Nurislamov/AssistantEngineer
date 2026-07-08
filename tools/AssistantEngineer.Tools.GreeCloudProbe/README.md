@@ -394,3 +394,13 @@ Details:
 ```text
 docs/integrations/gree-alice/control-action-capture-evidence.md
 ```
+
+## MQTT auth/topic evidence acquisition plan
+
+`GREE-ALICE-14` defines safe evidence handling for future MQTT client id/auth/topic discovery.
+
+```text
+docs/integrations/gree-alice/mqtt-auth-topic-evidence-plan.md
+```
+
+This is documentation-only. It does not name third-party source projects, and it does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.

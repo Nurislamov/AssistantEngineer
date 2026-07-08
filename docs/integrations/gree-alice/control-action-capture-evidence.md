@@ -106,3 +106,13 @@ GREE-ALICE-14 — MQTT auth/topic evidence acquisition plan
 ```
 
 That stage should define the safest practical ways to obtain MQTT client id/auth/topic evidence without sending commands.
+
+## GREE-ALICE-14 follow-up
+
+After the control-action capture evidence summary, the next safe step is:
+
+```text
+GREE-ALICE-14 — MQTT auth/topic evidence acquisition plan
+```
+
+This stage defines safe evidence handling for client id/auth/topic discovery. It remains documentation-only and must not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
