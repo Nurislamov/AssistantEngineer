@@ -5,7 +5,7 @@
 
 ### Current stage
 
-GREE-ALICE-18 — APPLIED locally / validation pending.
+GREE-ALICE-19 — APPLIED locally / validation pending.
 
 Latest pushed commit:
 
@@ -16,7 +16,7 @@ f2595145 GREE-ALICE-16 Add MQTT evidence gate decision
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-18 Add CONNECT-only input contract guard tests
+GREE-ALICE-19 Add CONNECT-only dry-run command contract
 ```
 
 ### Completed stages
@@ -40,6 +40,7 @@ GREE-ALICE-14 — CLOSED / pushed — MQTT auth/topic evidence acquisition plan
 GREE-ALICE-15 — CLOSED / pushed — masked MQTT evidence inventory
 GREE-ALICE-16 — CLOSED / pushed — MQTT evidence gate decision
 GREE-ALICE-17 — CLOSED / pushed — MQTT CONNECT-only safety specification
+GREE-ALICE-18 — CLOSED / pushed — CONNECT-only input contract guard tests
 ```
 
 ### Validation status
@@ -140,6 +141,19 @@ No MQTT SUBSCRIBE.
 No MQTT PUBLISH.
 No device control.
 ```
+### GREE-ALICE-19 local scope
+
+```text
+Adds offline dry-run command for future MQTT CONNECT-only input contract.
+Validates missing/invalid/unsafe inputs.
+Rejects topic/payload/control arguments.
+Writes masked report only.
+No MQTT CONNECT implementation.
+No TCP/TLS/MQTT network connection.
+No MQTT SUBSCRIBE.
+No MQTT PUBLISH.
+No device control.
+```
 ### Important decisions
 
 ```text
@@ -164,11 +178,13 @@ tools/AssistantEngineer.Tools.GreeCloudProbe/Program.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/README.md
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttEvidenceInventoryCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttEvidenceGateDecisionCommand.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectDryRunCommand.cs
 docs/integrations/gree-alice/mqtt-auth-topic-evidence-plan.md
 docs/integrations/gree-alice/mqtt-evidence-inventory.md
 docs/integrations/gree-alice/mqtt-evidence-gate-decision.md
 docs/integrations/gree-alice/mqtt-connect-only-safety-specification.md
 docs/integrations/gree-alice/mqtt-connect-input-contract-tests.md
+docs/integrations/gree-alice/mqtt-connect-dry-run-contract.md
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
 PROJECT_STATE.md
 ```
@@ -188,7 +204,7 @@ dotnet test .\AssistantEngineer.sln --no-build
 Recommended commit:
 
 ```text
-GREE-ALICE-18 Add CONNECT-only input contract guard tests
+GREE-ALICE-19 Add CONNECT-only dry-run command contract
 ```
 
 After GREE-ALICE-17 is pushed, the next possible stage is:

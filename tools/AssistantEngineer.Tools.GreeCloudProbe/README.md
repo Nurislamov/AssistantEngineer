@@ -460,3 +460,21 @@ docs/integrations/gree-alice/mqtt-connect-input-contract-tests.md
 ```
 
 The tests are offline. They do not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+## CONNECT-only dry-run command contract
+
+`GREE-ALICE-19` adds an offline dry-run command for future MQTT CONNECT-only inputs.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --mqtt-connect-dry-run
+```
+
+The dry-run validates and masks inputs only. It does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-connect-dry-run-contract.md
+```

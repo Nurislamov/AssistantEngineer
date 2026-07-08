@@ -45,3 +45,9 @@ GREE-ALICE-19 — CONNECT-only dry-run command contract
 ```
 
 That future stage should still be offline unless explicitly approved otherwise.
+
+## GREE-ALICE-19 follow-up
+
+`GREE-ALICE-19` adds an offline dry-run command for the future CONNECT-only input contract.
+
+The dry-run command validates inputs and writes masked output only. It still does not implement MQTT `CONNECT`, open network connections, subscribe, publish, or control a device.
