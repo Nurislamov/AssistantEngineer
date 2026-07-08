@@ -404,3 +404,21 @@ docs/integrations/gree-alice/mqtt-auth-topic-evidence-plan.md
 ```
 
 This is documentation-only. It does not name third-party source projects, and it does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+## Masked MQTT evidence inventory
+
+`GREE-ALICE-15` scans local GREE-ALICE JSON artifacts and produces a masked evidence inventory.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --inventory-mqtt-evidence
+```
+
+This is offline only. It writes field-name counts, classifications, and length buckets; it does not print raw values and does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-evidence-inventory.md
+```

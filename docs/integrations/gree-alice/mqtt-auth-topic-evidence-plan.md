@@ -202,3 +202,13 @@ Possible scope:
 - do not open network connections;
 - do not implement CONNECT/SUBSCRIBE/PUBLISH/control.
 ```
+
+## GREE-ALICE-15 follow-up
+
+After the evidence acquisition plan, the next safe step is:
+
+```text
+GREE-ALICE-15 — Masked MQTT evidence inventory
+```
+
+This stage scans local JSON artifacts and writes only field-name counts, classifications, and length buckets. It must not print raw values, open network connections, or implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.

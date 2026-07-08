@@ -53,6 +53,9 @@ internal static class Program
 
             if (args.Any(static arg => arg.Equals("--summarize-control-action-evidence", StringComparison.OrdinalIgnoreCase)))
                 return ControlActionEvidenceCommand.Run(args);
+
+            if (args.Any(static arg => arg.Equals("--inventory-mqtt-evidence", StringComparison.OrdinalIgnoreCase)))
+                return MqttEvidenceInventoryCommand.Run(args);
             if (args.Any(static arg => arg.Equals("--summarize-capture", StringComparison.OrdinalIgnoreCase)))
                 return CaptureSummaryCommand.Run(args);
 
@@ -120,6 +123,9 @@ internal static class Program
         Console.WriteLine("  --draft-mqtt-connect-input-contract");
         Console.WriteLine("  --validate-mqtt-connect-inputs");
         Console.WriteLine("  --summarize-control-action-evidence");
+        Console.WriteLine("  --inventory-mqtt-evidence");
+        Console.WriteLine("  --artifacts-root <path>");
+        Console.WriteLine("  --max-files <count>");
         Console.WriteLine("  --control-capture-csv <path>");
         Console.WriteLine("  --action-sequence <text>");
         Console.WriteLine("  --mqtt-model-report <path>");
