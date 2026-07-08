@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-10 — CLOSED / pushed.
+GREE-ALICE-11 — CLOSED / pushed.
 
 Latest commit:
 
 ```text
-b386b61b GREE-ALICE-10 Add MQTT CONNECT safety review
+efb98ced GREE-ALICE-11 Add MQTT CONNECT input contract
 ```
 
 State checkpoint to commit next:
 
 ```text
-GREE-ALICE-10.STATE — Update project state after MQTT CONNECT safety review
+GREE-ALICE-11.STATE — Update project state after MQTT CONNECT input contract
 ```
 
 ### Completed stages
@@ -33,6 +33,7 @@ GREE-ALICE-07 — CLOSED / pushed — live/control channel findings
 GREE-ALICE-08 — CLOSED / pushed — read-only MQTT channel probe
 GREE-ALICE-09 — CLOSED / pushed — offline MQTT auth/topic model draft
 GREE-ALICE-10 — CLOSED / pushed — MQTT CONNECT-only safety review
+GREE-ALICE-11 — CLOSED / pushed — MQTT CONNECT input contract
 ```
 
 ### Validation status
@@ -209,6 +210,45 @@ Raw credentials stored: no
 Production bridge changed: no
 ```
 
+### GREE-ALICE-11 findings
+
+```text
+Offline MQTT CONNECT input contract: implemented
+Contract status: draft-connect-still-blocked
+Inputs: 12
+Required future inputs: 3
+Secret inputs: 4
+Blockers: 7
+```
+
+Reserved future environment variables:
+
+```text
+GREE_ALICE_MQTT_HOST
+GREE_ALICE_MQTT_PORT
+GREE_ALICE_MQTT_CLIENT_ID
+GREE_ALICE_MQTT_USERNAME
+GREE_ALICE_MQTT_PASSWORD
+GREE_ALICE_MQTT_TOKEN
+GREE_ALICE_MQTT_AUTH_MODE
+GREE_ALICE_MQTT_KEEP_ALIVE_SECONDS
+GREE_ALICE_MQTT_CONNECT_TIMEOUT_SECONDS
+GREE_ALICE_MQTT_DISCONNECT_AFTER_CONNACK
+GREE_ALICE_MQTT_ALLOW_SUBSCRIBE
+GREE_ALICE_MQTT_ALLOW_PUBLISH
+```
+
+Safety result:
+
+```text
+MQTT CONNECT implementation included: no
+MQTT CONNECT sent: no
+MQTT SUBSCRIBE sent: no
+MQTT PUBLISH sent: no
+Device control sent: no
+Raw credentials stored: no
+```
+
 ### Important decisions
 
 ```text
@@ -221,6 +261,7 @@ Control commands are still out of scope until live-status/control channel auth/t
 MQTT investigation must remain read-only until the protocol, auth model, topics, and payload safety are understood.
 Do not start MQTT CONNECT/SUBSCRIBE/PUBLISH/control work without an explicit safety stage.
 Future MQTT CONNECT implementation is blocked until client id/auth inputs are known and guard rails are documented.
+Future MQTT CONNECT input validation must fail closed and must not open a MQTT connection.
 ```
 
 ### Files changed recently
@@ -232,26 +273,29 @@ tools/AssistantEngineer.Tools.GreeCloudProbe/LiveStatusProbeCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttChannelProbeCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttModelDraftCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectSafetyReviewCommand.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectInputContractCommand.cs
 docs/integrations/gree-alice/live-control-channel-investigation.md
 docs/integrations/gree-alice/mqtt-channel-handshake.md
 docs/integrations/gree-alice/mqtt-auth-topic-model.md
 docs/integrations/gree-alice/mqtt-connect-safety-review.md
+docs/integrations/gree-alice/mqtt-connect-input-contract.md
 PROJECT_STATE.md
 ```
 
 ### Next step
 
-GREE-ALICE-11 — MQTT CONNECT input contract.
+GREE-ALICE-12 — MQTT CONNECT input validation scaffold.
 
 Planned scope:
 
 ```text
-- define exact environment variables for a future connection-only test;
-- define required and optional inputs;
-- define masking rules for client id, username, token, device key, MAC-like identifiers, SSID, barcode, latitude, and longitude;
-- define output artifact shape;
-- define validation rules that block missing/unsafe inputs;
+- implement offline validation of future MQTT CONNECT environment variables;
+- report provided/missing/invalid inputs in masked form only;
+- fail closed on missing client id, username, auth mode, and unsafe allow flags;
+- reject subscribe/publish flags;
+- reject wildcard topic or command payload inputs if present;
 - no MQTT CONNECT implementation yet;
+- no TCP/TLS/MQTT network connection;
 - no MQTT SUBSCRIBE;
 - no MQTT PUBLISH;
 - no wildcard topics;
