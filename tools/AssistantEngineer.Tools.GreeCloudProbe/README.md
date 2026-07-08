@@ -450,3 +450,13 @@ docs/integrations/gree-alice/mqtt-connect-only-safety-specification.md
 ```
 
 This is documentation-only. It does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+## CONNECT-only input contract guard tests
+
+`GREE-ALICE-18` adds repository guard tests for the MQTT CONNECT-only input contract and safety docs.
+
+```text
+docs/integrations/gree-alice/mqtt-connect-input-contract-tests.md
+```
+
+The tests are offline. They do not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.

@@ -239,3 +239,9 @@ GREE-ALICE-18 — CONNECT-only input contract tests
 ```
 
 That stage should add tests and validation around the existing input contract only. It should still not implement live MQTT `CONNECT`.
+
+## GREE-ALICE-18 follow-up
+
+`GREE-ALICE-18` adds repository guard tests for this safety specification and the fail-closed input contract.
+
+The tests still do not implement MQTT `CONNECT`, do not open network connections, do not subscribe, do not publish, and do not control a device.

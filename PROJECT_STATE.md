@@ -5,7 +5,7 @@
 
 ### Current stage
 
-GREE-ALICE-17 — APPLIED locally / docs-only validation pending.
+GREE-ALICE-18 — APPLIED locally / validation pending.
 
 Latest pushed commit:
 
@@ -16,7 +16,7 @@ f2595145 GREE-ALICE-16 Add MQTT evidence gate decision
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-17 Add MQTT CONNECT-only safety specification
+GREE-ALICE-18 Add CONNECT-only input contract guard tests
 ```
 
 ### Completed stages
@@ -39,6 +39,7 @@ GREE-ALICE-13 — CLOSED / pushed — control action capture evidence summary
 GREE-ALICE-14 — CLOSED / pushed — MQTT auth/topic evidence acquisition plan
 GREE-ALICE-15 — CLOSED / pushed — masked MQTT evidence inventory
 GREE-ALICE-16 — CLOSED / pushed — MQTT evidence gate decision
+GREE-ALICE-17 — CLOSED / pushed — MQTT CONNECT-only safety specification
 ```
 
 ### Validation status
@@ -126,6 +127,19 @@ No API/Telegram/runtime/deployment/migration changes.
 No third-party source names in docs.
 ```
 
+### GREE-ALICE-18 local scope
+
+```text
+Adds repository guard tests for MQTT CONNECT-only input contract and safety docs.
+Tests fail if docs contain forbidden third-party source references.
+Tests fail if offline validation/evidence commands include live MQTT/network implementation markers.
+Tests fail if CONNECT-only safety spec no longer keeps SUBSCRIBE/PUBLISH/control blocked.
+No MQTT CONNECT implementation.
+No TCP/TLS/MQTT network connection.
+No MQTT SUBSCRIBE.
+No MQTT PUBLISH.
+No device control.
+```
 ### Important decisions
 
 ```text
@@ -154,6 +168,8 @@ docs/integrations/gree-alice/mqtt-auth-topic-evidence-plan.md
 docs/integrations/gree-alice/mqtt-evidence-inventory.md
 docs/integrations/gree-alice/mqtt-evidence-gate-decision.md
 docs/integrations/gree-alice/mqtt-connect-only-safety-specification.md
+docs/integrations/gree-alice/mqtt-connect-input-contract-tests.md
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
 PROJECT_STATE.md
 ```
 
@@ -172,16 +188,16 @@ dotnet test .\AssistantEngineer.sln --no-build
 Recommended commit:
 
 ```text
-GREE-ALICE-17 Add MQTT CONNECT-only safety specification
+GREE-ALICE-18 Add CONNECT-only input contract guard tests
 ```
 
 After GREE-ALICE-17 is pushed, the next possible stage is:
 
 ```text
-GREE-ALICE-18 — CONNECT-only input contract tests
+GREE-ALICE-19 — CONNECT-only dry-run command contract
 ```
 
-GREE-ALICE-18 should add tests and validation only. It should still not implement live MQTT CONNECT.
+GREE-ALICE-19 should define a dry-run command contract only. It should still not implement live MQTT CONNECT.
 <!-- GREE-ALICE-STATE:END -->
 
 
@@ -329,6 +345,7 @@ tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticCoreArchit
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticCoreCompatibilityTests.cs
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/EquipmentDiagnosticBotServiceTests.cs
 tests/AssistantEngineer.Tests/EquipmentDiagnostics/MultiSourceDiagnosticReferenceTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
 PROJECT_STATE.md
 ```
 
