@@ -5,12 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-06 — CLOSED / pushed.
+GREE-ALICE-08 — CLOSED / pushed.
 
 Latest commit:
 
 ```text
-62e7f646 GREE-ALICE-06 Add read-only live status probe
+c5e484a1 GREE-ALICE-08 Add read-only MQTT channel probe
+```
+
+State checkpoint to commit next:
+
+```text
+GREE-ALICE-08.STATE — Update project state after MQTT channel probe
 ```
 
 ### Completed stages
@@ -23,6 +29,8 @@ GREE-ALICE-03 — CLOSED / pushed — Gree+ Cloud login and discovery
 GREE-ALICE-04 — CLOSED / pushed — normalized Gree Cloud device snapshot
 GREE-ALICE-05 — CLOSED / pushed — safe raw cloud properties snapshot
 GREE-ALICE-06 — CLOSED / pushed — read-only live status probe
+GREE-ALICE-07 — CLOSED / pushed — live/control channel findings
+GREE-ALICE-08 — CLOSED / pushed — read-only MQTT channel probe
 ```
 
 ### Validation status
@@ -38,7 +46,7 @@ Tests: 5411/5411
 ```text
 Gree+ Cloud login: PASS
 Region shown by app/account: Ouzbekistan / Ouzbékistan
-Validated server: https://hkgrih.gree.com
+Validated REST server: https://hkgrih.gree.com
 Homes: 1
 Rooms: 1
 Devices: 1
@@ -48,12 +56,19 @@ Device key: provided
 Sensitive fields: masked in reports
 ```
 
-### Device classification
+### REST discovery path
 
 ```text
-Cloud classification: vrf-child-unit-candidate
-Normalized kind: gree-vrf-child-unit
-Candidate control target: room-climate-unit
+/App/UserLoginV2: PASS
+/App/GetHomes: PASS
+/App/GetDevsInRoomsOfHomeV2: PASS
+```
+
+### Device classification note
+
+```text
+First cloud-visible device: cloud room climate candidate
+Do not treat it as proven VRF control until parent/child or gateway fields are confirmed.
 ```
 
 ### GREE-ALICE-06 findings
@@ -71,8 +86,43 @@ Conclusion:
 
 ```text
 GetDevsInRoomsOfHomeV2 provides metadata only.
-Live status/control is not exposed through the simple /App/GetDeviceStatus / GetDevStatus / GetDevAttrs style endpoints on hkgrih.gree.com.
-Next step is to find the actual Gree+ live/control channel.
+Simple REST /App/GetDeviceStatus-style endpoints are not the live status/control channel on hkgrih.gree.com.
+```
+
+### GREE-ALICE-07 findings
+
+```text
+Private GREE+ app traffic export indicated:
+- hkgrih.gree.com:443 as HTTPS REST discovery path
+- mqtt-hk.gree.com:1994 as MQTT/TLS live channel candidate
+- 255.255.255.255:7000 as local UDP discovery fallback
+```
+
+The CSV / PCAP export itself is private diagnostic material and must not be committed.
+
+### GREE-ALICE-08 findings
+
+```text
+Read-only MQTT channel probe: implemented
+Target: mqtt-hk.gree.com:1994
+DNS resolved: PASS
+TCP connected: PASS
+TLS/SNI authenticated: PASS
+TLS protocol: Tls12
+Certificate subject: CN=*.gree.com, O=珠海格力电器股份有限公司, L=珠海市, S=广东省, C=CN
+Certificate issuer: CN=GlobalSign RSA OV SSL CA 2018, O=GlobalSign nv-sa, C=BE
+Certificate not after: 10.04.2027 14:35:22
+Resolved addresses: 18.139.13.162, 54.254.105.150
+```
+
+Safety result:
+
+```text
+MQTT application data sent: no
+MQTT CONNECT sent: no
+MQTT SUBSCRIBE sent: no
+MQTT PUBLISH sent: no
+Control command sent: no
 ```
 
 ### Important decisions
@@ -83,7 +133,8 @@ Do not wire into AssistantEngineer.Api, Telegram, deployment, migrations, or run
 Do not commit local artifacts under artifacts/gree-alice/.
 Do not store Gree+ credentials in files or repository.
 Use masked reports only.
-Control commands are still out of scope until live-status/control channel is confirmed.
+Control commands are still out of scope until live-status/control channel auth/topic model is confirmed.
+MQTT investigation must remain read-only until the protocol, auth model, topics, and payload safety are understood.
 ```
 
 ### Files changed recently
@@ -92,20 +143,25 @@ Control commands are still out of scope until live-status/control channel is con
 tools/AssistantEngineer.Tools.GreeCloudProbe/Program.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/README.md
 tools/AssistantEngineer.Tools.GreeCloudProbe/LiveStatusProbeCommand.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/MqttChannelProbeCommand.cs
+docs/integrations/gree-alice/live-control-channel-investigation.md
+docs/integrations/gree-alice/mqtt-channel-handshake.md
+PROJECT_STATE.md
 ```
 
 ### Next step
 
-GREE-ALICE-07 — Find actual live/control channel.
+GREE-ALICE-09 — MQTT authentication/topic model discovery.
 
 Planned scope:
 
 ```text
-- stop guessing simple /App/Get... live endpoints;
-- investigate actual channel used by Gree+ for live status/control;
-- look for MQTT/WebSocket/IoT endpoint candidates;
-- prepare safe traffic-capture workflow for Gree+ app without storing passwords;
-- keep all actions read-only until the real status/control protocol is known.
+- keep MQTT work read-only;
+- investigate authentication/client identity/topic model;
+- do not publish commands;
+- do not subscribe to unknown topics until topic safety is understood;
+- do not wire into production bridge;
+- keep all outputs masked and local under artifacts/.
 ```
 <!-- GREE-ALICE-STATE:END -->
 
