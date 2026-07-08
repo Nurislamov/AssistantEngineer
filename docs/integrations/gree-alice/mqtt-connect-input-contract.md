@@ -113,3 +113,13 @@ GREE-ALICE-12 — MQTT CONNECT input validation scaffold
 ```
 
 That stage may implement validation of local environment variable presence and masking, but still must not open a MQTT connection.
+
+## GREE-ALICE-12 follow-up
+
+After the input contract, the next safe step is:
+
+```text
+GREE-ALICE-12 — MQTT CONNECT input validation scaffold
+```
+
+This stage validates future environment variables and masking rules offline. It must not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.

@@ -356,3 +356,21 @@ Details:
 ```text
 docs/integrations/gree-alice/mqtt-connect-input-contract.md
 ```
+
+## Offline MQTT CONNECT input validation
+
+`GREE-ALICE-12` validates future MQTT `CONNECT` environment variables in fail-closed mode.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --validate-mqtt-connect-inputs
+```
+
+This is offline only. It does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-connect-input-validation.md
+```
