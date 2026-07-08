@@ -488,3 +488,14 @@ docs/integrations/gree-alice/mqtt-connect-dry-run-contract-tests.md
 ```
 
 The tests are offline. They do not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+## CONNECT-only dry-run operator guide
+
+`GREE-ALICE-21` adds safe operator instructions and a sample matrix for the offline dry-run command.
+
+```text
+docs/integrations/gree-alice/mqtt-connect-dry-run-operator-guide.md
+docs/integrations/gree-alice/mqtt-connect-dry-run-sample-matrix.md
+```
+
+The scenarios use dummy values only and do not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.

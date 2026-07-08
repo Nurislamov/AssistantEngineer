@@ -103,3 +103,9 @@ That future stage should add tests around the dry-run command and still avoid li
 `GREE-ALICE-20` adds repository guard tests for the dry-run command contract and masked-output requirements.
 
 The tests still do not implement MQTT `CONNECT`, do not open network connections, do not subscribe, do not publish, and do not control a device.
+
+## GREE-ALICE-21 follow-up
+
+`GREE-ALICE-21` adds an operator guide and safe dry-run sample matrix.
+
+The sample matrix is offline only and does not implement MQTT `CONNECT`, open network connections, subscribe, publish, or control a device.

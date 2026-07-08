@@ -5,7 +5,7 @@
 
 ### Current stage
 
-GREE-ALICE-20 — APPLIED locally / validation pending.
+GREE-ALICE-21 — APPLIED locally / validation pending.
 
 Latest pushed commit:
 
@@ -16,7 +16,7 @@ f2595145 GREE-ALICE-16 Add MQTT evidence gate decision
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-20 Add CONNECT-only dry-run guard tests
+GREE-ALICE-21 Add CONNECT-only dry-run operator guide
 ```
 
 ### Completed stages
@@ -42,6 +42,7 @@ GREE-ALICE-16 — CLOSED / pushed — MQTT evidence gate decision
 GREE-ALICE-17 — CLOSED / pushed — MQTT CONNECT-only safety specification
 GREE-ALICE-18 — CLOSED / pushed — CONNECT-only input contract guard tests
 GREE-ALICE-19 — CLOSED / pushed — CONNECT-only dry-run command contract
+GREE-ALICE-20 — CLOSED / pushed — CONNECT-only dry-run guard tests
 ```
 
 ### Validation status
@@ -168,6 +169,19 @@ No MQTT SUBSCRIBE.
 No MQTT PUBLISH.
 No device control.
 ```
+### GREE-ALICE-21 local scope
+
+```text
+Adds operator guide for offline dry-run usage.
+Adds safe dry-run sample matrix.
+Runs local offline dry-run scenarios with dummy values only.
+No MQTT CONNECT implementation.
+No DNS/TCP/TLS/MQTT network operation.
+No MQTT SUBSCRIBE.
+No MQTT PUBLISH.
+No device control.
+No raw credentials committed.
+```
 ### Important decisions
 
 ```text
@@ -200,6 +214,8 @@ docs/integrations/gree-alice/mqtt-connect-only-safety-specification.md
 docs/integrations/gree-alice/mqtt-connect-input-contract-tests.md
 docs/integrations/gree-alice/mqtt-connect-dry-run-contract.md
 docs/integrations/gree-alice/mqtt-connect-dry-run-contract-tests.md
+docs/integrations/gree-alice/mqtt-connect-dry-run-operator-guide.md
+docs/integrations/gree-alice/mqtt-connect-dry-run-sample-matrix.md
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectDryRunContractSafetyTests.cs
 PROJECT_STATE.md
@@ -220,7 +236,7 @@ dotnet test .\AssistantEngineer.sln --no-build
 Recommended commit:
 
 ```text
-GREE-ALICE-20 Add CONNECT-only dry-run guard tests
+GREE-ALICE-21 Add CONNECT-only dry-run operator guide
 ```
 
 After GREE-ALICE-17 is pushed, the next possible stage is:

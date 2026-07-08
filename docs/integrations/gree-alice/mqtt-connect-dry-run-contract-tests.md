@@ -45,3 +45,9 @@ GREE-ALICE-21 — Dry-run sample matrix and operator instructions
 ```
 
 That future stage should document safe operator scenarios and still avoid live MQTT CONNECT.
+
+## GREE-ALICE-21 follow-up
+
+`GREE-ALICE-21` adds safe operator instructions and a dry-run sample matrix for local validation.
+
+The matrix uses dummy values only and keeps all live gates blocked.
