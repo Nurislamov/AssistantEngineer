@@ -62,3 +62,13 @@ GREE-ALICE-17 — MQTT CONNECT-only safety specification
 ```
 
 That stage may prepare a specification only. It must still not implement MQTT `CONNECT` until the user explicitly approves a separate live-safety stage.
+
+## GREE-ALICE-17 follow-up
+
+After the evidence gate decision, the next safe step is:
+
+```text
+GREE-ALICE-17 — MQTT CONNECT-only safety specification
+```
+
+This stage defines the requirements for a possible future `CONNECT`-only probe. It remains documentation-only and does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.

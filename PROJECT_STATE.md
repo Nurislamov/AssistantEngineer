@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-13 — CLOSED / pushed.
+GREE-ALICE-17 — APPLIED locally / docs-only validation pending.
 
-Latest commit:
+Latest pushed commit:
 
 ```text
-38eb9ee1 GREE-ALICE-13 Add control action capture evidence summary
+f2595145 GREE-ALICE-16 Add MQTT evidence gate decision
 ```
 
-State checkpoint to commit next:
+Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-13.STATE — Update project state after control action evidence
+GREE-ALICE-17 Add MQTT CONNECT-only safety specification
 ```
 
 ### Completed stages
@@ -36,308 +36,95 @@ GREE-ALICE-10 — CLOSED / pushed — MQTT CONNECT-only safety review
 GREE-ALICE-11 — CLOSED / pushed — MQTT CONNECT input contract
 GREE-ALICE-12 — CLOSED / pushed — MQTT CONNECT input validation scaffold
 GREE-ALICE-13 — CLOSED / pushed — control action capture evidence summary
+GREE-ALICE-14 — CLOSED / pushed — MQTT auth/topic evidence acquisition plan
+GREE-ALICE-15 — CLOSED / pushed — masked MQTT evidence inventory
+GREE-ALICE-16 — CLOSED / pushed — MQTT evidence gate decision
 ```
 
 ### Validation status
 
 ```text
+Latest full validation before GREE-ALICE-17:
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
 Tests: 5411/5411
 ```
 
-### Cloud validation
+### Current Gree+ Cloud facts
 
 ```text
 Gree+ Cloud login: PASS
-Region shown by app/account: Ouzbekistan / Ouzbékistan
 Validated REST server: https://hkgrih.gree.com
-Homes: 1
-Rooms: 1
-Devices: 1
-Device: AC3167
-Device version: V3.4.M
-Device key: provided
-Sensitive fields: masked in reports
+MQTT/TLS endpoint candidate: mqtt-hk.gree.com:1994
+MQTT/TLS endpoint TLS probe: PASS
+Real control-action capture: PASS
+Action sequence: off/on and setpoint 24 -> 23 -> 24
+MQTT/TLS control candidate observed during action: yes
+REST discovery traffic observed during action: yes
+UDP 7000 LAN activity observed during action: yes
 ```
 
-### REST discovery path
+### GREE-ALICE-15 findings
 
 ```text
-/App/UserLoginV2: PASS
-/App/GetHomes: PASS
-/App/GetDevsInRoomsOfHomeV2: PASS
-```
-
-### Device classification note
-
-```text
-First cloud-visible device: cloud room climate candidate
-Do not treat it as proven VRF control until parent/child or gateway fields are confirmed.
-```
-
-### GREE-ALICE-06 findings
-
-```text
-Read-only live status probe tool: implemented
-Live probe login/discovery: PASS
-Candidate REST endpoints attempted: 32
-Result: all attempted /App/Get... live-status endpoints returned HTTP 404
-Live capability fields found: none
-Missing fields: Pow / Mod / SetTem / WdSpd / temperature / fan / swing
-```
-
-Conclusion:
-
-```text
-GetDevsInRoomsOfHomeV2 provides metadata only.
-Simple REST /App/GetDeviceStatus-style endpoints are not the live status/control channel on hkgrih.gree.com.
-```
-
-### GREE-ALICE-07 findings
-
-```text
-Private GREE+ app traffic export indicated:
-- hkgrih.gree.com:443 as HTTPS REST discovery path
-- mqtt-hk.gree.com:1994 as MQTT/TLS live channel candidate
-- 255.255.255.255:7000 as local UDP discovery fallback
-```
-
-The CSV / PCAP export itself is private diagnostic material and must not be committed.
-
-### GREE-ALICE-08 findings
-
-```text
-Read-only MQTT channel probe: implemented
-Target: mqtt-hk.gree.com:1994
-DNS resolved: PASS
-TCP connected: PASS
-TLS/SNI authenticated: PASS
-TLS protocol: Tls12
-Certificate subject: CN=*.gree.com, O=珠海格力电器股份有限公司, L=珠海市, S=广东省, C=CN
-Certificate issuer: CN=GlobalSign RSA OV SSL CA 2018, O=GlobalSign nv-sa, C=BE
-Certificate not after: 10.04.2027 14:35:22
-Resolved addresses: 18.139.13.162, 54.254.105.150
-```
-
-Safety result:
-
-```text
-MQTT application data sent: no
-MQTT CONNECT sent: no
-MQTT SUBSCRIBE sent: no
-MQTT PUBLISH sent: no
-Control command sent: no
-```
-
-### GREE-ALICE-09 findings
-
-```text
-Offline MQTT auth/topic model draft: implemented
-Discovery report found: yes
-MQTT channel report found: yes
-Transport host: mqtt-hk.gree.com
-Transport port: 1994
-TLS authenticated: yes
-TLS protocol: Tls12
-Device signals: 1
-Device key presence count: 1
-Masked MAC signal count: 1
-Auth model status: unknown-read-only
-Topic model status: unknown-read-only
-```
-
-Safety result:
-
-```text
+Masked local artifacts scanned: 25
+JSON files parsed: 25
+Distinct field names: 240
+Sensitive/identity field name hits: 124
+MQTT signal field name hits: 206
+Raw leak candidate hits: 10
+Output contains raw values: no
+Network connection opened: no
 MQTT CONNECT sent: no
 MQTT SUBSCRIBE sent: no
 MQTT PUBLISH sent: no
 Device control sent: no
-Raw credentials stored: no
-Raw device keys stored: no
-Raw MACs stored: no
 ```
 
-Known unknowns after GREE-ALICE-09:
+### GREE-ALICE-16 findings
 
 ```text
-MQTT client id format
-MQTT username format
-MQTT password/token format
-Whether MQTT auth uses cloud uid/token, device mac/key, app token, region secret, or another signed payload
-Status topic naming
-Command topic naming
-Account/home/device topic prefixes
-QoS level
-Payload encryption/signature shape
-Whether status is pushed only after subscription
-```
-
-### GREE-ALICE-10 findings
-
-```text
-Offline MQTT CONNECT-only safety review: implemented
-Model report found: yes
-TLS authenticated: yes
-Device signals: 1
-Device key presence count: 1
-Masked MAC signal count: 1
-Auth model status: unknown-read-only
-Topic model status: unknown-read-only
-Decision: not-ready
-Blockers: 7
+Inventory report found: yes
+Files scanned: 25
+JSON files parsed: 25
+Distinct field names: 240
+Sensitive/identity field name hits: 124
+MQTT signal field name hits: 206
+Raw leak candidate hits: 10
+Client id field-name signal: no
+Username field-name signal: yes
+Auth field-name signal: yes
+Topic field-name signal: yes
+Decision: blocked-evidence-incomplete
+CONNECT gate: blocked
+SUBSCRIBE gate: blocked
+PUBLISH gate: blocked
+Device control gate: blocked
+Blockers: 4
 ```
 
 Blockers:
 
 ```text
-MQTT auth model is not known. Current status must remain unknown-read-only.
-MQTT topic model is not known. This blocks subscribe/publish/control work.
-MQTT client id format is not confirmed.
-MQTT username format is not confirmed.
-MQTT password/token format is not confirmed.
-CONNECT-only packet shape is not specified.
-CONNACK handling and immediate DISCONNECT behavior are not implemented.
+No client id field-name signal was found.
+Field-name signals are not enough for MQTT CONNECT.
+Raw client id, username, auth secret, and topic values remain unknown.
+SUBSCRIBE, PUBLISH, and device control remain blocked even if CONNECT-only is later approved.
 ```
 
-Safety result:
+### GREE-ALICE-17 local scope
 
 ```text
-MQTT CONNECT sent: no
-MQTT SUBSCRIBE sent: no
-MQTT PUBLISH sent: no
-Device control sent: no
-Raw credentials stored: no
-Production bridge changed: no
+Documentation-only safety specification for possible future MQTT CONNECT-only probe.
+No MQTT CONNECT implementation.
+No TCP/TLS/MQTT network connection.
+No MQTT SUBSCRIBE.
+No MQTT PUBLISH.
+No device control.
+No production bridge.
+No API/Telegram/runtime/deployment/migration changes.
+No third-party source names in docs.
 ```
-
-### GREE-ALICE-11 findings
-
-```text
-Offline MQTT CONNECT input contract: implemented
-Contract status: draft-connect-still-blocked
-Inputs: 12
-Required future inputs: 3
-Secret inputs: 4
-Blockers: 7
-```
-
-Reserved future environment variables:
-
-```text
-GREE_ALICE_MQTT_HOST
-GREE_ALICE_MQTT_PORT
-GREE_ALICE_MQTT_CLIENT_ID
-GREE_ALICE_MQTT_USERNAME
-GREE_ALICE_MQTT_PASSWORD
-GREE_ALICE_MQTT_TOKEN
-GREE_ALICE_MQTT_AUTH_MODE
-GREE_ALICE_MQTT_KEEP_ALIVE_SECONDS
-GREE_ALICE_MQTT_CONNECT_TIMEOUT_SECONDS
-GREE_ALICE_MQTT_DISCONNECT_AFTER_CONNACK
-GREE_ALICE_MQTT_ALLOW_SUBSCRIBE
-GREE_ALICE_MQTT_ALLOW_PUBLISH
-```
-
-Safety result:
-
-```text
-MQTT CONNECT implementation included: no
-MQTT CONNECT sent: no
-MQTT SUBSCRIBE sent: no
-MQTT PUBLISH sent: no
-Device control sent: no
-Raw credentials stored: no
-```
-
-### GREE-ALICE-12 findings
-
-```text
-Offline MQTT CONNECT input validation scaffold: implemented
-Validation status with no env vars: blocked-fail-closed
-Inputs checked: 12
-Provided inputs: 0
-Missing required inputs: 3
-Invalid inputs: 3
-Unsafe inputs present: 0
-Violations: 6
-```
-
-Missing required future inputs:
-
-```text
-GREE_ALICE_MQTT_CLIENT_ID
-GREE_ALICE_MQTT_USERNAME
-GREE_ALICE_MQTT_AUTH_MODE
-```
-
-Safety result:
-
-```text
-MQTT CONNECT implementation included: no
-MQTT CONNECT sent: no
-MQTT SUBSCRIBE sent: no
-MQTT PUBLISH sent: no
-Device control sent: no
-Raw credentials stored: no
-No TCP/TLS/MQTT network connection opened
-```
-
-### GREE-ALICE-13 findings
-
-New PCAPdroid export captured real Gree+ control actions:
-
-```text
-Action sequence: off/on and setpoint 24 -> 23 -> 24
-App: GREE+
-Package: com.gree.greeplus
-Capture file: PCAPdroid_08_июл._15_58_15.csv
-Capture rows: 59
-Capture window: 2026-07-08T15:57:32.463+05:00 -> 2026-07-08T15:58:07.261+05:00
-```
-
-Observed during control action window:
-
-```text
-MQTT/TLS control candidate observed: yes
-REST discovery traffic observed: yes
-UDP 7000 LAN activity observed: yes
-Internal vocabulary items: 14
-MQTT auth/topic status: unknown
-```
-
-Internal vocabulary candidates kept for future mapping:
-
-```text
-Pow
-Mod
-SetTem
-TemUn
-WdSpd
-SwUpDn
-SwingLfRig
-Quiet
-Tur
-Lig
-t=status
-t=cmd
-opt
-p
-```
-
-Safety result:
-
-```text
-MQTT CONNECT implementation included: no
-MQTT CONNECT sent: no
-MQTT SUBSCRIBE sent: no
-MQTT PUBLISH sent: no
-Device control sent: no
-Private capture committed: no
-```
-
-The CSV itself is private diagnostic material and must not be committed.
 
 ### Important decisions
 
@@ -352,7 +139,6 @@ Control commands are still out of scope until live-status/control channel auth/t
 MQTT investigation must remain read-only until the protocol, auth model, topics, and payload safety are understood.
 Do not start MQTT CONNECT/SUBSCRIBE/PUBLISH/control work without an explicit safety stage.
 Future MQTT CONNECT implementation is blocked until client id/auth inputs are known and guard rails are documented.
-Future MQTT CONNECT input validation must fail closed and must not open a MQTT connection.
 Internal vocabulary candidates are not proof of Gree+ Cloud MQTT auth, topic, QoS, or payload envelope.
 Do not mention third-party protocol sources in GREE-ALICE project docs unless explicitly requested later.
 ```
@@ -362,46 +148,40 @@ Do not mention third-party protocol sources in GREE-ALICE project docs unless ex
 ```text
 tools/AssistantEngineer.Tools.GreeCloudProbe/Program.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/README.md
-tools/AssistantEngineer.Tools.GreeCloudProbe/LiveStatusProbeCommand.cs
-tools/AssistantEngineer.Tools.GreeCloudProbe/MqttChannelProbeCommand.cs
-tools/AssistantEngineer.Tools.GreeCloudProbe/MqttModelDraftCommand.cs
-tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectSafetyReviewCommand.cs
-tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectInputContractCommand.cs
-tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectInputValidationCommand.cs
-tools/AssistantEngineer.Tools.GreeCloudProbe/ControlActionEvidenceCommand.cs
-docs/integrations/gree-alice/live-control-channel-investigation.md
-docs/integrations/gree-alice/mqtt-channel-handshake.md
-docs/integrations/gree-alice/mqtt-auth-topic-model.md
-docs/integrations/gree-alice/mqtt-connect-safety-review.md
-docs/integrations/gree-alice/mqtt-connect-input-contract.md
-docs/integrations/gree-alice/mqtt-connect-input-validation.md
-docs/integrations/gree-alice/control-action-capture-evidence.md
+tools/AssistantEngineer.Tools.GreeCloudProbe/MqttEvidenceInventoryCommand.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/MqttEvidenceGateDecisionCommand.cs
+docs/integrations/gree-alice/mqtt-auth-topic-evidence-plan.md
+docs/integrations/gree-alice/mqtt-evidence-inventory.md
+docs/integrations/gree-alice/mqtt-evidence-gate-decision.md
+docs/integrations/gree-alice/mqtt-connect-only-safety-specification.md
 PROJECT_STATE.md
 ```
 
 ### Next step
 
-GREE-ALICE-14 — MQTT auth/topic evidence acquisition plan.
+Validate and commit GREE-ALICE-17 docs-only stage.
 
-Planned scope:
+Recommended validation:
 
 ```text
-- define safe ways to obtain MQTT client id/auth/topic evidence without sending commands;
-- keep the plan based on our own capture and local evidence only;
-- keep third-party source names out of project docs;
-- document acceptable evidence sources: masked app traffic summaries, local artifacts, decompiled string inventory if done later, manual user-provided non-secret observations;
-- document forbidden evidence handling: raw credentials, raw tokens, raw device keys, raw MACs, private PCAP/CSV commits;
-- define whether CONNECT-only can remain blocked or move to a future explicit safety stage;
-- no MQTT CONNECT implementation yet;
-- no TCP/TLS/MQTT network connection;
-- no MQTT SUBSCRIBE;
-- no MQTT PUBLISH;
-- no wildcard topics;
-- no device control payloads;
-- no production bridge;
-- no private capture files committed;
-- keep all outputs masked and local under artifacts/.
+git diff --check
+dotnet build .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj --no-restore
+dotnet test .\AssistantEngineer.sln --no-build
 ```
+
+Recommended commit:
+
+```text
+GREE-ALICE-17 Add MQTT CONNECT-only safety specification
+```
+
+After GREE-ALICE-17 is pushed, the next possible stage is:
+
+```text
+GREE-ALICE-18 — CONNECT-only input contract tests
+```
+
+GREE-ALICE-18 should add tests and validation only. It should still not implement live MQTT CONNECT.
 <!-- GREE-ALICE-STATE:END -->
 
 

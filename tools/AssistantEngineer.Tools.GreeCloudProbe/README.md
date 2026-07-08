@@ -440,3 +440,13 @@ Details:
 ```text
 docs/integrations/gree-alice/mqtt-evidence-gate-decision.md
 ```
+
+## MQTT CONNECT-only safety specification
+
+`GREE-ALICE-17` defines the safety contract for a possible future MQTT `CONNECT`-only probe.
+
+```text
+docs/integrations/gree-alice/mqtt-connect-only-safety-specification.md
+```
+
+This is documentation-only. It does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
