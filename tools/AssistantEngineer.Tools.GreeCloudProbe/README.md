@@ -338,3 +338,21 @@ Details:
 ```text
 docs/integrations/gree-alice/mqtt-connect-safety-review.md
 ```
+
+## Offline MQTT CONNECT input contract
+
+`GREE-ALICE-11` defines the input contract for a future MQTT `CONNECT`-only test.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --draft-mqtt-connect-input-contract
+```
+
+This is offline only. It does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-connect-input-contract.md
+```

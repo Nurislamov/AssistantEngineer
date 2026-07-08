@@ -97,3 +97,13 @@ GREE-ALICE-11 — MQTT CONNECT input contract
 ```
 
 This should define the exact environment variables and masking rules for a later connection-only test, without implementing the connection itself.
+
+## GREE-ALICE-11 follow-up
+
+After the CONNECT-only safety review, the next safe step is:
+
+```text
+GREE-ALICE-11 — MQTT CONNECT input contract
+```
+
+This stage defines future environment variables, validation rules, masking rules, and artifact shape only. It must not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
