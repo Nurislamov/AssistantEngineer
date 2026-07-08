@@ -50,6 +50,9 @@ internal static class Program
 
             if (args.Any(static arg => arg.Equals("--validate-mqtt-connect-inputs", StringComparison.OrdinalIgnoreCase)))
                 return MqttConnectInputValidationCommand.Run(args);
+
+            if (args.Any(static arg => arg.Equals("--summarize-control-action-evidence", StringComparison.OrdinalIgnoreCase)))
+                return ControlActionEvidenceCommand.Run(args);
             if (args.Any(static arg => arg.Equals("--summarize-capture", StringComparison.OrdinalIgnoreCase)))
                 return CaptureSummaryCommand.Run(args);
 
@@ -116,6 +119,9 @@ internal static class Program
         Console.WriteLine("  --review-mqtt-connect-safety");
         Console.WriteLine("  --draft-mqtt-connect-input-contract");
         Console.WriteLine("  --validate-mqtt-connect-inputs");
+        Console.WriteLine("  --summarize-control-action-evidence");
+        Console.WriteLine("  --control-capture-csv <path>");
+        Console.WriteLine("  --action-sequence <text>");
         Console.WriteLine("  --mqtt-model-report <path>");
         Console.WriteLine("  --mqtt-report <path>");
         Console.WriteLine("  --mqtt-host <host>");

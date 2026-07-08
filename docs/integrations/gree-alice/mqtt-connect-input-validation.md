@@ -118,3 +118,13 @@ GREE-ALICE-13 — MQTT CONNECT evidence plan
 ```
 
 That stage should define how to obtain or infer the real client id/auth fields safely before any live MQTT `CONNECT` implementation.
+
+## GREE-ALICE-13 follow-up
+
+After the input validation scaffold, the next safe step is:
+
+```text
+GREE-ALICE-13 — Control action capture evidence
+```
+
+This stage documents the new control-action capture in masked form. It must not mention third-party source names and must not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.

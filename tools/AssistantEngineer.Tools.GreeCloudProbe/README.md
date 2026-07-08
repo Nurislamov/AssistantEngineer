@@ -374,3 +374,23 @@ Details:
 ```text
 docs/integrations/gree-alice/mqtt-connect-input-validation.md
 ```
+
+## Offline control action evidence summary
+
+`GREE-ALICE-13` summarizes a private Gree+ control-action capture in masked form.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --summarize-control-action-evidence `
+  --control-capture-csv "$env:USERPROFILE\Downloads\PCAPdroid_08_июл._15_58_15.csv" `
+  --action-sequence "off/on and setpoint 24 -> 23 -> 24"
+```
+
+This is offline only. It does not mention third-party source names, and it does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/control-action-capture-evidence.md
+```
