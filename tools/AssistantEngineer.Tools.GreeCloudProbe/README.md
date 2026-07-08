@@ -278,3 +278,27 @@ docs/integrations/gree-alice/live-control-channel-investigation.md
 ```
 
 The capture CSV/PCAP itself is private diagnostic material and must not be committed.
+
+## Read-only MQTT channel handshake probe
+
+`GREE-ALICE-08` adds a transport-only probe for the current MQTT/TLS channel candidate:
+
+```text
+mqtt-hk.gree.com:1994
+```
+
+Safe run:
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --probe-mqtt-channel
+```
+
+This checks DNS, TCP, and TLS/SNI only. It does not send MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-channel-handshake.md
+```

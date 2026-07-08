@@ -105,3 +105,13 @@ Initial scope:
 - do not subscribe/publish to unknown topics until topic/auth model is known;
 - keep reports masked and local under artifacts/.
 ```
+
+## GREE-ALICE-08 implementation note
+
+The next safe implementation step is a transport-only MQTT channel probe for:
+
+```text
+mqtt-hk.gree.com:1994
+```
+
+The probe checks only DNS, TCP, and TLS/SNI. It does not send MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or any device command.
