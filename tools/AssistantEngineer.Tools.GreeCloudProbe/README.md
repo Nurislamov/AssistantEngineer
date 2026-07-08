@@ -320,3 +320,21 @@ Details:
 ```text
 docs/integrations/gree-alice/mqtt-auth-topic-model.md
 ```
+
+## Offline MQTT CONNECT-only safety review
+
+`GREE-ALICE-10` reviews whether a future MQTT `CONNECT`-only test is justified.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --review-mqtt-connect-safety
+```
+
+This is offline only. It does not send MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-connect-safety-review.md
+```

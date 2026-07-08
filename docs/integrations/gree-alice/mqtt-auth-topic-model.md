@@ -98,3 +98,13 @@ For cloud discovery it prefers reports with discovered devices or successful clo
 For the MQTT channel probe it prefers reports with successful TLS or TCP transport.
 
 This avoids accidentally selecting a newer `configuration-only` smoke report that contains no devices.
+
+## GREE-ALICE-10 follow-up
+
+After the offline auth/topic model draft, the next safe step is:
+
+```text
+GREE-ALICE-10 — MQTT CONNECT-only safety review
+```
+
+This review remains offline and must not send MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.

@@ -41,6 +41,9 @@ internal static class Program
 
             if (args.Any(static arg => arg.Equals("--draft-mqtt-model", StringComparison.OrdinalIgnoreCase)))
                 return MqttModelDraftCommand.Run(args);
+
+            if (args.Any(static arg => arg.Equals("--review-mqtt-connect-safety", StringComparison.OrdinalIgnoreCase)))
+                return MqttConnectSafetyReviewCommand.Run(args);
             if (args.Any(static arg => arg.Equals("--summarize-capture", StringComparison.OrdinalIgnoreCase)))
                 return CaptureSummaryCommand.Run(args);
 
@@ -104,6 +107,8 @@ internal static class Program
         Console.WriteLine("  --probe-live-status");
         Console.WriteLine("  --probe-mqtt-channel");
         Console.WriteLine("  --draft-mqtt-model");
+        Console.WriteLine("  --review-mqtt-connect-safety");
+        Console.WriteLine("  --mqtt-model-report <path>");
         Console.WriteLine("  --mqtt-report <path>");
         Console.WriteLine("  --mqtt-host <host>");
         Console.WriteLine("  --mqtt-port <number>");
