@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-22 — CLOSED / pushed.
+GREE-ALICE-23 — CLOSED / full validation PASS / awaiting push.
 
-Latest pushed commit:
+Latest pushed commit before GREE-ALICE-23:
 
 ```text
-f3c0d1a0 GREE-ALICE-22 Add MQTT CONNECT readiness gate
+21f44f15 GREE-ALICE-22a Fix PROJECT_STATE checkpoint encoding
 ```
 
 Current local stage prepared for validation:
 
 ```text
-None. GREE-ALICE-22 is closed and pushed.
+GREE-ALICE-23 Add CONNECT-only human safety review checklist
 ```
 
 ### Completed stages
@@ -45,6 +45,7 @@ GREE-ALICE-19 — CLOSED / pushed — CONNECT-only dry-run command contract
 GREE-ALICE-20 — CLOSED / pushed — CONNECT-only dry-run guard tests
 GREE-ALICE-21 — CLOSED / pushed — CONNECT-only dry-run operator guide
 GREE-ALICE-22 — CLOSED / pushed — MQTT CONNECT readiness gate
+GREE-ALICE-23 — CLOSED / full validation PASS — CONNECT-only human safety review checklist
 ```
 
 ### Validation status
@@ -102,6 +103,8 @@ tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectReadinessGateCommand.cs
 docs/integrations/gree-alice/mqtt-connect-readiness-gate.md
 docs/integrations/gree-alice/mqtt-connect-dry-run-operator-guide.md
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectReadinessGateSafetyTests.cs
+docs/integrations/gree-alice/mqtt-connect-human-safety-review-checklist.md
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectHumanSafetyReviewChecklistTests.cs
 PROJECT_STATE.md
 ```
 
@@ -114,10 +117,10 @@ None for GREE-ALICE-22.
 ### Next step
 
 ```text
-GREE-ALICE-23 — CONNECT-only human safety review checklist
+GREE-ALICE-24 — CONNECT-only safety review decision record
 ```
 
-GREE-ALICE-23 should define a human safety review checklist only. It should still not implement live MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, API integration, Telegram integration, runtime config, deployment, or migrations.
+GREE-ALICE-24 should record a CONNECT-only safety review decision only. It should still not implement live MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, API integration, Telegram integration, runtime config, deployment, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 
@@ -268,6 +271,8 @@ tests/AssistantEngineer.Tests/EquipmentDiagnostics/MultiSourceDiagnosticReferenc
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectInputContractSafetyTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectDryRunContractSafetyTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/MqttConnectReadinessGateSafetyTests.cs
+docs/integrations/gree-alice/mqtt-connect-human-safety-review-checklist.md
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectHumanSafetyReviewChecklistTests.cs
 PROJECT_STATE.md
 ```
 
