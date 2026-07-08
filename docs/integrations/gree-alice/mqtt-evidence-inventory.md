@@ -103,3 +103,13 @@ Possible scope:
 - decide if CONNECT remains blocked;
 - do not add network code unless a separate explicit safety stage is approved.
 ```
+
+## GREE-ALICE-16 follow-up
+
+After the masked inventory, the next safe step is:
+
+```text
+GREE-ALICE-16 — MQTT evidence gate decision
+```
+
+This stage interprets masked field-name inventory and keeps MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, and device control blocked unless a separate explicit safety stage is approved.

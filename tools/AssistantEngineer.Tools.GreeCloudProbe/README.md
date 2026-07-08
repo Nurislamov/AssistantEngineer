@@ -422,3 +422,21 @@ Details:
 ```text
 docs/integrations/gree-alice/mqtt-evidence-inventory.md
 ```
+
+## MQTT evidence gate decision
+
+`GREE-ALICE-16` interprets the latest masked evidence inventory and keeps MQTT `CONNECT` blocked unless required non-secret evidence exists.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --decide-mqtt-evidence-gate
+```
+
+This is offline only. It does not print raw values and does not implement MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-evidence-gate-decision.md
+```
