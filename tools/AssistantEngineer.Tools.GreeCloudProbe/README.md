@@ -1,4 +1,4 @@
-﻿# AssistantEngineer.Tools.GreeCloudProbe
+# AssistantEngineer.Tools.GreeCloudProbe
 
 Console tool for the GREE-ALICE cloud probe.
 
@@ -301,4 +301,22 @@ Details:
 
 ```text
 docs/integrations/gree-alice/mqtt-channel-handshake.md
+```
+
+## Offline MQTT auth/topic model draft
+
+`GREE-ALICE-09` drafts the MQTT authentication and topic model from local masked artifacts.
+
+```powershell
+dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
+  --repo-root "D:\Project\AssistantEngineer" `
+  --draft-mqtt-model
+```
+
+This is offline only. It does not send MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
+
+Details:
+
+```text
+docs/integrations/gree-alice/mqtt-auth-topic-model.md
 ```

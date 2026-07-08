@@ -1,4 +1,4 @@
-﻿# GREE-ALICE MQTT channel handshake probe
+# GREE-ALICE MQTT channel handshake probe
 
 ## Stage
 
@@ -116,3 +116,13 @@ GREE-ALICE-09 вЂ” MQTT authentication/topic model discovery
 ```
 
 Only start it after `GREE-ALICE-08` proves whether `mqtt-hk.gree.com:1994` is reachable from the intended environment.
+
+## GREE-ALICE-09 follow-up
+
+After transport validation, the next safe step is an offline model draft:
+
+```text
+GREE-ALICE-09 — MQTT authentication/topic model discovery
+```
+
+This draft uses local masked artifacts only and does not send MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or device commands.
