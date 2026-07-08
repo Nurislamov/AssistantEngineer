@@ -104,7 +104,7 @@ GREE_ALICE_MASK_SECRETS
 
 `GREE-ALICE-03` adds real Gree+ Cloud login and device discovery to the probe tool.
 
-The next stage should use the probe output to define the first internal device model for split and VRF candidates.
+The next stage should investigate the read-only MQTT/TLS channel handshake without publishing commands.
 
 ## Validated project region mapping
 
@@ -260,3 +260,21 @@ The detailed model contract is documented in:
 ```text
 docs/integrations/gree-alice/device-state-model.md
 ```
+
+## Live/control channel investigation
+
+`GREE-ALICE-07` records the current live/control evidence:
+
+```text
+hkgrih.gree.com:443      HTTPS REST discovery path
+mqtt-hk.gree.com:1994    MQTT/TLS live channel candidate
+255.255.255.255:7000     local UDP discovery fallback
+```
+
+Details:
+
+```text
+docs/integrations/gree-alice/live-control-channel-investigation.md
+```
+
+The capture CSV/PCAP itself is private diagnostic material and must not be committed.

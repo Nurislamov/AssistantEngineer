@@ -1,119 +1,107 @@
-# GREE-ALICE-07 Live/control channel investigation
+﻿# GREE-ALICE live/control channel investigation
 
-## Current evidence
+## Stage
 
-GREE-ALICE-03 confirmed that the Gree+ Cloud account can log in and discover one device through the East South Asia server:
+`GREE-ALICE-07` records the current evidence for the actual Gree+ live/control channel.
+
+This stage is read-only. It does not send control commands, does not publish MQTT messages, does not change devices, and does not wire anything into production API, Telegram, deployment, runtime database, or migrations.
+
+## Current confirmed baseline
+
+Cloud discovery is confirmed through the HTTPS REST path:
 
 ```text
-Server: https://hkgrih.gree.com
+Region: Ouzbekistan / Ouzbékistan
+REST server: https://hkgrih.gree.com
+Login endpoint: /App/UserLoginV2
+Homes endpoint: /App/GetHomes
+Devices endpoint: /App/GetDevsInRoomsOfHomeV2
 Homes: 1
 Rooms: 1
 Devices: 1
-Device: AC3167
-Version: V3.4.M
-Device key: provided
 ```
 
-GREE-ALICE-05 added safe raw cloud metadata snapshots.
+The first observed device remains a cloud-visible room climate candidate. It has a masked cloud key and a Wi-Fi module signature, but it must not be treated as proven VRF control until parent/child or gateway fields are confirmed.
 
-GREE-ALICE-06 added a read-only live-status probe and tested simple `/App/Get...` endpoint guesses. All 32 attempted live-status endpoint candidates returned HTTP 404.
+## GREE-ALICE-06 REST status result
 
-## Conclusion
+`GREE-ALICE-06` tried read-only candidate `Get...` endpoints for live state.
 
-`GetDevsInRoomsOfHomeV2` is a metadata discovery endpoint. It does not expose live status fields such as:
+Result:
 
 ```text
-Pow
-Mod
-SetTem
-WdSpd
-SwUpDn
-SwLfRig
-TemSen
+Candidate REST endpoints attempted: 32
+Result: all attempted /App/Get... live-status endpoints returned HTTP 404
+Live capability fields found: none
+Missing fields: Pow / Mod / SetTem / WdSpd / temperature / fan / swing
 ```
 
-The actual Gree+ live/control channel is still unknown. It may be another HTTPS endpoint, WebSocket, MQTT, or another app-specific IoT channel.
-
-## Safety rules
+Conclusion:
 
 ```text
-- Do not store Gree+ credentials in files or Git.
-- Do not commit artifacts under artifacts/gree-alice/.
-- Do not run control commands from AssistantEngineer yet.
-- Do not share raw captures containing tokens/passwords.
-- Use only accounts/devices that we own or are authorized to analyze.
-- Prefer host/path/protocol-level observations first.
+GetDevsInRoomsOfHomeV2 provides metadata only.
+Simple REST /App/GetDeviceStatus-style endpoints are not the live status/control channel on hkgrih.gree.com.
 ```
 
-## Capture summary workflow
+## Capture evidence
 
-GREE-ALICE-07 adds a local summarizer for exported capture text:
-
-```powershell
-dotnet run --project .\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj -- `
-  --repo-root "D:\Project\AssistantEngineer" `
-  --summarize-capture `
-  --capture-input "C:\path\to\gree-plus-capture-export.txt"
-```
-
-The command does not capture traffic. It only reads a user-provided export, masks sensitive values, and writes a summarized report to:
+A private GREE+ mobile app traffic export showed these relevant paths:
 
 ```text
-artifacts/gree-alice/channel-investigation/
+hkgrih.gree.com:443      HTTPS REST / cloud discovery path
+mqtt-hk.gree.com:1994    MQTT/TLS live channel candidate
+255.255.255.255:7000     local UDP discovery fallback
 ```
 
-The report extracts:
+The CSV / PCAP export itself is private diagnostic material and must not be committed.
+
+## Working conclusion
+
+The likely live/control path is not the simple HTTPS REST `Get...` family.
+
+The next technical target is the GREE+ cloud MQTT/TLS path:
 
 ```text
-- hosts
-- URL path shapes
-- ports
-- protocol hints
-- keyword hits
-- sanitized preview
+mqtt-hk.gree.com:1994
 ```
 
-## Recommended manual capture process
+At this point we should still treat it as a read-only investigation target until authentication, topics, payload shape, and safety boundaries are understood.
 
-Use a phone or emulator where the Gree+ app is installed.
+## Safety boundaries
 
-Start with a non-decrypting capture if possible:
+Allowed next actions:
 
 ```text
-1. Start capture.
-2. Open Gree+.
-3. Open AC3167 device screen.
-4. Wait until live status is visible in the app.
-5. Change nothing first; stop capture.
-6. Export text/CSV/HTTP summary if the capture app supports it.
-7. Run --summarize-capture.
+- document channel candidates;
+- parse sanitized capture summaries;
+- identify MQTT host/port/client metadata;
+- add read-only MQTT connection scaffolding only if no publish/control happens;
+- mask all credentials, tokens, keys, MAC-like values, SSID, barcode, latitude/longitude.
 ```
 
-Only after read-only status traffic is understood, do a separate controlled capture for one action:
+Not allowed in this stage:
 
 ```text
-1. Start capture.
-2. Open AC3167.
-3. Change target temperature by 1 degree once.
-4. Stop capture immediately.
-5. Export and summarize.
+- no MQTT publish;
+- no command endpoint calls;
+- no power/mode/setpoint changes;
+- no production bridge;
+- no Yandex Smart Home endpoint;
+- no persistent credential storage;
+- no committing capture CSV/PCAP artifacts.
 ```
 
-The second capture is for protocol discovery only. AssistantEngineer must not send commands until the protocol and safety boundaries are understood.
-
-## What to look for
-
-High-value observations:
+## Next stage proposal
 
 ```text
-- any host not already known as hkgrih.gree.com
-- wss:// or websocket hints
-- mqtt or ports 1883/8883
-- paths outside /App/GetHomes and /App/GetDevsInRoomsOfHomeV2
-- payload keys similar to Pow, Mod, SetTem, WdSpd, TemSen
-- device id / mac / hid routing fields after masking
+GREE-ALICE-08 — Read-only MQTT channel handshake investigation
 ```
 
-## Next implementation step
+Initial scope:
 
-After a sanitized capture summary identifies the actual host/path/protocol, add a targeted read-only probe for that channel.
+```text
+- define MQTT candidate configuration for hkgrih / mqtt-hk;
+- attempt only safe TCP/TLS/MQTT connection diagnostics if credentials are understood;
+- do not subscribe/publish to unknown topics until topic/auth model is known;
+- keep reports masked and local under artifacts/.
+```
