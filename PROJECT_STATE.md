@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-09 — CLOSED / pushed.
+GREE-ALICE-10 — CLOSED / pushed.
 
 Latest commit:
 
 ```text
-8290fc91 GREE-ALICE-09 Add offline MQTT auth topic model draft
+b386b61b GREE-ALICE-10 Add MQTT CONNECT safety review
 ```
 
 State checkpoint to commit next:
 
 ```text
-GREE-ALICE-09.STATE — Update project state after MQTT auth/topic model draft
+GREE-ALICE-10.STATE — Update project state after MQTT CONNECT safety review
 ```
 
 ### Completed stages
@@ -32,6 +32,7 @@ GREE-ALICE-06 — CLOSED / pushed — read-only live status probe
 GREE-ALICE-07 — CLOSED / pushed — live/control channel findings
 GREE-ALICE-08 — CLOSED / pushed — read-only MQTT channel probe
 GREE-ALICE-09 — CLOSED / pushed — offline MQTT auth/topic model draft
+GREE-ALICE-10 — CLOSED / pushed — MQTT CONNECT-only safety review
 ```
 
 ### Validation status
@@ -170,6 +171,44 @@ Payload encryption/signature shape
 Whether status is pushed only after subscription
 ```
 
+### GREE-ALICE-10 findings
+
+```text
+Offline MQTT CONNECT-only safety review: implemented
+Model report found: yes
+TLS authenticated: yes
+Device signals: 1
+Device key presence count: 1
+Masked MAC signal count: 1
+Auth model status: unknown-read-only
+Topic model status: unknown-read-only
+Decision: not-ready
+Blockers: 7
+```
+
+Blockers:
+
+```text
+MQTT auth model is not known. Current status must remain unknown-read-only.
+MQTT topic model is not known. This blocks subscribe/publish/control work.
+MQTT client id format is not confirmed.
+MQTT username format is not confirmed.
+MQTT password/token format is not confirmed.
+CONNECT-only packet shape is not specified.
+CONNACK handling and immediate DISCONNECT behavior are not implemented.
+```
+
+Safety result:
+
+```text
+MQTT CONNECT sent: no
+MQTT SUBSCRIBE sent: no
+MQTT PUBLISH sent: no
+Device control sent: no
+Raw credentials stored: no
+Production bridge changed: no
+```
+
 ### Important decisions
 
 ```text
@@ -181,6 +220,7 @@ Use masked reports only.
 Control commands are still out of scope until live-status/control channel auth/topic model is confirmed.
 MQTT investigation must remain read-only until the protocol, auth model, topics, and payload safety are understood.
 Do not start MQTT CONNECT/SUBSCRIBE/PUBLISH/control work without an explicit safety stage.
+Future MQTT CONNECT implementation is blocked until client id/auth inputs are known and guard rails are documented.
 ```
 
 ### Files changed recently
@@ -191,27 +231,33 @@ tools/AssistantEngineer.Tools.GreeCloudProbe/README.md
 tools/AssistantEngineer.Tools.GreeCloudProbe/LiveStatusProbeCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttChannelProbeCommand.cs
 tools/AssistantEngineer.Tools.GreeCloudProbe/MqttModelDraftCommand.cs
+tools/AssistantEngineer.Tools.GreeCloudProbe/MqttConnectSafetyReviewCommand.cs
 docs/integrations/gree-alice/live-control-channel-investigation.md
 docs/integrations/gree-alice/mqtt-channel-handshake.md
 docs/integrations/gree-alice/mqtt-auth-topic-model.md
+docs/integrations/gree-alice/mqtt-connect-safety-review.md
 PROJECT_STATE.md
 ```
 
 ### Next step
 
-GREE-ALICE-10 — MQTT CONNECT-only safety review.
+GREE-ALICE-11 — MQTT CONNECT input contract.
 
 Planned scope:
 
 ```text
-- review whether a connection-only MQTT test is justified;
+- define exact environment variables for a future connection-only test;
+- define required and optional inputs;
+- define masking rules for client id, username, token, device key, MAC-like identifiers, SSID, barcode, latitude, and longitude;
+- define output artifact shape;
+- define validation rules that block missing/unsafe inputs;
+- no MQTT CONNECT implementation yet;
 - no MQTT SUBSCRIBE;
 - no MQTT PUBLISH;
 - no wildcard topics;
 - no device control payloads;
 - no production bridge;
 - no persistent credential storage;
-- decide required credentials/client id inputs before any CONNECT attempt;
 - keep all outputs masked and local under artifacts/.
 ```
 <!-- GREE-ALICE-STATE:END -->
