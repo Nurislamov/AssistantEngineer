@@ -155,17 +155,23 @@ mqtt-connect-future-live-probe-boundary.md
 offline-bridge-path-decision.md
 yandex-smart-home-offline-endpoint-contract.md
 offline-fixture-model-boundary.md
+offline-bridge-project-skeleton.md
 ```
 
 Current safety position:
 
 ```text
 Chosen path: offline Yandex Smart Home bridge skeleton first
+Runtime mode: offline-fixture
+HTTP endpoint implementation: not implemented
+Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
 PUBLISH: blocked
 Device control: blocked
 Runtime integration: blocked
 Gree+ runtime control: blocked
+Deployment changes: none
+Migrations: none
 ```
 <!-- GREE-ALICE-DOC-INDEX:END -->

@@ -88,6 +88,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.Equ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.Tools.GreeCloudProbe", "tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj", "{029950E8-FD72-4235-9761-F546165B1B36}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integrations", "{95CF60EF-5A8F-866C-1324-B5EA7AAAC44D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GreeAliceBridge", "GreeAliceBridge", "{0CA33D48-59FD-B489-87E4-8A3740CEC755}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.GreeAliceBridge.Contracts", "src\Integrations\GreeAliceBridge\AssistantEngineer.GreeAliceBridge.Contracts\AssistantEngineer.GreeAliceBridge.Contracts.csproj", "{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssistantEngineer.GreeAliceBridge.Application", "src\Integrations\GreeAliceBridge\AssistantEngineer.GreeAliceBridge.Application\AssistantEngineer.GreeAliceBridge.Application.csproj", "{F410614E-C541-47FA-B411-34A486915067}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -422,6 +430,30 @@ Global
 		{029950E8-FD72-4235-9761-F546165B1B36}.Release|x64.Build.0 = Release|Any CPU
 		{029950E8-FD72-4235-9761-F546165B1B36}.Release|x86.ActiveCfg = Release|Any CPU
 		{029950E8-FD72-4235-9761-F546165B1B36}.Release|x86.Build.0 = Release|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Debug|x64.Build.0 = Debug|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Debug|x86.Build.0 = Debug|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Release|x64.ActiveCfg = Release|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Release|x64.Build.0 = Release|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Release|x86.ActiveCfg = Release|Any CPU
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A}.Release|x86.Build.0 = Release|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Debug|x64.Build.0 = Debug|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Debug|x86.Build.0 = Debug|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Release|x64.ActiveCfg = Release|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Release|x64.Build.0 = Release|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Release|x86.ActiveCfg = Release|Any CPU
+		{F410614E-C541-47FA-B411-34A486915067}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -458,5 +490,9 @@ Global
 		{DF28131E-763D-422D-B119-FD569234370B} = {85720D2F-E550-408E-88EB-4363784765AB}
 		{F349DEDD-3A65-42BC-80A0-D4C9CF242148} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 		{029950E8-FD72-4235-9761-F546165B1B36} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
+		{95CF60EF-5A8F-866C-1324-B5EA7AAAC44D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{0CA33D48-59FD-B489-87E4-8A3740CEC755} = {95CF60EF-5A8F-866C-1324-B5EA7AAAC44D}
+		{F443A9B1-DBC0-46BE-A7B6-5E1245CCAF6A} = {0CA33D48-59FD-B489-87E4-8A3740CEC755}
+		{F410614E-C541-47FA-B411-34A486915067} = {0CA33D48-59FD-B489-87E4-8A3740CEC755}
 	EndGlobalSection
 EndGlobal

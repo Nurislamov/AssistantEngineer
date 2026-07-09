@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-30 — APPLIED locally / validation pending.
+GREE-ALICE-31 — APPLIED locally / validation pending.
 
-Latest pushed commit before GREE-ALICE-30:
+Latest pushed GREE-ALICE commit before GREE-ALICE-31:
 
 ```text
-a0ba18de GREE-ALICE-26 Add offline review packet and fail-closed live gate policy
+0ad1f563 GREE-ALICE-30 Choose offline bridge skeleton path
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-30 Choose offline bridge skeleton path and define endpoint boundary
+GREE-ALICE-31 Add offline bridge project skeleton
 ```
 
 ### Completed stages
@@ -49,26 +49,28 @@ GREE-ALICE-23 — CLOSED / pushed — CONNECT-only human safety review checklist
 GREE-ALICE-24 — CLOSED / pushed — CONNECT-only safety review decision record
 GREE-ALICE-25 — CLOSED / pushed — CONNECT-only operator sign-off template
 GREE-ALICE-26 — CLOSED / pushed — offline review packet and fail-closed live gate policy
+GREE-ALICE-30 — CLOSED / pushed — choose offline bridge skeleton path
 ```
 
 ### Validation status
 
 ```text
-Latest full validation for GREE-ALICE-26:
+Latest full validation for GREE-ALICE-30:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5451/5451
+Tests: 5458/5458
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit a0ba18de
+master == origin/master after commit 0ad1f563
 ```
 
 ### Safety boundary
 
 ```text
 Workstream remains isolated in:
+src/Integrations/GreeAliceBridge
 tools/AssistantEngineer.Tools.GreeCloudProbe
 docs/integrations/gree-alice
 tests/AssistantEngineer.Tests/GreeAlice
@@ -83,51 +85,54 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-30 local scope
+### GREE-ALICE-31 local scope
 
 ```text
-Chooses Path B: offline Yandex Smart Home bridge skeleton first.
-Defines future endpoint contract skeleton.
-Defines offline fixture model boundary.
+Creates isolated GreeAliceBridge Contracts project.
+Creates isolated GreeAliceBridge Application project.
+Adds offline safety boundary constants.
+Adds dummy-only offline bridge service.
+Adds tests for fail-closed service behavior.
 Updates GREE-ALICE docs index.
-Adds guard tests for the bridge boundary.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
 Keeps PUBLISH blocked.
 Keeps device control blocked.
 Keeps Gree+ runtime control blocked.
 No HTTP endpoint implementation.
-No bridge runtime project creation yet.
 No MQTT CONNECT implementation.
 No DNS/TCP/TLS/MQTT network operation.
 No API/Telegram/runtime/deployment/migration changes.
 ```
 
-### Files changed by GREE-ALICE-30
+### Files changed by GREE-ALICE-31
 
 ```text
-docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/offline-bridge-path-decision.md
-docs/integrations/gree-alice/yandex-smart-home-offline-endpoint-contract.md
-docs/integrations/gree-alice/offline-fixture-model-boundary.md
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/**
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/**
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeProjectSkeletonTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
+tests/AssistantEngineer.Tests/AssistantEngineer.Tests.csproj
+docs/integrations/gree-alice/README.md
+docs/integrations/gree-alice/offline-bridge-project-skeleton.md
+AssistantEngineer.sln
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-30 validation.
+None for local GREE-ALICE-31 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-31 — offline bridge project skeleton
+GREE-ALICE-32 — map offline fixture service to Yandex Smart Home response DTOs
 ```
 
-GREE-ALICE-31 may create an isolated bridge project skeleton only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
+GREE-ALICE-32 may map the offline fixture service to Yandex Smart Home response DTOs only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 
