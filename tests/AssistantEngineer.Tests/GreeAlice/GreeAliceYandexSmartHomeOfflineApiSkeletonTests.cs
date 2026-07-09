@@ -93,6 +93,8 @@ public sealed class GreeAliceYandexSmartHomeOfflineApiSkeletonTests
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
         string json = await httpResponse.Content.ReadAsStringAsync();
         Assert.Contains("\"runtimeMode\":\"offline-fixture\"", json, StringComparison.Ordinal);
+        Assert.Contains("\"safetyDecision\"", json, StringComparison.Ordinal);
+        Assert.Contains("\"isAllowed\":true", json, StringComparison.Ordinal);
         Assert.Contains("\"liveMqttConnectEnabled\":false", json, StringComparison.Ordinal);
         Assert.Contains("\"mqttSubscribeEnabled\":false", json, StringComparison.Ordinal);
         Assert.Contains("\"mqttPublishEnabled\":false", json, StringComparison.Ordinal);

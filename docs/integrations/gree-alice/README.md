@@ -161,6 +161,7 @@ yandex-smart-home-offline-api-contract-hardening.md
 offline-account-device-registry-boundary.md
 gree-cloud-adapter-interface-boundary.md
 read-only-cloud-state-mapping-contract.md
+bridge-safety-middleware-and-kill-switches.md
 ```
 
 Current safety position:
@@ -184,6 +185,9 @@ Gree Cloud control adapter: dry-run fail-closed
 Read-only state mapping: offline masked fixture only
 State mapping mode: offline-masked-fixture
 Missing/unknown state fields: controlled mapping issues
+Bridge safety layer: offline safety decision service
+Control adapter kill switch: enabled
+Action safety: dry-run fail-closed only
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
