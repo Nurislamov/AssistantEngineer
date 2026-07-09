@@ -18,10 +18,13 @@ public sealed class GreeAliceYandexSmartHomeOfflineApiSkeletonTests
         YandexDevicesResponse? response = await client.GetFromJsonAsync<YandexDevicesResponse>("/v1.0/user/devices");
 
         Assert.NotNull(response);
-        YandexDeviceDto device = Assert.Single(response.Devices);
+        Assert.True(response.Devices.Count >= 3);
+        YandexDeviceDto device = Assert.Single(response.Devices, item => item.Id == "dummy-gree-ac-001");
         Assert.Equal("dummy-gree-ac-001", device.Id);
         Assert.Equal("offline-fixture", device.Source);
         Assert.Equal("offline-fixture", response.RuntimeMode);
+        Assert.Contains(response.Devices, item => item.Id == "yandex-dummy-vrf-child-living-001");
+        Assert.Contains(response.Devices, item => item.Id == "yandex-dummy-vrf-child-bedroom-001");
     }
 
     [Fact]

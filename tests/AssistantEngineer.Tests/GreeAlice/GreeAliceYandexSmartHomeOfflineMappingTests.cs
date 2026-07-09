@@ -12,7 +12,7 @@ public sealed class GreeAliceYandexSmartHomeOfflineMappingTests
     {
         IYandexSmartHomeOfflineService service = CreateService();
 
-        YandexDeviceDto device = Assert.Single(service.GetDevices().Devices);
+        YandexDeviceDto device = Assert.Single(service.GetDevices().Devices, item => item.Id == "dummy-gree-ac-001");
 
         Assert.Equal("dummy-gree-ac-001", device.Id);
         Assert.Equal("Demo Gree AC", device.Name);
@@ -23,7 +23,7 @@ public sealed class GreeAliceYandexSmartHomeOfflineMappingTests
     }
 
     [Fact]
-    public void DevicesResponseWithRegistryProviderStillReturnsOnlyDummySplitAc()
+    public void DevicesResponseWithRegistryProviderReturnsSplitAcAndExposedVrfChildren()
     {
         IYandexSmartHomeOfflineService service = new YandexSmartHomeOfflineService(
             new OfflineGreeAliceBridgeService(),
@@ -31,9 +31,12 @@ public sealed class GreeAliceYandexSmartHomeOfflineMappingTests
 
         YandexDevicesResponse response = service.GetDevices();
 
-        YandexDeviceDto device = Assert.Single(response.Devices);
+        Assert.True(response.Devices.Count >= 3);
+        YandexDeviceDto device = Assert.Single(response.Devices, item => item.Id == "dummy-gree-ac-001");
         Assert.Equal("dummy-gree-ac-001", device.Id);
         Assert.Equal("offline-fixture", device.Source);
+        Assert.Contains(response.Devices, item => item.Id == "yandex-dummy-vrf-child-living-001");
+        Assert.Contains(response.Devices, item => item.Id == "yandex-dummy-vrf-child-bedroom-001");
     }
 
     [Fact]

@@ -29,10 +29,12 @@ public sealed class GreeAliceGreeCloudAdapterBoundaryTests
 
         IReadOnlyList<GreeCloudDeviceDescriptor> devices = await adapter.DiscoverDevicesAsync();
 
-        Assert.Equal(3, devices.Count);
+        Assert.Equal(5, devices.Count);
         Assert.Contains(devices, device => device.DeviceId == "dummy-gree-ac-001" && device.Kind == GreeAliceDeviceKind.SplitAc);
         Assert.Contains(devices, device => device.DeviceId == "dummy-vrf-gateway-001" && device.Kind == GreeAliceDeviceKind.VrfGateway);
         Assert.Contains(devices, device => device.DeviceId == "dummy-vrf-child-001" && device.Kind == GreeAliceDeviceKind.VrfChildIndoorUnit);
+        Assert.Contains(devices, device => device.DeviceId == "dummy-vrf-child-living-001" && device.Kind == GreeAliceDeviceKind.VrfChildIndoorUnit);
+        Assert.Contains(devices, device => device.DeviceId == "dummy-vrf-child-bedroom-001" && device.Kind == GreeAliceDeviceKind.VrfChildIndoorUnit);
         Assert.All(devices, device =>
         {
             Assert.StartsWith("dummy-", device.DeviceId, StringComparison.Ordinal);

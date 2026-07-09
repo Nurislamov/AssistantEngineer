@@ -1,4 +1,5 @@
 using AssistantEngineer.GreeAliceBridge.Contracts;
+using AssistantEngineer.GreeAliceBridge.Contracts.Registry.Vrf;
 
 namespace AssistantEngineer.GreeAliceBridge.Application;
 
@@ -15,6 +16,20 @@ public sealed class OfflineGreeAliceBridgeService : IGreeAliceOfflineBridgeServi
         ["on_off", "mode", "temperature", "fan_speed"],
         GreeAliceBridgeSafetyBoundary.RuntimeMode);
 
+    private static readonly IReadOnlyList<GreeAliceDevice> VrfChildDevices = GreeAliceVrfSystemTopology
+        .OfflineFixture
+        .ChildUnits
+        .Where(GreeAliceVrfYandexExposurePolicy.ShouldExpose)
+        .Select(childUnit => new GreeAliceDevice(
+            childUnit.StableYandexDeviceId,
+            childUnit.DisplayName,
+            childUnit.RoomName,
+            "devices.types.thermostat.ac",
+            Online: true,
+            ["on_off", "mode", "temperature", "fan_speed"],
+            GreeAliceBridgeSafetyBoundary.RuntimeMode))
+        .ToArray();
+
     private static readonly GreeAliceDeviceState DummyState = new(
         DummyDeviceId,
         On: true,
@@ -27,7 +42,7 @@ public sealed class OfflineGreeAliceBridgeService : IGreeAliceOfflineBridgeServi
 
     public IReadOnlyList<GreeAliceDevice> GetDevices()
     {
-        return [DummyDevice];
+        return [DummyDevice, .. VrfChildDevices];
     }
 
     public GreeAliceDeviceState QueryDeviceState(string deviceId)
@@ -35,6 +50,21 @@ public sealed class OfflineGreeAliceBridgeService : IGreeAliceOfflineBridgeServi
         if (string.Equals(deviceId, DummyDeviceId, StringComparison.Ordinal))
         {
             return DummyState;
+        }
+
+        if (GreeAliceVrfSystemTopology.OfflineFixture.ChildUnits.Any(
+            childUnit => string.Equals(childUnit.StableYandexDeviceId, deviceId, StringComparison.Ordinal)
+                && GreeAliceVrfYandexExposurePolicy.ShouldExpose(childUnit)))
+        {
+            return new GreeAliceDeviceState(
+                deviceId,
+                On: true,
+                "cool",
+                TargetTemperatureC: 24,
+                "auto",
+                Online: true,
+                GreeAliceBridgeSafetyBoundary.RuntimeMode,
+                "offline-fixture");
         }
 
         return new GreeAliceDeviceState(

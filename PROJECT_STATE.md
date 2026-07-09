@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-45 — APPLIED locally / validation pending.
+GREE-ALICE-46 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-45:
+Latest pushed GREE-ALICE commit before GREE-ALICE-46:
 
 ```text
-61fa58ff GREE-ALICE-44 Add single-device control pilot skeleton
+82e552e0 GREE-ALICE-45 Add minimal production pilot boundary
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-45 Add minimal production pilot boundary
+GREE-ALICE-46 Add VRF GMV child unit support
 ```
 
 ### Completed stages
@@ -63,20 +63,21 @@ GREE-ALICE-41 — CLOSED / pushed — live read-only adapter proposal
 GREE-ALICE-42 — CLOSED / pushed — live read-only pilot gate
 GREE-ALICE-43 — CLOSED / pushed — control safety approval package
 GREE-ALICE-44 — CLOSED / pushed — single-device control pilot skeleton
+GREE-ALICE-45 — CLOSED / pushed — minimal production pilot boundary
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-44:
+Latest validation for GREE-ALICE-45:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5582/5582
+Tests: 5593/5593
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit 61fa58ff
+master == origin/master after commit 82e552e0
 ```
 
 ### Safety boundary
@@ -98,13 +99,14 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-45 local scope
+### GREE-ALICE-46 local scope
 
 ```text
-Adds minimal production pilot boundary documentation.
-Adds minimal production pilot manual checklist and decision record template.
-Adds minimal production pilot contracts and offline readiness evaluator.
-Adds static tests for NOT APPROVED production pilot defaults, modes, dummy/template scope, readiness evaluator, docs, and bridge isolation.
+Adds offline VRF/GMV gateway and child-unit contracts.
+Adds dummy VRF/GMV gateway and room-bound child units.
+Adds stable Yandex device IDs for exposed child units.
+Extends offline /devices, query, and action behavior for exposed VRF child units.
+Adds VRF/GMV child-unit support documentation and tests.
 Updates GREE-ALICE docs index.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
@@ -116,6 +118,8 @@ Command sending remains disabled.
 Minimal production pilot remains not approved.
 Production deployment wiring remains disabled.
 Read-only-first remains required before any future production pilot.
+VRF/GMV gateway remains internal by default.
+VRF/GMV child-unit behavior remains offline fixture / fail-closed.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
 Keeps PUBLISH blocked.
@@ -130,35 +134,35 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-45
+### Files changed by GREE-ALICE-46
 
 ```text
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/Pilot/*
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/Pilot/*
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceMinimalProductionPilotBoundaryTests.cs
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/Registry/Vrf/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/Registry/OfflineGreeAliceRegistryProvider.cs
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/OfflineGreeAliceBridgeService.cs
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/YandexSmartHome/YandexSmartHomeOfflineService.cs
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/GreeCloud/Mapping/OfflineGreeCloudMaskedStateFixtureProvider.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceVrfGmvChildUnitSupportTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/minimal-production-pilot-boundary.md
-docs/integrations/gree-alice/minimal-production-pilot-checklist.md
-docs/integrations/gree-alice/minimal-production-pilot-decision-record-template.md
+docs/integrations/gree-alice/vrf-gmv-child-unit-support.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-45 validation.
+None for local GREE-ALICE-46 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-46 — add VRF/GMV child-unit support
+GREE-ALICE-47 — add device registry import/admin boundary
 ```
 
-GREE-ALICE-46 may add VRF/GMV child-unit support inside the offline safety boundary. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
+GREE-ALICE-47 may add device registry import/admin boundary only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
 <!-- GREE-ALICE-STATE:END -->
 
 

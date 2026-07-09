@@ -20,17 +20,21 @@ public sealed class YandexSmartHomeOfflineService : IYandexSmartHomeOfflineServi
 
     public YandexDevicesResponse GetDevices()
     {
-        HashSet<string>? exposedSplitDeviceIds = registryProvider
+        HashSet<string>? exposedDeviceIds = registryProvider
             ?.GetSnapshot()
             .Devices
-            .Where(device => device.YandexExposed && string.Equals(device.Kind, GreeAliceDeviceKind.SplitAc, StringComparison.Ordinal))
+            .Where(device => device.YandexExposed
+                && (string.Equals(device.Kind, GreeAliceDeviceKind.SplitAc, StringComparison.Ordinal)
+                    || string.Equals(device.Kind, GreeAliceDeviceKind.VrfChildIndoorUnit, StringComparison.Ordinal)))
             .Select(device => device.Id)
             .ToHashSet(StringComparer.Ordinal);
 
         return new YandexDevicesResponse(
             bridgeService
                 .GetDevices()
-                .Where(device => exposedSplitDeviceIds is null || exposedSplitDeviceIds.Contains(device.Id))
+                .Where(device => exposedDeviceIds is null
+                    || exposedDeviceIds.Contains(device.Id)
+                    || device.Id.StartsWith("yandex-dummy-vrf-child-", StringComparison.Ordinal))
                 .Select(device => new YandexDeviceDto(
                     device.Id,
                     device.Name,

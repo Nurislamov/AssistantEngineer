@@ -33,9 +33,11 @@ public sealed class GreeAliceOfflineRegistryBoundaryTests
         Assert.Equal("dummy-home-001", home.Id);
         Assert.Equal("dummy-account-001", home.AccountRef);
 
-        GreeAliceRoom room = Assert.Single(snapshot.Rooms);
+        GreeAliceRoom room = Assert.Single(snapshot.Rooms, item => item.Id == "dummy-room-001");
         Assert.Equal("dummy-room-001", room.Id);
         Assert.Equal("dummy-home-001", room.HomeRef);
+        Assert.Contains(snapshot.Rooms, item => item.Id == "dummy-room-living-001" && item.Name == "Гостиная");
+        Assert.Contains(snapshot.Rooms, item => item.Id == "dummy-room-bedroom-001" && item.Name == "Спальня");
     }
 
     [Fact]
@@ -65,13 +67,12 @@ public sealed class GreeAliceOfflineRegistryBoundaryTests
     {
         GreeAliceRegistrySnapshot snapshot = CreateSnapshot();
 
-        GreeAliceRegisteredDevice child = Assert.Single(
-            snapshot.Devices,
-            device => device.Kind == GreeAliceDeviceKind.VrfChildIndoorUnit);
-
-        Assert.Contains(
-            snapshot.Devices,
-            device => device.Id == child.ParentGatewayRef && device.Kind == GreeAliceDeviceKind.VrfGateway);
+        foreach (GreeAliceRegisteredDevice child in snapshot.Devices.Where(device => device.Kind == GreeAliceDeviceKind.VrfChildIndoorUnit))
+        {
+            Assert.Contains(
+                snapshot.Devices,
+                device => device.Id == child.ParentGatewayRef && device.Kind == GreeAliceDeviceKind.VrfGateway);
+        }
     }
 
     [Fact]
@@ -85,6 +86,8 @@ public sealed class GreeAliceOfflineRegistryBoundaryTests
                 || value.EndsWith("Home", StringComparison.Ordinal)
                 || value.EndsWith("Room", StringComparison.Ordinal)
                 || value.Contains("Demo ", StringComparison.Ordinal)
+                || value.StartsWith("Кондиционер ", StringComparison.Ordinal)
+                || value is "Гостиная" or "Спальня"
                 || value.StartsWith("offline-", StringComparison.Ordinal)
                 || value == GreeAliceDeviceKind.SplitAc
                 || value == GreeAliceDeviceKind.VrfGateway

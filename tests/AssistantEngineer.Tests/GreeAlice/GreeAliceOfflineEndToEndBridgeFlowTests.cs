@@ -41,7 +41,8 @@ public sealed class GreeAliceOfflineEndToEndBridgeFlowTests
         YandexDevicesResponse? response = await client.GetFromJsonAsync<YandexDevicesResponse>("/v1.0/user/devices");
 
         Assert.NotNull(response);
-        YandexDeviceDto device = Assert.Single(response.Devices);
+        Assert.True(response.Devices.Count >= 3);
+        YandexDeviceDto device = Assert.Single(response.Devices, item => item.Id == "dummy-gree-ac-001");
         Assert.Equal("dummy-gree-ac-001", device.Id);
         Assert.Equal("offline-fixture", device.Source);
         Assert.Equal("offline-fixture", response.RuntimeMode);
@@ -49,7 +50,10 @@ public sealed class GreeAliceOfflineEndToEndBridgeFlowTests
         AssertSafePayloadValue(device.Id);
         AssertSafePayloadValue(device.Name);
         AssertSafePayloadValue(device.Room);
+        Assert.DoesNotContain("dummy-vrf-gateway-001", response.Devices.Select(item => item.Id));
         Assert.DoesNotContain("dummy-vrf-child-001", response.Devices.Select(item => item.Id));
+        Assert.Contains(response.Devices, item => item.Id == "yandex-dummy-vrf-child-living-001");
+        Assert.Contains(response.Devices, item => item.Id == "yandex-dummy-vrf-child-bedroom-001");
 
         GreeAliceRegistrySnapshot registry = new OfflineGreeAliceRegistryProvider().GetSnapshot();
         Assert.Contains(registry.Devices, item => item.Id == "dummy-vrf-child-001" && item.Kind == GreeAliceDeviceKind.VrfChildIndoorUnit);

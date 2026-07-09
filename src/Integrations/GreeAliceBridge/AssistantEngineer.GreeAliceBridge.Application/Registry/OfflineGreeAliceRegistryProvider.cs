@@ -1,4 +1,5 @@
 using AssistantEngineer.GreeAliceBridge.Contracts.Registry;
+using AssistantEngineer.GreeAliceBridge.Contracts.Registry.Vrf;
 
 namespace AssistantEngineer.GreeAliceBridge.Application.Registry;
 
@@ -21,8 +22,13 @@ public sealed class OfflineGreeAliceRegistryProvider : IGreeAliceOfflineRegistry
     private static readonly GreeAliceRegistrySnapshot Snapshot = new(
         new GreeAliceBridgeAccount("dummy-account-001", "Demo Account", Source),
         [new GreeAliceHome("dummy-home-001", "dummy-account-001", "Demo Home", Source)],
-        [new GreeAliceRoom("dummy-room-001", "dummy-home-001", "Demo Room", Source)],
         [
+            new GreeAliceRoom("dummy-room-001", "dummy-home-001", "Demo Room", Source),
+            new GreeAliceRoom("dummy-room-living-001", "dummy-home-001", "Гостиная", Source),
+            new GreeAliceRoom("dummy-room-bedroom-001", "dummy-home-001", "Спальня", Source)
+        ],
+        new GreeAliceRegisteredDevice[]
+        {
             new GreeAliceRegisteredDevice(
                 "dummy-gree-ac-001",
                 "Demo Gree Split AC",
@@ -50,7 +56,15 @@ public sealed class OfflineGreeAliceRegistryProvider : IGreeAliceOfflineRegistry
                 YandexExposed: true,
                 AcCapabilities,
                 Source)
-        ],
+        }.Concat(GreeAliceVrfSystemTopology.OfflineFixture.ChildUnits.Select(childUnit => new GreeAliceRegisteredDevice(
+            childUnit.ChildUnitId,
+            childUnit.DisplayName,
+            GreeAliceDeviceKind.VrfChildIndoorUnit,
+            childUnit.RoomId,
+            childUnit.ParentGatewayId,
+            childUnit.ExposeToYandex,
+            AcCapabilities,
+            Source))).ToArray(),
         GreeAliceRegistrySafetyBoundary.RegistryMode);
 
     public GreeAliceRegistrySnapshot GetSnapshot()

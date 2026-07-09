@@ -175,6 +175,7 @@ single-device-control-pilot-skeleton.md
 minimal-production-pilot-boundary.md
 minimal-production-pilot-checklist.md
 minimal-production-pilot-decision-record-template.md
+vrf-gmv-child-unit-support.md
 ```
 
 Current safety position:
@@ -216,6 +217,9 @@ Minimal production pilot boundary: exists, NOT APPROVED by default
 Read-only-first: required
 Production wiring: disabled
 Secrets in repository: forbidden
+VRF/GMV gateway and child-unit model: exists
+VRF/GMV gateway exposure: internal by default
+VRF/GMV child units: can be exposed as Yandex user devices
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

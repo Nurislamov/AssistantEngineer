@@ -10,6 +10,8 @@ public sealed class OfflineGreeCloudMaskedStateFixtureProvider : IGreeCloudMaske
         {
             "dummy-gree-ac-001" => CreateKnownSnapshot(deviceId, currentTemperatureC: "23"),
             "dummy-vrf-child-001" => CreateKnownSnapshot(deviceId, currentTemperatureC: "22"),
+            "dummy-vrf-child-living-001" => CreateKnownSnapshot(deviceId, currentTemperatureC: "22"),
+            "dummy-vrf-child-bedroom-001" => CreateKnownSnapshot(deviceId, currentTemperatureC: "21"),
             _ => new GreeCloudMaskedRawStateSnapshot(
                 deviceId,
                 IsKnownDevice: false,

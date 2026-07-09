@@ -22,12 +22,13 @@ public sealed class GreeAliceOfflineBridgeProjectSkeletonTests
     }
 
     [Fact]
-    public void DevicesReturnsOnlyDummyFixtureDevice()
+    public void DevicesReturnDummyFixtureDevices()
     {
         IGreeAliceOfflineBridgeService service = new OfflineGreeAliceBridgeService();
 
-        GreeAliceDevice device = Assert.Single(service.GetDevices());
+        IReadOnlyList<GreeAliceDevice> devices = service.GetDevices();
 
+        GreeAliceDevice device = Assert.Single(devices, item => item.Id == "dummy-gree-ac-001");
         Assert.Equal("dummy-gree-ac-001", device.Id);
         Assert.Equal("Demo Gree AC", device.Name);
         Assert.Equal("offline-fixture", device.Source);
@@ -35,6 +36,8 @@ public sealed class GreeAliceOfflineBridgeProjectSkeletonTests
         Assert.Contains("mode", device.Capabilities);
         Assert.Contains("temperature", device.Capabilities);
         Assert.Contains("fan_speed", device.Capabilities);
+        Assert.Contains(devices, item => item.Id == "yandex-dummy-vrf-child-living-001");
+        Assert.Contains(devices, item => item.Id == "yandex-dummy-vrf-child-bedroom-001");
     }
 
     [Fact]
