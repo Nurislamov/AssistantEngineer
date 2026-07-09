@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-41 — APPLIED locally / validation pending.
+GREE-ALICE-42 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-41:
+Latest pushed GREE-ALICE commit before GREE-ALICE-42:
 
 ```text
-36b906ab GREE-ALICE-40 Add isolated staging deploy skeleton
+dd79e2f4 GREE-ALICE-41 Add live read-only adapter proposal
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-41 Add live read-only Gree+ adapter proposal
+GREE-ALICE-42 Add live read-only pilot gate
 ```
 
 ### Completed stages
@@ -59,20 +59,21 @@ GREE-ALICE-37 — CLOSED / pushed — read-only cloud state mapping contract
 GREE-ALICE-38 — CLOSED / pushed — bridge safety middleware and kill switches
 GREE-ALICE-39 — CLOSED / committed locally — offline end-to-end bridge flow tests
 GREE-ALICE-40 — CLOSED / pushed — isolated staging deploy skeleton
+GREE-ALICE-41 — CLOSED / pushed — live read-only adapter proposal
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-40:
+Latest validation for GREE-ALICE-41:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5545/5545
+Tests: 5553/5553
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit 36b906ab
+master == origin/master after commit dd79e2f4
 ```
 
 ### Safety boundary
@@ -94,13 +95,14 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-41 local scope
+### GREE-ALICE-42 local scope
 
 ```text
-Adds live read-only Gree+ adapter proposal documentation only.
-Adds manual live read-only pilot approval checklist with default NOT APPROVED status.
-Adds proposal boundary contracts for approval status, allowed read fields, forbidden operations, and evidence requirements.
-Adds static tests for proposal docs, approval checklist, contracts, and bridge isolation.
+Adds live read-only pilot gate contracts.
+Adds offline pilot gate evaluator.
+Adds manual pilot decision record template.
+Adds pilot gate documentation.
+Adds static tests for default NOT APPROVED gate state, requirements, evaluator, docs, and bridge isolation.
 Updates GREE-ALICE docs index.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
@@ -119,31 +121,35 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-41
+### Files changed by GREE-ALICE-42
 
 ```text
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/GreeCloud/LiveReadOnly/*
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceLiveReadOnlyAdapterProposalTests.cs
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/GreeCloud/LiveReadOnly/PilotGate/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/GreeCloud/LiveReadOnly/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceLiveReadOnlyPilotGateTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeApiBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/live-read-only-gree-cloud-adapter-proposal.md
-docs/integrations/gree-alice/live-read-only-pilot-approval-checklist.md
+docs/integrations/gree-alice/live-read-only-pilot-gate.md
+docs/integrations/gree-alice/live-read-only-pilot-decision-record-template.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-41 validation.
+None for local GREE-ALICE-42 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-42 — add live read-only pilot gate
+GREE-ALICE-43 — add control safety approval package
 ```
 
-GREE-ALICE-42 may add a live read-only pilot gate only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations.
+GREE-ALICE-43 may add a control safety approval package only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 

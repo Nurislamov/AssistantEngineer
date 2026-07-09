@@ -82,7 +82,8 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
     [Fact]
     public void GreeAliceBridgeSourceDoesNotContainRealCredentialOrSecretMaterial()
     {
-        string combined = ReadBridgeSource();
+        string combined = ReadBridgeSource()
+            .Replace("CredentialsStoredOutsideRepository", string.Empty, StringComparison.Ordinal);
 
         Assert.DoesNotContain("password", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("authToken", combined, StringComparison.OrdinalIgnoreCase);

@@ -83,15 +83,15 @@ public sealed class GreeAliceOfflineBridgeSkeletonBoundaryTests
     }
 
     [Fact]
-    public void ProjectStateClosesGreeAlice40AndOpensGreeAlice41()
+    public void ProjectStateClosesGreeAlice41AndOpensGreeAlice42()
     {
         string text = ReadRepoFile("PROJECT_STATE.md");
 
-        Assert.Contains("GREE-ALICE-40", text, StringComparison.Ordinal);
-        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
-        Assert.Contains("36b906ab", text, StringComparison.Ordinal);
-        Assert.Contains("Tests: 5545/5545", text, StringComparison.Ordinal);
         Assert.Contains("GREE-ALICE-41", text, StringComparison.Ordinal);
+        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
+        Assert.Contains("dd79e2f4", text, StringComparison.Ordinal);
+        Assert.Contains("Tests: 5553/5553", text, StringComparison.Ordinal);
+        Assert.Contains("GREE-ALICE-42", text, StringComparison.Ordinal);
         Assert.Contains("offline bridge skeleton", text, StringComparison.OrdinalIgnoreCase);
     }
 

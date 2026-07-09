@@ -1,5 +1,6 @@
 using AssistantEngineer.GreeAliceBridge.Application;
 using AssistantEngineer.GreeAliceBridge.Application.GreeCloud;
+using AssistantEngineer.GreeAliceBridge.Application.GreeCloud.LiveReadOnly;
 using AssistantEngineer.GreeAliceBridge.Application.GreeCloud.Mapping;
 using AssistantEngineer.GreeAliceBridge.Application.Registry;
 using AssistantEngineer.GreeAliceBridge.Application.Safety;
@@ -14,6 +15,7 @@ builder.Services.AddSingleton<IGreeAliceOfflineBridgeService, OfflineGreeAliceBr
 builder.Services.AddSingleton<IGreeAliceOfflineRegistryProvider, OfflineGreeAliceRegistryProvider>();
 builder.Services.AddSingleton<IGreeCloudReadAdapter, OfflineGreeCloudReadAdapter>();
 builder.Services.AddSingleton<IGreeCloudControlAdapter, OfflineGreeCloudControlAdapter>();
+builder.Services.AddSingleton<IGreeCloudLiveReadOnlyPilotGateEvaluator, OfflineGreeCloudLiveReadOnlyPilotGateEvaluator>();
 builder.Services.AddSingleton<IGreeCloudMaskedStateFixtureProvider, OfflineGreeCloudMaskedStateFixtureProvider>();
 builder.Services.AddSingleton<IGreeCloudStateMapper, OfflineGreeCloudStateMapper>();
 builder.Services.AddSingleton<IGreeAliceBridgeSafetyDecisionService, OfflineGreeAliceBridgeSafetyDecisionService>();

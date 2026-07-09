@@ -166,6 +166,8 @@ offline-end-to-end-bridge-flow.md
 isolated-staging-deploy-skeleton.md
 live-read-only-gree-cloud-adapter-proposal.md
 live-read-only-pilot-approval-checklist.md
+live-read-only-pilot-gate.md
+live-read-only-pilot-decision-record-template.md
 ```
 
 Current safety position:
@@ -196,6 +198,8 @@ Offline E2E flow tests: health, devices, query, action, unlink
 Isolated staging deploy skeleton: docs-only, offline-only, no production wiring
 Live read-only adapter: proposed, not implemented
 Live read-only approval status: NOT APPROVED
+Live read-only pilot gate: exists, NOT APPROVED by default
+Live read-only pilot: blocked
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
