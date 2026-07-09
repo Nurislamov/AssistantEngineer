@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-47 — APPLIED locally / validation pending.
+GREE-ALICE-48 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-47:
+Latest pushed GREE-ALICE commit before GREE-ALICE-48:
 
 ```text
-740e2b20 GREE-ALICE-46 Add VRF GMV child unit support
+4a89a466 GREE-ALICE-47 Add device registry import admin boundary
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-47 Add device registry import admin boundary
+GREE-ALICE-48 Add Yandex account linking boundary
 ```
 
 ### Completed stages
@@ -65,20 +65,21 @@ GREE-ALICE-43 — CLOSED / pushed — control safety approval package
 GREE-ALICE-44 — CLOSED / pushed — single-device control pilot skeleton
 GREE-ALICE-45 — CLOSED / pushed — minimal production pilot boundary
 GREE-ALICE-46 — CLOSED / pushed — VRF/GMV child unit support
+GREE-ALICE-47 — CLOSED / pushed — device registry import/admin boundary
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-46:
+Latest validation for GREE-ALICE-47:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5608/5608
+Tests: 5626/5626
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit 740e2b20
+master == origin/master after commit 4a89a466
 ```
 
 ### Safety boundary
@@ -100,16 +101,17 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-47 local scope
+### GREE-ALICE-48 local scope
 
 ```text
-Adds offline registry import/admin contracts.
-Adds device registry import/admin boundary.
-Adds manual registry draft model for account, home, rooms, split AC, VRF gateway, VRF child units, and exposure decisions.
-Adds dummy/template import provider.
-Adds offline import validator for stable IDs, room binding, duplicate IDs, VRF gateway mapping, and unsafe material.
-Adds explicit exposure policy for reviewed registry exposure.
-Adds import/admin boundary documentation and template/schema documentation.
+Adds offline Yandex account linking contracts.
+Adds dummy/template account-linking session model.
+Adds masked Yandex user binding model.
+Adds bridge account to explicit registry scope mapping.
+Adds offline unlink boundary model.
+Adds dummy/template linking provider.
+Adds offline linking validator and scoped registry resolver.
+Adds account-linking boundary documentation and flow template.
 Updates GREE-ALICE docs index.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
@@ -130,6 +132,11 @@ Gree Cloud discovery auto-exposure remains disabled.
 Manual review remains required before Yandex exposure.
 Stable Yandex device IDs remain required for exposed devices.
 Room binding remains required for exposed devices.
+Yandex account linking boundary remains offline-template only.
+Real OAuth remains not implemented.
+Real Yandex credentials and tokens remain forbidden in repository.
+Yandex user must map to bridge account and explicit registry scope.
+Unknown/unlinked users fail closed.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
 Keeps PUBLISH blocked.
@@ -144,34 +151,34 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-47
+### Files changed by GREE-ALICE-48
 
 ```text
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/Registry/Import/*
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/Registry/Import/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/YandexSmartHome/AccountLinking/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/YandexSmartHome/AccountLinking/*
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceDeviceRegistryImportAdminBoundaryTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexAccountLinkingBoundaryTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/device-registry-import-admin-boundary.md
-docs/integrations/gree-alice/device-registry-import-template.md
+docs/integrations/gree-alice/yandex-account-linking-boundary.md
+docs/integrations/gree-alice/yandex-account-linking-flow-template.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-47 validation.
+None for local GREE-ALICE-48 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-48 — add Yandex account linking boundary
+GREE-ALICE-49 — add Yandex provider readiness package
 ```
 
-GREE-ALICE-48 may add Yandex account linking boundary only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
+GREE-ALICE-49 may add Yandex provider readiness package only. It should still not implement real OAuth, live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
 <!-- GREE-ALICE-STATE:END -->
 
 

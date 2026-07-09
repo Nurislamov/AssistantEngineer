@@ -178,6 +178,8 @@ minimal-production-pilot-decision-record-template.md
 vrf-gmv-child-unit-support.md
 device-registry-import-admin-boundary.md
 device-registry-import-template.md
+yandex-account-linking-boundary.md
+yandex-account-linking-flow-template.md
 ```
 
 Current safety position:
@@ -227,6 +229,11 @@ Device addition path: reviewed registry exposure only
 Gree Cloud discovery auto-exposure: disabled
 Real imports: disabled
 Admin UI: not implemented
+Yandex account linking boundary: exists
+Real OAuth: not implemented
+Real Yandex credentials/tokens in repository: forbidden
+Yandex user mapping: bridge account plus explicit registry scope required
+Unknown/unlinked users: fail closed
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
