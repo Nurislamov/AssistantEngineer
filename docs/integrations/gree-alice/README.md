@@ -152,16 +152,20 @@ mqtt-connect-operator-sign-off-template.md
 mqtt-connect-offline-review-packet-summary.md
 mqtt-live-gate-fail-closed-policy.md
 mqtt-connect-future-live-probe-boundary.md
+offline-bridge-path-decision.md
+yandex-smart-home-offline-endpoint-contract.md
+offline-fixture-model-boundary.md
 ```
 
 Current safety position:
 
 ```text
+Chosen path: offline Yandex Smart Home bridge skeleton first
 Live CONNECT: blocked
 SUBSCRIBE: blocked
 PUBLISH: blocked
 Device control: blocked
 Runtime integration: blocked
-Next decision: choose explicit live-safety stage or offline bridge skeleton path
+Gree+ runtime control: blocked
 ```
 <!-- GREE-ALICE-DOC-INDEX:END -->
