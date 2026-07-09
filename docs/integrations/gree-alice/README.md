@@ -158,6 +158,7 @@ offline-fixture-model-boundary.md
 offline-bridge-project-skeleton.md
 yandex-smart-home-offline-api-skeleton.md
 yandex-smart-home-offline-api-contract-hardening.md
+offline-account-device-registry-boundary.md
 ```
 
 Current safety position:
@@ -172,6 +173,9 @@ Offline API contract: hardened
 Unknown device behavior: offline unknown state or fail-closed action result
 Unknown capability behavior: fail-closed action result
 Bad/empty request behavior: controlled offline error response where model binding succeeds
+Registry boundary: offline fixture only
+Registry mode: offline-fixture-registry
+Registry device kinds: split-ac, vrf-gateway, vrf-child-indoor-unit, unknown
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

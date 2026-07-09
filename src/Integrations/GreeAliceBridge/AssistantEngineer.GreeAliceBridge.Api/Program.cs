@@ -1,4 +1,5 @@
 using AssistantEngineer.GreeAliceBridge.Application;
+using AssistantEngineer.GreeAliceBridge.Application.Registry;
 using AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome;
 using AssistantEngineer.GreeAliceBridge.Contracts;
 using AssistantEngineer.GreeAliceBridge.Contracts.YandexSmartHome;
@@ -6,6 +7,7 @@ using AssistantEngineer.GreeAliceBridge.Contracts.YandexSmartHome;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IGreeAliceOfflineBridgeService, OfflineGreeAliceBridgeService>();
+builder.Services.AddSingleton<IGreeAliceOfflineRegistryProvider, OfflineGreeAliceRegistryProvider>();
 builder.Services.AddSingleton<IYandexSmartHomeOfflineService, YandexSmartHomeOfflineService>();
 
 WebApplication app = builder.Build();

@@ -88,7 +88,8 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
         Assert.DoesNotContain("credential", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("deviceKey", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("macAddress", combined, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("accountId", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("real-account-", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("real-device-", combined, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ReadApiProject()

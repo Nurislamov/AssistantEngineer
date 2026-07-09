@@ -1,4 +1,5 @@
 using AssistantEngineer.GreeAliceBridge.Application;
+using AssistantEngineer.GreeAliceBridge.Application.Registry;
 using AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome;
 using AssistantEngineer.GreeAliceBridge.Contracts.YandexSmartHome;
 
@@ -19,6 +20,20 @@ public sealed class GreeAliceYandexSmartHomeOfflineMappingTests
         Assert.Equal("devices.types.thermostat.ac", device.Type);
         Assert.Equal("offline-fixture", device.Source);
         Assert.Contains(device.Capabilities, capability => capability.Type == "devices.capabilities.on_off");
+    }
+
+    [Fact]
+    public void DevicesResponseWithRegistryProviderStillReturnsOnlyDummySplitAc()
+    {
+        IYandexSmartHomeOfflineService service = new YandexSmartHomeOfflineService(
+            new OfflineGreeAliceBridgeService(),
+            new OfflineGreeAliceRegistryProvider());
+
+        YandexDevicesResponse response = service.GetDevices();
+
+        YandexDeviceDto device = Assert.Single(response.Devices);
+        Assert.Equal("dummy-gree-ac-001", device.Id);
+        Assert.Equal("offline-fixture", device.Source);
     }
 
     [Fact]

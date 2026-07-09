@@ -1,4 +1,6 @@
 using AssistantEngineer.GreeAliceBridge.Contracts;
+using AssistantEngineer.GreeAliceBridge.Application.Registry;
+using AssistantEngineer.GreeAliceBridge.Contracts.Registry;
 using AssistantEngineer.GreeAliceBridge.Contracts.YandexSmartHome;
 
 namespace AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome;
@@ -6,23 +8,37 @@ namespace AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome;
 public sealed class YandexSmartHomeOfflineService : IYandexSmartHomeOfflineService
 {
     private readonly IGreeAliceOfflineBridgeService bridgeService;
+    private readonly IGreeAliceOfflineRegistryProvider? registryProvider;
 
-    public YandexSmartHomeOfflineService(IGreeAliceOfflineBridgeService bridgeService)
+    public YandexSmartHomeOfflineService(
+        IGreeAliceOfflineBridgeService bridgeService,
+        IGreeAliceOfflineRegistryProvider? registryProvider = null)
     {
         this.bridgeService = bridgeService;
+        this.registryProvider = registryProvider;
     }
 
     public YandexDevicesResponse GetDevices()
     {
+        HashSet<string>? exposedSplitDeviceIds = registryProvider
+            ?.GetSnapshot()
+            .Devices
+            .Where(device => device.YandexExposed && string.Equals(device.Kind, GreeAliceDeviceKind.SplitAc, StringComparison.Ordinal))
+            .Select(device => device.Id)
+            .ToHashSet(StringComparer.Ordinal);
+
         return new YandexDevicesResponse(
-            bridgeService.GetDevices().Select(device => new YandexDeviceDto(
-                device.Id,
-                device.Name,
-                device.Room,
-                device.Type,
-                device.Capabilities.Select(MapCapability).ToArray(),
-                device.Online,
-                device.Source)).ToArray());
+            bridgeService
+                .GetDevices()
+                .Where(device => exposedSplitDeviceIds is null || exposedSplitDeviceIds.Contains(device.Id))
+                .Select(device => new YandexDeviceDto(
+                    device.Id,
+                    device.Name,
+                    device.Room,
+                    device.Type,
+                    device.Capabilities.Select(MapCapability).ToArray(),
+                    device.Online,
+                    device.Source)).ToArray());
     }
 
     public YandexQueryResponse QueryDevices(YandexQueryRequest? request)

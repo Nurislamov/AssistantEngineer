@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-34 — APPLIED locally / validation pending.
+GREE-ALICE-35 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-34:
+Latest pushed GREE-ALICE commit before GREE-ALICE-35:
 
 ```text
-839805ff GREE-ALICE-32 Add offline Yandex Smart Home API skeleton
+20b2e90f GREE-ALICE-34 Harden offline API contract behavior
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-34 Harden offline API contract tests and error behavior
+GREE-ALICE-35 Add offline account and device registry boundary
 ```
 
 ### Completed stages
@@ -52,20 +52,21 @@ GREE-ALICE-26 — CLOSED / pushed — offline review packet and fail-closed live
 GREE-ALICE-30 — CLOSED / pushed — choose offline bridge skeleton path
 GREE-ALICE-31 — CLOSED / pushed — offline bridge project skeleton
 GREE-ALICE-32/33 — CLOSED / pushed — Yandex Smart Home offline DTO mapping and API skeleton
+GREE-ALICE-34 — CLOSED / pushed — offline API contract tests and error behavior
 ```
 
 ### Validation status
 
 ```text
-Latest full validation for GREE-ALICE-32/33:
+Latest full validation for GREE-ALICE-34:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5477/5477
+Tests: 5489/5489
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit 839805ff
+master == origin/master after commit 20b2e90f
 ```
 
 ### Safety boundary
@@ -87,15 +88,15 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-34 local scope
+### GREE-ALICE-35 local scope
 
 ```text
-Hardens Yandex Smart Home offline response metadata.
-Defines empty query/action request behavior.
-Defines unknown device and unknown capability behavior.
-Keeps action responses dry-run fail-closed.
-Adds contract tests for mapper and endpoint behavior.
-Adds static boundary tests for live MQTT, device control, and secret material.
+Adds offline registry contracts for account, home, room, and devices.
+Adds device kinds for split AC, VRF/GMV gateway, VRF/GMV child indoor unit, and unknown.
+Adds offline registry safety boundary.
+Adds static dummy fixture registry provider.
+Keeps Yandex /devices mapping stable for dummy-gree-ac-001.
+Adds registry boundary tests for dummy-only IDs, VRF parent relation, and secret/MAC absence.
 Updates GREE-ALICE docs index.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
@@ -108,34 +109,34 @@ No DNS/TCP/TLS/MQTT network operation.
 No API/Telegram/runtime/deployment/migration changes.
 ```
 
-### Files changed by GREE-ALICE-34
+### Files changed by GREE-ALICE-35
 
 ```text
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/**
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/**
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/**
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineRegistryBoundaryTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeOfflineMappingTests.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeOfflineApiSkeletonTests.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeApiBoundaryTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/yandex-smart-home-offline-api-contract-hardening.md
+docs/integrations/gree-alice/offline-account-device-registry-boundary.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-34 validation.
+None for local GREE-ALICE-35 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-35 — add offline account and device registry boundary
+GREE-ALICE-36 — add Gree Cloud adapter interface boundary
 ```
 
-GREE-ALICE-35 may add an offline account and device registry boundary only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
+GREE-ALICE-36 may add a Gree Cloud adapter interface boundary only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 
