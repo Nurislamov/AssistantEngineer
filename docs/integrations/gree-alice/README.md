@@ -176,6 +176,8 @@ minimal-production-pilot-boundary.md
 minimal-production-pilot-checklist.md
 minimal-production-pilot-decision-record-template.md
 vrf-gmv-child-unit-support.md
+device-registry-import-admin-boundary.md
+device-registry-import-template.md
 ```
 
 Current safety position:
@@ -220,11 +222,16 @@ Secrets in repository: forbidden
 VRF/GMV gateway and child-unit model: exists
 VRF/GMV gateway exposure: internal by default
 VRF/GMV child units: can be exposed as Yandex user devices
+Device registry import/admin boundary: exists
+Device addition path: reviewed registry exposure only
+Gree Cloud discovery auto-exposure: disabled
+Real imports: disabled
+Admin UI: not implemented
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
 PUBLISH: blocked
-Device control: blocked
+Device control: blocked / fail-closed
 Runtime integration: blocked
 Gree+ runtime control: blocked
 Production wiring: blocked

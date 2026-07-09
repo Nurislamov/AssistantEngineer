@@ -83,16 +83,16 @@ public sealed class GreeAliceOfflineBridgeSkeletonBoundaryTests
     }
 
     [Fact]
-    public void ProjectStateClosesGreeAlice45AndOpensGreeAlice46()
+    public void ProjectStateClosesGreeAlice46AndOpensGreeAlice47()
     {
         string text = ReadRepoFile("PROJECT_STATE.md");
 
-        Assert.Contains("GREE-ALICE-45", text, StringComparison.Ordinal);
-        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
-        Assert.Contains("82e552e0", text, StringComparison.Ordinal);
-        Assert.Contains("Tests: 5593/5593", text, StringComparison.Ordinal);
         Assert.Contains("GREE-ALICE-46", text, StringComparison.Ordinal);
-        Assert.Contains("offline bridge skeleton", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
+        Assert.Contains("740e2b20", text, StringComparison.Ordinal);
+        Assert.Contains("Tests: 5608/5608", text, StringComparison.Ordinal);
+        Assert.Contains("GREE-ALICE-47", text, StringComparison.Ordinal);
+        Assert.Contains("device registry import/admin boundary", text, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ReadAllDocs()

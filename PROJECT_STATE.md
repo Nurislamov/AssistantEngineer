@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-46 — APPLIED locally / validation pending.
+GREE-ALICE-47 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-46:
+Latest pushed GREE-ALICE commit before GREE-ALICE-47:
 
 ```text
-82e552e0 GREE-ALICE-45 Add minimal production pilot boundary
+740e2b20 GREE-ALICE-46 Add VRF GMV child unit support
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-46 Add VRF GMV child unit support
+GREE-ALICE-47 Add device registry import admin boundary
 ```
 
 ### Completed stages
@@ -64,20 +64,21 @@ GREE-ALICE-42 — CLOSED / pushed — live read-only pilot gate
 GREE-ALICE-43 — CLOSED / pushed — control safety approval package
 GREE-ALICE-44 — CLOSED / pushed — single-device control pilot skeleton
 GREE-ALICE-45 — CLOSED / pushed — minimal production pilot boundary
+GREE-ALICE-46 — CLOSED / pushed — VRF/GMV child unit support
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-45:
+Latest validation for GREE-ALICE-46:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5593/5593
+Tests: 5608/5608
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit 82e552e0
+master == origin/master after commit 740e2b20
 ```
 
 ### Safety boundary
@@ -99,14 +100,16 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-46 local scope
+### GREE-ALICE-47 local scope
 
 ```text
-Adds offline VRF/GMV gateway and child-unit contracts.
-Adds dummy VRF/GMV gateway and room-bound child units.
-Adds stable Yandex device IDs for exposed child units.
-Extends offline /devices, query, and action behavior for exposed VRF child units.
-Adds VRF/GMV child-unit support documentation and tests.
+Adds offline registry import/admin contracts.
+Adds device registry import/admin boundary.
+Adds manual registry draft model for account, home, rooms, split AC, VRF gateway, VRF child units, and exposure decisions.
+Adds dummy/template import provider.
+Adds offline import validator for stable IDs, room binding, duplicate IDs, VRF gateway mapping, and unsafe material.
+Adds explicit exposure policy for reviewed registry exposure.
+Adds import/admin boundary documentation and template/schema documentation.
 Updates GREE-ALICE docs index.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
@@ -120,6 +123,13 @@ Production deployment wiring remains disabled.
 Read-only-first remains required before any future production pilot.
 VRF/GMV gateway remains internal by default.
 VRF/GMV child-unit behavior remains offline fixture / fail-closed.
+Registry import/admin boundary remains offline-template only.
+Real imports remain disabled.
+Admin UI remains not implemented.
+Gree Cloud discovery auto-exposure remains disabled.
+Manual review remains required before Yandex exposure.
+Stable Yandex device IDs remain required for exposed devices.
+Room binding remains required for exposed devices.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
 Keeps PUBLISH blocked.
@@ -134,35 +144,34 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-46
+### Files changed by GREE-ALICE-47
 
 ```text
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/Registry/Vrf/*
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/Registry/OfflineGreeAliceRegistryProvider.cs
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/OfflineGreeAliceBridgeService.cs
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/YandexSmartHome/YandexSmartHomeOfflineService.cs
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/GreeCloud/Mapping/OfflineGreeCloudMaskedStateFixtureProvider.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceVrfGmvChildUnitSupportTests.cs
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/Registry/Import/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/Registry/Import/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceDeviceRegistryImportAdminBoundaryTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/vrf-gmv-child-unit-support.md
+docs/integrations/gree-alice/device-registry-import-admin-boundary.md
+docs/integrations/gree-alice/device-registry-import-template.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-46 validation.
+None for local GREE-ALICE-47 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-47 — add device registry import/admin boundary
+GREE-ALICE-48 — add Yandex account linking boundary
 ```
 
-GREE-ALICE-47 may add device registry import/admin boundary only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
+GREE-ALICE-48 may add Yandex account linking boundary only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
 <!-- GREE-ALICE-STATE:END -->
 
 

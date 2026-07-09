@@ -6,6 +6,7 @@ using AssistantEngineer.GreeAliceBridge.Application.GreeCloud.LiveReadOnly;
 using AssistantEngineer.GreeAliceBridge.Application.GreeCloud.Mapping;
 using AssistantEngineer.GreeAliceBridge.Application.Pilot;
 using AssistantEngineer.GreeAliceBridge.Application.Registry;
+using AssistantEngineer.GreeAliceBridge.Application.Registry.Import;
 using AssistantEngineer.GreeAliceBridge.Application.Safety;
 using AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome;
 using AssistantEngineer.GreeAliceBridge.Contracts;
@@ -16,6 +17,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IGreeAliceOfflineBridgeService, OfflineGreeAliceBridgeService>();
 builder.Services.AddSingleton<IGreeAliceOfflineRegistryProvider, OfflineGreeAliceRegistryProvider>();
+builder.Services.AddSingleton<IGreeAliceRegistryImportTemplateProvider, OfflineGreeAliceRegistryImportTemplateProvider>();
+builder.Services.AddSingleton<IGreeAliceRegistryImportValidator, OfflineGreeAliceRegistryImportValidator>();
 builder.Services.AddSingleton<IGreeCloudReadAdapter, OfflineGreeCloudReadAdapter>();
 builder.Services.AddSingleton<IGreeCloudControlAdapter, OfflineGreeCloudControlAdapter>();
 builder.Services.AddSingleton<IGreeCloudControlApprovalEvaluator, OfflineGreeCloudControlApprovalEvaluator>();
