@@ -168,6 +168,9 @@ live-read-only-gree-cloud-adapter-proposal.md
 live-read-only-pilot-approval-checklist.md
 live-read-only-pilot-gate.md
 live-read-only-pilot-decision-record-template.md
+control-safety-approval-package.md
+control-pilot-approval-checklist.md
+control-pilot-decision-record-template.md
 ```
 
 Current safety position:
@@ -200,6 +203,9 @@ Live read-only adapter: proposed, not implemented
 Live read-only approval status: NOT APPROVED
 Live read-only pilot gate: exists, NOT APPROVED by default
 Live read-only pilot: blocked
+Control approval package: exists, NOT APPROVED by default
+Control adapter: fail-closed
+Single-device control pilot: not approved
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
