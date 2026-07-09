@@ -134,3 +134,30 @@ No runtime code, migrations, Telegram handlers, diagnostics catalog, production 
 ## Current investigation
 
 - [Live/control channel investigation](./live-control-channel-investigation.md)
+
+# GREE-ALICE integration notes
+
+This folder contains safe, isolated documentation for the GREE-ALICE workstream.
+
+The workstream is not connected to AssistantEngineer.Api, Telegram, runtime configuration, deployment, or database migrations.
+
+<!-- GREE-ALICE-DOC-INDEX:START -->
+## Current safe review documents
+
+```text
+mqtt-connect-readiness-gate.md
+mqtt-connect-human-safety-review-checklist.md
+mqtt-connect-safety-review-decision-record.md
+mqtt-connect-operator-sign-off-template.md
+```
+
+Current safety position:
+
+```text
+Live CONNECT: blocked
+SUBSCRIBE: blocked
+PUBLISH: blocked
+Device control: blocked
+Runtime integration: blocked
+```
+<!-- GREE-ALICE-DOC-INDEX:END -->
