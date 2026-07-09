@@ -4,6 +4,7 @@ using AssistantEngineer.GreeAliceBridge.Application.GreeCloud.ControlApproval;
 using AssistantEngineer.GreeAliceBridge.Application.GreeCloud.ControlPilot;
 using AssistantEngineer.GreeAliceBridge.Application.GreeCloud.LiveReadOnly;
 using AssistantEngineer.GreeAliceBridge.Application.GreeCloud.Mapping;
+using AssistantEngineer.GreeAliceBridge.Application.Pilot;
 using AssistantEngineer.GreeAliceBridge.Application.Registry;
 using AssistantEngineer.GreeAliceBridge.Application.Safety;
 using AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome;
@@ -23,6 +24,7 @@ builder.Services.AddSingleton<IGreeCloudLiveReadOnlyPilotGateEvaluator, OfflineG
 builder.Services.AddSingleton<IGreeCloudMaskedStateFixtureProvider, OfflineGreeCloudMaskedStateFixtureProvider>();
 builder.Services.AddSingleton<IGreeCloudStateMapper, OfflineGreeCloudStateMapper>();
 builder.Services.AddSingleton<IGreeAliceBridgeSafetyDecisionService, OfflineGreeAliceBridgeSafetyDecisionService>();
+builder.Services.AddSingleton<IGreeAliceMinimalProductionPilotReadinessEvaluator, OfflineGreeAliceMinimalProductionPilotReadinessEvaluator>();
 builder.Services.AddSingleton<IYandexSmartHomeOfflineService, YandexSmartHomeOfflineService>();
 
 WebApplication app = builder.Build();

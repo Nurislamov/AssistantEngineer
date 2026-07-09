@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-44 — APPLIED locally / validation pending.
+GREE-ALICE-45 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-44:
+Latest pushed GREE-ALICE commit before GREE-ALICE-45:
 
 ```text
-eda3c6e4 GREE-ALICE-43 Add control safety approval package
+61fa58ff GREE-ALICE-44 Add single-device control pilot skeleton
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-44 Add single-device control pilot skeleton
+GREE-ALICE-45 Add minimal production pilot boundary
 ```
 
 ### Completed stages
@@ -62,20 +62,21 @@ GREE-ALICE-40 — CLOSED / pushed — isolated staging deploy skeleton
 GREE-ALICE-41 — CLOSED / pushed — live read-only adapter proposal
 GREE-ALICE-42 — CLOSED / pushed — live read-only pilot gate
 GREE-ALICE-43 — CLOSED / pushed — control safety approval package
+GREE-ALICE-44 — CLOSED / pushed — single-device control pilot skeleton
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-43:
+Latest validation for GREE-ALICE-44:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5571/5571
+Tests: 5582/5582
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit eda3c6e4
+master == origin/master after commit 61fa58ff
 ```
 
 ### Safety boundary
@@ -97,13 +98,13 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-44 local scope
+### GREE-ALICE-45 local scope
 
 ```text
-Adds single-device control pilot skeleton documentation.
-Adds dummy-only pilot scope and candidate command plan contracts.
-Adds offline pilot planner returning dry-run fail-closed decisions.
-Adds static tests for NOT APPROVED pilot defaults, dummy-only scope, candidate command plan, safety limits, planner, docs, and bridge isolation.
+Adds minimal production pilot boundary documentation.
+Adds minimal production pilot manual checklist and decision record template.
+Adds minimal production pilot contracts and offline readiness evaluator.
+Adds static tests for NOT APPROVED production pilot defaults, modes, dummy/template scope, readiness evaluator, docs, and bridge isolation.
 Updates GREE-ALICE docs index.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
@@ -112,6 +113,9 @@ Control approval remains not approved.
 Control adapter remains dry-run fail-closed.
 Single-device control pilot remains not approved.
 Command sending remains disabled.
+Minimal production pilot remains not approved.
+Production deployment wiring remains disabled.
+Read-only-first remains required before any future production pilot.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
 Keeps PUBLISH blocked.
@@ -126,33 +130,35 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-44
+### Files changed by GREE-ALICE-45
 
 ```text
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/GreeCloud/ControlPilot/*
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/GreeCloud/ControlPilot/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/Pilot/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/Pilot/*
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceSingleDeviceControlPilotSkeletonTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceMinimalProductionPilotBoundaryTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/single-device-control-pilot-skeleton.md
+docs/integrations/gree-alice/minimal-production-pilot-boundary.md
+docs/integrations/gree-alice/minimal-production-pilot-checklist.md
+docs/integrations/gree-alice/minimal-production-pilot-decision-record-template.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-44 validation.
+None for local GREE-ALICE-45 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-45 — add minimal production pilot boundary
+GREE-ALICE-46 — add VRF/GMV child-unit support
 ```
 
-GREE-ALICE-45 may add a minimal production pilot boundary only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
+GREE-ALICE-46 may add VRF/GMV child-unit support inside the offline safety boundary. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
 <!-- GREE-ALICE-STATE:END -->
 
 

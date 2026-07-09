@@ -172,6 +172,9 @@ control-safety-approval-package.md
 control-pilot-approval-checklist.md
 control-pilot-decision-record-template.md
 single-device-control-pilot-skeleton.md
+minimal-production-pilot-boundary.md
+minimal-production-pilot-checklist.md
+minimal-production-pilot-decision-record-template.md
 ```
 
 Current safety position:
@@ -209,6 +212,10 @@ Control adapter: fail-closed
 Single-device control pilot: not approved
 Single-device control pilot skeleton: exists, NOT APPROVED by default
 Command sending: disabled
+Minimal production pilot boundary: exists, NOT APPROVED by default
+Read-only-first: required
+Production wiring: disabled
+Secrets in repository: forbidden
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
