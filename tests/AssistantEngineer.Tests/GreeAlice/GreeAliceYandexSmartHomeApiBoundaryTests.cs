@@ -85,6 +85,14 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
         string combined = ReadBridgeSource()
             .Replace("CredentialsStoredOutsideRepository", string.Empty, StringComparison.Ordinal)
             .Replace("RealYandexAppCredentialsAllowed", string.Empty, StringComparison.Ordinal)
+            .Replace("RealYandexClientCredentialsConfigured", string.Empty, StringComparison.Ordinal)
+            .Replace("RealYandexClientCredentialsAllowedInRepository", string.Empty, StringComparison.Ordinal)
+            .Replace("ProductionCredentialsConfigured", string.Empty, StringComparison.Ordinal)
+            .Replace("AllowsRealYandexCredentialsInRepository", string.Empty, StringComparison.Ordinal)
+            .Replace("no-gree-credentials-in-repo", string.Empty, StringComparison.Ordinal)
+            .Replace("credentials-rotation-plan-required", string.Empty, StringComparison.Ordinal)
+            .Replace("No real Gree credentials in repository", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("Credentials rotation plan required", string.Empty, StringComparison.OrdinalIgnoreCase)
             .Replace("AllowsSecretsInRepository", string.Empty, StringComparison.Ordinal);
 
         Assert.DoesNotContain("password", combined, StringComparison.OrdinalIgnoreCase);

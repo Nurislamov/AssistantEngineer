@@ -180,6 +180,10 @@ device-registry-import-admin-boundary.md
 device-registry-import-template.md
 yandex-account-linking-boundary.md
 yandex-account-linking-flow-template.md
+yandex-provider-readiness-package.md
+yandex-provider-submission-checklist.md
+yandex-provider-manual-smoke-plan.md
+yandex-provider-security-review.md
 ```
 
 Current safety position:
@@ -234,6 +238,12 @@ Real OAuth: not implemented
 Real Yandex credentials/tokens in repository: forbidden
 Yandex user mapping: bridge account plus explicit registry scope required
 Unknown/unlinked users: fail closed
+Yandex provider readiness package: exists
+Provider readiness: NOT READY by default
+Provider registration: NOT APPROVED
+Real OAuth implementation: not implemented
+Real Yandex credentials/tokens in repository: forbidden
+Production endpoint/deploy: disabled
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

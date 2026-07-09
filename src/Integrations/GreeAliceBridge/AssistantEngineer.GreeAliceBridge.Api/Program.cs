@@ -10,6 +10,7 @@ using AssistantEngineer.GreeAliceBridge.Application.Registry.Import;
 using AssistantEngineer.GreeAliceBridge.Application.Safety;
 using AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome;
 using AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome.AccountLinking;
+using AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome.ProviderReadiness;
 using AssistantEngineer.GreeAliceBridge.Contracts;
 using AssistantEngineer.GreeAliceBridge.Contracts.Safety;
 using AssistantEngineer.GreeAliceBridge.Contracts.YandexSmartHome;
@@ -23,6 +24,7 @@ builder.Services.AddSingleton<IGreeAliceRegistryImportValidator, OfflineGreeAlic
 builder.Services.AddSingleton<IGreeAliceYandexAccountLinkingTemplateProvider, OfflineGreeAliceYandexAccountLinkingTemplateProvider>();
 builder.Services.AddSingleton<IGreeAliceYandexAccountLinkingValidator, OfflineGreeAliceYandexAccountLinkingValidator>();
 builder.Services.AddSingleton<IGreeAliceYandexScopedRegistryResolver, OfflineGreeAliceYandexScopedRegistryResolver>();
+builder.Services.AddSingleton<IGreeAliceYandexProviderReadinessEvaluator, OfflineGreeAliceYandexProviderReadinessEvaluator>();
 builder.Services.AddSingleton<IGreeCloudReadAdapter, OfflineGreeCloudReadAdapter>();
 builder.Services.AddSingleton<IGreeCloudControlAdapter, OfflineGreeCloudControlAdapter>();
 builder.Services.AddSingleton<IGreeCloudControlApprovalEvaluator, OfflineGreeCloudControlApprovalEvaluator>();
