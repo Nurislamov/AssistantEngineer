@@ -160,6 +160,7 @@ yandex-smart-home-offline-api-skeleton.md
 yandex-smart-home-offline-api-contract-hardening.md
 offline-account-device-registry-boundary.md
 gree-cloud-adapter-interface-boundary.md
+read-only-cloud-state-mapping-contract.md
 ```
 
 Current safety position:
@@ -180,6 +181,9 @@ Registry device kinds: split-ac, vrf-gateway, vrf-child-indoor-unit, unknown
 Gree Cloud adapter boundary: offline-fake only
 Gree Cloud read adapter: offline registry only
 Gree Cloud control adapter: dry-run fail-closed
+Read-only state mapping: offline masked fixture only
+State mapping mode: offline-masked-fixture
+Missing/unknown state fields: controlled mapping issues
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

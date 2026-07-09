@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-36 — APPLIED locally / validation pending.
+GREE-ALICE-37 — APPLIED locally / validation pending.
 
-Latest committed GREE-ALICE commit before GREE-ALICE-36:
+Latest pushed GREE-ALICE commit before GREE-ALICE-37:
 
 ```text
-e67e2833 GREE-ALICE-35 Add offline account device registry boundary
+742d4551 GREE-ALICE-36 Add Gree Cloud adapter interface boundary
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-36 Add Gree Cloud adapter interface boundary
+GREE-ALICE-37 Add read-only cloud state mapping contract
 ```
 
 ### Completed stages
@@ -54,20 +54,21 @@ GREE-ALICE-31 — CLOSED / pushed — offline bridge project skeleton
 GREE-ALICE-32/33 — CLOSED / pushed — Yandex Smart Home offline DTO mapping and API skeleton
 GREE-ALICE-34 — CLOSED / pushed — offline API contract tests and error behavior
 GREE-ALICE-35 — CLOSED / committed locally — offline account and device registry boundary
+GREE-ALICE-36 — CLOSED / pushed — Gree Cloud adapter interface boundary
 ```
 
 ### Validation status
 
 ```text
-Latest local validation for GREE-ALICE-35:
+Latest full validation for GREE-ALICE-36:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5496/5496
+Tests: 5506/5506
 git diff --check: PASS
-Push: not performed
-master ahead of origin/master after commit e67e2833
+Push: PASS
+master == origin/master after commit 742d4551
 ```
 
 ### Safety boundary
@@ -89,15 +90,16 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-36 local scope
+### GREE-ALICE-37 local scope
 
 ```text
-Adds Gree Cloud adapter contract records.
-Adds Gree Cloud adapter safety boundary.
-Adds offline-fake read adapter over the offline registry.
-Adds offline-fake control adapter that always fails closed.
-Registers offline-fake adapters only in the isolated bridge API.
-Adds adapter safety, read, control, and static boundary tests.
+Adds masked raw state snapshot contracts.
+Adds normalized read-only bridge state contract.
+Adds state mapping result and issue contracts.
+Adds state mapping safety boundary.
+Adds offline masked fixture provider.
+Adds offline state mapper from masked fields to normalized state.
+Adds mapping safety, fixture, mapper, compatibility, and static boundary tests.
 Updates GREE-ALICE docs index.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
@@ -111,36 +113,36 @@ No DNS/TCP/TLS/MQTT network operation.
 No API/Telegram/runtime/deployment/migration changes.
 ```
 
-### Files changed by GREE-ALICE-36
+### Files changed by GREE-ALICE-37
 
 ```text
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/GreeCloud/**
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/GreeCloud/**
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/GreeCloud/Mapping/**
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/GreeCloud/Mapping/**
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/**
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/**
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceGreeCloudAdapterBoundaryTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceReadOnlyCloudStateMappingTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeApiBoundaryTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/gree-cloud-adapter-interface-boundary.md
+docs/integrations/gree-alice/read-only-cloud-state-mapping-contract.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-36 validation.
+None for local GREE-ALICE-37 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-37 — add read-only cloud state mapping plan and masked model contract
+GREE-ALICE-38 — add bridge safety middleware and kill-switch contracts
 ```
 
-GREE-ALICE-37 may add a read-only cloud state mapping plan and masked model contract only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
+GREE-ALICE-38 may add bridge safety middleware and kill-switch contracts only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 

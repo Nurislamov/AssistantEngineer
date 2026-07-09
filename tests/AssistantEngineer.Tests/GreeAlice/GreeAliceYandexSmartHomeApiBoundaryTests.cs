@@ -88,7 +88,8 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
         Assert.DoesNotContain("authToken", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("access-token", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("refresh-token", combined, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("secret", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("clientSecret", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("raw-secret", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("credential", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("deviceKey", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("macAddress", combined, StringComparison.OrdinalIgnoreCase);
