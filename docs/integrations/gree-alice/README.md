@@ -159,6 +159,7 @@ offline-bridge-project-skeleton.md
 yandex-smart-home-offline-api-skeleton.md
 yandex-smart-home-offline-api-contract-hardening.md
 offline-account-device-registry-boundary.md
+gree-cloud-adapter-interface-boundary.md
 ```
 
 Current safety position:
@@ -176,6 +177,9 @@ Bad/empty request behavior: controlled offline error response where model bindin
 Registry boundary: offline fixture only
 Registry mode: offline-fixture-registry
 Registry device kinds: split-ac, vrf-gateway, vrf-child-indoor-unit, unknown
+Gree Cloud adapter boundary: offline-fake only
+Gree Cloud read adapter: offline registry only
+Gree Cloud control adapter: dry-run fail-closed
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

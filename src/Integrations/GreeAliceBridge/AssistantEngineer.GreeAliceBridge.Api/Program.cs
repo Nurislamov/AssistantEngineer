@@ -1,4 +1,5 @@
 using AssistantEngineer.GreeAliceBridge.Application;
+using AssistantEngineer.GreeAliceBridge.Application.GreeCloud;
 using AssistantEngineer.GreeAliceBridge.Application.Registry;
 using AssistantEngineer.GreeAliceBridge.Application.YandexSmartHome;
 using AssistantEngineer.GreeAliceBridge.Contracts;
@@ -8,6 +9,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IGreeAliceOfflineBridgeService, OfflineGreeAliceBridgeService>();
 builder.Services.AddSingleton<IGreeAliceOfflineRegistryProvider, OfflineGreeAliceRegistryProvider>();
+builder.Services.AddSingleton<IGreeCloudReadAdapter, OfflineGreeCloudReadAdapter>();
+builder.Services.AddSingleton<IGreeCloudControlAdapter, OfflineGreeCloudControlAdapter>();
 builder.Services.AddSingleton<IYandexSmartHomeOfflineService, YandexSmartHomeOfflineService>();
 
 WebApplication app = builder.Build();

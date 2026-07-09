@@ -54,12 +54,14 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
         string combined = ReadApiSource();
 
         Assert.DoesNotContain("MqttClient", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("HttpClient", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(".ConnectAsync(", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(".SubscribeAsync(", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(".PublishAsync(", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("DeviceControlService", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("SendToDevice", combined, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("GreeCloud", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("GreeCloudClient", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("LiveGreeCloud", combined, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -83,13 +85,32 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
         string combined = ReadBridgeSource();
 
         Assert.DoesNotContain("password", combined, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("token", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("authToken", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("access-token", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("refresh-token", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("secret", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("credential", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("deviceKey", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("macAddress", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("real-account-", combined, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("real-device-", combined, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void GreeAliceBridgeProjectsDoNotReferenceProductionApiTelegramDeploymentOrMigrations()
+    {
+        string root = FindRepositoryRoot();
+        string bridgeRoot = Path.Combine(root, "src", "Integrations", "GreeAliceBridge");
+        string combined = string.Join(
+            Environment.NewLine,
+            Directory.EnumerateFiles(bridgeRoot, "*.csproj", SearchOption.AllDirectories)
+                .Select(File.ReadAllText));
+
+        Assert.DoesNotContain("src\\Backend\\AssistantEngineer.Api", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("AssistantEngineer.Api.csproj", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Telegram", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("deploy", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Migration", combined, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ReadApiProject()

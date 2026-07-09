@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-35 — APPLIED locally / validation pending.
+GREE-ALICE-36 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-35:
+Latest committed GREE-ALICE commit before GREE-ALICE-36:
 
 ```text
-20b2e90f GREE-ALICE-34 Harden offline API contract behavior
+e67e2833 GREE-ALICE-35 Add offline account device registry boundary
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-35 Add offline account and device registry boundary
+GREE-ALICE-36 Add Gree Cloud adapter interface boundary
 ```
 
 ### Completed stages
@@ -53,20 +53,21 @@ GREE-ALICE-30 — CLOSED / pushed — choose offline bridge skeleton path
 GREE-ALICE-31 — CLOSED / pushed — offline bridge project skeleton
 GREE-ALICE-32/33 — CLOSED / pushed — Yandex Smart Home offline DTO mapping and API skeleton
 GREE-ALICE-34 — CLOSED / pushed — offline API contract tests and error behavior
+GREE-ALICE-35 — CLOSED / committed locally — offline account and device registry boundary
 ```
 
 ### Validation status
 
 ```text
-Latest full validation for GREE-ALICE-34:
+Latest local validation for GREE-ALICE-35:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5489/5489
+Tests: 5496/5496
 git diff --check: PASS
-Push: PASS
-master == origin/master after commit 20b2e90f
+Push: not performed
+master ahead of origin/master after commit e67e2833
 ```
 
 ### Safety boundary
@@ -88,15 +89,15 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-35 local scope
+### GREE-ALICE-36 local scope
 
 ```text
-Adds offline registry contracts for account, home, room, and devices.
-Adds device kinds for split AC, VRF/GMV gateway, VRF/GMV child indoor unit, and unknown.
-Adds offline registry safety boundary.
-Adds static dummy fixture registry provider.
-Keeps Yandex /devices mapping stable for dummy-gree-ac-001.
-Adds registry boundary tests for dummy-only IDs, VRF parent relation, and secret/MAC absence.
+Adds Gree Cloud adapter contract records.
+Adds Gree Cloud adapter safety boundary.
+Adds offline-fake read adapter over the offline registry.
+Adds offline-fake control adapter that always fails closed.
+Registers offline-fake adapters only in the isolated bridge API.
+Adds adapter safety, read, control, and static boundary tests.
 Updates GREE-ALICE docs index.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
@@ -105,38 +106,41 @@ Keeps device control blocked.
 Keeps Gree+ runtime control blocked.
 Keeps /action dry-run fail-closed.
 No MQTT CONNECT implementation.
+No HttpClient live calls.
 No DNS/TCP/TLS/MQTT network operation.
 No API/Telegram/runtime/deployment/migration changes.
 ```
 
-### Files changed by GREE-ALICE-35
+### Files changed by GREE-ALICE-36
 
 ```text
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/GreeCloud/**
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/GreeCloud/**
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/**
 src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/**
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/**
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineRegistryBoundaryTests.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeOfflineMappingTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceGreeCloudAdapterBoundaryTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeApiBoundaryTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/offline-account-device-registry-boundary.md
+docs/integrations/gree-alice/gree-cloud-adapter-interface-boundary.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-35 validation.
+None for local GREE-ALICE-36 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-36 — add Gree Cloud adapter interface boundary
+GREE-ALICE-37 — add read-only cloud state mapping plan and masked model contract
 ```
 
-GREE-ALICE-36 may add a Gree Cloud adapter interface boundary only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
+GREE-ALICE-37 may add a read-only cloud state mapping plan and masked model contract only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 
