@@ -164,6 +164,8 @@ read-only-cloud-state-mapping-contract.md
 bridge-safety-middleware-and-kill-switches.md
 offline-end-to-end-bridge-flow.md
 isolated-staging-deploy-skeleton.md
+live-read-only-gree-cloud-adapter-proposal.md
+live-read-only-pilot-approval-checklist.md
 ```
 
 Current safety position:
@@ -192,6 +194,8 @@ Control adapter kill switch: enabled
 Action safety: dry-run fail-closed only
 Offline E2E flow tests: health, devices, query, action, unlink
 Isolated staging deploy skeleton: docs-only, offline-only, no production wiring
+Live read-only adapter: proposed, not implemented
+Live read-only approval status: NOT APPROVED
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
@@ -199,6 +203,7 @@ PUBLISH: blocked
 Device control: blocked
 Runtime integration: blocked
 Gree+ runtime control: blocked
+Production wiring: blocked
 Deployment changes: none
 Migrations: none
 ```
