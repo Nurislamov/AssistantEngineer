@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-38 — APPLIED locally / validation pending.
+GREE-ALICE-39 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-38:
+Latest pushed GREE-ALICE commit before GREE-ALICE-39:
 
 ```text
-76f0b3e8 GREE-ALICE-37 Add read-only cloud state mapping contract
+2205d32e GREE-ALICE-38 Add bridge safety middleware kill switches
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-38 Add bridge safety middleware and kill-switch contracts
+GREE-ALICE-39 Add offline end-to-end bridge flow tests
 ```
 
 ### Completed stages
@@ -56,20 +56,21 @@ GREE-ALICE-34 — CLOSED / pushed — offline API contract tests and error behav
 GREE-ALICE-35 — CLOSED / committed locally — offline account and device registry boundary
 GREE-ALICE-36 — CLOSED / pushed — Gree Cloud adapter interface boundary
 GREE-ALICE-37 — CLOSED / pushed — read-only cloud state mapping contract
+GREE-ALICE-38 — CLOSED / pushed — bridge safety middleware and kill switches
 ```
 
 ### Validation status
 
 ```text
-Latest full validation for GREE-ALICE-37:
+Latest full validation for GREE-ALICE-38:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5516/5516
+Tests: 5533/5533
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit 76f0b3e8
+master == origin/master after commit 2205d32e
 ```
 
 ### Safety boundary
@@ -91,16 +92,15 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-38 local scope
+### GREE-ALICE-39 local scope
 
 ```text
-Adds centralized bridge safety policy contracts.
-Adds static kill-switch contracts.
-Adds offline safety decision service.
-Registers safety decision service in the isolated bridge API.
-Routes isolated API endpoints through explicit safety decisions.
-Keeps action/control dry-run fail-closed.
-Adds safety policy, kill-switch, decision, API compatibility, adapter compatibility, and static boundary tests.
+Adds offline end-to-end bridge flow tests.
+Covers health, devices, query, action, and unlink through isolated API endpoints.
+Verifies safety decision path remains offline.
+Verifies action is dry-run fail-closed for known, unknown, and unsupported requests.
+Verifies unlink does not clear production data.
+Verifies offline registry still models VRF child while /devices remains stable.
 Updates GREE-ALICE docs index.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
@@ -115,36 +115,30 @@ No DNS/TCP/TLS/MQTT network operation.
 No API/Telegram/runtime/deployment/migration changes.
 ```
 
-### Files changed by GREE-ALICE-38
+### Files changed by GREE-ALICE-39
 
 ```text
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/Safety/**
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/Safety/**
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/GreeCloud/OfflineGreeCloudControlAdapter.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceBridgeSafetyDecisionTests.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeOfflineApiSkeletonTests.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexSmartHomeApiBoundaryTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineEndToEndBridgeFlowTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/bridge-safety-middleware-and-kill-switches.md
+docs/integrations/gree-alice/offline-end-to-end-bridge-flow.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-38 validation.
+None for local GREE-ALICE-39 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-39 — add offline end-to-end bridge flow tests
+GREE-ALICE-40 — add isolated staging deploy skeleton without production wiring
 ```
 
-GREE-ALICE-39 may add offline end-to-end bridge flow tests only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, deployment, production runtime wiring, or migrations.
+GREE-ALICE-40 may add an isolated staging deploy skeleton without production wiring only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 

@@ -162,6 +162,7 @@ offline-account-device-registry-boundary.md
 gree-cloud-adapter-interface-boundary.md
 read-only-cloud-state-mapping-contract.md
 bridge-safety-middleware-and-kill-switches.md
+offline-end-to-end-bridge-flow.md
 ```
 
 Current safety position:
@@ -188,6 +189,7 @@ Missing/unknown state fields: controlled mapping issues
 Bridge safety layer: offline safety decision service
 Control adapter kill switch: enabled
 Action safety: dry-run fail-closed only
+Offline E2E flow tests: health, devices, query, action, unlink
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
