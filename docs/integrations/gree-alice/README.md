@@ -149,6 +149,9 @@ mqtt-connect-readiness-gate.md
 mqtt-connect-human-safety-review-checklist.md
 mqtt-connect-safety-review-decision-record.md
 mqtt-connect-operator-sign-off-template.md
+mqtt-connect-offline-review-packet-summary.md
+mqtt-live-gate-fail-closed-policy.md
+mqtt-connect-future-live-probe-boundary.md
 ```
 
 Current safety position:
@@ -159,5 +162,6 @@ SUBSCRIBE: blocked
 PUBLISH: blocked
 Device control: blocked
 Runtime integration: blocked
+Next decision: choose explicit live-safety stage or offline bridge skeleton path
 ```
 <!-- GREE-ALICE-DOC-INDEX:END -->

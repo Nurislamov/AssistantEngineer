@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-25 — APPLIED locally / validation pending.
+GREE-ALICE-26 — APPLIED locally / validation pending.
 
-Latest pushed commit before GREE-ALICE-25:
+Latest pushed commit before GREE-ALICE-26:
 
 ```text
-d391ad42 GREE-ALICE-24 Add CONNECT-only safety review decision record
+7c683efa GREE-ALICE-25 Add CONNECT-only operator sign-off template
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-25 Add CONNECT-only operator sign-off template
+GREE-ALICE-26 Add offline review packet and fail-closed live gate policy
 ```
 
 ### Completed stages
@@ -47,20 +47,21 @@ GREE-ALICE-21 — CLOSED / pushed — CONNECT-only dry-run operator guide
 GREE-ALICE-22 — CLOSED / pushed — MQTT CONNECT readiness gate
 GREE-ALICE-23 — CLOSED / pushed — CONNECT-only human safety review checklist
 GREE-ALICE-24 — CLOSED / pushed — CONNECT-only safety review decision record
+GREE-ALICE-25 — CLOSED / pushed — CONNECT-only operator sign-off template
 ```
 
 ### Validation status
 
 ```text
-Latest full validation for GREE-ALICE-24:
+Latest full validation for GREE-ALICE-25:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5436/5436
+Tests: 5442/5442
 git diff --check: PASS
 Push: PASS
-master == origin/master after commit d391ad42
+master == origin/master after commit 7c683efa
 ```
 
 ### Safety boundary
@@ -81,12 +82,16 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-25 local scope
+### GREE-ALICE-26 local scope
 
 ```text
-Adds documentation-only CONNECT operator sign-off template.
-Adds docs/integrations/gree-alice README safe index if missing or updates its generated index block.
-Adds guard tests for the sign-off template.
+Combines planned stages 26-29 into one documentation/tests-only safety stage.
+Adds offline review packet summary.
+Refreshes blocked live-gate decision.
+Adds future CONNECT-only live probe boundary.
+Adds fail-closed and kill-switch policy.
+Updates GREE-ALICE docs index.
+Adds guard tests for the combined package.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
 Keeps PUBLISH blocked.
@@ -99,29 +104,31 @@ No device control.
 No API/Telegram/runtime/deployment/migration changes.
 ```
 
-### Files changed by GREE-ALICE-25
+### Files changed by GREE-ALICE-26
 
 ```text
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/mqtt-connect-operator-sign-off-template.md
-tests/AssistantEngineer.Tests/GreeAlice/MqttConnectOperatorSignOffTemplateTests.cs
+docs/integrations/gree-alice/mqtt-connect-offline-review-packet-summary.md
+docs/integrations/gree-alice/mqtt-live-gate-fail-closed-policy.md
+docs/integrations/gree-alice/mqtt-connect-future-live-probe-boundary.md
+tests/AssistantEngineer.Tests/GreeAlice/MqttConnectOfflineReviewPackageSafetyTests.cs
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-25 validation.
+None for local GREE-ALICE-26 validation.
 Live MQTT remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-26 — CONNECT-only offline review packet summary
+GREE-ALICE-30 — choose live CONNECT-only proof or offline bridge skeleton path
 ```
 
-GREE-ALICE-26 may add an offline review packet summary only. It should still not implement live MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, API integration, Telegram integration, runtime config, deployment, or migrations.
+GREE-ALICE-30 should be a decision stage: either open a separate explicit live-safety stage for CONNECT-only proof, or continue with an offline Yandex Smart Home bridge skeleton that still does not perform live Gree control.
 <!-- GREE-ALICE-STATE:END -->
 
 
