@@ -24,11 +24,11 @@ app.MapGet("/health", () => Results.Ok(new
 app.MapGet("/v1.0/user/devices", (IYandexSmartHomeOfflineService service) => Results.Ok(service.GetDevices()));
 
 app.MapPost("/v1.0/user/devices/query", (
-    YandexQueryRequest request,
+    YandexQueryRequest? request,
     IYandexSmartHomeOfflineService service) => Results.Ok(service.QueryDevices(request)));
 
 app.MapPost("/v1.0/user/devices/action", (
-    YandexActionRequest request,
+    YandexActionRequest? request,
     IYandexSmartHomeOfflineService service) => Results.Ok(service.ExecuteAction(request)));
 
 app.MapPost("/v1.0/user/unlink", (IYandexSmartHomeOfflineService service) =>

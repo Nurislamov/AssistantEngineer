@@ -6,9 +6,9 @@ public interface IYandexSmartHomeOfflineService
 {
     YandexDevicesResponse GetDevices();
 
-    YandexQueryResponse QueryDevices(YandexQueryRequest request);
+    YandexQueryResponse QueryDevices(YandexQueryRequest? request);
 
-    YandexActionResponse ExecuteAction(YandexActionRequest request);
+    YandexActionResponse ExecuteAction(YandexActionRequest? request);
 
     YandexUnlinkResponse Unlink(string userId);
 }

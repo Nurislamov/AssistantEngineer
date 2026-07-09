@@ -157,6 +157,7 @@ yandex-smart-home-offline-endpoint-contract.md
 offline-fixture-model-boundary.md
 offline-bridge-project-skeleton.md
 yandex-smart-home-offline-api-skeleton.md
+yandex-smart-home-offline-api-contract-hardening.md
 ```
 
 Current safety position:
@@ -167,6 +168,10 @@ Runtime mode: offline-fixture
 HTTP endpoint implementation: offline API skeleton only
 Fixture endpoints: enabled
 /action mode: dry-run fail-closed
+Offline API contract: hardened
+Unknown device behavior: offline unknown state or fail-closed action result
+Unknown capability behavior: fail-closed action result
+Bad/empty request behavior: controlled offline error response where model binding succeeds
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

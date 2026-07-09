@@ -62,6 +62,35 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
         Assert.DoesNotContain("GreeCloud", combined, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void GreeAliceBridgeSourceDoesNotContainLiveMqttOrDeviceControlImplementation()
+    {
+        string combined = ReadBridgeSource();
+
+        Assert.DoesNotContain("MqttClient", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(".ConnectAsync(", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(".SubscribeAsync(", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(".PublishAsync(", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("DeviceControlService", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("SendToDevice", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("GreeRuntimeControlService", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("EnableGreeRuntimeControl", combined, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void GreeAliceBridgeSourceDoesNotContainRealCredentialOrSecretMaterial()
+    {
+        string combined = ReadBridgeSource();
+
+        Assert.DoesNotContain("password", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("token", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("secret", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("credential", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("deviceKey", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("macAddress", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("accountId", combined, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static string ReadApiProject()
     {
         string root = FindRepositoryRoot();
@@ -91,6 +120,17 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
         return string.Join(
             Environment.NewLine,
             Directory.EnumerateFiles(apiRoot, "*.cs", SearchOption.AllDirectories)
+                .Select(File.ReadAllText));
+    }
+
+    private static string ReadBridgeSource()
+    {
+        string root = FindRepositoryRoot();
+        string bridgeRoot = Path.Combine(root, "src", "Integrations", "GreeAliceBridge");
+
+        return string.Join(
+            Environment.NewLine,
+            Directory.EnumerateFiles(bridgeRoot, "*.cs", SearchOption.AllDirectories)
                 .Select(File.ReadAllText));
     }
 

@@ -25,30 +25,50 @@ public sealed class YandexSmartHomeOfflineService : IYandexSmartHomeOfflineServi
                 device.Source)).ToArray());
     }
 
-    public YandexQueryResponse QueryDevices(YandexQueryRequest request)
+    public YandexQueryResponse QueryDevices(YandexQueryRequest? request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        IReadOnlyList<YandexDeviceRequestDto> devices = request?.Devices ?? [];
 
-        return new YandexQueryResponse(
-            request.Devices.Select(device => MapState(bridgeService.QueryDeviceState(device.Id))).ToArray());
+        if (devices.Count == 0)
+        {
+            return new YandexQueryResponse([])
+            {
+                Status = "offline-empty-request",
+                ErrorCode = "offline-empty-query",
+                Message = "Offline query request did not include devices."
+            };
+        }
+
+        return new YandexQueryResponse(devices.Select(device => MapState(bridgeService.QueryDeviceState(device.Id))).ToArray());
     }
 
-    public YandexActionResponse ExecuteAction(YandexActionRequest request)
+    public YandexActionResponse ExecuteAction(YandexActionRequest? request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        IReadOnlyList<YandexActionDeviceRequestDto> devices = request?.Devices ?? [];
+
+        if (devices.Count == 0)
+        {
+            return new YandexActionResponse([])
+            {
+                ErrorCode = "offline-empty-action",
+                Message = "Offline action request did not include devices; no action was sent."
+            };
+        }
 
         return new YandexActionResponse(
-            request.Devices.Select(device =>
+            devices.Select(device =>
             {
-                YandexActionCapabilityRequestDto? capability = device.Capabilities.FirstOrDefault();
+                YandexActionCapabilityRequestDto? capability = device.Capabilities?.FirstOrDefault();
+                string capabilityType = capability?.Type ?? "unknown";
                 GreeAliceActionResult result = bridgeService.ApplyAction(new GreeAliceActionRequest(
                     device.Id,
-                    capability?.Type ?? "unknown",
+                    capabilityType,
                     capability?.Action ?? "unknown",
                     capability?.Value));
 
                 return new YandexActionDeviceResultDto(
                     result.DeviceId,
+                    capabilityType,
                     result.Status,
                     result.SentToGreeCloud,
                     result.SentToMqtt,
