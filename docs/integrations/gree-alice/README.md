@@ -171,6 +171,7 @@ live-read-only-pilot-decision-record-template.md
 control-safety-approval-package.md
 control-pilot-approval-checklist.md
 control-pilot-decision-record-template.md
+single-device-control-pilot-skeleton.md
 ```
 
 Current safety position:
@@ -206,6 +207,8 @@ Live read-only pilot: blocked
 Control approval package: exists, NOT APPROVED by default
 Control adapter: fail-closed
 Single-device control pilot: not approved
+Single-device control pilot skeleton: exists, NOT APPROVED by default
+Command sending: disabled
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
