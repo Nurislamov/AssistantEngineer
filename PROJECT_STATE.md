@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-39 — APPLIED locally / validation pending.
+GREE-ALICE-40 — APPLIED locally / validation pending.
 
-Latest pushed GREE-ALICE commit before GREE-ALICE-39:
+Latest committed GREE-ALICE commit before GREE-ALICE-40:
 
 ```text
-2205d32e GREE-ALICE-38 Add bridge safety middleware kill switches
+cd45db1d GREE-ALICE-39 Add offline end-to-end bridge flow tests
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-39 Add offline end-to-end bridge flow tests
+GREE-ALICE-40 Add isolated staging deploy skeleton without production wiring
 ```
 
 ### Completed stages
@@ -57,20 +57,21 @@ GREE-ALICE-35 — CLOSED / committed locally — offline account and device regi
 GREE-ALICE-36 — CLOSED / pushed — Gree Cloud adapter interface boundary
 GREE-ALICE-37 — CLOSED / pushed — read-only cloud state mapping contract
 GREE-ALICE-38 — CLOSED / pushed — bridge safety middleware and kill switches
+GREE-ALICE-39 — CLOSED / committed locally — offline end-to-end bridge flow tests
 ```
 
 ### Validation status
 
 ```text
-Latest full validation for GREE-ALICE-38:
+Latest local validation for GREE-ALICE-39:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5533/5533
+Tests: 5539/5539
 git diff --check: PASS
-Push: PASS
-master == origin/master after commit 2205d32e
+Push: not performed
+master ahead of origin/master after commit cd45db1d
 ```
 
 ### Safety boundary
@@ -92,15 +93,14 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-39 local scope
+### GREE-ALICE-40 local scope
 
 ```text
-Adds offline end-to-end bridge flow tests.
-Covers health, devices, query, action, and unlink through isolated API endpoints.
-Verifies safety decision path remains offline.
-Verifies action is dry-run fail-closed for known, unknown, and unsupported requests.
-Verifies unlink does not clear production data.
-Verifies offline registry still models VRF child while /devices remains stable.
+Adds isolated staging deploy skeleton documentation.
+Documents safe local run commands for AssistantEngineer.GreeAliceBridge.Api only.
+Documents that production AssistantEngineer.Api, Telegram, production deployment scripts, runtime config, and migrations are not modified.
+Documents offline-fixture and dry-run fail-closed defaults.
+Adds static tests for isolated staging docs and bridge API isolation.
 Updates GREE-ALICE docs index.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
@@ -113,32 +113,33 @@ No HttpClient live calls.
 No bridge runtime environment configuration.
 No DNS/TCP/TLS/MQTT network operation.
 No API/Telegram/runtime/deployment/migration changes.
+No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-39
+### Files changed by GREE-ALICE-40
 
 ```text
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineEndToEndBridgeFlowTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceIsolatedStagingDeploySkeletonTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 docs/integrations/gree-alice/README.md
-docs/integrations/gree-alice/offline-end-to-end-bridge-flow.md
+docs/integrations/gree-alice/isolated-staging-deploy-skeleton.md
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-39 validation.
+None for local GREE-ALICE-40 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-40 — add isolated staging deploy skeleton without production wiring
+GREE-ALICE-41 — add live read-only Gree+ adapter proposal
 ```
 
-GREE-ALICE-40 may add an isolated staging deploy skeleton without production wiring only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, or migrations.
+GREE-ALICE-41 may add a live read-only Gree+ adapter proposal only. It should still not implement live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, or migrations.
 <!-- GREE-ALICE-STATE:END -->
 
 

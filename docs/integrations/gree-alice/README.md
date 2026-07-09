@@ -163,6 +163,7 @@ gree-cloud-adapter-interface-boundary.md
 read-only-cloud-state-mapping-contract.md
 bridge-safety-middleware-and-kill-switches.md
 offline-end-to-end-bridge-flow.md
+isolated-staging-deploy-skeleton.md
 ```
 
 Current safety position:
@@ -190,6 +191,7 @@ Bridge safety layer: offline safety decision service
 Control adapter kill switch: enabled
 Action safety: dry-run fail-closed only
 Offline E2E flow tests: health, devices, query, action, unlink
+Isolated staging deploy skeleton: docs-only, offline-only, no production wiring
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
