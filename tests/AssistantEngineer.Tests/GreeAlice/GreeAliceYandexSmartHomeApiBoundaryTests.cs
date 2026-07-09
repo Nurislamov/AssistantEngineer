@@ -1,0 +1,113 @@
+using System;
+using System.IO;
+using System.Linq;
+
+namespace AssistantEngineer.Tests.GreeAlice;
+
+public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
+{
+    [Fact]
+    public void ApiProjectExistsAndIsIncludedInSolution()
+    {
+        string root = FindRepositoryRoot();
+        string projectPath = Path.Combine(
+            root,
+            "src",
+            "Integrations",
+            "GreeAliceBridge",
+            "AssistantEngineer.GreeAliceBridge.Api",
+            "AssistantEngineer.GreeAliceBridge.Api.csproj");
+        string solutionText = File.ReadAllText(Path.Combine(root, "AssistantEngineer.sln"));
+
+        Assert.True(File.Exists(projectPath), "Expected isolated GreeAliceBridge API project.");
+        Assert.Contains("AssistantEngineer.GreeAliceBridge.Api.csproj", solutionText, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ApiProjectReferencesOnlyGreeAliceBridgeProjects()
+    {
+        string text = ReadApiProject();
+
+        Assert.Contains("AssistantEngineer.GreeAliceBridge.Application.csproj", text, StringComparison.Ordinal);
+        Assert.Contains("AssistantEngineer.GreeAliceBridge.Contracts.csproj", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("src\\Backend\\AssistantEngineer.Api", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("AssistantEngineer.Api.csproj", text, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Telegram", text, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ApiSkeletonDoesNotContainProductionRuntimeWiring()
+    {
+        string combined = ReadApiSource();
+
+        Assert.DoesNotContain("UseNpgsql", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Migration", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ConnectionString", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Telegram", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("AssistantEngineer.Api", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("deploy", combined, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void ApiSkeletonDoesNotImplementLiveMqttOrDeviceControl()
+    {
+        string combined = ReadApiSource();
+
+        Assert.DoesNotContain("MqttClient", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(".ConnectAsync(", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(".SubscribeAsync(", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(".PublishAsync(", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("DeviceControlService", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("SendToDevice", combined, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("GreeCloud", combined, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ReadApiProject()
+    {
+        string root = FindRepositoryRoot();
+        string path = Path.Combine(
+            root,
+            "src",
+            "Integrations",
+            "GreeAliceBridge",
+            "AssistantEngineer.GreeAliceBridge.Api",
+            "AssistantEngineer.GreeAliceBridge.Api.csproj");
+
+        Assert.True(File.Exists(path), "Expected API project file to exist: " + path);
+
+        return File.ReadAllText(path);
+    }
+
+    private static string ReadApiSource()
+    {
+        string root = FindRepositoryRoot();
+        string apiRoot = Path.Combine(
+            root,
+            "src",
+            "Integrations",
+            "GreeAliceBridge",
+            "AssistantEngineer.GreeAliceBridge.Api");
+
+        return string.Join(
+            Environment.NewLine,
+            Directory.EnumerateFiles(apiRoot, "*.cs", SearchOption.AllDirectories)
+                .Select(File.ReadAllText));
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        DirectoryInfo? current = new(AppContext.BaseDirectory);
+
+        while (current is not null)
+        {
+            if (File.Exists(Path.Combine(current.FullName, "AssistantEngineer.sln")))
+            {
+                return current.FullName;
+            }
+
+            current = current.Parent;
+        }
+
+        throw new InvalidOperationException("Could not locate AssistantEngineer.sln from " + AppContext.BaseDirectory);
+    }
+}

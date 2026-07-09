@@ -156,6 +156,7 @@ offline-bridge-path-decision.md
 yandex-smart-home-offline-endpoint-contract.md
 offline-fixture-model-boundary.md
 offline-bridge-project-skeleton.md
+yandex-smart-home-offline-api-skeleton.md
 ```
 
 Current safety position:
@@ -163,7 +164,9 @@ Current safety position:
 ```text
 Chosen path: offline Yandex Smart Home bridge skeleton first
 Runtime mode: offline-fixture
-HTTP endpoint implementation: not implemented
+HTTP endpoint implementation: offline API skeleton only
+Fixture endpoints: enabled
+/action mode: dry-run fail-closed
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

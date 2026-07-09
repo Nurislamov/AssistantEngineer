@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AssistantEngineer.GreeAliceBridge.Application\AssistantEngineer.GreeAliceBridge.Application.csproj" />
+    <ProjectReference Include="..\AssistantEngineer.GreeAliceBridge.Contracts\AssistantEngineer.GreeAliceBridge.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
