@@ -88,6 +88,8 @@ public sealed class GreeAliceYandexSmartHomeApiBoundaryTests
             .Replace("RealYandexClientCredentialsConfigured", string.Empty, StringComparison.Ordinal)
             .Replace("RealYandexClientCredentialsAllowedInRepository", string.Empty, StringComparison.Ordinal)
             .Replace("ProductionCredentialsConfigured", string.Empty, StringComparison.Ordinal)
+            .Replace("RequiresRealYandexCredentials", string.Empty, StringComparison.Ordinal)
+            .Replace("RequiresRealGreeCredentials", string.Empty, StringComparison.Ordinal)
             .Replace("AllowsRealYandexCredentialsInRepository", string.Empty, StringComparison.Ordinal)
             .Replace("no-gree-credentials-in-repo", string.Empty, StringComparison.Ordinal)
             .Replace("credentials-rotation-plan-required", string.Empty, StringComparison.Ordinal)

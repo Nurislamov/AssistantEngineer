@@ -184,6 +184,8 @@ yandex-provider-readiness-package.md
 yandex-provider-submission-checklist.md
 yandex-provider-manual-smoke-plan.md
 yandex-provider-security-review.md
+local-yandex-provider-smoke-harness.md
+local-yandex-provider-smoke-expectations.md
 ```
 
 Current safety position:
@@ -244,6 +246,13 @@ Provider registration: NOT APPROVED
 Real OAuth implementation: not implemented
 Real Yandex credentials/tokens in repository: forbidden
 Production endpoint/deploy: disabled
+Local Yandex provider smoke harness: exists
+Smoke harness mode: offline-local only
+Smoke harness real Yandex calls: disabled
+Smoke harness OAuth: not implemented
+Smoke harness real credentials/tokens: not used
+Smoke harness live Gree+ Cloud calls: disabled
+Smoke harness MQTT/control: blocked
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
