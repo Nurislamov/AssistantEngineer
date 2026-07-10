@@ -7,6 +7,58 @@ namespace AssistantEngineer.Tests.GreeAlice;
 public sealed class GreeAliceGreePlusCommandBuilderTests
 {
     [Theory]
+    [MemberData(nameof(SerializerCases))]
+    public void SerializerReturnsExactCompactJson(GreePlusCommandPayload payload, string expectedJson)
+    {
+        string json = GreePlusCommandPayloadJsonSerializer.Serialize(payload);
+
+        Assert.Equal(expectedJson, json);
+        Assert.StartsWith("{\"t\":\"cmd\",\"opt\":", json, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void SerializerEmitsOnlyGreePlusCommandProperties()
+    {
+        string json = GreePlusCommandPayloadJsonSerializer.Serialize(GreePlusCommandBuilder.SetTemperature(26));
+        using JsonDocument document = JsonDocument.Parse(json);
+        string[] names = document.RootElement.EnumerateObject().Select(static property => property.Name).ToArray();
+        JsonElement values = document.RootElement.GetProperty("p");
+
+        Assert.Equal(["t", "opt", "p"], names);
+        Assert.Equal(JsonValueKind.Number, values[0].ValueKind);
+        Assert.DoesNotContain("\"26\"", json, StringComparison.Ordinal);
+
+        string[] forbiddenFields =
+        [
+            "m" + "ac",
+            "device" + "Mac",
+            "device" + "Id",
+            "home" + "Id",
+            "u" + "id",
+            "access" + "_token"
+        ];
+
+        foreach (string field in forbiddenFields)
+        {
+            Assert.DoesNotContain(field, json, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
+    public void SerializerRejectsInvalidPayloadShape()
+    {
+        Assert.Throws<ArgumentNullException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(null!));
+        Assert.Throws<ArgumentNullException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(new GreePlusCommandPayload("cmd", null!, [1])));
+        Assert.Throws<ArgumentNullException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(new GreePlusCommandPayload("cmd", ["Pow"], null!)));
+        Assert.Throws<ArgumentException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(new GreePlusCommandPayload("status", ["Pow"], [1])));
+        Assert.Throws<ArgumentException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(new GreePlusCommandPayload("cmd", [], [])));
+        Assert.Throws<ArgumentException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(new GreePlusCommandPayload("cmd", ["Pow"], [])));
+        Assert.Throws<ArgumentException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(new GreePlusCommandPayload("cmd", ["Pow", "SetTem"], [1])));
+        Assert.Throws<ArgumentException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(new GreePlusCommandPayload("cmd", [""], [1])));
+        Assert.Throws<ArgumentException>(() => GreePlusCommandPayloadJsonSerializer.Serialize(new GreePlusCommandPayload("cmd", ["Pow"], [null!])));
+    }
+
+    [Theory]
     [MemberData(nameof(CommandCases))]
     public void BuilderReturnsExactCommandPayloads(string caseId, GreePlusCommandPayload payload, string[] expectedOpt, object[] expectedP)
     {
@@ -67,19 +119,16 @@ public sealed class GreeAliceGreePlusCommandBuilderTests
     public void CommandBuilderFilesStayOfflineAndLocalOnly()
     {
         string root = FindRepositoryRoot();
-        string[] relativePaths =
-        [
-            Path.Combine("tools", "AssistantEngineer.Tools.GreeCloudProbe", "GreePlusCommands", "GreePlusCommandBuilder.cs"),
-            Path.Combine("tools", "AssistantEngineer.Tools.GreeCloudProbe", "GreePlusCommands", "GreePlusCommandPayload.cs"),
-            Path.Combine("tools", "AssistantEngineer.Tools.GreeCloudProbe", "GreePlusCommands", "GreePlusFanSpeed.cs"),
-            Path.Combine("tools", "AssistantEngineer.Tools.GreeCloudProbe", "GreePlusCommands", "GreePlusFeature.cs"),
-            Path.Combine("tools", "AssistantEngineer.Tools.GreeCloudProbe", "GreePlusCommands", "GreePlusMode.cs"),
-            Path.Combine("tools", "AssistantEngineer.Tools.GreeCloudProbe", "GreePlusCommands", "GreePlusSwingPosition.cs"),
-            Path.Combine("tests", "AssistantEngineer.Tests", "GreeAlice", "GreeAliceGreePlusCommandBuilderTests.cs")
-        ];
+        string commandRoot = Path.Combine(root, "tools", "AssistantEngineer.Tools.GreeCloudProbe", "GreePlusCommands");
+        string testRoot = Path.Combine(root, "tests", "AssistantEngineer.Tests", "GreeAlice");
+        string[] paths = Directory.EnumerateFiles(commandRoot, "*.cs", SearchOption.TopDirectoryOnly)
+            .Concat(Directory.EnumerateFiles(testRoot, "*GreePlusCommand*.cs", SearchOption.TopDirectoryOnly))
+            .Order(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
         string combined = string.Join(
             Environment.NewLine,
-            relativePaths.Select(path => File.ReadAllText(Path.Combine(root, path))));
+            paths.Select(File.ReadAllText));
 
         string[] forbidden =
         [
@@ -90,13 +139,43 @@ public sealed class GreeAliceGreePlusCommandBuilderTests
             "home" + "Id",
             "u" + "id",
             "." + "local",
-            "m" + "qtt"
+            "Http" + "Client",
+            "So" + "cket",
+            "Tcp" + "Client",
+            "Udp" + "Client",
+            "Web" + "So" + "cket",
+            "System" + ".Net",
+            "M" + "qtt"
         ];
 
         foreach (string value in forbidden)
         {
             Assert.DoesNotContain(value, combined, StringComparison.OrdinalIgnoreCase);
         }
+    }
+
+    public static IEnumerable<object[]> SerializerCases()
+    {
+        yield return [GreePlusCommandBuilder.PowerOn(), "{\"t\":\"cmd\",\"opt\":[\"Pow\",\"WdSpd\",\"Quiet\",\"Tur\"],\"p\":[1,0,0,0]}"];
+        yield return [GreePlusCommandBuilder.PowerOff(25), "{\"t\":\"cmd\",\"opt\":[\"TemUn\",\"SetTem\",\"TemRec\",\"Pow\",\"SwhSlp\",\"SlpMod\",\"Air\"],\"p\":[0,25,0,0,0,0,0]}"];
+        yield return [GreePlusCommandBuilder.SetTemperature(26), "{\"t\":\"cmd\",\"opt\":[\"SetTem\",\"TemUn\",\"TemRec\"],\"p\":[26,0,0]}"];
+        yield return [GreePlusCommandBuilder.SetMode(GreePlusMode.Auto), "{\"t\":\"cmd\",\"opt\":[\"Dmod\",\"Dwet\",\"Mod\"],\"p\":[15,0,0]}"];
+        yield return [GreePlusCommandBuilder.SetMode(GreePlusMode.Cool, 25), "{\"t\":\"cmd\",\"opt\":[\"Dmod\",\"Dwet\",\"Mod\",\"SetTem\",\"TemRec\"],\"p\":[15,0,1,25,0]}"];
+        yield return [GreePlusCommandBuilder.SetMode(GreePlusMode.Dry), "{\"t\":\"cmd\",\"opt\":[\"AssHt\",\"Dmod\",\"Dwet\",\"Mod\",\"WdSpd\",\"Quiet\",\"Tur\"],\"p\":[0,15,0,2,1,0,0]}"];
+        yield return [GreePlusCommandBuilder.SetMode(GreePlusMode.Fan), "{\"t\":\"cmd\",\"opt\":[\"Dmod\",\"Dwet\",\"Mod\"],\"p\":[15,0,3]}"];
+        yield return [GreePlusCommandBuilder.SetMode(GreePlusMode.Heat), "{\"t\":\"cmd\",\"opt\":[\"Dmod\",\"Dwet\",\"Mod\"],\"p\":[15,0,4]}"];
+        yield return [GreePlusCommandBuilder.SetFan(GreePlusFanSpeed.Auto), "{\"t\":\"cmd\",\"opt\":[\"WdSpd\",\"Quiet\",\"Tur\"],\"p\":[0,0,0]}"];
+        yield return [GreePlusCommandBuilder.SetFan(GreePlusFanSpeed.High), "{\"t\":\"cmd\",\"opt\":[\"WdSpd\",\"Quiet\",\"Tur\"],\"p\":[5,0,0]}"];
+        yield return [GreePlusCommandBuilder.SetFan(GreePlusFanSpeed.Quiet), "{\"t\":\"cmd\",\"opt\":[\"Quiet\",\"Tur\"],\"p\":[2,0]}"];
+        yield return [GreePlusCommandBuilder.SetFan(GreePlusFanSpeed.Turbo), "{\"t\":\"cmd\",\"opt\":[\"Quiet\",\"Tur\"],\"p\":[0,1]}"];
+        yield return [GreePlusCommandBuilder.SetFeature(GreePlusFeature.Light, enabled: true), "{\"t\":\"cmd\",\"opt\":[\"Lig\"],\"p\":[1]}"];
+        yield return [GreePlusCommandBuilder.SetFeature(GreePlusFeature.Light, enabled: false), "{\"t\":\"cmd\",\"opt\":[\"Lig\"],\"p\":[0]}"];
+        yield return [GreePlusCommandBuilder.SetFeature(GreePlusFeature.EnergySave, enabled: true), "{\"t\":\"cmd\",\"opt\":[\"WdSpd\",\"Quiet\",\"Tur\",\"SvSt\"],\"p\":[0,0,0,1]}"];
+        yield return [GreePlusCommandBuilder.SetFeature(GreePlusFeature.EnergySave, enabled: false), "{\"t\":\"cmd\",\"opt\":[\"SvSt\"],\"p\":[0]}"];
+        yield return [GreePlusCommandBuilder.SetFeature(GreePlusFeature.Sleep, enabled: true), "{\"t\":\"cmd\",\"opt\":[\"SvSt\",\"Dmod\",\"SlpMod\",\"SwhSlp\"],\"p\":[0,15,1,1]}"];
+        yield return [GreePlusCommandBuilder.SetFeature(GreePlusFeature.Sleep, enabled: false), "{\"t\":\"cmd\",\"opt\":[\"Dmod\",\"SlpMod\",\"SwhSlp\"],\"p\":[15,0,0]}"];
+        yield return [GreePlusCommandBuilder.SetVerticalSwing(GreePlusSwingPosition.Angle4), "{\"t\":\"cmd\",\"opt\":[\"SwUpDn\"],\"p\":[5]}"];
+        yield return [GreePlusCommandBuilder.SetHorizontalSwing(GreePlusSwingPosition.Angle5), "{\"t\":\"cmd\",\"opt\":[\"SwingLfRig\"],\"p\":[6]}"];
     }
 
     public static IEnumerable<object[]> CommandCases()

@@ -319,6 +319,9 @@ Yandex OAuth/provider dev smoke: yandex-oauth-provider-dev-smoke.md
 Gree Plus command map: gree-plus-plugin-10001-command-map.md
 Gree Plus command map JSON: gree-plus-plugin-10001-command-map.json
 Gree Plus command builder: offline/local payload builder only
+Gree Plus command serializer: offline compact JSON only
+Gree Plus command serializer fields: t/opt/p only
+Gree Plus command serializer device identifiers: not emitted
 Gree Plus command builder network operations: disabled
 Gree Plus command builder timers: out of scope
 Next implementation stage: GREE-ALICE-PILOT-1B.
