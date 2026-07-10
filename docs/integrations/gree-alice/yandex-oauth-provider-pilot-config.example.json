@@ -1,0 +1,19 @@
+{
+  "GreeAliceBridge": {
+    "Yandex": {
+      "PilotMode": "PrivateSkillDevOnly",
+      "ProviderMode": "DummyOfflineDevices",
+      "PublicBaseUrl": "https://<your-bridge-domain>",
+      "ClientId": "<set-via-secret-store-or-env>",
+      "ClientSecret": "<set-via-secret-store-or-env>",
+      "AllowedRedirectUris": [
+        "https://<yandex-configured-redirect-uri>"
+      ],
+      "AuthorizationCodeLifetimeSeconds": 300,
+      "AccessTokenLifetimeSeconds": 3600,
+      "RefreshTokenLifetimeSeconds": 2592000,
+      "RequireHttpsPublicBaseUrl": true,
+      "EnableDevOnlyInMemoryTokenStore": true
+    }
+  }
+}

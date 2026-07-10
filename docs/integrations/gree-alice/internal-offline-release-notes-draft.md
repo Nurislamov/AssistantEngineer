@@ -94,3 +94,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\integrations\gree-alice\run-l
 1. Archive masked RC evidence.
 2. Decide whether to tag the internal/offline RC.
 3. Choose a separate production pilot path only after explicit approval.
+4. Use [Yandex OAuth provider pilot contract](./yandex-oauth-provider-pilot-contract.md) and [pilot config example](./yandex-oauth-provider-pilot-config.example.json) before GREE-ALICE-PILOT-1B.
+
+Production Yandex release remains NOT READY.
+Next implementation stage: GREE-ALICE-PILOT-1B.

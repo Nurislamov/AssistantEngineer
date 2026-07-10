@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-RC1 — CLOSED locally / internal offline RC / push pending.
+GREE-ALICE-PILOT-1A — APPLIED locally / validation pending.
 
 Latest closed GREE-ALICE commit:
 
 ```text
-b60fb382 GREE-ALICE-53 Add release readiness audit and RC path
+8603aaef GREE-ALICE-RC1 Cut internal offline release candidate
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-RC1 Cut internal offline release candidate
+GREE-ALICE-PILOT-1A Design Yandex OAuth provider pilot contract
 ```
 
 ### Completed stages
@@ -72,21 +72,23 @@ GREE-ALICE-50 — CLOSED / pushed — local Yandex provider smoke harness
 GREE-ALICE-51 — CLOSED / pushed — local bridge runbook and smoke script boundary
 GREE-ALICE-52 — CLOSED / pushed — local bridge HTTP smoke endpoint boundary
 GREE-ALICE-53 — CLOSED / pushed — release readiness audit and RC path
+GREE-ALICE-RC1 — CLOSED / pushed — internal offline release candidate
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-53:
+Latest validation for GREE-ALICE-RC1:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5693/5693
+Tests: 5694/5694
 git diff --check: PASS
 Local smoke script: PASS
+Optional HTTP smoke http://localhost:5005: PASS
 Push: PASS
-master == origin/master after commit b60fb382
+master == origin/master after commit 8603aaef
 ```
 
 ### Safety boundary
@@ -108,14 +110,16 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-RC1 local scope
+### GREE-ALICE-PILOT-1A local scope
 
 ```text
-Cuts internal/offline release candidate locally.
-Marks RC checklist as CUT LOCALLY / PUSH PENDING.
-Updates release notes to RC1 / INTERNAL OFFLINE RELEASE CANDIDATE / NOT PRODUCTION.
+Designs real Yandex OAuth/provider pilot contract.
+Adds safe placeholder-only pilot configuration example.
+Documents official Yandex Smart Home pilot constraints.
+Defines pilot account linking and Provider Adapter API flow.
+Keeps real OAuth runtime not implemented.
 Keeps current Yandex Smart Home production release status as NOT READY.
-Sets next real pilot track to GREE-ALICE-PILOT-1.
+Sets next implementation stage to GREE-ALICE-PILOT-1B.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
 Live read-only pilot remains not approved.
@@ -154,6 +158,7 @@ Local HTTP smoke boundary remains localhost-only.
 Internal/offline engineering release is near-ready.
 Yandex Smart Home production release is not ready.
 Internal/offline RC1 is cut locally.
+Private skill pilot contract is design-only.
 Smoke harness does not call real Yandex.
 Smoke script does not call real Yandex.
 HTTP smoke boundary does not call real Yandex.
@@ -176,6 +181,9 @@ Smoke harness does not deploy anything.
 Smoke script does not deploy anything.
 HTTP smoke boundary does not deploy production.
 Release audit does not add runtime functionality.
+Pilot contract does not add runtime functionality.
+Pilot contract does not add real OAuth endpoints.
+Pilot contract does not add real Yandex credentials or tokens.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
 Keeps PUBLISH blocked.
@@ -190,32 +198,32 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-RC1
+### Files changed by GREE-ALICE-PILOT-1A
 
 ```text
-docs/integrations/gree-alice/internal-offline-rc-checklist.md
-docs/integrations/gree-alice/internal-offline-release-notes-draft.md
+docs/integrations/gree-alice/yandex-oauth-provider-pilot-contract.md
+docs/integrations/gree-alice/yandex-oauth-provider-pilot-config.example.json
 docs/integrations/gree-alice/release-readiness-audit.md
+docs/integrations/gree-alice/internal-offline-release-notes-draft.md
 docs/integrations/gree-alice/README.md
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceReleaseReadinessAuditTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexOAuthProviderPilotContractTests.cs
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-RC1 validation.
+None for local GREE-ALICE-PILOT-1A validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-PILOT-1 — implement real Yandex OAuth/provider minimal skeleton
+GREE-ALICE-PILOT-1B — implement dev-only Yandex OAuth/provider skeleton
 ```
 
-GREE-ALICE-PILOT-1 should start the first real pilot track only after the internal/offline RC is pushed/reviewed. It should still not add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
+GREE-ALICE-PILOT-1B may implement a dev-only Yandex OAuth/provider skeleton from the PILOT-1A contract. It should still not add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
 <!-- GREE-ALICE-STATE:END -->
 
 

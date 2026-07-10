@@ -194,6 +194,8 @@ local-bridge-http-smoke-boundary.md
 release-readiness-audit.md
 internal-offline-rc-checklist.md
 internal-offline-release-notes-draft.md
+yandex-oauth-provider-pilot-contract.md
+yandex-oauth-provider-pilot-config.example.json
 ```
 
 Current safety position:
@@ -305,6 +307,9 @@ Recommended next stage: GREE-ALICE-RC1 — cut internal offline release candidat
 Current internal/offline status: GREE-ALICE-RC1 candidate.
 Current production Yandex status: NOT READY.
 Next real pilot track: GREE-ALICE-PILOT-1.
+Yandex OAuth/provider pilot contract: yandex-oauth-provider-pilot-contract.md
+Yandex OAuth/provider pilot config example: yandex-oauth-provider-pilot-config.example.json
+Next implementation stage: GREE-ALICE-PILOT-1B.
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

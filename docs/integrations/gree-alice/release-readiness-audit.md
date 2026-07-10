@@ -163,6 +163,18 @@ Yandex Smart Home production release remains NOT READY.
 Recommended next track after RC1:
 GREE-ALICE-PILOT-1 — implement real Yandex OAuth/provider minimal skeleton.
 
+## PILOT-1A contract decision
+
+The real pilot track starts with design-only contract work:
+
+- [Yandex OAuth provider pilot contract](./yandex-oauth-provider-pilot-contract.md)
+- [Yandex OAuth provider pilot config example](./yandex-oauth-provider-pilot-config.example.json)
+
+PILOT-1A does not implement runtime OAuth, real provider registration, real credentials/tokens, production deploy, live Gree+ Cloud, MQTT, or device control.
+
+Recommended next implementation stage:
+GREE-ALICE-PILOT-1B — implement dev-only Yandex OAuth/provider skeleton.
+
 ## Final decision
 
 Internal/offline engineering release: NEAR READY.
