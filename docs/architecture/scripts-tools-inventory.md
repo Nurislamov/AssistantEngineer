@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `100`
+- `PowerShell` scripts reviewed: `101`
 - `CSharpTool` projects reviewed: `15`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `123`
+- Total reviewed entries: `124`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
@@ -73,6 +73,8 @@ ED-24GMVX.17 adds one ignored-artifact GMV X review-bundle exporter. It reads ru
 renders review markdown/CSV reports, writes ZIP bundles outside Git by operator choice, and does not edit diagnostic cards.
 
 GREE-ALICE-02 adds one scaffold console probe tool for Gree+ Cloud account, region, device discovery, and masked diagnostic output validation before any runtime bridge service is added.
+
+GREE-ALICE-51 adds one offline/local bridge smoke script boundary. It performs local validation only and must not do production deploy, call Yandex/Gree live endpoints, use OAuth/secrets/tokens, use MQTT, or control devices.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
