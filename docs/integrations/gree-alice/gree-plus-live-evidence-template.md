@@ -81,6 +81,7 @@ email redacted: yes/no
 uid/user id redacted: yes/no
 homeId redacted: yes/no
 deviceId redacted: yes/no
+deviceid query redacted: yes/no
 mac redacted: yes/no
 access_token redacted: yes/no
 refresh_token redacted: yes/no
@@ -89,13 +90,20 @@ cookie/session redacted: yes/no
 phone redacted: yes/no
 account name redacted: yes/no
 local IP redacted: yes/no
+task/window token redacted: yes/no
+analytics user_id pValue redacted: yes/no
+analytics appliance name pValue redacted: yes/no
 raw logs/screenshots/PCAPs excluded: yes/no
+extractor run on redacted input only: yes/no
+generated extract files kept outside Git: yes/no
 ```
 
 ## Conclusion
 
 ```text
 Contract status: unknown/partial/confirmed-read-only
+Status callback shape confirmed: yes/no
+Exact HTTP live read contract confirmed: yes/no
 Remaining gaps:
 Reviewer:
 Review date:

@@ -340,6 +340,9 @@ Gree Plus live read-only contract confirmed: no
 Gree Plus live evidence capture package: exists
 Gree Plus live evidence capture mode: manual adb logcat, read-only scenario, masked summary only
 Gree Plus live evidence redaction helper: offline/local only at scripts/integrations/gree-alice/redact-gree-plus-live-evidence.ps1
+Gree Plus live evidence extraction helper: offline/local only at scripts/integrations/gree-alice/extract-gree-plus-live-evidence.ps1, redacted input only
+Gree Plus live evidence confirmed so far: plugin/status callback shape
+Gree Plus live evidence unresolved: exact HTTP live read endpoint, method, headers, body, response envelope
 Gree Plus live evidence raw artifacts in repository: forbidden
 Gree Plus live read-only probe local approval: GREE_ALICE_ENABLE_LIVE_READ=true plus explicit read-only approval plus one allowlisted alias
 Gree Plus live read-only probe config source: .local or environment only

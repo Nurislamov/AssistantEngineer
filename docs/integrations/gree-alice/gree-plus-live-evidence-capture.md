@@ -32,7 +32,7 @@ adb logcat -v time > <untracked-local-capture-path>
 
 Stop capture after the device status is loaded. Immediately redact the capture before sharing or summarizing it.
 
-The helper script is offline-only and has no default input path:
+The redaction helper script is offline-only and has no default input path:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\integrations\gree-alice\redact-gree-plus-live-evidence.ps1 -InputPath <raw-capture-path> -OutputPath <redacted-output-path>
@@ -43,6 +43,14 @@ You may also pass a short pasted sample:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\integrations\gree-alice\redact-gree-plus-live-evidence.ps1 -Text "<sample>"
 ```
+
+After redaction, run the extractor only on the redacted or super-redacted file:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\integrations\gree-alice\extract-gree-plus-live-evidence.ps1 -InputPath <redacted-output-path> -OutputDirectory <untracked-extract-directory>
+```
+
+The extractor writes small local files such as `status-evidence.txt`, `control-risk-evidence.txt`, `negative-control-proof.txt`, `contract-gaps.txt`, `leak-check.txt`, and `summary.md`. Keep generated evidence files outside Git unless a later stage explicitly approves a masked summary format.
 
 ## Positive evidence to look for
 
@@ -91,6 +99,10 @@ command payload sent
 
 If any write-like operation appears, do not use the capture as read-only contract evidence. Stop and document the exact redacted line and user action that caused it.
 
+`sendDataToDevice` may appear in analytics, click traces, or bridge logging. Treat that as a risk candidate, not proof of live control by itself. Confirmed control proof requires stronger markers such as `t=cmd`, `control_order`, `dev_control`, MQTT publish, or a write/control/action request carrying a command body.
+
+Status fields such as `Pow`, `Mod`, `SetTem`, and `WdSpd` inside `t=status` or `fullstatueJson` are status evidence, not command proof.
+
 ## Redaction requirements
 
 Everything shared or committed must be redacted:
@@ -108,9 +120,13 @@ cookie/session -> <SESSION>
 phone -> <PHONE>
 account name -> <ACCOUNT>
 local IP -> <LOCAL_IP>
+task/window token -> <WINDOW_TOKEN>
+analytics appliance name -> <DEVICE_ALIAS_OR_MAC>
 ```
 
 Never commit raw logs, raw PCAPs, screenshots with identifiers, account values, MACs, tokens, cookies, home IDs, device IDs, emails, or local `.local` files.
+
+Current evidence status: manual read-only capture can confirm plugin/callback/status shape, including `cordova.callbackFromNative`, `fullstatueJson`, `t=status`, and safe status fields. It still does not confirm the exact HTTP live read endpoint, method, headers, request body, and response envelope needed for a live status client.
 
 ## Review package
 

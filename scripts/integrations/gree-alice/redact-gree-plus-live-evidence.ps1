@@ -12,9 +12,13 @@ function Redact-GreePlusLiveEvidence {
 
     $redacted = $Value
 
+    $redacted = [regex]::Replace($redacted, "(?i)(pName\s*[:=]\s*user_id\b.*?pValue\s*[:=]\s*)([^,\r\n;\s}]+)", '${1}<UID>')
+    $redacted = [regex]::Replace($redacted, "(?i)(pName\s*[:=]\s*Appliance_name\b.*?pValue\s*[:=]\s*)([^,\r\n;\s}]+)", '${1}<DEVICE_ALIAS_OR_MAC>')
     $redacted = [regex]::Replace($redacted, "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", "<EMAIL>")
     $redacted = [regex]::Replace($redacted, "(?i)(Authorization\s*[:=]\s*)(Bearer\s+)?[^,\r\n;]+", '${1}<AUTHORIZATION>')
+    $redacted = [regex]::Replace($redacted, "(?i)(Bearer\s+)[A-Za-z0-9._~+/-]+=*", '${1}<AUTHORIZATION>')
     $redacted = [regex]::Replace($redacted, "(?i)(Cookie|Session)(\s*[:=]\s*)[^,\r\n;]+", '${1}${2}<SESSION>')
+    $redacted = [regex]::Replace($redacted, "(?i)\b((?:task|window|activity)[^;\r\n]*?\btoken\s*[:=]\s*)[^,\r\n;\s}]+", '${1}<WINDOW_TOKEN>')
     $redacted = [regex]::Replace($redacted, "\b(?:10|172\.(?:1[6-9]|2\d|3[01])|192\.168)\.\d{1,3}\.\d{1,3}\b", "<LOCAL_IP>")
     $redacted = [regex]::Replace($redacted, "(?i)\b(?:\+?\d[\d\s().-]{8,}\d)\b", "<PHONE>")
     $redacted = [regex]::Replace($redacted, "\b(?:[0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}\b", "<DEVICE_MAC>")
@@ -23,7 +27,10 @@ function Redact-GreePlusLiveEvidence {
         "access_token" = "<ACCESS_TOKEN>"
         "refresh_token" = "<REFRESH_TOKEN>"
         "token" = "<ACCESS_TOKEN>"
+        "windowToken" = "<WINDOW_TOKEN>"
+        "activityToken" = "<WINDOW_TOKEN>"
         "uid" = "<UID>"
+        "user_id" = "<UID>"
         "userId" = "<UID>"
         "homeId" = "<HOME_ID>"
         "deviceId" = "<DEVICE_ID>"
@@ -39,8 +46,12 @@ function Redact-GreePlusLiveEvidence {
         $marker = $entry.Value
         $redacted = [regex]::Replace(
             $redacted,
-            "(?i)([""']?$key[""']?\s*[:=]\s*)([""']?)[^,""'\s;}\]]+(\2)",
+            "(?i)(\\?[""']?$key\\?[""']?\s*[:=]\s*)(\\?[""']?)[^<,""'\s;&;}\]]+(\2)",
             "`$1`$2$marker`$3")
+        $redacted = [regex]::Replace(
+            $redacted,
+            "(?i)([?&]$key=)[^&\s;]+",
+            "`$1$marker")
     }
 
     return $redacted
