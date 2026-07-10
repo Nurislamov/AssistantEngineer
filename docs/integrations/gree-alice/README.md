@@ -199,6 +199,7 @@ yandex-oauth-provider-pilot-config.example.json
 yandex-oauth-provider-dev-smoke.md
 gree-plus-plugin-10001-command-map.md
 gree-plus-plugin-10001-command-map.json
+gree-plus-live-read-only-probe.md
 ```
 
 Current safety position:
@@ -326,6 +327,15 @@ Gree Plus status parser: offline JSON status objects only
 Gree Plus status parser network operations: disabled
 Gree Plus status parser live control: disabled
 Gree Plus status parser timers: out of scope
+Gree Plus live read-only probe scaffold: exists
+Gree Plus live read-only probe exact endpoint/auth contract: missing
+Gree Plus live read-only probe default result: blocked or NotReady
+Gree Plus live read-only probe network operations by default: disabled
+Gree Plus live read-only probe local approval: GREE_ALICE_ENABLE_LIVE_READ=true plus explicit read-only approval plus one allowlisted alias
+Gree Plus live read-only probe config source: .local or environment only
+Gree Plus live read-only probe credentials and identifiers: redacted and never committed
+Gree Plus live read-only probe Alice production readiness: NOT READY
+Next live-read follow-up after successful reviewed read: GREE-ALICE-LIVE-CONTROL-GATE-1
 Gree Plus command builder network operations: disabled
 Gree Plus command builder timers: out of scope
 Next implementation stage: GREE-ALICE-PILOT-1B.
