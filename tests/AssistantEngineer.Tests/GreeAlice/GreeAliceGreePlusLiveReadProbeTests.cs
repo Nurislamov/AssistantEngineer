@@ -44,16 +44,55 @@ public sealed class GreeAliceGreePlusLiveReadProbeTests
     }
 
     [Fact]
+    public void SafetyGateAllowsEnvironmentSource()
+    {
+        GreePlusLiveReadSafetyGateResult result = GreePlusLiveReadSafetyGate.Evaluate(ApprovedOptions() with
+        {
+            ConfigSource = GreePlusLiveReadConfigSource.Environment
+        });
+
+        Assert.True(result.IsAllowed);
+        Assert.Empty(result.MissingRequirements);
+    }
+
+    [Fact]
+    public void SafetyGateRejectsRepositoryStableConfigSource()
+    {
+        GreePlusLiveReadSafetyGateResult result = GreePlusLiveReadSafetyGate.Evaluate(ApprovedOptions() with
+        {
+            ConfigSource = GreePlusLiveReadConfigSource.Unknown
+        });
+
+        Assert.False(result.IsAllowed);
+        Assert.Contains(result.MissingRequirements, requirement => requirement.Contains("config source", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void ProbeFailsClosedWhenExactReadContractIsUnknown()
     {
         GreePlusLiveReadResult result = new GreePlusLiveReadProbe().Run(ApprovedOptions());
 
         Assert.Equal(GreePlusLiveReadStatus.NotReady, result.Status);
+        Assert.Equal(GreePlusLiveReadResultReason.ContractUnknown, result.Reason);
         Assert.False(result.NetworkAttempted);
         Assert.Null(result.Snapshot);
         Assert.Contains(result.MissingRequirements, requirement => requirement.Contains("endpoint", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(result.MissingRequirements, requirement => requirement.Contains("contract", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result.MissingRequirements, requirement => requirement.Contains("status read", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(result.Diagnostics, value => value.Contains("success", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void ContractInspectorReportsPartialEvidenceAndGaps()
+    {
+        GreePlusLiveReadContractReport report = GreePlusLiveReadContractInspector.InspectKnownEvidence();
+
+        Assert.Equal(GreePlusLiveReadContractStatus.EvidencePartial, report.Status);
+        Assert.False(report.IsReadOnlyContractConfirmed);
+        Assert.NotEmpty(report.KnownEvidence);
+        Assert.Contains(report.Gaps, gap => gap.Area.Contains("region", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(report.Gaps, gap => gap.Area.Contains("session", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(report.Gaps, gap => gap.Area.Contains("status read", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -68,6 +107,7 @@ public sealed class GreeAliceGreePlusLiveReadProbeTests
         GreePlusLiveReadResult result = new GreePlusLiveReadProbe().Run(options);
 
         Assert.Equal(GreePlusLiveReadStatus.Parsed, result.Status);
+        Assert.Equal(GreePlusLiveReadResultReason.OfflineStatusParsed, result.Reason);
         Assert.False(result.NetworkAttempted);
         Assert.Empty(result.MissingRequirements);
         Assert.NotNull(result.Snapshot);
@@ -87,6 +127,7 @@ public sealed class GreeAliceGreePlusLiveReadProbeTests
         });
 
         Assert.Equal(GreePlusLiveReadStatus.NotReady, result.Status);
+        Assert.Equal(GreePlusLiveReadResultReason.MissingStatusPayload, result.Reason);
         Assert.False(result.NetworkAttempted);
         Assert.Contains(result.MissingRequirements, requirement => requirement.Contains("response payload", StringComparison.OrdinalIgnoreCase));
     }
@@ -98,6 +139,8 @@ public sealed class GreeAliceGreePlusLiveReadProbeTests
             " ",
             [
                 ("to" + "ken") + "=aaa111",
+                ("access" + "_token") + "=access111",
+                ("refresh" + "_token") + "=refresh111",
                 ("coo" + "kie") + "=bbb222",
                 ("auth" + "orization") + "=ccc333",
                 "operator" + "@" + "example.test",
@@ -113,6 +156,8 @@ public sealed class GreeAliceGreePlusLiveReadProbeTests
         string redacted = GreePlusLiveReadRedactor.Redact(raw);
 
         Assert.DoesNotContain("aaa111", redacted, StringComparison.Ordinal);
+        Assert.DoesNotContain("access111", redacted, StringComparison.Ordinal);
+        Assert.DoesNotContain("refresh111", redacted, StringComparison.Ordinal);
         Assert.DoesNotContain("bbb222", redacted, StringComparison.Ordinal);
         Assert.DoesNotContain("ccc333", redacted, StringComparison.Ordinal);
         Assert.DoesNotContain("operator", redacted, StringComparison.OrdinalIgnoreCase);
@@ -141,6 +186,8 @@ public sealed class GreeAliceGreePlusLiveReadProbeTests
             "device" + "Id",
             "u" + "id",
             "to" + "ken",
+            "access" + "_token",
+            "refresh" + "_token",
             "coo" + "kie",
             "auth",
             "email",

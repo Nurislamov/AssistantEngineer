@@ -12,12 +12,17 @@ public sealed class GreePlusLiveReadProbe
 
         if (!options.ExactReadContractKnown)
         {
-            return GreePlusLiveReadResult.NotReady(["exact authenticated read-only status endpoint/request contract"]);
+            GreePlusLiveReadContractReport report = GreePlusLiveReadContractInspector.InspectKnownEvidence();
+            string[] gaps = report.Gaps
+                .Select(static gap => gap.Area + ": " + gap.MissingEvidence)
+                .ToArray();
+
+            return GreePlusLiveReadResult.NotReady(gaps);
         }
 
         if (string.IsNullOrWhiteSpace(options.ReadOnlyStatusJson))
         {
-            return GreePlusLiveReadResult.NotReady(["read-only status response payload"]);
+            return GreePlusLiveReadResult.MissingStatusPayload(["read-only status response payload"]);
         }
 
         GreePlusDeviceStatusSnapshot snapshot = GreePlusDeviceStatusParser.Parse(options.ReadOnlyStatusJson);

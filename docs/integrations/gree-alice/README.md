@@ -200,6 +200,7 @@ yandex-oauth-provider-dev-smoke.md
 gree-plus-plugin-10001-command-map.md
 gree-plus-plugin-10001-command-map.json
 gree-plus-live-read-only-probe.md
+gree-plus-live-read-contract.md
 ```
 
 Current safety position:
@@ -331,6 +332,9 @@ Gree Plus live read-only probe scaffold: exists
 Gree Plus live read-only probe exact endpoint/auth contract: missing
 Gree Plus live read-only probe default result: blocked or NotReady
 Gree Plus live read-only probe network operations by default: disabled
+Gree Plus live read-only contract report: EvidencePartial
+Gree Plus live read-only contract gaps: region selection, session, homes discovery, device discovery, status read
+Gree Plus live read-only contract confirmed: no
 Gree Plus live read-only probe local approval: GREE_ALICE_ENABLE_LIVE_READ=true plus explicit read-only approval plus one allowlisted alias
 Gree Plus live read-only probe config source: .local or environment only
 Gree Plus live read-only probe credentials and identifiers: redacted and never committed

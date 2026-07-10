@@ -9,6 +9,8 @@ public static class GreePlusLiveReadRedactor
     private static readonly string[] SensitiveKeys =
     [
         "to" + "ken",
+        "access" + "_token",
+        "refresh" + "_token",
         "coo" + "kie",
         "auth" + "orization",
         "email",
