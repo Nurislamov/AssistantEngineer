@@ -38,6 +38,7 @@
     <ProjectReference Include="..\..\src\Integrations\GreeAliceBridge\AssistantEngineer.GreeAliceBridge.Contracts\AssistantEngineer.GreeAliceBridge.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Integrations\GreeAliceBridge\AssistantEngineer.GreeAliceBridge.Application\AssistantEngineer.GreeAliceBridge.Application.csproj" />
     <ProjectReference Include="..\..\src\Integrations\GreeAliceBridge\AssistantEngineer.GreeAliceBridge.Api\AssistantEngineer.GreeAliceBridge.Api.csproj" Aliases="GreeAliceBridgeApi" />
+    <ProjectReference Include="..\..\tools\AssistantEngineer.Tools.GreeCloudProbe\AssistantEngineer.Tools.GreeCloudProbe.csproj" />
     <ProjectReference Include="..\..\tools\AssistantEngineer.Tools.EngineeringCoreVerification\AssistantEngineer.Tools.EngineeringCoreVerification.csproj" />
     <ProjectReference Include="..\..\tools\AssistantEngineer.Tools.OwnershipBackfill\AssistantEngineer.Tools.OwnershipBackfill.csproj" />
   </ItemGroup>

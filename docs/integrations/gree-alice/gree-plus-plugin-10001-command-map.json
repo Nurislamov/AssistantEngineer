@@ -1,603 +1,163 @@
 {
-  "schemaVersion": 1,
-  "stage": "GREE-ALICE-TRACE-2",
-  "source": "Gree Plus Webplugin controlled redacted traces",
-  "applianceMid": "10001",
-  "timers": {
-    "included": false,
-    "policy": "out-of-scope-for-first-bridge",
-    "reason": "Use Alice or AssistantEngineer scheduler instead of Gree Plus internal timers."
-  },
-  "safety": {
-    "deviceMacPlaceholder": "<DEVICE_MAC>",
-    "noSecrets": true,
-    "noRawLogs": true,
-    "noPcap": true,
-    "noRealDeviceIdentifiers": true
-  },
-  "envelope": {
-    "mac": "<DEVICE_MAC>",
+  "stage": "GREE-ALICE-CMD-1",
+  "runtimeMode": "offline-command-builder-only",
+  "payloadShape": {
     "t": "cmd",
-    "opt": "positional option array",
-    "p": "positional value array"
+    "opt": [],
+    "p": []
   },
-  "power": {
-    "on": {
-      "t": "cmd",
-      "opt": [
-        "Pow",
-        "WdSpd",
-        "Quiet",
-        "Tur"
-      ],
-      "p": [
-        1,
-        0,
-        0,
-        0
-      ]
+  "commands": {
+    "PowerOn": {
+      "opt": ["Pow", "WdSpd", "Quiet", "Tur"],
+      "p": [1, 0, 0, 0]
     },
-    "off": {
-      "t": "cmd",
-      "opt": [
-        "TemUn",
-        "SetTem",
-        "TemRec",
-        "Pow",
-        "SwhSlp",
-        "SlpMod",
-        "Air"
-      ],
-      "p": [
-        0,
-        "{setTem}",
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
+    "PowerOff": {
+      "opt": ["TemUn", "SetTem", "TemRec", "Pow", "SwhSlp", "SlpMod", "Air"],
+      "p": [0, 25, 0, 0, 0, 0, 0]
+    },
+    "SetTemperature25": {
+      "opt": ["SetTem", "TemUn", "TemRec"],
+      "p": [25, 0, 0]
+    },
+    "ModeAuto": {
+      "opt": ["Dmod", "Dwet", "Mod"],
+      "p": [15, 0, 0]
+    },
+    "ModeCool25": {
+      "opt": ["Dmod", "Dwet", "Mod", "SetTem", "TemRec"],
+      "p": [15, 0, 1, 25, 0]
+    },
+    "ModeDry": {
+      "opt": ["AssHt", "Dmod", "Dwet", "Mod", "WdSpd", "Quiet", "Tur"],
+      "p": [0, 15, 0, 2, 1, 0, 0]
+    },
+    "ModeFan": {
+      "opt": ["Dmod", "Dwet", "Mod"],
+      "p": [15, 0, 3]
+    },
+    "ModeHeat": {
+      "opt": ["Dmod", "Dwet", "Mod"],
+      "p": [15, 0, 4]
+    },
+    "FanAuto": {
+      "opt": ["WdSpd", "Quiet", "Tur"],
+      "p": [0, 0, 0]
+    },
+    "FanLow": {
+      "opt": ["WdSpd", "Quiet", "Tur"],
+      "p": [1, 0, 0]
+    },
+    "FanMediumLow": {
+      "opt": ["WdSpd", "Quiet", "Tur"],
+      "p": [2, 0, 0]
+    },
+    "FanMedium": {
+      "opt": ["WdSpd", "Quiet", "Tur"],
+      "p": [3, 0, 0]
+    },
+    "FanMediumHigh": {
+      "opt": ["WdSpd", "Quiet", "Tur"],
+      "p": [4, 0, 0]
+    },
+    "FanHigh": {
+      "opt": ["WdSpd", "Quiet", "Tur"],
+      "p": [5, 0, 0]
+    },
+    "FanQuiet": {
+      "opt": ["Quiet", "Tur"],
+      "p": [2, 0]
+    },
+    "FanTurbo": {
+      "opt": ["Quiet", "Tur"],
+      "p": [0, 1]
+    },
+    "FeatureLightOn": {
+      "opt": ["Lig"],
+      "p": [1]
+    },
+    "FeatureLightOff": {
+      "opt": ["Lig"],
+      "p": [0]
+    },
+    "FeatureBlowOn": {
+      "opt": ["Blo"],
+      "p": [1]
+    },
+    "FeatureBlowOff": {
+      "opt": ["Blo"],
+      "p": [0]
+    },
+    "FeatureHealthOn": {
+      "opt": ["Health"],
+      "p": [1]
+    },
+    "FeatureHealthOff": {
+      "opt": ["Health"],
+      "p": [0]
+    },
+    "FeatureEnergySaveOn": {
+      "opt": ["WdSpd", "Quiet", "Tur", "SvSt"],
+      "p": [0, 0, 0, 1]
+    },
+    "FeatureEnergySaveOff": {
+      "opt": ["SvSt"],
+      "p": [0]
+    },
+    "FeatureSleepOn": {
+      "opt": ["SvSt", "Dmod", "SlpMod", "SwhSlp"],
+      "p": [0, 15, 1, 1]
+    },
+    "FeatureSleepOff": {
+      "opt": ["Dmod", "SlpMod", "SwhSlp"],
+      "p": [15, 0, 0]
+    },
+    "VerticalSwing": {
+      "opt": ["SwUpDn"],
+      "p": [1]
+    },
+    "VerticalAngle1": {
+      "opt": ["SwUpDn"],
+      "p": [2]
+    },
+    "VerticalAngle2": {
+      "opt": ["SwUpDn"],
+      "p": [3]
+    },
+    "VerticalAngle3": {
+      "opt": ["SwUpDn"],
+      "p": [4]
+    },
+    "VerticalAngle4": {
+      "opt": ["SwUpDn"],
+      "p": [5]
+    },
+    "VerticalAngle5": {
+      "opt": ["SwUpDn"],
+      "p": [6]
+    },
+    "HorizontalSwing": {
+      "opt": ["SwingLfRig"],
+      "p": [1]
+    },
+    "HorizontalAngle1": {
+      "opt": ["SwingLfRig"],
+      "p": [2]
+    },
+    "HorizontalAngle2": {
+      "opt": ["SwingLfRig"],
+      "p": [3]
+    },
+    "HorizontalAngle3": {
+      "opt": ["SwingLfRig"],
+      "p": [4]
+    },
+    "HorizontalAngle4": {
+      "opt": ["SwingLfRig"],
+      "p": [5]
+    },
+    "HorizontalAngle5": {
+      "opt": ["SwingLfRig"],
+      "p": [6]
     }
-  },
-  "temperature": {
-    "set": {
-      "t": "cmd",
-      "opt": [
-        "SetTem",
-        "TemUn",
-        "TemRec"
-      ],
-      "p": [
-        "{setTem}",
-        0,
-        0
-      ]
-    }
-  },
-  "modes": {
-    "auto": {
-      "value": 0,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "Dmod",
-          "Dwet",
-          "Mod"
-        ],
-        "p": [
-          15,
-          0,
-          0
-        ]
-      }
-    },
-    "cool": {
-      "value": 1,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "Dmod",
-          "Dwet",
-          "Mod",
-          "SetTem",
-          "TemRec"
-        ],
-        "p": [
-          15,
-          0,
-          1,
-          "{setTem}",
-          0
-        ]
-      }
-    },
-    "dry": {
-      "value": 2,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "AssHt",
-          "Dmod",
-          "Dwet",
-          "Mod",
-          "WdSpd",
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          0,
-          15,
-          0,
-          2,
-          1,
-          0,
-          0
-        ]
-      }
-    },
-    "fan": {
-      "value": 3,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "Dmod",
-          "Dwet",
-          "Mod"
-        ],
-        "p": [
-          15,
-          0,
-          3
-        ]
-      }
-    },
-    "heat": {
-      "value": 4,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "Dmod",
-          "Dwet",
-          "Mod"
-        ],
-        "p": [
-          15,
-          0,
-          4
-        ]
-      }
-    }
-  },
-  "fan": {
-    "auto": {
-      "value": 0,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "WdSpd",
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          0,
-          0,
-          0
-        ]
-      },
-      "confidence": "status-confirmed-command-inferred"
-    },
-    "low": {
-      "value": 1,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "WdSpd",
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          1,
-          0,
-          0
-        ]
-      }
-    },
-    "mediumLow": {
-      "value": 2,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "WdSpd",
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          2,
-          0,
-          0
-        ]
-      }
-    },
-    "medium": {
-      "value": 3,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "WdSpd",
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          3,
-          0,
-          0
-        ]
-      }
-    },
-    "mediumHigh": {
-      "value": 4,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "WdSpd",
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          4,
-          0,
-          0
-        ]
-      }
-    },
-    "high": {
-      "value": 5,
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "WdSpd",
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          5,
-          0,
-          0
-        ]
-      }
-    },
-    "quiet": {
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          2,
-          0
-        ]
-      }
-    },
-    "turbo": {
-      "command": {
-        "t": "cmd",
-        "opt": [
-          "Quiet",
-          "Tur"
-        ],
-        "p": [
-          0,
-          1
-        ]
-      }
-    }
-  },
-  "features": {
-    "light": {
-      "field": "Lig",
-      "on": {
-        "t": "cmd",
-        "opt": [
-          "Lig"
-        ],
-        "p": [
-          1
-        ]
-      },
-      "off": {
-        "t": "cmd",
-        "opt": [
-          "Lig"
-        ],
-        "p": [
-          0
-        ]
-      }
-    },
-    "blow": {
-      "field": "Blo",
-      "on": {
-        "t": "cmd",
-        "opt": [
-          "Blo"
-        ],
-        "p": [
-          1
-        ]
-      },
-      "off": {
-        "t": "cmd",
-        "opt": [
-          "Blo"
-        ],
-        "p": [
-          0
-        ]
-      }
-    },
-    "health": {
-      "field": "Health",
-      "on": {
-        "t": "cmd",
-        "opt": [
-          "Health"
-        ],
-        "p": [
-          1
-        ]
-      },
-      "off": {
-        "t": "cmd",
-        "opt": [
-          "Health"
-        ],
-        "p": [
-          0
-        ]
-      }
-    },
-    "energySave": {
-      "field": "SvSt",
-      "on": {
-        "t": "cmd",
-        "opt": [
-          "WdSpd",
-          "Quiet",
-          "Tur",
-          "SvSt"
-        ],
-        "p": [
-          0,
-          0,
-          0,
-          1
-        ]
-      },
-      "off": {
-        "t": "cmd",
-        "opt": [
-          "SvSt"
-        ],
-        "p": [
-          0
-        ]
-      }
-    },
-    "sleep": {
-      "fields": [
-        "SwhSlp",
-        "SlpMod"
-      ],
-      "on": {
-        "t": "cmd",
-        "opt": [
-          "SvSt",
-          "Dmod",
-          "SlpMod",
-          "SwhSlp"
-        ],
-        "p": [
-          0,
-          15,
-          1,
-          1
-        ]
-      },
-      "off": {
-        "t": "cmd",
-        "opt": [
-          "Dmod",
-          "SlpMod",
-          "SwhSlp"
-        ],
-        "p": [
-          15,
-          0,
-          0
-        ]
-      }
-    }
-  },
-  "swing": {
-    "vertical": {
-      "field": "SwUpDn",
-      "swing": {
-        "value": 1,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwUpDn"
-          ],
-          "p": [
-            1
-          ]
-        }
-      },
-      "angle1": {
-        "value": 2,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwUpDn"
-          ],
-          "p": [
-            2
-          ]
-        }
-      },
-      "angle2": {
-        "value": 3,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwUpDn"
-          ],
-          "p": [
-            3
-          ]
-        }
-      },
-      "angle3": {
-        "value": 4,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwUpDn"
-          ],
-          "p": [
-            4
-          ]
-        }
-      },
-      "angle4": {
-        "value": 5,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwUpDn"
-          ],
-          "p": [
-            5
-          ]
-        }
-      },
-      "angle5": {
-        "value": 6,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwUpDn"
-          ],
-          "p": [
-            6
-          ]
-        }
-      }
-    },
-    "horizontal": {
-      "field": "SwingLfRig",
-      "swing": {
-        "value": 1,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwingLfRig"
-          ],
-          "p": [
-            1
-          ]
-        }
-      },
-      "angle1": {
-        "value": 2,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwingLfRig"
-          ],
-          "p": [
-            2
-          ]
-        }
-      },
-      "angle2": {
-        "value": 3,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwingLfRig"
-          ],
-          "p": [
-            3
-          ]
-        }
-      },
-      "angle3": {
-        "value": 4,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwingLfRig"
-          ],
-          "p": [
-            4
-          ]
-        }
-      },
-      "angle4": {
-        "value": 5,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwingLfRig"
-          ],
-          "p": [
-            5
-          ]
-        }
-      },
-      "angle5": {
-        "value": 6,
-        "command": {
-          "t": "cmd",
-          "opt": [
-            "SwingLfRig"
-          ],
-          "p": [
-            6
-          ]
-        }
-      }
-    }
-  },
-  "statusFields": [
-    "Pow",
-    "Mod",
-    "TemUn",
-    "SetTem",
-    "TemRec",
-    "WdSpd",
-    "Tur",
-    "Quiet",
-    "SwUpDn",
-    "SwingLfRig",
-    "Air",
-    "Blo",
-    "Health",
-    "SvSt",
-    "Lig",
-    "SwhSlp",
-    "SlpMod",
-    "Dmod",
-    "Dwet",
-    "HeatCoolType",
-    "AllErr",
-    "AppTimer",
-    "AssHt",
-    "ModelType",
-    "ModelNew",
-    "deviceState",
-    "status"
-  ]
+  }
 }

@@ -197,6 +197,8 @@ internal-offline-release-notes-draft.md
 yandex-oauth-provider-pilot-contract.md
 yandex-oauth-provider-pilot-config.example.json
 yandex-oauth-provider-dev-smoke.md
+gree-plus-plugin-10001-command-map.md
+gree-plus-plugin-10001-command-map.json
 ```
 
 Current safety position:
@@ -314,6 +316,11 @@ Next real pilot track: GREE-ALICE-PILOT-1.
 Yandex OAuth/provider pilot contract: yandex-oauth-provider-pilot-contract.md
 Yandex OAuth/provider pilot config example: yandex-oauth-provider-pilot-config.example.json
 Yandex OAuth/provider dev smoke: yandex-oauth-provider-dev-smoke.md
+Gree Plus command map: gree-plus-plugin-10001-command-map.md
+Gree Plus command map JSON: gree-plus-plugin-10001-command-map.json
+Gree Plus command builder: offline/local payload builder only
+Gree Plus command builder network operations: disabled
+Gree Plus command builder timers: out of scope
 Next implementation stage: GREE-ALICE-PILOT-1B.
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
