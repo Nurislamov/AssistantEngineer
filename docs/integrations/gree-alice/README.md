@@ -191,6 +191,9 @@ local-bridge-operator-smoke-checklist.md
 local-bridge-smoke-evidence-template.md
 local-bridge-forbidden-commands.md
 local-bridge-http-smoke-boundary.md
+release-readiness-audit.md
+internal-offline-rc-checklist.md
+internal-offline-release-notes-draft.md
 ```
 
 Current safety position:
@@ -292,6 +295,13 @@ HTTP smoke does not call live Gree+ Cloud.
 HTTP smoke does not use MQTT.
 HTTP smoke does not control devices.
 HTTP smoke does not deploy production.
+Release readiness audit: exists
+Internal/offline engineering release: NEAR READY
+Yandex Smart Home production release: NOT READY
+Internal/offline engineering release is near-ready.
+Yandex Smart Home production release is NOT READY.
+Production release requires real provider registration, OAuth, production endpoint, secret storage, deployment approval, and live Gree+ approval.
+Recommended next stage: GREE-ALICE-RC1 — cut internal offline release candidate
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

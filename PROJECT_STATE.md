@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-52 — APPLIED locally / validation pending.
+GREE-ALICE-53 — APPLIED locally / validation pending.
 
 Latest closed GREE-ALICE commit:
 
 ```text
-4b0b8852 GREE-ALICE-51 Add local bridge runbook and smoke script boundary
+1a8b8754 GREE-ALICE-52 Add local bridge HTTP smoke endpoint boundary
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-52 Add local bridge HTTP smoke endpoint boundary
+GREE-ALICE-53 Add release readiness audit and RC path
 ```
 
 ### Completed stages
@@ -70,20 +70,22 @@ GREE-ALICE-48 — CLOSED / pushed — Yandex account linking boundary
 GREE-ALICE-49 — CLOSED / pushed — Yandex provider readiness package
 GREE-ALICE-50 — CLOSED / pushed — local Yandex provider smoke harness
 GREE-ALICE-51 — CLOSED / pushed — local bridge runbook and smoke script boundary
+GREE-ALICE-52 — CLOSED / pushed — local bridge HTTP smoke endpoint boundary
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-51:
+Latest validation for GREE-ALICE-52:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5679/5679
+Tests: 5686/5686
 git diff --check: PASS
+Optional HTTP smoke http://localhost:5005: PASS
 Push: PASS
-master == origin/master after commit 4b0b8852
+master == origin/master after commit 1a8b8754
 ```
 
 ### Safety boundary
@@ -105,14 +107,16 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-52 local scope
+### GREE-ALICE-53 local scope
 
 ```text
-Adds localhost-only HTTP smoke boundary contracts.
-Adds offline local HTTP smoke plan provider.
-Adds local HTTP smoke endpoint checklist and request templates.
-Extends PowerShell local smoke script with optional localhost-only HTTP smoke mode.
-Adds tests for HTTP smoke defaults, endpoint plan, request templates, docs, script safety, and existing behavior compatibility.
+Adds release readiness audit.
+Adds internal/offline RC checklist.
+Adds internal/offline release notes draft.
+Defines current internal/offline engineering release status as NEAR READY.
+Defines current Yandex Smart Home production release status as NOT READY.
+Defines shortest release-oriented RC path.
+Postpones non-RC scope and prevents another abstract boundary stage from becoming the default next step.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
 Live read-only pilot remains not approved.
@@ -148,6 +152,8 @@ Local Yandex provider smoke harness remains offline-local only.
 Local bridge runbook remains offline-local only.
 Local bridge smoke script remains offline-local only.
 Local HTTP smoke boundary remains localhost-only.
+Internal/offline engineering release is near-ready.
+Yandex Smart Home production release is not ready.
 Smoke harness does not call real Yandex.
 Smoke script does not call real Yandex.
 HTTP smoke boundary does not call real Yandex.
@@ -169,6 +175,7 @@ HTTP smoke boundary does not control devices.
 Smoke harness does not deploy anything.
 Smoke script does not deploy anything.
 HTTP smoke boundary does not deploy production.
+Release audit does not add runtime functionality.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
 Keeps PUBLISH blocked.
@@ -183,38 +190,32 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-52
+### Files changed by GREE-ALICE-53
 
 ```text
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/YandexSmartHome/HttpSmoke/*
-src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/YandexSmartHome/HttpSmoke/*
-scripts/integrations/gree-alice/run-local-yandex-provider-smoke.ps1
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceLocalBridgeHttpSmokeBoundaryTests.cs
-docs/integrations/gree-alice/local-bridge-http-smoke-boundary.md
-docs/integrations/gree-alice/local-bridge-operator-runbook.md
-docs/integrations/gree-alice/local-bridge-operator-smoke-checklist.md
-docs/integrations/gree-alice/local-bridge-smoke-evidence-template.md
-docs/integrations/gree-alice/local-bridge-forbidden-commands.md
-docs/integrations/gree-alice/local-yandex-provider-smoke-expectations.md
+docs/integrations/gree-alice/release-readiness-audit.md
+docs/integrations/gree-alice/internal-offline-rc-checklist.md
+docs/integrations/gree-alice/internal-offline-release-notes-draft.md
 docs/integrations/gree-alice/README.md
-docs/architecture/scripts-tools-inventory.*
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceReleaseReadinessAuditTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-52 validation.
+None for local GREE-ALICE-53 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-53 — add Yandex OAuth offline contract skeleton
+GREE-ALICE-RC1 — cut internal offline release candidate
 ```
 
-GREE-ALICE-53 may add Yandex OAuth offline contract skeleton only. It should still not implement real OAuth, real provider registration, live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
+GREE-ALICE-RC1 should cut an internal/offline release candidate from the existing green local bridge boundary. It should not add another abstract skeleton as the default next step, and it should still not implement real OAuth, real provider registration, live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
 <!-- GREE-ALICE-STATE:END -->
 
 
