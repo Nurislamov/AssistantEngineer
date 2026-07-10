@@ -83,18 +83,18 @@ public sealed class GreeAliceOfflineBridgeSkeletonBoundaryTests
     }
 
     [Fact]
-    public void ProjectStateClosesRc1AndOpensPilot1A()
+    public void ProjectStateClosesPilot1AAndOpensPilot1B()
     {
         string text = ReadRepoFile("PROJECT_STATE.md");
 
-        Assert.Contains("GREE-ALICE-RC1", text, StringComparison.Ordinal);
-        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
-        Assert.Contains("8603aaef", text, StringComparison.Ordinal);
-        Assert.Contains("Tests: 5694/5694", text, StringComparison.Ordinal);
         Assert.Contains("GREE-ALICE-PILOT-1A", text, StringComparison.Ordinal);
-        Assert.Contains("APPLIED locally / validation pending", text, StringComparison.Ordinal);
-        Assert.Contains("Design Yandex OAuth provider pilot contract", text, StringComparison.Ordinal);
+        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
+        Assert.Contains("1686adb3", text, StringComparison.Ordinal);
+        Assert.Contains("Tests: 5701/5701", text, StringComparison.Ordinal);
         Assert.Contains("GREE-ALICE-PILOT-1B", text, StringComparison.Ordinal);
+        Assert.Contains("APPLIED locally / validation pending", text, StringComparison.Ordinal);
+        Assert.Contains("Implement dev-only Yandex OAuth provider vertical slice", text, StringComparison.Ordinal);
+        Assert.Contains("GREE-ALICE-PILOT-2", text, StringComparison.Ordinal);
     }
 
     private static string ReadAllDocs()

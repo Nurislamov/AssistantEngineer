@@ -196,6 +196,7 @@ internal-offline-rc-checklist.md
 internal-offline-release-notes-draft.md
 yandex-oauth-provider-pilot-contract.md
 yandex-oauth-provider-pilot-config.example.json
+yandex-oauth-provider-dev-smoke.md
 ```
 
 Current safety position:
@@ -247,13 +248,16 @@ Real imports: disabled
 Admin UI: not implemented
 Yandex account linking boundary: exists
 Real OAuth: not implemented
+Dev-only OAuth/provider vertical slice: implemented for local/private-skill pilot only
+Dev-only OAuth endpoints: /oauth/authorize, /oauth/callback, /oauth/token
+Dev-only token store: in-memory only
 Real Yandex credentials/tokens in repository: forbidden
 Yandex user mapping: bridge account plus explicit registry scope required
 Unknown/unlinked users: fail closed
 Yandex provider readiness package: exists
 Provider readiness: NOT READY by default
 Provider registration: NOT APPROVED
-Real OAuth implementation: not implemented
+Production OAuth implementation: not implemented
 Real Yandex credentials/tokens in repository: forbidden
 Production endpoint/deploy: disabled
 Local Yandex provider smoke harness: exists
@@ -273,7 +277,7 @@ HTTP smoke allowed targets: http://localhost:<local-port> and http://127.0.0.1:<
 HTTP smoke public hosts: blocked
 HTTP smoke production endpoints: blocked
 Script real Yandex calls: disabled
-Script OAuth: not implemented
+Script OAuth: dev-only local smoke supported
 Script real credentials/tokens: not used
 Script live Gree+ Cloud calls: disabled
 Script MQTT: blocked
@@ -283,7 +287,7 @@ Local operator runbook exists.
 Local smoke script boundary exists.
 Script is offline/local only.
 Script does not call real Yandex.
-Script does not implement OAuth.
+Script supports dev-only local OAuth smoke only.
 Script does not use real credentials/tokens.
 Script does not call live Gree+ Cloud.
 Script does not use MQTT.
@@ -309,6 +313,7 @@ Current production Yandex status: NOT READY.
 Next real pilot track: GREE-ALICE-PILOT-1.
 Yandex OAuth/provider pilot contract: yandex-oauth-provider-pilot-contract.md
 Yandex OAuth/provider pilot config example: yandex-oauth-provider-pilot-config.example.json
+Yandex OAuth/provider dev smoke: yandex-oauth-provider-dev-smoke.md
 Next implementation stage: GREE-ALICE-PILOT-1B.
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked

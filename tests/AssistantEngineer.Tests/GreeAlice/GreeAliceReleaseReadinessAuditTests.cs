@@ -44,7 +44,7 @@ public sealed class GreeAliceReleaseReadinessAuditTests
         string audit = ReadRepoFile("docs", "integrations", "gree-alice", "release-readiness-audit.md");
 
         Assert.Contains("real Yandex provider registration", audit, StringComparison.Ordinal);
-        Assert.Contains("real OAuth implementation", audit, StringComparison.Ordinal);
+        Assert.Contains("production OAuth implementation", audit, StringComparison.Ordinal);
         Assert.Contains("production endpoint", audit, StringComparison.Ordinal);
         Assert.Contains("secure secret storage", audit, StringComparison.Ordinal);
         Assert.Contains("production deployment", audit, StringComparison.Ordinal);

@@ -13,7 +13,9 @@
       "AccessTokenLifetimeSeconds": 3600,
       "RefreshTokenLifetimeSeconds": 2592000,
       "RequireHttpsPublicBaseUrl": true,
-      "EnableDevOnlyInMemoryTokenStore": true
+      "EnableDevOnlyInMemoryTokenStore": true,
+      "DevOnlyBridgeAccountId": "dummy-account-001",
+      "DevOnlyMaskedYandexUserId": "masked-yandex-user-dev-001"
     }
   }
 }

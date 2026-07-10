@@ -173,8 +173,8 @@ public sealed class GreeAliceLocalBridgeHttpSmokeBoundaryTests
         string projects = ReadBridgeProjects();
         string docsRoot = Path.Combine(FindRepositoryRoot(), "docs", "integrations", "gree-alice");
 
-        Assert.DoesNotContain("MapGet(\"/oauth", source, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("MapPost(\"/oauth", source, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("MapGet(\"/oauth/authorize", source, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("MapPost(\"/oauth/token", source, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("HttpClient", source, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(".GetAsync(", source, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain(".PostAsync(", source, StringComparison.OrdinalIgnoreCase);

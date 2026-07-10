@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using AssistantEngineer.GreeAliceBridge.Contracts.Pilot;
+using AssistantEngineer.GreeAliceBridge.Contracts.YandexSmartHome.OAuth;
 using AssistantEngineer.GreeAliceBridge.Contracts.YandexSmartHome.HttpSmoke;
 using AssistantEngineer.GreeAliceBridge.Contracts.YandexSmartHome.ProviderReadiness;
 
@@ -44,7 +45,7 @@ public sealed class GreeAliceYandexOAuthProviderPilotContractTests
     }
 
     [Fact]
-    public void PilotContractDefinesRequiredEndpointsWithoutRuntimeImplementation()
+    public void PilotContractDefinesRequiredDevOnlyEndpoints()
     {
         string contract = ReadContract();
 
@@ -56,8 +57,8 @@ public sealed class GreeAliceYandexOAuthProviderPilotContractTests
         Assert.Contains("POST /v1.0/user/devices/action", contract, StringComparison.Ordinal);
         Assert.Contains("POST /v1.0/user/unlink", contract, StringComparison.Ordinal);
         Assert.Contains("GET /health", contract, StringComparison.Ordinal);
-        Assert.Contains("Design-only contract", contract, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("No runtime OAuth endpoints implemented", contract, StringComparison.Ordinal);
+        Assert.Contains("PILOT-1B endpoints are dev-only/local and in-memory", contract, StringComparison.Ordinal);
+        Assert.Contains("Provider endpoints can require Bearer token only in configured `PrivateSkillDevOnly` mode", contract, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -78,6 +79,8 @@ public sealed class GreeAliceYandexOAuthProviderPilotContractTests
         Assert.Equal(2592000, yandex.GetProperty("RefreshTokenLifetimeSeconds").GetInt32());
         Assert.True(yandex.GetProperty("RequireHttpsPublicBaseUrl").GetBoolean());
         Assert.True(yandex.GetProperty("EnableDevOnlyInMemoryTokenStore").GetBoolean());
+        Assert.Equal("dummy-account-001", yandex.GetProperty("DevOnlyBridgeAccountId").GetString());
+        Assert.Equal("masked-yandex-user-dev-001", yandex.GetProperty("DevOnlyMaskedYandexUserId").GetString());
 
         Assert.DoesNotContain("client_id=", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("client_secret=", json, StringComparison.OrdinalIgnoreCase);
@@ -118,13 +121,31 @@ public sealed class GreeAliceYandexOAuthProviderPilotContractTests
         string notes = ReadRepoFile("docs", "integrations", "gree-alice", "internal-offline-release-notes-draft.md");
 
         Assert.Contains("Real Yandex/Alice production release remains NOT READY.", contract, StringComparison.Ordinal);
-        Assert.Contains("GREE-ALICE-PILOT-1B", contract, StringComparison.Ordinal);
+        Assert.Contains("GREE-ALICE-PILOT-2", contract, StringComparison.Ordinal);
         Assert.Contains("Production Yandex release remains NOT READY.", notes, StringComparison.Ordinal);
-        Assert.Contains("Next implementation stage: GREE-ALICE-PILOT-1B.", notes, StringComparison.Ordinal);
-        Assert.Contains("Next implementation stage: GREE-ALICE-PILOT-1B.", readme, StringComparison.Ordinal);
+        Assert.Contains("Next implementation stage: GREE-ALICE-PILOT-2.", notes, StringComparison.Ordinal);
+        Assert.Contains("Dev-only OAuth/provider vertical slice", readme, StringComparison.Ordinal);
         Assert.Equal("not-ready", GreeAliceYandexProviderReadinessBoundary.ProviderReadinessStatus);
         Assert.False(GreeAliceMinimalProductionPilotBoundary.ProductionPilotApproved);
         Assert.Equal("localhost-only", GreeAliceLocalHttpSmokeBoundary.HttpSmokeMode);
+    }
+
+    [Fact]
+    public void Pilot1BBoundaryConstantsRemainDevOnlyAndFailClosed()
+    {
+        Assert.Equal("dev-only", GreeAliceYandexOAuthPilotBoundary.RuntimeStatus);
+        Assert.Equal("dummy-offline-devices", GreeAliceYandexOAuthPilotBoundary.ProviderMode);
+        Assert.Equal("dry-run-fail-closed", GreeAliceYandexOAuthPilotBoundary.ActionMode);
+        Assert.False(GreeAliceYandexOAuthPilotBoundary.RealProductionOAuth);
+        Assert.False(GreeAliceYandexOAuthPilotBoundary.RealYandexSharedMaterialAllowedInRepository);
+        Assert.False(GreeAliceYandexOAuthPilotBoundary.RealTokensAllowedInRepository);
+        Assert.True(GreeAliceYandexOAuthPilotBoundary.InMemoryTokenStoreOnly);
+        Assert.False(GreeAliceYandexOAuthPilotBoundary.PersistentTokenStoreImplemented);
+        Assert.False(GreeAliceYandexOAuthPilotBoundary.LiveGreeReadAllowed);
+        Assert.False(GreeAliceYandexOAuthPilotBoundary.LiveGreeControlAllowed);
+        Assert.False(GreeAliceYandexOAuthPilotBoundary.MqttAllowed);
+        Assert.False(GreeAliceYandexOAuthPilotBoundary.ProductionDeploymentAllowed);
+        Assert.Equal(2048, GreeAliceYandexOAuthPilotBoundary.MaxTokenLength);
     }
 
     [Fact]

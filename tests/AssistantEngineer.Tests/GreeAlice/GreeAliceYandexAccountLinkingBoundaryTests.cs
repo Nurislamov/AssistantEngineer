@@ -261,9 +261,9 @@ public sealed class GreeAliceYandexAccountLinkingBoundaryTests
         string bridgeProjects = ReadBridgeProjects();
         string docsRoot = Path.Combine(FindRepositoryRoot(), "docs", "integrations", "gree-alice");
 
-        Assert.DoesNotContain("MapGet(\"/oauth", source, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("MapPost(\"/oauth", source, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("authorizationCode", source, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("MapGet(\"/oauth/authorize", source, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("MapPost(\"/oauth/token", source, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("GreeAliceYandexOAuthAuthorizationCode", source, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clientSecret", source, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("access-token", source, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("refresh-token", source, StringComparison.OrdinalIgnoreCase);

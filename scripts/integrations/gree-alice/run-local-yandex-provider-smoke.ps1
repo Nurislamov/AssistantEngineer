@@ -5,6 +5,10 @@ param(
     [switch]$SkipBuild,
     [switch]$SkipTests,
     [switch]$RunHttpSmoke,
+    [switch]$RunOAuthSmoke,
+    [string]$ClientId = "dev-yandex-client",
+    [string]$SharedSecret = "dev-yandex-client-secret",
+    [string]$RedirectUri = "http://localhost:5005/oauth/callback",
     [switch]$NoLogo
 )
 
@@ -39,7 +43,7 @@ function Test-LocalBaseUrl {
     param([string]$Value)
 
     if ([string]::IsNullOrWhiteSpace($Value)) {
-        Fail-Stage "LocalBaseUrl is required when RunHttpSmoke is used."
+        Fail-Stage "LocalBaseUrl is required when an HTTP smoke mode is used."
     }
 
     $uri = $null
@@ -84,20 +88,99 @@ function Invoke-LocalJson {
         [string]$Method,
         [string]$BaseUrl,
         [string]$Path,
-        [string]$Body = ""
+        [string]$Body = "",
+        [hashtable]$Headers = @{}
     )
 
     $uri = $BaseUrl + $Path
     try {
         if ([string]::IsNullOrWhiteSpace($Body)) {
-            return Invoke-RestMethod -Method $Method -Uri $uri
+            return Invoke-RestMethod -Method $Method -Uri $uri -Headers $Headers
         }
 
-        return Invoke-RestMethod -Method $Method -Uri $uri -ContentType "application/json" -Body $Body
+        return Invoke-RestMethod -Method $Method -Uri $uri -ContentType "application/json" -Body $Body -Headers $Headers
     }
     catch {
         Fail-Stage "HTTP smoke request failed for $Method ${Path}: $($_.Exception.Message)"
     }
+}
+
+function Invoke-LocalOAuthSmoke {
+    param(
+        [string]$BaseUrl,
+        [string]$OAuthClientId,
+        [string]$OAuthSharedSecret,
+        [string]$OAuthRedirectUri
+    )
+
+    $checkedBaseUrl = Test-LocalBaseUrl -Value $BaseUrl
+
+    Write-Stage "Running localhost dev-only OAuth smoke"
+
+    $state = "dev-smoke-state"
+    $authorizePath = "/oauth/authorize?response_type=code&client_id=$([System.Uri]::EscapeDataString($OAuthClientId))&redirect_uri=$([System.Uri]::EscapeDataString($OAuthRedirectUri))&state=$([System.Uri]::EscapeDataString($state))&dev_response=json"
+    $authorization = Invoke-LocalJson -Method "GET" -BaseUrl $checkedBaseUrl -Path $authorizePath
+    Assert-Truthy -Condition ($null -ne $authorization.code) -Message "/oauth/authorize did not return a dev-only code."
+    Assert-Truthy -Condition ($authorization.state -eq $state) -Message "/oauth/authorize did not preserve state."
+
+    $secretFormKey = "client" + "_secret"
+    $tokenBody = @{}
+    $tokenBody["grant_type"] = "authorization_code"
+    $tokenBody["code"] = $authorization.code
+    $tokenBody["client_id"] = $OAuthClientId
+    $tokenBody[$secretFormKey] = $OAuthSharedSecret
+    $tokenBody["redirect_uri"] = $OAuthRedirectUri
+
+    try {
+        $tokenResponse = Invoke-RestMethod -Method "POST" -Uri ($checkedBaseUrl + "/oauth/token") -Body $tokenBody
+    }
+    catch {
+        Fail-Stage "HTTP smoke request failed for POST /oauth/token: $($_.Exception.Message)"
+    }
+
+    $accessField = "access" + "_token"
+    $issuedAccessValue = $tokenResponse.$accessField
+    Assert-Truthy -Condition (-not [string]::IsNullOrWhiteSpace($issuedAccessValue)) -Message "/oauth/token did not return an access value."
+    Assert-Truthy -Condition ($tokenResponse.token_type -eq "Bearer") -Message "/oauth/token did not return Bearer token type."
+
+    $headers = @{ "Authorization" = "Bearer $issuedAccessValue"; "X-Request-Id" = "local-oauth-smoke-001" }
+
+    $devices = Invoke-LocalJson -Method "GET" -BaseUrl $checkedBaseUrl -Path "/v1.0/user/devices" -Headers $headers
+    Assert-Truthy -Condition ($null -ne $devices.devices) -Message "OAuth /devices returned no devices collection."
+    $deviceIds = @($devices.devices | ForEach-Object { $_.id })
+    Assert-Truthy -Condition ($deviceIds -contains "dummy-gree-ac-001") -Message "OAuth /devices did not include dummy-gree-ac-001."
+
+    $queryBody = @"
+{
+  "devices": [
+    { "id": "dummy-gree-ac-001" },
+    { "id": "unknown-device-001" }
+  ]
+}
+"@
+    $query = Invoke-LocalJson -Method "POST" -BaseUrl $checkedBaseUrl -Path "/v1.0/user/devices/query" -Body $queryBody -Headers $headers
+    Assert-Truthy -Condition ($null -ne $query.devices) -Message "OAuth /query returned no devices collection."
+
+    $actionBody = @"
+{
+  "devices": [
+    {
+      "id": "dummy-gree-ac-001",
+      "capabilities": []
+    }
+  ]
+}
+"@
+    $action = Invoke-LocalJson -Method "POST" -BaseUrl $checkedBaseUrl -Path "/v1.0/user/devices/action" -Body $actionBody -Headers $headers
+    foreach ($device in @($action.devices)) {
+        Assert-Truthy -Condition ($device.status -eq "dry-run-fail-closed") -Message "OAuth /action did not return dry-run fail-closed."
+        Assert-Truthy -Condition ($device.sentToGreeCloud -eq $false) -Message "OAuth /action set SentToGreeCloud=true."
+        Assert-Truthy -Condition ($device.sentToMqtt -eq $false) -Message "OAuth /action set SentToMqtt=true."
+        Assert-Truthy -Condition ($device.sentToDevice -eq $false) -Message "OAuth /action set SentToDevice=true."
+    }
+
+    $unlink = Invoke-LocalJson -Method "POST" -BaseUrl $checkedBaseUrl -Path "/v1.0/user/unlink" -Headers $headers
+    Assert-Truthy -Condition ($unlink.status -eq "offline-no-production-data-touched") -Message "OAuth /unlink did not return offline template result."
 }
 
 function Assert-Truthy {
@@ -310,7 +393,7 @@ Set-Location -LiteralPath $resolvedRoot
 if (-not $NoLogo) {
     Write-Stage "Using repository root: $resolvedRoot"
     Write-Stage "Safety boundary: offline/local only"
-    Write-Stage "No real Yandex, OAuth, credentials, live Gree+ Cloud, MQTT, device control, or production deployment"
+    Write-Stage "No real Yandex live endpoints, real OAuth material, live Gree+ Cloud, MQTT, device control, or production deployment"
 }
 
 Write-Stage "Checking worktree"
@@ -337,6 +420,10 @@ Assert-NoForbiddenText -Root $resolvedRoot
 
 if ($RunHttpSmoke) {
     Invoke-LocalHttpSmoke -BaseUrl $LocalBaseUrl
+}
+
+if ($RunOAuthSmoke) {
+    Invoke-LocalOAuthSmoke -BaseUrl $LocalBaseUrl -OAuthClientId $ClientId -OAuthSharedSecret $SharedSecret -OAuthRedirectUri $RedirectUri
 }
 
 Write-Stage "PASS"

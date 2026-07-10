@@ -31,7 +31,7 @@ An internal/offline engineering release candidate is near-ready. It can release 
 
 ## What is not releasable now
 
-A real Yandex Smart Home production release is not releasable now. It remains blocked by missing real Yandex provider registration, real OAuth implementation, production endpoint, secure secret storage, production deployment, live Gree+ approval, and production operator approval.
+A real Yandex Smart Home production release is not releasable now. It remains blocked by missing real Yandex provider registration, production OAuth implementation, production endpoint, secure secret storage, production deployment, live Gree+ approval, and production operator approval.
 
 ## Release types
 
@@ -56,7 +56,7 @@ This is close to a release candidate because it has:
 This is NOT READY because it does not have:
 
 - real Yandex provider registration;
-- real OAuth implementation;
+- production OAuth implementation;
 - real production callback/authorize/token endpoints;
 - secure secret storage plan implemented;
 - production endpoint configured;
@@ -89,7 +89,7 @@ No document, checklist, smoke script, or local dummy endpoint should claim produ
 | Local smoke harness | Present and passing | Supports internal/offline RC | Non-blocker | Run for RC evidence |
 | Local HTTP smoke | Present and localhost-only | Supports internal/offline RC | Non-blocker if local API available | Run for RC evidence |
 | Yandex provider registration | Not done | Blocks real Yandex release | Critical production blocker | Prepare submission only after RC decision |
-| OAuth implementation | Not implemented | Blocks real Yandex release | Critical production blocker | Design and approve separately |
+| OAuth implementation | Dev-only local slice only | Blocks real Yandex release | Critical production blocker | Design and approve production storage/deployment separately |
 | Production endpoint | Not configured | Blocks real Yandex release | Critical production blocker | Requires hosting/deployment approval |
 | Secrets/token storage | Not implemented | Blocks real Yandex release | Critical production blocker | Implement secure secret storage before production |
 | Live Gree+ read-only integration | Not approved | Blocks real production behavior | Critical production blocker | Approve read-only pilot first |
@@ -102,7 +102,7 @@ No document, checklist, smoke script, or local dummy endpoint should claim produ
 ## Critical blockers
 
 - real Yandex provider registration;
-- real OAuth implementation;
+- production OAuth implementation;
 - production endpoint;
 - secure secret storage;
 - production deployment;
@@ -174,6 +174,20 @@ PILOT-1A does not implement runtime OAuth, real provider registration, real cred
 
 Recommended next implementation stage:
 GREE-ALICE-PILOT-1B — implement dev-only Yandex OAuth/provider skeleton.
+
+## PILOT-1B dev-only vertical slice
+
+PILOT-1B adds local/dev-only OAuth endpoints and bearer-protected provider smoke mode:
+
+- `GET /oauth/authorize`;
+- `GET /oauth/callback`;
+- `POST /oauth/token`;
+- Provider Adapter API calls with Bearer token in `PrivateSkillDevOnly` mode;
+- in-memory token records only;
+- dummy/offline devices only;
+- `/action` remains dry-run fail-closed.
+
+This does not change the production release decision. Real Yandex Smart Home production release remains NOT READY.
 
 ## Final decision
 

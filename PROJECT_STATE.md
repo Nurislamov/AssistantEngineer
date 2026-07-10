@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-PILOT-1A — APPLIED locally / validation pending.
+GREE-ALICE-PILOT-1B — APPLIED locally / validation pending.
 
 Latest closed GREE-ALICE commit:
 
 ```text
-8603aaef GREE-ALICE-RC1 Cut internal offline release candidate
+1686adb3 GREE-ALICE-PILOT-1A Design Yandex OAuth provider pilot contract
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-PILOT-1A Design Yandex OAuth provider pilot contract
+GREE-ALICE-PILOT-1B Implement dev-only Yandex OAuth provider vertical slice
 ```
 
 ### Completed stages
@@ -73,22 +73,23 @@ GREE-ALICE-51 — CLOSED / pushed — local bridge runbook and smoke script boun
 GREE-ALICE-52 — CLOSED / pushed — local bridge HTTP smoke endpoint boundary
 GREE-ALICE-53 — CLOSED / pushed — release readiness audit and RC path
 GREE-ALICE-RC1 — CLOSED / pushed — internal offline release candidate
+GREE-ALICE-PILOT-1A — CLOSED / pushed — Yandex OAuth provider pilot contract
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-RC1:
+Latest validation for GREE-ALICE-PILOT-1A:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5694/5694
+Tests: 5701/5701
 git diff --check: PASS
 Local smoke script: PASS
 Optional HTTP smoke http://localhost:5005: PASS
 Push: PASS
-master == origin/master after commit 8603aaef
+master == origin/master after commit 1686adb3
 ```
 
 ### Safety boundary
@@ -110,16 +111,18 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-PILOT-1A local scope
+### GREE-ALICE-PILOT-1B local scope
 
 ```text
-Designs real Yandex OAuth/provider pilot contract.
-Adds safe placeholder-only pilot configuration example.
-Documents official Yandex Smart Home pilot constraints.
-Defines pilot account linking and Provider Adapter API flow.
-Keeps real OAuth runtime not implemented.
+Implements dev-only/local OAuth-like vertical slice.
+Adds GET /oauth/authorize, GET /oauth/callback, POST /oauth/token in isolated bridge API only.
+Adds in-memory authorization code and token stores.
+Adds Bearer-token provider mode for configured PrivateSkillDevOnly.
+Keeps default local/offline provider endpoints compatible without bearer.
+Adds smoke script -RunOAuthSmoke for localhost-only dev smoke.
+Keeps production OAuth runtime not implemented.
 Keeps current Yandex Smart Home production release status as NOT READY.
-Sets next implementation stage to GREE-ALICE-PILOT-1B.
+Sets next implementation stage to GREE-ALICE-PILOT-2.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
 Live read-only pilot remains not approved.
@@ -140,7 +143,7 @@ Manual review remains required before Yandex exposure.
 Stable Yandex device IDs remain required for exposed devices.
 Room binding remains required for exposed devices.
 Yandex account linking boundary remains offline-template only.
-Real OAuth remains not implemented.
+Real production OAuth remains not implemented.
 Real Yandex credentials and tokens remain forbidden in repository.
 Yandex user must map to bridge account and explicit registry scope.
 Unknown/unlinked users fail closed.
@@ -163,7 +166,7 @@ Smoke harness does not call real Yandex.
 Smoke script does not call real Yandex.
 HTTP smoke boundary does not call real Yandex.
 Smoke harness does not implement OAuth.
-Smoke script does not implement OAuth.
+Smoke script supports dev-only local OAuth smoke.
 HTTP smoke boundary does not implement OAuth.
 Smoke harness does not use real credentials or tokens.
 Smoke script does not use real credentials or tokens.
@@ -181,8 +184,8 @@ Smoke harness does not deploy anything.
 Smoke script does not deploy anything.
 HTTP smoke boundary does not deploy production.
 Release audit does not add runtime functionality.
-Pilot contract does not add runtime functionality.
-Pilot contract does not add real OAuth endpoints.
+Pilot contract exists and PILOT-1B adds dev-only runtime functionality.
+Pilot implementation does not add production OAuth endpoints.
 Pilot contract does not add real Yandex credentials or tokens.
 Keeps live CONNECT blocked.
 Keeps SUBSCRIBE blocked.
@@ -198,32 +201,38 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-PILOT-1A
+### Files changed by GREE-ALICE-PILOT-1B
 
 ```text
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Api/Program.cs
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Application/YandexSmartHome/OAuth/*
+src/Integrations/GreeAliceBridge/AssistantEngineer.GreeAliceBridge.Contracts/YandexSmartHome/OAuth/*
 docs/integrations/gree-alice/yandex-oauth-provider-pilot-contract.md
 docs/integrations/gree-alice/yandex-oauth-provider-pilot-config.example.json
+docs/integrations/gree-alice/yandex-oauth-provider-dev-smoke.md
 docs/integrations/gree-alice/release-readiness-audit.md
 docs/integrations/gree-alice/internal-offline-release-notes-draft.md
 docs/integrations/gree-alice/README.md
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexOAuthProviderPilotContractTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceYandexOAuthProviderPilotVerticalSliceTests.cs
+scripts/integrations/gree-alice/run-local-yandex-provider-smoke.ps1
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-PILOT-1A validation.
+None for local GREE-ALICE-PILOT-1B validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-PILOT-1B — implement dev-only Yandex OAuth/provider skeleton
+GREE-ALICE-PILOT-2 — prepare isolated bridge VPS/HTTPS deployment package
 ```
 
-GREE-ALICE-PILOT-1B may implement a dev-only Yandex OAuth/provider skeleton from the PILOT-1A contract. It should still not add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
+GREE-ALICE-PILOT-2 may prepare an isolated bridge VPS/HTTPS deployment package after explicit approval. It should still not add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring in AssistantEngineer.Api, migrations, or secrets without a separate explicit approval.
 <!-- GREE-ALICE-STATE:END -->
 
 
