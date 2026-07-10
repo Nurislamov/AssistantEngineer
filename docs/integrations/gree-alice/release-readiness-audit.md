@@ -154,6 +154,15 @@ Recommended next stage: `GREE-ALICE-RC1 — cut internal offline release candida
 
 Do not make the next default step another abstract boundary stage.
 
+## RC1 decision
+
+Internal/offline RC1 can be cut after full validation PASS.
+
+Yandex Smart Home production release remains NOT READY.
+
+Recommended next track after RC1:
+GREE-ALICE-PILOT-1 — implement real Yandex OAuth/provider minimal skeleton.
+
 ## Final decision
 
 Internal/offline engineering release: NEAR READY.

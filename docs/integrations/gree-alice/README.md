@@ -302,6 +302,9 @@ Internal/offline engineering release is near-ready.
 Yandex Smart Home production release is NOT READY.
 Production release requires real provider registration, OAuth, production endpoint, secret storage, deployment approval, and live Gree+ approval.
 Recommended next stage: GREE-ALICE-RC1 — cut internal offline release candidate
+Current internal/offline status: GREE-ALICE-RC1 candidate.
+Current production Yandex status: NOT READY.
+Next real pilot track: GREE-ALICE-PILOT-1.
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

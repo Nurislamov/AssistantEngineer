@@ -1,31 +1,39 @@
 # GREE-ALICE Internal Offline RC Checklist
 
-RC status: NOT CUT
+RC status: CUT LOCALLY / PUSH PENDING
+
+RC name: GREE-ALICE-RC1
+Base commit: b60fb382
+Branch: master
+Scope: internal/offline engineering release candidate
+Production Yandex release status: NOT READY
+
+Local HTTP smoke: PASS on RC1 at http://localhost:5005.
 
 Use this checklist as the manual gate before cutting an internal/offline release candidate.
 
-- [ ] Repository branch recorded
-- [ ] Repository commit recorded
-- [ ] Full validation PASS
-- [ ] GreeAlice tests PASS
-- [ ] Local smoke harness PASS
-- [ ] Local HTTP smoke PASS if local API available
-- [ ] PROJECT_STATE updated
-- [ ] Release readiness audit reviewed
-- [ ] No production claims
-- [ ] No real Yandex calls
-- [ ] No real OAuth credentials
-- [ ] No real tokens
-- [ ] No live Gree+ Cloud
-- [ ] No MQTT
-- [ ] No device control
-- [ ] No production deployment
-- [ ] Docs reviewed
-- [ ] Evidence masked
-- [ ] Final RC decision
+- [x] Repository branch recorded
+- [x] Repository commit recorded
+- [x] Full validation PASS
+- [x] GreeAlice tests PASS
+- [x] Local smoke harness PASS
+- [x] Local HTTP smoke PASS if local API available
+- [x] PROJECT_STATE updated
+- [x] Release readiness audit reviewed
+- [x] No production claims
+- [x] No real Yandex calls
+- [x] No real OAuth credentials
+- [x] No real tokens
+- [x] No live Gree+ Cloud
+- [x] No MQTT
+- [x] No device control
+- [x] No production deployment
+- [x] Docs reviewed
+- [x] Evidence masked
+- [x] Final RC decision
 
 Final RC decision:
 
 ```text
-NOT CUT
+CUT LOCALLY / PUSH PENDING
 ```

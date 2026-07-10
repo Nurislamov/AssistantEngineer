@@ -2,44 +2,49 @@
 
 ## Release name
 
-GREE-ALICE Internal Offline RC
+Release name: GREE-ALICE-RC1
 
 ## Status
 
-Status: DRAFT / NOT RELEASED
+Status: RC1 / INTERNAL OFFLINE RELEASE CANDIDATE / NOT PRODUCTION
 
 ## Scope
 
-Internal/offline engineering release candidate for the isolated `GreeAliceBridge` bounded context.
+Scope: internal/offline only.
+
+Base commit: b60fb382
+RC commit: to be created by this stage
+Validation: pending before commit, then PASS after checks
+Production Yandex release: NOT READY
 
 ## Included capabilities
 
-- Offline bridge contracts.
-- Offline Yandex Smart Home API skeleton.
-- Offline registry and registry import/admin boundary.
-- VRF/GMV child-unit dummy exposure model.
-- Account linking boundary.
-- Provider readiness package.
-- Local smoke harness.
-- Operator runbook.
-- PowerShell smoke script.
-- Localhost-only HTTP smoke boundary.
-- Safety guards and tests.
+- isolated GreeAliceBridge API;
+- offline Yandex Smart Home endpoints;
+- dummy split AC device;
+- VRF/GMV child-unit model;
+- gateway hidden by default;
+- offline registry/import boundary;
+- offline account linking boundary;
+- provider readiness package;
+- local smoke harness;
+- PowerShell smoke script;
+- localhost-only HTTP smoke boundary;
+- dry-run fail-closed /action.
 
 ## Excluded capabilities
 
-- Real Yandex provider registration.
-- Real OAuth implementation.
-- Real Yandex client credentials.
-- Access/refresh tokens.
-- Production endpoint.
-- Production deployment.
-- Live Gree+ Cloud read-only integration.
-- Live Gree+ Cloud control.
-- MQTT.
-- Device control.
-- Admin UI.
-- Multi-account rollout.
+- real Yandex provider registration;
+- real OAuth;
+- real credentials/tokens;
+- production endpoint;
+- production deployment;
+- live Gree+ Cloud read-only;
+- live Gree+ Cloud control;
+- MQTT;
+- device control;
+- admin UI;
+- multi-account rollout.
 
 ## Validation summary
 
@@ -47,7 +52,12 @@ Validation must include full solution restore/build/test, `git diff --check`, lo
 
 ## Known limitations
 
-This release candidate is offline/local only. It uses dummy/template data and does not prove real provider registration, real OAuth, production hosting, live Gree+ behavior, MQTT behavior, or device control.
+- not usable by real Yandex app as production provider;
+- no real account linking;
+- no real Gree+ runtime data;
+- no real control;
+- offline fixture data only;
+- manual smoke/evidence still required before any pilot.
 
 ## Safety boundaries
 

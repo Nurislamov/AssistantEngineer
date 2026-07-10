@@ -5,18 +5,18 @@
 
 ### Current stage
 
-GREE-ALICE-53 — APPLIED locally / validation pending.
+GREE-ALICE-RC1 — CLOSED locally / internal offline RC / push pending.
 
 Latest closed GREE-ALICE commit:
 
 ```text
-1a8b8754 GREE-ALICE-52 Add local bridge HTTP smoke endpoint boundary
+b60fb382 GREE-ALICE-53 Add release readiness audit and RC path
 ```
 
 Current local stage prepared for validation:
 
 ```text
-GREE-ALICE-53 Add release readiness audit and RC path
+GREE-ALICE-RC1 Cut internal offline release candidate
 ```
 
 ### Completed stages
@@ -71,21 +71,22 @@ GREE-ALICE-49 — CLOSED / pushed — Yandex provider readiness package
 GREE-ALICE-50 — CLOSED / pushed — local Yandex provider smoke harness
 GREE-ALICE-51 — CLOSED / pushed — local bridge runbook and smoke script boundary
 GREE-ALICE-52 — CLOSED / pushed — local bridge HTTP smoke endpoint boundary
+GREE-ALICE-53 — CLOSED / pushed — release readiness audit and RC path
 ```
 
 ### Validation status
 
 ```text
-Latest validation for GREE-ALICE-52:
+Latest validation for GREE-ALICE-53:
 dotnet restore .\AssistantEngineer.sln
 dotnet build .\AssistantEngineer.sln --no-restore
 dotnet test .\AssistantEngineer.sln --no-build
 Result: PASS
-Tests: 5686/5686
+Tests: 5693/5693
 git diff --check: PASS
-Optional HTTP smoke http://localhost:5005: PASS
+Local smoke script: PASS
 Push: PASS
-master == origin/master after commit 1a8b8754
+master == origin/master after commit b60fb382
 ```
 
 ### Safety boundary
@@ -107,16 +108,14 @@ Do not add live MQTT CONNECT, SUBSCRIBE, PUBLISH, or device control before an ex
 Do not mention third-party repo/source names in docs, README, or PROJECT_STATE.
 ```
 
-### GREE-ALICE-53 local scope
+### GREE-ALICE-RC1 local scope
 
 ```text
-Adds release readiness audit.
-Adds internal/offline RC checklist.
-Adds internal/offline release notes draft.
-Defines current internal/offline engineering release status as NEAR READY.
-Defines current Yandex Smart Home production release status as NOT READY.
-Defines shortest release-oriented RC path.
-Postpones non-RC scope and prevents another abstract boundary stage from becoming the default next step.
+Cuts internal/offline release candidate locally.
+Marks RC checklist as CUT LOCALLY / PUSH PENDING.
+Updates release notes to RC1 / INTERNAL OFFLINE RELEASE CANDIDATE / NOT PRODUCTION.
+Keeps current Yandex Smart Home production release status as NOT READY.
+Sets next real pilot track to GREE-ALICE-PILOT-1.
 Live read-only adapter remains not implemented.
 Live read-only adapter remains disabled.
 Live read-only pilot remains not approved.
@@ -154,6 +153,7 @@ Local bridge smoke script remains offline-local only.
 Local HTTP smoke boundary remains localhost-only.
 Internal/offline engineering release is near-ready.
 Yandex Smart Home production release is not ready.
+Internal/offline RC1 is cut locally.
 Smoke harness does not call real Yandex.
 Smoke script does not call real Yandex.
 HTTP smoke boundary does not call real Yandex.
@@ -190,32 +190,32 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
-### Files changed by GREE-ALICE-53
+### Files changed by GREE-ALICE-RC1
 
 ```text
-docs/integrations/gree-alice/release-readiness-audit.md
 docs/integrations/gree-alice/internal-offline-rc-checklist.md
 docs/integrations/gree-alice/internal-offline-release-notes-draft.md
+docs/integrations/gree-alice/release-readiness-audit.md
 docs/integrations/gree-alice/README.md
-tests/AssistantEngineer.Tests/GreeAlice/GreeAliceReleaseReadinessAuditTests.cs
 tests/AssistantEngineer.Tests/GreeAlice/GreeAliceOfflineBridgeSkeletonBoundaryTests.cs
+tests/AssistantEngineer.Tests/GreeAlice/GreeAliceReleaseReadinessAuditTests.cs
 PROJECT_STATE.md
 ```
 
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-53 validation.
+None for local GREE-ALICE-RC1 validation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-RC1 — cut internal offline release candidate
+GREE-ALICE-PILOT-1 — implement real Yandex OAuth/provider minimal skeleton
 ```
 
-GREE-ALICE-RC1 should cut an internal/offline release candidate from the existing green local bridge boundary. It should not add another abstract skeleton as the default next step, and it should still not implement real OAuth, real provider registration, live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
+GREE-ALICE-PILOT-1 should start the first real pilot track only after the internal/offline RC is pushed/reviewed. It should still not add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring, deployment changes, or migrations without a separate explicit approval.
 <!-- GREE-ALICE-STATE:END -->
 
 
