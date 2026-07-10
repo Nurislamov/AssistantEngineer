@@ -341,6 +341,7 @@ Gree Plus live evidence capture package: exists
 Gree Plus live evidence capture mode: manual adb logcat, read-only scenario, masked summary only
 Gree Plus live evidence redaction helper: offline/local only at scripts/integrations/gree-alice/redact-gree-plus-live-evidence.ps1
 Gree Plus live evidence extraction helper: offline/local only at scripts/integrations/gree-alice/extract-gree-plus-live-evidence.ps1, redacted input only
+Gree Plus focused live evidence extraction helper: offline/local only at scripts/integrations/gree-alice/extract-gree-plus-focused-live-evidence.ps1, redacted input only, Android/Samsung noise rejected
 Gree Plus live evidence confirmed so far: plugin/status callback shape
 Gree Plus live evidence unresolved: exact HTTP live read endpoint, method, headers, body, response envelope
 Gree Plus live evidence raw artifacts in repository: forbidden

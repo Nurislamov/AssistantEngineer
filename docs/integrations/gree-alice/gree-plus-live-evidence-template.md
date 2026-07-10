@@ -95,7 +95,9 @@ analytics user_id pValue redacted: yes/no
 analytics appliance name pValue redacted: yes/no
 raw logs/screenshots/PCAPs excluded: yes/no
 extractor run on redacted input only: yes/no
+focused extractor run on redacted input only: yes/no
 generated extract files kept outside Git: yes/no
+Android/Samsung noise rejected from focused evidence: yes/no
 ```
 
 ## Conclusion

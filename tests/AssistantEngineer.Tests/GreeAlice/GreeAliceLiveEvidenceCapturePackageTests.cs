@@ -17,6 +17,7 @@ public sealed class GreeAliceLiveEvidenceCapturePackageTests
         Assert.Contains("Do not tap power", capture, StringComparison.Ordinal);
         Assert.Contains("redact-gree-plus-live-evidence.ps1", capture, StringComparison.Ordinal);
         Assert.Contains("extract-gree-plus-live-evidence.ps1", capture, StringComparison.Ordinal);
+        Assert.Contains("extract-gree-plus-focused-live-evidence.ps1", capture, StringComparison.Ordinal);
         Assert.Contains("sendDataToDevice observed: no/yes", template, StringComparison.Ordinal);
         Assert.Contains("Contract status: unknown/partial/confirmed-read-only", template, StringComparison.Ordinal);
         Assert.Contains("Gree Plus live evidence capture package: exists", readme, StringComparison.Ordinal);
@@ -224,6 +225,137 @@ public sealed class GreeAliceLiveEvidenceCapturePackageTests
         Assert.DoesNotContain("Invoke-WebRequest", script, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Invoke-RestMethod", script, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Start-Process", script, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void FocusedEvidenceExtractorIncludesGreeStatusAndRejectsAndroidNoise()
+    {
+        string root = FindRepositoryRoot();
+        string script = Path.Combine(root, "scripts", "integrations", "gree-alice", "extract-gree-plus-focused-live-evidence.ps1");
+        string tempRoot = Path.Combine(Path.GetTempPath(), "gree-alice-focused-evidence-tests", Guid.NewGuid().ToString("N"));
+        string inputPath = Path.Combine(tempRoot, "redacted-input.txt");
+        string outputPath = Path.Combine(tempRoot, "extract");
+        Directory.CreateDirectory(tempRoot);
+
+        try
+        {
+            File.WriteAllText(
+                inputPath,
+                string.Join(
+                    Environment.NewLine,
+                    [
+                        "I/com.gree.greeplus PluginInterface start funName=getInfo",
+                        "D/GREE+ getEnvApiAddress ApiAddress=https://hkgrih.gree.com",
+                        "D/GREE+ GreeAccess /GreeAccess/access/action actionBytes=<REDACTED_SHAPE>",
+                        "I/chromium cordova.callbackFromNative fullstatueJson {\\\"t\\\":\\\"status\\\",\\\"Pow\\\":1,\\\"Mod\\\":1,\\\"SetTem\\\":25,\\\"AllErr\\\":0,\\\"deviceState\\\":4,\\\"status\\\":true,\\\"host\\\":\\\"hk.dis.gree.com\\\"}",
+                        "I/PluginInterface funName=sendDataToDevice analytics click trace",
+                        "W/PowerManager SourcePower TvStatus POWER_ON",
+                        "I/StatusBar WindowManager generic notification",
+                        "W/ServiceManager No service published for: wifirtt",
+                        "D/Samsung oneconnect TV BLE ScanController line"
+                    ]));
+
+            RunExtractor(script, inputPath, outputPath);
+
+            string status = File.ReadAllText(Path.Combine(outputPath, "focused-status-evidence.txt"));
+            string api = File.ReadAllText(Path.Combine(outputPath, "focused-api-evidence.txt"));
+            string risk = File.ReadAllText(Path.Combine(outputPath, "focused-control-risk-evidence.txt"));
+            string negative = File.ReadAllText(Path.Combine(outputPath, "focused-negative-control-proof.txt"));
+            string rejected = File.ReadAllText(Path.Combine(outputPath, "focused-noise-rejected.txt"));
+            string summary = File.ReadAllText(Path.Combine(outputPath, "focused-summary.md"));
+
+            Assert.Contains("fullstatueJson", status, StringComparison.Ordinal);
+            Assert.Contains("\\\"t\\\":\\\"status\\\"", status, StringComparison.Ordinal);
+            Assert.Contains("Pow", status, StringComparison.Ordinal);
+            Assert.Contains("SetTem", status, StringComparison.Ordinal);
+            Assert.Contains("ApiAddress", api, StringComparison.Ordinal);
+            Assert.Contains("GreeAccess", api, StringComparison.Ordinal);
+            Assert.Contains("actionBytes", api, StringComparison.Ordinal);
+            Assert.Contains("sendDataToDevice", risk, StringComparison.Ordinal);
+            Assert.Contains("No strong command/control markers found", negative, StringComparison.Ordinal);
+            Assert.Contains("sendDataToDevice appeared as a focused risk candidate", negative, StringComparison.Ordinal);
+            Assert.Contains("PowerManager", rejected, StringComparison.Ordinal);
+            Assert.Contains("wifirtt", rejected, StringComparison.Ordinal);
+            Assert.Contains("oneconnect", rejected, StringComparison.Ordinal);
+            Assert.DoesNotContain("PowerManager", status, StringComparison.Ordinal);
+            Assert.DoesNotContain("SourcePower", risk, StringComparison.Ordinal);
+            Assert.Contains("Rejected noise lines: 4", summary, StringComparison.Ordinal);
+            Assert.Contains("Strong command/control marker lines: 0", summary, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(tempRoot))
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void FocusedEvidenceExtractorReportsExactCommandMarkersOnlyAsStrongControl()
+    {
+        string root = FindRepositoryRoot();
+        string script = Path.Combine(root, "scripts", "integrations", "gree-alice", "extract-gree-plus-focused-live-evidence.ps1");
+        string tempRoot = Path.Combine(Path.GetTempPath(), "gree-alice-focused-evidence-tests", Guid.NewGuid().ToString("N"));
+        string inputPath = Path.Combine(tempRoot, "redacted-input.txt");
+        string outputPath = Path.Combine(tempRoot, "extract");
+        Directory.CreateDirectory(tempRoot);
+
+        try
+        {
+            File.WriteAllText(
+                inputPath,
+                string.Join(
+                    Environment.NewLine,
+                    [
+                        "I/com.gree.greeplus transport payload {\"t\":\"cmd\",\"opt\":[\"Pow\"],\"p\":[1]}",
+                        "I/com.gree.greeplus transport payload {\\\"t\\\":\\\"cmd\\\",\\\"opt\\\":[\\\"SetTem\\\"],\\\"p\\\":[25]}",
+                        "D/GREE+ dev_control control_order control_Agtype",
+                        "I/MQTT Gree topic publish payload marker",
+                        "W/ServiceManager No service published for: wifirtt",
+                        "W/TvStatus POWER_ON SourcePower"
+                    ]));
+
+            RunExtractor(script, inputPath, outputPath);
+
+            string negative = File.ReadAllText(Path.Combine(outputPath, "focused-negative-control-proof.txt"));
+            string rejected = File.ReadAllText(Path.Combine(outputPath, "focused-noise-rejected.txt"));
+            string summary = File.ReadAllText(Path.Combine(outputPath, "focused-summary.md"));
+
+            Assert.Contains("Strong command/control markers require manual review", negative, StringComparison.Ordinal);
+            Assert.Contains("\"t\":\"cmd\"", negative, StringComparison.Ordinal);
+            Assert.Contains("\\\"t\\\":\\\"cmd\\\"", negative, StringComparison.Ordinal);
+            Assert.Contains("control_order", negative, StringComparison.Ordinal);
+            Assert.Contains("Gree topic publish", negative, StringComparison.Ordinal);
+            Assert.Contains("wifirtt", rejected, StringComparison.Ordinal);
+            Assert.DoesNotContain("No service published for: wifirtt", negative, StringComparison.Ordinal);
+            Assert.DoesNotContain("TvStatus POWER_ON", negative, StringComparison.Ordinal);
+            Assert.Contains("Strong command/control marker lines: 4", summary, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(tempRoot))
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void FocusedEvidenceExtractorHasNoDefaultInputOrNetworkBehavior()
+    {
+        string scriptPath = Path.Combine(FindRepositoryRoot(), "scripts", "integrations", "gree-alice", "extract-gree-plus-focused-live-evidence.ps1");
+        string script = File.ReadAllText(scriptPath);
+
+        Assert.True(File.Exists(scriptPath));
+        Assert.Contains("has no default paths", script, StringComparison.Ordinal);
+        Assert.Contains("Get-Content -LiteralPath $inputFullPath -Raw", script, StringComparison.Ordinal);
+        Assert.DoesNotContain("Invoke-WebRequest", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Invoke-RestMethod", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Start-Process", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ConnectAsync", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("SubscribeAsync", script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("PublishAsync", script, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string RunPowerShell(string scriptPath, string text)

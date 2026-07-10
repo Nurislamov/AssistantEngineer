@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `103`
+- `PowerShell` scripts reviewed: `104`
 - `CSharpTool` projects reviewed: `15`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `126`
+- Total reviewed entries: `127`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
@@ -81,6 +81,8 @@ GREE-ALICE-52 extends that script with optional localhost-only HTTP smoke. The m
 GREE-ALICE-LIVE-EVIDENCE-1 adds one offline/local redaction helper for manually captured read-only Gree Plus evidence summaries. It has no default input path and must not call live endpoints, use MQTT, control devices, add production wiring, or persist raw evidence.
 
 GREE-ALICE-LIVE-EVIDENCE-1a adds one offline/local extraction helper for already-redacted Gree Plus evidence. It writes operator-selected local extract files only, distinguishes status callback evidence from control-risk candidates, and must not call live endpoints, use MQTT, control devices, add production wiring, or persist raw evidence.
+
+GREE-ALICE-LIVE-EVIDENCE-1b adds one offline/local focused extraction helper for already-redacted Gree Plus evidence. It filters common Android/Samsung logcat noise before counting Gree+ status/API/control-risk evidence and must not call live endpoints, use MQTT, control devices, add production wiring, or persist raw evidence.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 

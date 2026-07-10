@@ -1663,6 +1663,22 @@
                         "riskIfChanged":  "Extractor drift can misclassify analytics noise as control proof, hide command/control markers, leak identifiers, read unintended local files, or imply live Gree, MQTT, device-control, or production integration behavior."
                     },
                     {
+                        "id":  "SCR-103",
+                        "path":  "scripts/integrations/gree-alice/extract-gree-plus-focused-live-evidence.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "GREE-ALICE offline/local focused extraction helper for already-redacted Gree Plus evidence, rejecting common Android/Samsung noise before splitting focused status, API, control-risk, negative proof, and summary output.",
+                        "invokedBy":  [
+                                          "LocalManual"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  true,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the helper offline/local, explicit-input only, redacted-input only, and limited to focused operator-selected local extract output.",
+                        "proposedStage":  "GREE-ALICE-LIVE-EVIDENCE-1b",
+                        "riskIfChanged":  "Focused extractor drift can admit Android/Samsung false positives, hide Gree command markers, leak identifiers, read unintended local files, or imply live Gree, MQTT, device-control, or production integration behavior."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",

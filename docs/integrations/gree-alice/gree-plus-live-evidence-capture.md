@@ -52,6 +52,14 @@ powershell -ExecutionPolicy Bypass -File .\scripts\integrations\gree-alice\extra
 
 The extractor writes small local files such as `status-evidence.txt`, `control-risk-evidence.txt`, `negative-control-proof.txt`, `contract-gaps.txt`, `leak-check.txt`, and `summary.md`. Keep generated evidence files outside Git unless a later stage explicitly approves a masked summary format.
 
+For noisy Android logcat captures, prefer the focused extractor on the already-redacted file:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\integrations\gree-alice\extract-gree-plus-focused-live-evidence.ps1 -InputPath <redacted-output-path> -OutputDirectory <untracked-focused-extract-directory>
+```
+
+The focused extractor writes `focused-summary.md`, `focused-status-evidence.txt`, `focused-api-evidence.txt`, `focused-control-risk-evidence.txt`, `focused-negative-control-proof.txt`, and `focused-noise-rejected.txt`. It rejects common Android/Samsung noise such as PowerManager, SourcePower, TvStatus, StatusBar, WindowManager, wifirtt, oneconnect, and BLE-only lines before counting Gree+ status/control evidence.
+
 ## Positive evidence to look for
 
 Capture and summarize, if present:
@@ -102,6 +110,8 @@ If any write-like operation appears, do not use the capture as read-only contrac
 `sendDataToDevice` may appear in analytics, click traces, or bridge logging. Treat that as a risk candidate, not proof of live control by itself. Confirmed control proof requires stronger markers such as `t=cmd`, `control_order`, `dev_control`, MQTT publish, or a write/control/action request carrying a command body.
 
 Status fields such as `Pow`, `Mod`, `SetTem`, and `WdSpd` inside `t=status` or `fullstatueJson` are status evidence, not command proof.
+
+PowerManager, SourcePower, StatusBar, TvStatus `POWER_ON`, and Android/Samsung service or BLE lines are not Gree+ status or command proof unless the same line also has a clear Gree+ status/control context.
 
 ## Redaction requirements
 
