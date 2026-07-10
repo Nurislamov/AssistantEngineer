@@ -322,6 +322,10 @@ Gree Plus command builder: offline/local payload builder only
 Gree Plus command serializer: offline compact JSON only
 Gree Plus command serializer fields: t/opt/p only
 Gree Plus command serializer device identifiers: not emitted
+Gree Plus status parser: offline JSON status objects only
+Gree Plus status parser network operations: disabled
+Gree Plus status parser live control: disabled
+Gree Plus status parser timers: out of scope
 Gree Plus command builder network operations: disabled
 Gree Plus command builder timers: out of scope
 Next implementation stage: GREE-ALICE-PILOT-1B.
