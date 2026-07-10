@@ -1619,16 +1619,16 @@
                         "path":  "scripts/integrations/gree-alice/run-local-yandex-provider-smoke.ps1",
                         "type":  "PowerShell",
                         "category":  "KeepAsWrapper",
-                        "purpose":  "GREE-ALICE offline/local smoke script boundary for local bridge validation without production deploy, live Yandex/Gree endpoints, OAuth, secrets, tokens, MQTT, or device control.",
+                        "purpose":  "GREE-ALICE offline/local smoke script boundary for local bridge validation and optional localhost-only HTTP smoke without production deploy, live Yandex/Gree endpoints, OAuth, secrets, tokens, MQTT, or device control.",
                         "invokedBy":  [
                                           "LocalManualOrNestedScript"
                                       ],
                         "wrapsTool":  "dotnet CLI + git local checks",
                         "producesArtifacts":  false,
                         "safeToRemove":  false,
-                        "recommendedAction":  "Keep the script offline/local only; do not add production deploy, live endpoint calls, OAuth credentials, secrets, tokens, MQTT, or device-control behavior.",
-                        "proposedStage":  "GREE-ALICE-51",
-                        "riskIfChanged":  "Boundary drift can turn a local smoke check into live service access, secret exposure, MQTT usage, device control, or production deployment."
+                        "recommendedAction":  "Keep the script offline/local and localhost-only for HTTP smoke; do not add production deploy, live endpoint calls, OAuth credentials, secrets, tokens, MQTT, or device-control behavior.",
+                        "proposedStage":  "GREE-ALICE-52",
+                        "riskIfChanged":  "Boundary drift can turn a local smoke check into live service access, secret exposure, public endpoint access, MQTT usage, device control, or production deployment."
                     },
                     {
                         "id":  "TOOL-001",

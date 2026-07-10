@@ -26,6 +26,8 @@ Use this checklist manually. Mark PASS only after local/offline evidence is coll
 - [ ] /query offline check PASS, if API is run locally
 - [ ] /action fail-closed check PASS, if API is run locally
 - [ ] /unlink offline check PASS, if API is run locally
+- [ ] HTTP smoke mode uses only http://localhost:<local-port> or http://127.0.0.1:<local-port>
+- [ ] HTTP smoke rejects public hosts, https, production endpoints, Yandex/Gree domains, OAuth endpoints, and MQTT endpoints
 - [ ] Unknown user fail-closed check PASS
 - [ ] Unknown device fail-closed check PASS
 - [ ] VRF child exposure check PASS

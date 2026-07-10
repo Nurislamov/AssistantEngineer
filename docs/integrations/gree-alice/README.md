@@ -190,6 +190,7 @@ local-bridge-operator-runbook.md
 local-bridge-operator-smoke-checklist.md
 local-bridge-smoke-evidence-template.md
 local-bridge-forbidden-commands.md
+local-bridge-http-smoke-boundary.md
 ```
 
 Current safety position:
@@ -260,6 +261,12 @@ Smoke harness MQTT/control: blocked
 Local operator runbook: exists
 Local smoke script boundary: exists at scripts/integrations/gree-alice/run-local-yandex-provider-smoke.ps1
 Script mode: offline/local only
+Local HTTP smoke boundary: exists
+Local HTTP smoke document: local-bridge-http-smoke-boundary.md
+HTTP smoke mode: localhost-only
+HTTP smoke allowed targets: http://localhost:<local-port> and http://127.0.0.1:<local-port>
+HTTP smoke public hosts: blocked
+HTTP smoke production endpoints: blocked
 Script real Yandex calls: disabled
 Script OAuth: not implemented
 Script real credentials/tokens: not used
@@ -277,6 +284,14 @@ Script does not call live Gree+ Cloud.
 Script does not use MQTT.
 Script does not control devices.
 Script does not deploy production.
+HTTP smoke is localhost-only.
+HTTP smoke does not call real Yandex.
+HTTP smoke does not implement OAuth.
+HTTP smoke does not use real credentials/tokens.
+HTTP smoke does not call live Gree+ Cloud.
+HTTP smoke does not use MQTT.
+HTTP smoke does not control devices.
+HTTP smoke does not deploy production.
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked

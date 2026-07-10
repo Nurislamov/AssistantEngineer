@@ -78,6 +78,19 @@ For a faster repeat after restore/build:
 powershell -ExecutionPolicy Bypass -File .\scripts\integrations\gree-alice\run-local-yandex-provider-smoke.ps1 -RepoRoot . -SkipRestore -SkipBuild
 ```
 
+Optional localhost HTTP smoke mode:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\integrations\gree-alice\run-local-yandex-provider-smoke.ps1 `
+  -RepoRoot . `
+  -SkipRestore `
+  -SkipBuild `
+  -RunHttpSmoke `
+  -LocalBaseUrl "http://localhost:<local-port>"
+```
+
+HTTP smoke is localhost-only and rejects public hosts, `https`, Yandex/Gree domains, OAuth endpoints, production endpoints, and MQTT endpoints.
+
 ## Optional isolated API run command
 
 Use only the isolated bridge API project in local development mode:
@@ -186,4 +199,4 @@ Do not add real credentials, tokens, OAuth client secrets, passwords, account id
 
 ## Next stage
 
-GREE-ALICE-52 — add local bridge HTTP smoke endpoint boundary.
+GREE-ALICE-53 — add Yandex OAuth offline contract skeleton.

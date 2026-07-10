@@ -18,6 +18,7 @@ Forbidden on GREE-ALICE-51:
 - Running commands that send device control
 - Running scripts outside offline/local scope
 - Committing smoke evidence with secrets
+- Running HTTP smoke against `https`, public hosts, public IP addresses, production endpoints, Yandex/Gree domains, OAuth endpoints, or MQTT endpoints
 
 Also forbidden:
 

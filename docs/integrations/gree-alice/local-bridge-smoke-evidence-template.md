@@ -49,6 +49,12 @@ NOT RUN
 not-run | local-offline
 ```
 
+## HTTP smoke base URL
+
+```text
+http://localhost:<local-port>
+```
+
 ## Health check result
 
 ```text

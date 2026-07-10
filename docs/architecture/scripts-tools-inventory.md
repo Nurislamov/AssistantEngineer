@@ -76,6 +76,8 @@ GREE-ALICE-02 adds one scaffold console probe tool for Gree+ Cloud account, regi
 
 GREE-ALICE-51 adds one offline/local bridge smoke script boundary. It performs local validation only and must not do production deploy, call Yandex/Gree live endpoints, use OAuth/secrets/tokens, use MQTT, or control devices.
 
+GREE-ALICE-52 extends that script with optional localhost-only HTTP smoke. The mode accepts only `http://localhost:<local-port>` or `http://127.0.0.1:<local-port>` and still must not deploy production, call live endpoints, use OAuth/secrets/tokens, use MQTT, or control devices.
+
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 
 ## Non-claims

@@ -83,17 +83,17 @@ public sealed class GreeAliceOfflineBridgeSkeletonBoundaryTests
     }
 
     [Fact]
-    public void ProjectStateClosesGreeAlice50AndOpensGreeAlice51()
+    public void ProjectStateClosesGreeAlice51AndOpensGreeAlice52()
     {
         string text = ReadRepoFile("PROJECT_STATE.md");
 
-        Assert.Contains("GREE-ALICE-50", text, StringComparison.Ordinal);
-        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
-        Assert.Contains("4bd8744b", text, StringComparison.Ordinal);
-        Assert.Contains("Tests: 5670/5670", text, StringComparison.Ordinal);
         Assert.Contains("GREE-ALICE-51", text, StringComparison.Ordinal);
+        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
+        Assert.Contains("4b0b8852", text, StringComparison.Ordinal);
+        Assert.Contains("Tests: 5679/5679", text, StringComparison.Ordinal);
+        Assert.Contains("GREE-ALICE-52", text, StringComparison.Ordinal);
+        Assert.Contains("local bridge HTTP smoke endpoint boundary", text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("local bridge runbook and smoke script boundary", text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("local Yandex provider smoke harness", text, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ReadAllDocs()

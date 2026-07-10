@@ -44,3 +44,18 @@ The public `/devices` endpoint still needs a future user-context enforcement sta
 ## Future Production Smoke Delta
 
 Future production smoke would add provider registration evidence, OAuth evidence, production endpoint checks, external callback checks, credential storage evidence outside the repository, monitoring evidence, rollback evidence, and operator approval.
+# Local HTTP Smoke Boundary
+
+GREE-ALICE-52 adds a localhost-only HTTP smoke boundary for the isolated bridge API.
+
+The HTTP smoke boundary checks:
+
+```text
+GET /health
+GET /v1.0/user/devices
+POST /v1.0/user/devices/query
+POST /v1.0/user/devices/action
+POST /v1.0/user/unlink
+```
+
+It uses only dummy/template payloads, requires `/action` dry-run fail-closed results, requires gateway hidden behavior, and does not call real Yandex, OAuth, live Gree+ Cloud, MQTT, device control, command execution, or production deployment.

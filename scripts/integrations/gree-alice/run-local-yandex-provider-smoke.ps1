@@ -1,8 +1,10 @@
 param(
     [string]$RepoRoot = "",
+    [string]$LocalBaseUrl = "",
     [switch]$SkipRestore,
     [switch]$SkipBuild,
     [switch]$SkipTests,
+    [switch]$RunHttpSmoke,
     [switch]$NoLogo
 )
 
@@ -10,12 +12,12 @@ $ErrorActionPreference = "Stop"
 
 function Write-Stage {
     param([string]$Message)
-    Write-Host "[GREE-ALICE-51] $Message"
+    Write-Host "[GREE-ALICE-52] $Message"
 }
 
 function Fail-Stage {
     param([string]$Message)
-    Write-Error "[GREE-ALICE-51] FAIL: $Message"
+    Write-Error "[GREE-ALICE-52] FAIL: $Message"
     exit 1
 }
 
@@ -31,6 +33,148 @@ function Invoke-Checked {
     if ($LASTEXITCODE -ne 0) {
         Fail-Stage "$DisplayName failed."
     }
+}
+
+function Test-LocalBaseUrl {
+    param([string]$Value)
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        Fail-Stage "LocalBaseUrl is required when RunHttpSmoke is used."
+    }
+
+    $uri = $null
+    if (-not [System.Uri]::TryCreate($Value, [System.UriKind]::Absolute, [ref]$uri)) {
+        Fail-Stage "LocalBaseUrl must be an absolute local URL."
+    }
+
+    if ($uri.Scheme -ne "http") {
+        Fail-Stage "LocalBaseUrl must use http only."
+    }
+
+    if ($uri.Host -ne "localhost" -and $uri.Host -ne "127.0.0.1") {
+        Fail-Stage "LocalBaseUrl host must be localhost or 127.0.0.1 only."
+    }
+
+    if ($uri.IsDefaultPort -or $uri.Port -le 0) {
+        Fail-Stage "LocalBaseUrl must include an explicit local port."
+    }
+
+    $lowerValue = $Value.ToLowerInvariant()
+    $forbiddenFragments = @(
+        "yandex",
+        "gree.com",
+        "grih",
+        "oauth",
+        "mqtt",
+        "prod",
+        "production"
+    )
+
+    foreach ($fragment in $forbiddenFragments) {
+        if ($lowerValue.Contains($fragment)) {
+            Fail-Stage "LocalBaseUrl contains forbidden non-local fragment: $fragment"
+        }
+    }
+
+    return $uri.AbsoluteUri.TrimEnd("/")
+}
+
+function Invoke-LocalJson {
+    param(
+        [string]$Method,
+        [string]$BaseUrl,
+        [string]$Path,
+        [string]$Body = ""
+    )
+
+    $uri = $BaseUrl + $Path
+    try {
+        if ([string]::IsNullOrWhiteSpace($Body)) {
+            return Invoke-RestMethod -Method $Method -Uri $uri
+        }
+
+        return Invoke-RestMethod -Method $Method -Uri $uri -ContentType "application/json" -Body $Body
+    }
+    catch {
+        Fail-Stage "HTTP smoke request failed for $Method ${Path}: $($_.Exception.Message)"
+    }
+}
+
+function Assert-Truthy {
+    param(
+        [bool]$Condition,
+        [string]$Message
+    )
+
+    if (-not $Condition) {
+        Fail-Stage $Message
+    }
+}
+
+function Invoke-LocalHttpSmoke {
+    param([string]$BaseUrl)
+
+    $checkedBaseUrl = Test-LocalBaseUrl -Value $BaseUrl
+
+    Write-Stage "Running localhost HTTP smoke"
+
+    $health = Invoke-LocalJson -Method "GET" -BaseUrl $checkedBaseUrl -Path "/health"
+    Assert-Truthy -Condition ($null -ne $health) -Message "/health returned empty response."
+    Assert-Truthy -Condition ($health.status -eq "healthy") -Message "/health did not return healthy status."
+
+    $devices = Invoke-LocalJson -Method "GET" -BaseUrl $checkedBaseUrl -Path "/v1.0/user/devices"
+    Assert-Truthy -Condition ($null -ne $devices.devices) -Message "/devices returned no devices collection."
+    $deviceIds = @($devices.devices | ForEach-Object { $_.id })
+    Assert-Truthy -Condition ($deviceIds.Count -gt 0) -Message "/devices returned no dummy devices."
+    Assert-Truthy -Condition ($deviceIds -contains "dummy-gree-ac-001") -Message "/devices did not include dummy-gree-ac-001."
+    Assert-Truthy -Condition ($deviceIds -contains "yandex-dummy-vrf-child-living-001") -Message "/devices did not include exposed VRF child unit."
+    Assert-Truthy -Condition (-not ($deviceIds -contains "dummy-vrf-gateway-001")) -Message "/devices exposed hidden gateway."
+
+    $queryBody = @"
+{
+  "devices": [
+    { "id": "dummy-gree-ac-001" },
+    { "id": "yandex-dummy-vrf-child-living-001" },
+    { "id": "unknown-device-001" }
+  ]
+}
+"@
+    $query = Invoke-LocalJson -Method "POST" -BaseUrl $checkedBaseUrl -Path "/v1.0/user/devices/query" -Body $queryBody
+    Assert-Truthy -Condition ($null -ne $query.devices) -Message "/query returned no devices collection."
+    $queryStatuses = @($query.devices | ForEach-Object { $_.status })
+    Assert-Truthy -Condition ($queryStatuses -contains "offline-fixture") -Message "/query did not return offline fixture state."
+    Assert-Truthy -Condition (($queryStatuses -contains "offline-unknown") -or ($queryStatuses -contains "dry-run-fail-closed")) -Message "/query did not return controlled unknown/fail-closed result."
+
+    $actionBody = @"
+{
+  "devices": [
+    {
+      "id": "dummy-gree-ac-001",
+      "capabilities": []
+    },
+    {
+      "id": "yandex-dummy-vrf-child-living-001",
+      "capabilities": []
+    },
+    {
+      "id": "unknown-device-001",
+      "capabilities": []
+    }
+  ]
+}
+"@
+    $action = Invoke-LocalJson -Method "POST" -BaseUrl $checkedBaseUrl -Path "/v1.0/user/devices/action" -Body $actionBody
+    Assert-Truthy -Condition ($null -ne $action.devices) -Message "/action returned no devices collection."
+    foreach ($device in @($action.devices)) {
+        Assert-Truthy -Condition ($device.status -eq "dry-run-fail-closed") -Message "/action did not return dry-run fail-closed for a device."
+        Assert-Truthy -Condition ($device.sentToGreeCloud -eq $false) -Message "/action set SentToGreeCloud=true."
+        Assert-Truthy -Condition ($device.sentToMqtt -eq $false) -Message "/action set SentToMqtt=true."
+        Assert-Truthy -Condition ($device.sentToDevice -eq $false) -Message "/action set SentToDevice=true."
+    }
+
+    $unlink = Invoke-LocalJson -Method "POST" -BaseUrl $checkedBaseUrl -Path "/v1.0/user/unlink"
+    Assert-Truthy -Condition ($null -ne $unlink) -Message "/unlink returned empty response."
+    Assert-Truthy -Condition ($unlink.status -eq "offline-no-production-data-touched") -Message "/unlink did not return offline template result."
 }
 
 function Resolve-RepositoryRoot {
@@ -190,6 +334,10 @@ if (-not $SkipTests) {
 Invoke-Checked -DisplayName "Running smoke harness tests" -FileName "dotnet" -Arguments @("test", ".\AssistantEngineer.sln", "--no-build", "--filter", "FullyQualifiedName~GreeAliceLocalYandexProviderSmokeHarnessTests")
 Invoke-Checked -DisplayName "Running git diff --check" -FileName "git" -Arguments @("diff", "--check")
 Assert-NoForbiddenText -Root $resolvedRoot
+
+if ($RunHttpSmoke) {
+    Invoke-LocalHttpSmoke -BaseUrl $LocalBaseUrl
+}
 
 Write-Stage "PASS"
 exit 0
