@@ -111,3 +111,6 @@ blob-report/
 
 # Generated verification reports
 /artifacts/verification/
+
+# Local private traces and runtime artifacts
+.local/
