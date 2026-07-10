@@ -30,10 +30,10 @@ Classify scripts, tools, and CI workflow wrappers by operational role and risk b
 
 ## Current inventory summary
 
-- `PowerShell` scripts reviewed: `101`
+- `PowerShell` scripts reviewed: `102`
 - `CSharpTool` projects reviewed: `15`
 - `GitHubWorkflow` wrappers reviewed: `8`
-- Total reviewed entries: `124`
+- Total reviewed entries: `125`
 
 ED-19C adds two provider-neutral operations scripts for sanitized incident log collection and offline redaction.
 They produce ignored local artifacts only and must never persist raw log input.
@@ -77,6 +77,8 @@ GREE-ALICE-02 adds one scaffold console probe tool for Gree+ Cloud account, regi
 GREE-ALICE-51 adds one offline/local bridge smoke script boundary. It performs local validation only and must not do production deploy, call Yandex/Gree live endpoints, use OAuth/secrets/tokens, use MQTT, or control devices.
 
 GREE-ALICE-52 extends that script with optional localhost-only HTTP smoke. The mode accepts only `http://localhost:<local-port>` or `http://127.0.0.1:<local-port>` and still must not deploy production, call live endpoints, use OAuth/secrets/tokens, use MQTT, or control devices.
+
+GREE-ALICE-LIVE-EVIDENCE-1 adds one offline/local redaction helper for manually captured read-only Gree Plus evidence summaries. It has no default input path and must not call live endpoints, use MQTT, control devices, add production wiring, or persist raw evidence.
 
 Canonical machine-readable inventory: `docs/architecture/scripts-tools-inventory.json`.
 

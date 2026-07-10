@@ -1631,6 +1631,22 @@
                         "riskIfChanged":  "Boundary drift can turn a local smoke check into live service access, secret exposure, public endpoint access, MQTT usage, device control, or production deployment."
                     },
                     {
+                        "id":  "SCR-101",
+                        "path":  "scripts/integrations/gree-alice/redact-gree-plus-live-evidence.ps1",
+                        "type":  "PowerShell",
+                        "category":  "KeepAsWrapper",
+                        "purpose":  "GREE-ALICE offline/local redaction helper for manually captured read-only Gree Plus evidence summaries without live endpoint calls, MQTT, device control, production wiring, or default input paths.",
+                        "invokedBy":  [
+                                          "LocalManual"
+                                      ],
+                        "wrapsTool":  null,
+                        "producesArtifacts":  false,
+                        "safeToRemove":  false,
+                        "recommendedAction":  "Keep the helper offline/local, deterministic, explicit-input only, and limited to redacting manually supplied evidence text or operator-selected files.",
+                        "proposedStage":  "GREE-ALICE-LIVE-EVIDENCE-1",
+                        "riskIfChanged":  "Redaction drift can leak credentials or identifiers, read unintended local files, or imply live Gree, MQTT, device-control, or production integration behavior."
+                    },
+                    {
                         "id":  "TOOL-001",
                         "path":  "tools/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring/AssistantEngineer.Tools.EnergyPlusFixtureAuthoring.csproj",
                         "type":  "CSharpTool",
