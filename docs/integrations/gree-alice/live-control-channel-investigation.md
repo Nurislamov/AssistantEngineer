@@ -57,15 +57,22 @@ The CSV / PCAP export itself is private diagnostic material and must not be comm
 
 ## Working conclusion
 
-The likely live/control path is not the simple HTTPS REST `Get...` family.
+Historical GREE-ALICE-06/07/08 results remain valid checkpoints, but they are superseded and expanded by the later static APK and Flutter/plugin evidence in [gree-plus-api-contract-inventory.md](./gree-plus-api-contract-inventory.md).
 
-The next technical target is the GREE+ cloud MQTT/TLS path:
+The likely live/control path is not the simple HTTPS REST `Get...` family. GREE+ uses multiple channel candidates:
 
 ```text
-mqtt-hk.gree.com:1994
+HTTPS REST discovery is confirmed.
+/App/QueryOnline was runtime-observed as a periodic online/state poll candidate.
+/App/OptHistory was runtime-observed as a history/sync candidate.
+/GreeAccess/access/action is statically discovered and runtime-correlated as a high-risk command endpoint candidate.
+The plugin bridge contains sendDataToDevice, request, MQTT callbacks, publish, and subscribe surfaces.
+MQTT/TLS remains a channel candidate, including mqtt-hk.gree.com:1994 from prior private capture evidence.
 ```
 
-At this point we should still treat it as a read-only investigation target until authentication, topics, payload shape, and safety boundaries are understood.
+The exact transport selection, auth/session lifecycle, method/body/header contract, command envelope, MQTT topic/auth model, and response shapes remain unresolved. MQTT is still a candidate, not the only assumed path.
+
+The next evidence target is passive gateway capture for channel/timing correlation, followed by focused call-argument correlation. It must not become blind endpoint scanning.
 
 ## Safety boundaries
 
@@ -94,24 +101,27 @@ Not allowed in this stage:
 ## Next stage proposal
 
 ```text
-GREE-ALICE-08 — Read-only MQTT channel handshake investigation
+GREE-ALICE-GATEWAY-CAPTURE-1 — passive Wi-Fi gateway metadata capture and channel correlation
 ```
 
 Initial scope:
 
 ```text
-- define MQTT candidate configuration for hkgrih / mqtt-hk;
-- attempt only safe TCP/TLS/MQTT connection diagnostics if credentials are understood;
-- do not subscribe/publish to unknown topics until topic/auth model is known;
-- keep reports masked and local under artifacts/.
+- capture passive metadata only;
+- correlate user action timing with DNS, destination IP, ports, TLS/SNI where visible, packet sizes, and connection reuse;
+- keep PCAP and raw local worksheets outside Git;
+- do not call Set/Mod/Del/Clear/StartOrCancel/action endpoints;
+- do not run MQTT CONNECT, SUBSCRIBE, or PUBLISH without a separate approved stage.
 ```
 
 ## GREE-ALICE-08 implementation note
 
-The next safe implementation step is a transport-only MQTT channel probe for:
+Historical GREE-ALICE-08 proposed a transport-only MQTT channel probe for:
 
 ```text
 mqtt-hk.gree.com:1994
 ```
 
 The probe checks only DNS, TCP, and TLS/SNI. It does not send MQTT `CONNECT`, `SUBSCRIBE`, `PUBLISH`, or any device command.
+
+That historical boundary remains safe, but the current discovery conclusion is broader: passive gateway capture should first establish which channel is actually used for launch, discovery, device view, refresh, polling, and approved future control scenarios.

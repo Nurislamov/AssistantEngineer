@@ -21,6 +21,8 @@ The available repository evidence is enough to model the open questions, but not
 
 ## Known evidence
 
+The full evidence-backed candidate inventory is now maintained in [gree-plus-api-contract-inventory.md](./gree-plus-api-contract-inventory.md). This document keeps only the live read contract implications and gaps.
+
 Observed app and region evidence:
 
 ```text
@@ -40,6 +42,9 @@ Observed app/API strings:
 /App/GetHomes
 /App/GetHomeMsg
 /App/GetMsg
+/App/QueryOnline runtime-observed online/state poll candidate, about every 8 seconds
+/App/OptHistory runtime-observed history/sync candidate
+/GreeAccess/access/action statically discovered and runtime-correlated command endpoint candidate
 /Stats/GetHomeDevEnergyData
 /Stats/GetHomeDevEnergySummary
 access_token
@@ -61,6 +66,57 @@ jsBridge.getHomeId
 getInfo
 setMqttStatusCallback
 sendDataToDevice
+```
+
+Expanded bridge/plugin surface confirmed by the static Flutter/plugin evidence:
+
+```text
+Network.request
+Network.downloadFile
+Network.downloadPlugin
+Network.getServerTime
+Network.sendDataToDevice
+Network.publishTopic
+Network.setMqttStatusCallback
+Network.setHomeBroadCastMsgCallback
+UserData.getUserInfo
+UserData.getHomeId
+UserData.getHomeList
+UserData.getRoomList
+UserData.getDeviceList
+UserData.getDeviceStatus
+UserData.getDeviceConnect
+UserData.getHomeInfo
+UserData.getDeviceInfo
+UserData.getDevicesData
+UserData.getAppConfig
+Subscribe.subscribeDeviceStatus
+Subscribe.unsubscribeDeviceStatus
+Subscribe.subscribeTopics
+Safety.encryptData
+Safety.decryptData
+Safety.jsonToHex
+Safety.hexToJson
+Safety.restoreHexData
+```
+
+Aggregate discovery checkpoint:
+
+```text
+Static APK inventory: PASS
+Flutter/plugin contract extraction: PASS
+PluginArtifactCount: 68
+PluginJadxSuccessCount: 27
+LibAppStringCount: 26950
+LibAppFocusedCount: 1921
+LibAppEndpointCount: 32
+PluginFocusedHitCount: 2529
+PluginContractHitCount: 2525
+PluginEndpointCount: 235
+CombinedContractCount: 4699
+AccessActionStaticHits: 1
+SendDataToDevicePluginHits: 40
+MqttPluginHits: 7
 ```
 
 Observed status fields are already covered by `GreePlusDeviceStatusParser`, including `Pow`, `Mod`, `SetTem`, `WdSpd`, `AllErr`, `deviceState`, `status`, `mid`, and `host`.
@@ -87,7 +143,11 @@ authentication/session: login, token refresh, request signing, and required head
 homes discovery: exact request method, body/query shape, and response envelope
 device discovery: exact device list shape and selected-device binding
 status read: exact read-only endpoint, request method, headers, and response envelope
+status read: exact request body/query shape and signing/encryption requirements
+status read: proof of non-mutation for the selected path
 read-only proof: evidence that the selected status path cannot mutate device/account state
+command/control: /GreeAccess/access/action contract remains high risk and must not be blind-probed
+MQTT: authentication, topic, callback/publish/subscribe, and payload envelope remain unresolved
 ```
 
 Because these are unknown, the live probe must return `NotReady` with `NetworkAttempted=false`.

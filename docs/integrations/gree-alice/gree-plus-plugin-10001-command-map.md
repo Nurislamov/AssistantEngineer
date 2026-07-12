@@ -37,3 +37,42 @@ The parser accepts JSON objects only, reads known status fields such as `Pow`, `
 The parser does not perform network reads, live control, authentication, transport work, or timer work. It is intended as a local model step for a later read-only probe and Alice query/status path.
 
 The machine-readable payload map is stored in `gree-plus-plugin-10001-command-map.json`.
+
+## Plugin and transport evidence
+
+The broader API and bridge inventory is maintained in [gree-plus-api-contract-inventory.md](./gree-plus-api-contract-inventory.md). Current evidence confirms that the plugin/runtime surface includes:
+
+```text
+Network.request
+Network.sendDataToDevice
+Network.publishTopic
+Network.setMqttStatusCallback
+Network.setHomeBroadCastMsgCallback
+Subscribe.subscribeDeviceStatus
+Subscribe.unsubscribeDeviceStatus
+Subscribe.subscribeTopics
+Safety.encryptData
+Safety.decryptData
+Safety.jsonToHex
+Safety.hexToJson
+Safety.restoreHexData
+```
+
+Command helper names confirmed in plugin evidence include:
+
+```text
+getPowCmd
+getPowOnCmd
+getPowOffCmd
+getTempCmd
+toSendJson
+toSendStatesJson
+toSendTempJson
+toSendTurnOffJson
+praseEntityToJson
+praseJsonToEntity
+```
+
+`sendDataToDevice` is linked to command payload assembly in plugin evidence, but this does not prove the complete live transport envelope. The current repository builder remains an offline normalized serializer only. It emits the compact `t` / `opt` / `p` body shape and does not emit device identifiers, device MAC values, authentication material, signatures, MQTT topics, `/GreeAccess/access/action` request metadata, or any live control transport wrapper.
+
+Therefore this document does not claim that the live control contract is complete. `/GreeAccess/access/action`, MQTT publish, and any Set/Mod/Del/Clear/StartOrCancel/action-like flow remain blocked until a separate evidence and approval stage proves exact method, auth, request shape, response shape, target addressing, and safety behavior.

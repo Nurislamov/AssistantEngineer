@@ -5,18 +5,20 @@
 
 ### Current stage
 
-GREE-ALICE-PILOT-1B — APPLIED locally / validation pending.
+GREE-ALICE-API-DISCOVERY-DOC1 — documentation-only discovery checkpoint.
 
-Latest closed GREE-ALICE commit:
+GREE-ALICE-PILOT-1B is already present in git history and pushed on `master`; it is no longer only a local validation-pending stage.
+
+Latest closed GREE-ALICE commit before this documentation checkpoint:
 
 ```text
-1686adb3 GREE-ALICE-PILOT-1A Design Yandex OAuth provider pilot contract
+4422b240 GREE-ALICE-LIVE-EVIDENCE-1b Harden focused Gree evidence extraction
 ```
 
-Current local stage prepared for validation:
+Current documentation stage prepared in this working tree:
 
 ```text
-GREE-ALICE-PILOT-1B Implement dev-only Yandex OAuth provider vertical slice
+GREE-ALICE-API-DISCOVERY-DOC1 Consolidate Gree Plus API evidence
 ```
 
 ### Completed stages
@@ -74,6 +76,10 @@ GREE-ALICE-52 — CLOSED / pushed — local bridge HTTP smoke endpoint boundary
 GREE-ALICE-53 — CLOSED / pushed — release readiness audit and RC path
 GREE-ALICE-RC1 — CLOSED / pushed — internal offline release candidate
 GREE-ALICE-PILOT-1A — CLOSED / pushed — Yandex OAuth provider pilot contract
+GREE-ALICE-PILOT-1B — CLOSED / pushed — dev-only Yandex OAuth provider vertical slice
+GREE-ALICE-LIVE-EVIDENCE-1 — CLOSED / pushed — read-only evidence capture package
+GREE-ALICE-LIVE-EVIDENCE-1a — CLOSED / pushed — evidence redaction hardening
+GREE-ALICE-LIVE-EVIDENCE-1b — CLOSED / pushed — focused evidence extraction hardening
 ```
 
 ### Validation status
@@ -90,6 +96,16 @@ Local smoke script: PASS
 Optional HTTP smoke http://localhost:5005: PASS
 Push: PASS
 master == origin/master after commit 1686adb3
+```
+
+Latest factual git state before GREE-ALICE-API-DISCOVERY-DOC1:
+
+```text
+Current branch: master
+HEAD before DOC1: 4422b240dfc700eb491332777e18dea9d05ec426
+origin/master before DOC1: 4422b240dfc700eb491332777e18dea9d05ec426
+Working tree before DOC1: clean
+git diff --check before DOC1: PASS
 ```
 
 ### Safety boundary
@@ -201,6 +217,46 @@ No API/Telegram/runtime/deployment/migration changes.
 No production deployment wiring.
 ```
 
+### GREE-ALICE-API-DISCOVERY-DOC1 documentation checkpoint
+
+```text
+Stage type: documentation-only
+Canonical API contract inventory: created
+API contract gaps document: created
+Passive gateway capture plan: created
+Static APK inventory: PASS
+Flutter/plugin extraction: PASS
+Package: com.gree.greeplus
+Observed app version: 1.25.3.7
+Static inventory run: run-20260712-103917
+Flutter/plugin run: run-20260712-111123
+PluginArtifactCount: 68
+PluginJadxSuccessCount: 27
+LibAppStringCount: 26950
+LibAppFocusedCount: 1921
+LibAppEndpointCount: 32
+PluginFocusedHitCount: 2529
+PluginContractHitCount: 2525
+PluginEndpointCount: 235
+CombinedContractCount: 4699
+AccessActionStaticHits: 1
+SendDataToDevicePluginHits: 40
+MqttPluginHits: 7
+libapp.so SHA-256: 43071232B93304D2F2249DE1CB2EC72D9BDD5F42451EBF1D17CDCA9E70E7A720
+Clean static application inventory: 77 /App/*, 8 /Stats/*, 1 /GreeAccess/*, 86 total
+Runtime-observed HTTPS candidates: /App/QueryOnline, /App/OptHistory
+Runtime-correlated command endpoint candidate: /GreeAccess/access/action
+Command/sendDataToDevice evidence: confirmed in plugin/static evidence
+Exact auth/method/body/response contract: unknown
+Exact read-only proof: unknown
+Exact command transport envelope: unknown
+Live network/control performed in DOC1: no
+MQTT operations performed in DOC1: no
+Raw artifacts committed: no
+Production/API/Telegram/deployment/migration changes: no
+Next evidence stage: GREE-ALICE-GATEWAY-CAPTURE-1 — passive Wi-Fi gateway metadata capture and channel correlation
+```
+
 ### Files changed by GREE-ALICE-PILOT-1B
 
 ```text
@@ -222,17 +278,19 @@ PROJECT_STATE.md
 ### Current blocker
 
 ```text
-None for local GREE-ALICE-PILOT-1B validation.
+None for GREE-ALICE-API-DISCOVERY-DOC1 documentation.
 Live Gree control remains blocked.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-PILOT-2 — prepare isolated bridge VPS/HTTPS deployment package
+GREE-ALICE-GATEWAY-CAPTURE-1 — passive Wi-Fi gateway metadata capture and channel correlation
 ```
 
-GREE-ALICE-PILOT-2 may prepare an isolated bridge VPS/HTTPS deployment package after explicit approval. It should still not add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring in AssistantEngineer.Api, migrations, or secrets without a separate explicit approval.
+GREE-ALICE-GATEWAY-CAPTURE-1 should capture passive metadata only: DNS, destination IP, ports, TLS/SNI where visible, packet sizes, timing, and channel correlation. It must not add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring in AssistantEngineer.Api, migrations, deployment changes, or secrets without a separate explicit approval.
+
+GREE-ALICE-PILOT-2 remains a possible separate implementation/deployment track after explicit approval, but it is not the next evidence step for the Gree Plus API contract.
 <!-- GREE-ALICE-STATE:END -->
 
 

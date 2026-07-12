@@ -83,18 +83,36 @@ public sealed class GreeAliceOfflineBridgeSkeletonBoundaryTests
     }
 
     [Fact]
-    public void ProjectStateClosesPilot1AAndOpensPilot1B()
+    public void ProjectStateRecordsPilot1BAndDiscoveryDoc1Checkpoint()
     {
         string text = ReadRepoFile("PROJECT_STATE.md");
+        string readme = ReadRepoFile("docs", "integrations", "gree-alice", "README.md");
+        string inventory = ReadRepoFile("docs", "integrations", "gree-alice", "gree-plus-api-contract-inventory.md");
+        string gaps = ReadRepoFile("docs", "integrations", "gree-alice", "gree-plus-api-contract-gaps.md");
+        string gatewayPlan = ReadRepoFile("docs", "integrations", "gree-alice", "gree-plus-passive-gateway-capture-plan.md");
 
         Assert.Contains("GREE-ALICE-PILOT-1A", text, StringComparison.Ordinal);
         Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
         Assert.Contains("1686adb3", text, StringComparison.Ordinal);
         Assert.Contains("Tests: 5701/5701", text, StringComparison.Ordinal);
         Assert.Contains("GREE-ALICE-PILOT-1B", text, StringComparison.Ordinal);
-        Assert.Contains("APPLIED locally / validation pending", text, StringComparison.Ordinal);
-        Assert.Contains("Implement dev-only Yandex OAuth provider vertical slice", text, StringComparison.Ordinal);
+        Assert.Contains("CLOSED / pushed", text, StringComparison.Ordinal);
+        Assert.Contains("dev-only Yandex OAuth provider vertical slice", text, StringComparison.Ordinal);
+        Assert.Contains("GREE-ALICE-API-DISCOVERY-DOC1", text, StringComparison.Ordinal);
+        Assert.Contains("documentation-only", text, StringComparison.Ordinal);
+        Assert.Contains("Clean static application inventory: 77 /App/*, 8 /Stats/*, 1 /GreeAccess/*, 86 total", text, StringComparison.Ordinal);
+        Assert.Contains("/App/QueryOnline", text, StringComparison.Ordinal);
+        Assert.Contains("/App/OptHistory", text, StringComparison.Ordinal);
+        Assert.Contains("/GreeAccess/access/action", text, StringComparison.Ordinal);
+        Assert.Contains("GREE-ALICE-GATEWAY-CAPTURE-1", text, StringComparison.Ordinal);
         Assert.Contains("GREE-ALICE-PILOT-2", text, StringComparison.Ordinal);
+        Assert.Contains("gree-plus-api-contract-inventory.md", readme, StringComparison.Ordinal);
+        Assert.Contains("gree-plus-api-contract-gaps.md", readme, StringComparison.Ordinal);
+        Assert.Contains("gree-plus-passive-gateway-capture-plan.md", readme, StringComparison.Ordinal);
+        Assert.Contains("evidence-backed candidate inventory", inventory, StringComparison.Ordinal);
+        Assert.Contains("DoNotBlindProbe", inventory, StringComparison.Ordinal);
+        Assert.Contains("IsReadOnlyContractConfirmed=false", gaps, StringComparison.Ordinal);
+        Assert.Contains("passive metadata capture", gatewayPlan, StringComparison.Ordinal);
     }
 
     private static string ReadAllDocs()

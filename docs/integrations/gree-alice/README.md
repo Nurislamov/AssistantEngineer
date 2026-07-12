@@ -197,6 +197,9 @@ internal-offline-release-notes-draft.md
 yandex-oauth-provider-pilot-contract.md
 yandex-oauth-provider-pilot-config.example.json
 yandex-oauth-provider-dev-smoke.md
+gree-plus-api-contract-inventory.md
+gree-plus-api-contract-gaps.md
+gree-plus-passive-gateway-capture-plan.md
 gree-plus-plugin-10001-command-map.md
 gree-plus-plugin-10001-command-map.json
 gree-plus-live-read-only-probe.md
@@ -345,6 +348,15 @@ Gree Plus focused live evidence extraction helper: offline/local only at scripts
 Gree Plus live evidence confirmed so far: plugin/status callback shape
 Gree Plus live evidence unresolved: exact HTTP live read endpoint, method, headers, body, response envelope
 Gree Plus live evidence raw artifacts in repository: forbidden
+Gree Plus static APK inventory: PASS for com.gree.greeplus 1.25.3.7
+Gree Plus Flutter/plugin contract extraction: PASS
+Gree Plus canonical endpoint inventory: exists at gree-plus-api-contract-inventory.md
+Gree Plus canonical static inventory counts: 77 /App/*, 8 /Stats/*, 1 /GreeAccess/*, 86 total
+Gree Plus runtime-observed endpoints: /App/QueryOnline, /App/OptHistory
+Gree Plus command endpoint candidate: /GreeAccess/access/action, DoNotBlindProbe
+Gree Plus exact authenticated read/control contract: incomplete
+Gree Plus blind endpoint probing: forbidden
+Gree Plus next evidence stage: passive gateway capture and focused call-argument correlation
 Gree Plus live read-only probe local approval: GREE_ALICE_ENABLE_LIVE_READ=true plus explicit read-only approval plus one allowlisted alias
 Gree Plus live read-only probe config source: .local or environment only
 Gree Plus live read-only probe credentials and identifiers: redacted and never committed
@@ -352,7 +364,7 @@ Gree Plus live read-only probe Alice production readiness: NOT READY
 Next live-read follow-up after successful reviewed read: GREE-ALICE-LIVE-CONTROL-GATE-1
 Gree Plus command builder network operations: disabled
 Gree Plus command builder timers: out of scope
-Next implementation stage: GREE-ALICE-PILOT-1B.
+Next evidence stage: GREE-ALICE-GATEWAY-CAPTURE-1 passive Wi-Fi gateway metadata capture and channel correlation.
 Live Gree+ Cloud calls: blocked
 Live CONNECT: blocked
 SUBSCRIBE: blocked
