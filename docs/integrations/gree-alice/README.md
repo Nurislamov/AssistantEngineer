@@ -145,6 +145,7 @@ The workstream is not connected to AssistantEngineer.Api, Telegram, runtime conf
 ## Current safe review documents
 
 ```text
+discovery/README.md
 mqtt-connect-readiness-gate.md
 mqtt-connect-human-safety-review-checklist.md
 mqtt-connect-safety-review-decision-record.md

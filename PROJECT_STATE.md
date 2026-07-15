@@ -18,7 +18,7 @@ Latest closed GREE-ALICE commit before this documentation checkpoint:
 Current documentation stage prepared in this working tree:
 
 ```text
-GREE-ALICE-API-DISCOVERY-DOC1 Consolidate Gree Plus API evidence
+GREE-ALICE-API-DISCOVERY-DOC2 Recover Android/ART API discovery history
 ```
 
 ### Completed stages
@@ -257,6 +257,30 @@ Production/API/Telegram/deployment/migration changes: no
 Next evidence stage: GREE-ALICE-GATEWAY-CAPTURE-1 — passive Wi-Fi gateway metadata capture and channel correlation
 ```
 
+### GREE-ALICE-API-DISCOVERY-DOC2 documentation checkpoint
+
+```text
+Stage type: documentation-only
+Documentation root: docs/integrations/gree-alice/discovery
+Live evidence root inspected: D:\AssistantEngineer-live-evidence\GREE-ALICE-API-DISCOVERY
+Production/runtime unchanged: yes
+Database unchanged: yes
+Migrations added: none
+HVAC commands sent: none
+Phone/Frida/observer/network operations run by DOC2: none
+Raw evidence copied to git: no
+Last valid ART/nterp stage: v1.0.48 GREE EXECUTENTERP REGISTER FILTER FEASIBILITY
+Last attempted ART/nterp stage: v1.0.49b GREE EXECUTENTERP TARGET ARTMETHOD CORRELATION
+v1.0.49b ZIP SHA256: C90004A9ABA44DE118F8EDE1121390D36DC3377B4A243BBB4C364957C0748DEC
+v1.0.49b result: INVALID
+v1.0.49b blocker: SessionDetachedBeforeTargetArtMethodGate before hook-ready/gate-complete
+Confirmed late-stage facts: direct JNI 4/4 classes and 8/8 method IDs; slot +16 CodeItem-like; slot +24 shared ExecuteNterpImpl; x0 plausible ArtMethod register candidate
+Invalidated assumptions: slot +16 native hook target; direct x0 == jmethodID equality; v1.0.49b as successful deferred-classification proof
+Documentation files created: README, DISCOVERY-TIMELINE, CONFIRMED-FINDINGS, FAILED-AND-INVALID-BRANCHES, METHODCHANNEL-ENTRYPOINTS, ART-AND-NTERP-NOTES, LAB-RUNBOOK, EVIDENCE-INDEX, ARCHIVE-REPORT-v1.0.49b, CURRENT-STATE, DECISION-LOG, GLOSSARY, DOCUMENTATION-VALIDATION
+Current recovered blocker: target ArtMethod/CodeItem correlation gate fails before hook-ready because the process/session detaches before capture
+Recommended next safe branch: fix-first-host-or-agent-error using offline diagnosis of existing v1.0.49a/v1.0.49b host/agent logs before any new device work
+```
+
 ### Files changed by GREE-ALICE-PILOT-1B
 
 ```text
@@ -278,17 +302,20 @@ PROJECT_STATE.md
 ### Current blocker
 
 ```text
-None for GREE-ALICE-API-DISCOVERY-DOC1 documentation.
+None for GREE-ALICE-API-DISCOVERY-DOC2 documentation.
 Live Gree control remains blocked.
+Android/ART target correlation remains blocked by v1.0.49b early process/session detach before hook-ready.
 ```
 
 ### Next step
 
 ```text
-GREE-ALICE-GATEWAY-CAPTURE-1 — passive Wi-Fi gateway metadata capture and channel correlation
+GREE-ALICE-API-DISCOVERY-DOC2-FOLLOWUP — offline diagnosis of v1.0.49a/v1.0.49b first host/agent/process termination
 ```
 
-GREE-ALICE-GATEWAY-CAPTURE-1 should capture passive metadata only: DNS, destination IP, ports, TLS/SNI where visible, packet sizes, timing, and channel correlation. It must not add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring in AssistantEngineer.Api, migrations, deployment changes, or secrets without a separate explicit approval.
+GREE-ALICE-API-DISCOVERY-DOC2-FOLLOWUP should use existing local logs only. It must not launch GREE+, connect to the phone, run Frida, run observers, send network requests, send HVAC commands, add live Gree+ control, MQTT CONNECT, SUBSCRIBE, PUBLISH, device control, production runtime wiring in AssistantEngineer.Api, migrations, deployment changes, or secrets without a separate explicit approval.
+
+GREE-ALICE-GATEWAY-CAPTURE-1 remains a possible later passive metadata stage after the Android/ART discovery state is closed or explicitly parked. It should capture passive metadata only: DNS, destination IP, ports, TLS/SNI where visible, packet sizes, timing, and channel correlation.
 
 GREE-ALICE-PILOT-2 remains a possible separate implementation/deployment track after explicit approval, but it is not the next evidence step for the Gree Plus API contract.
 <!-- GREE-ALICE-STATE:END -->

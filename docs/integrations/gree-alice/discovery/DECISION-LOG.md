@@ -1,0 +1,18 @@
+# Decision Log
+
+| ID | Date | Stage | Decision | Evidence | Consequence | Supersedes / superseded by |
+| --- | --- | --- | --- | --- | --- | --- |
+| GAD-001 | 2026-07-12 | static APK inventory | `GREE_APK_STATIC_INVENTORY_PASS` | `static-apk-inventory\run-20260712-103917\06-reports\summary.txt` | Static Gree endpoint/API markers may be used as context only. | Superseded by richer Flutter/plugin evidence for architecture. |
+| GAD-002 | 2026-07-12 | Flutter/plugin contract | `GREE_FLUTTER_PLUGIN_CONTRACT_PASS` | `flutter-plugin-contract\run-20260712-111123\06-reports\summary.txt` | Plugin/libapp contract markers are confirmed; runtime envelope remains unknown. | Complements GAD-001. |
+| GAD-003 | 2026-07-14 | Flutter AOT/channel proof | `GREE_FLUTTER_CHANNEL_PROOF_PASS` | `flutter-aot\run-20260714-122159\channel-proof-v1.0.10` | Candidate channel `com.greeplus.flutter` is architectural evidence, not runtime target proof. | Superseded by runtime inventory for live channel existence. |
+| GAD-004 | 2026-07-14 | MethodChannel runtime inventory | `live-methodchannel-inventory-confirmed` | `gree-live-methodchannel-inventory-after-v48\run-20260714-210522` | Channel identifiers can be captured safely; payloads stay forbidden. | Leads to direct JNI target gate. |
+| GAD-005 | 2026-07-15 | managed handler mapping | `no-managed-handler-match-found` | `managed-methodchannel-handler-mapping\run-20260715-093048` | Static managed handler mapping did not identify a managed MethodChannel handler. | Leads to controlled runtime metadata/direct JNI. |
+| GAD-006 | 2026-07-15 | v1.0.44c | `direct-jni-methodchannel-entrypoints-confirmed` | `post-bypass-direct-jni-methodchannel-gate\run-20260715-144607` | Four classes and eight method IDs are confirmed. | Base for ART analysis. |
+| GAD-007 | 2026-07-15 | v1.0.45 | `art-method-entrypoints-resolve-to-one-shared-stub` | `art-method-anchor-feasibility-gate\run-20260715-151505` | Initial shared executable ART candidate observed. | Refined by v1.0.46/v1.0.47a. |
+| GAD-008 | 2026-07-15 | v1.0.46 | `artmethod-slot16-unique-slot24-shared-confirmed` | `artmethod-slot-discrimination-gate\run-20260715-154903` | Slot `+16` unique and slot `+24` shared. | Refined by v1.0.47a. |
+| GAD-009 | 2026-07-15 | v1.0.47a | `slot16-likely-codeitem-data-slot24-shared-art-stub` | `slot16-code-kind-diagnostic\run-20260715-162142` | Slot `+16` native hook branch is invalid. | Supersedes direct slot16 native-hook idea. |
+| GAD-010 | 2026-07-15 | v1.0.48 | `executenterp-artmethod-register-candidate-confirmed` | `executenterp-register-filter-feasibility\run-20260715-164229` | `x0` is the best plausible ArtMethod register candidate. | Leads to target correlation gates. |
+| GAD-011 | 2026-07-15 | v1.0.49 | `invalid-executenterp-target-artmethod-correlation-gate` | `executenterp-target-artmethod-correlation\run-20260715-213420` | Direct `x0 == jmethodID` gate is invalid and blocked by validator failure. | Superseded by CodeItem correlation attempt. |
+| GAD-012 | 2026-07-15 | v1.0.49a | `invalid-executenterp-target-codeitem-correlation-gate` | `executenterp-target-artmethod-correlation\run-20260715-222613` | Live CodeItem dereference inside callback is unsafe / did not complete. | Superseded by deferred idea. |
+| GAD-013 | 2026-07-15 | v1.0.49b | `invalid-executenterp-target-codeitem-correlation-gate` | v1.0.49b ZIP SHA256 `C90004A9ABA44DE118F8EDE1121390D36DC3377B4A243BBB4C364957C0748DEC` | Deferred design was configured but not validated; process terminated before hook-ready. | Current blocker. |
+| GAD-014 | 2026-07-15 | DOC2 | documentation-only recovery | this folder | Research state is recoverable without old chats; production/runtime remain unchanged. | Current documentation checkpoint. |
