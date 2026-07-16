@@ -17,6 +17,10 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
     private static readonly string[] GatewayHints = ["app", "gateway", "шлюз"];
     private static readonly string[] ControllerModelNames = ["CE41", "CE42", "CE52"];
 
+    private sealed record TokenCandidate(string Value, string NormalizedValue, int StartIndex);
+
+    private sealed record DiagnosticCodeCandidate(string Code, int StartIndex);
+
     public EquipmentDiagnosticTelegramParseResult Parse(
         string? text,
         EquipmentDiagnosticTelegramOptions options)
@@ -92,25 +96,22 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
         var lowered = trimmed.ToLowerInvariant();
         var equipmentSide = FindEquipmentSide(lowered);
         var displayContext = FindDisplayContext(lowered);
-        var tokens = TokenPattern().Matches(trimmed).Select(match => match.Value).ToArray();
-        var code = tokens
-            .LastOrDefault(token => LooksLikeCode(token) && !IsHint(token));
-
-        if (code is null)
+        var tokens = ExtractTokens(trimmed);
+        if (!TryExtractNormalizedDiagnosticCode(trimmed, tokens, out var codeCandidate))
         {
             return Invalid("A displayed diagnostic code is required.");
         }
 
+        var code = codeCandidate.Code;
         if (ControllerModelNames.Contains(code, StringComparer.OrdinalIgnoreCase))
         {
             return Command(EquipmentDiagnosticTelegramCommand.Unsupported);
         }
 
-        var codeIndex = Array.FindIndex(tokens, token => string.Equals(token, code, StringComparison.OrdinalIgnoreCase));
         var explicitManufacturer = tokens
-            .Take(codeIndex)
-            .FirstOrDefault(token => !IsHint(token) && !token.StartsWith('/'));
-        var manufacturer = explicitManufacturer;
+            .Where(token => token.StartIndex < codeCandidate.StartIndex)
+            .FirstOrDefault(token => !IsHint(token.NormalizedValue) && !token.Value.StartsWith('/'));
+        var manufacturer = explicitManufacturer?.Value;
 
         if (string.IsNullOrWhiteSpace(manufacturer) && !options.RequireExplicitManufacturer)
         {
@@ -153,17 +154,245 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
             return false;
         }
 
-        var tokens = TokenPattern().Matches(trimmed).Select(match => match.Value).ToArray();
-        var match = tokens.LastOrDefault(token => LooksLikeCode(token) && !IsHint(token));
-        if (match is null ||
-            ControllerModelNames.Contains(match, StringComparer.OrdinalIgnoreCase))
+        var tokens = ExtractTokens(trimmed);
+        if (!TryExtractNormalizedDiagnosticCode(trimmed, tokens, out var match) ||
+            ControllerModelNames.Contains(match.Code, StringComparer.OrdinalIgnoreCase))
         {
             return false;
         }
 
-        code = match;
+        code = match.Code;
         return true;
     }
+
+    private static bool TryExtractNormalizedDiagnosticCode(
+        string text,
+        IReadOnlyList<TokenCandidate> tokens,
+        out DiagnosticCodeCandidate code)
+    {
+        code = ExtractDiagnosticCodeCandidates(text, tokens)
+            .OrderBy(candidate => candidate.StartIndex)
+            .LastOrDefault()!;
+        return code is not null;
+    }
+
+    private static IReadOnlyList<DiagnosticCodeCandidate> ExtractDiagnosticCodeCandidates(
+        string text,
+        IReadOnlyList<TokenCandidate> tokens)
+    {
+        var candidates = new List<DiagnosticCodeCandidate>();
+        foreach (var token in tokens)
+        {
+            if (!TryNormalizeDiagnosticCodeToken(token, out var code) ||
+                IsHint(token.NormalizedValue) ||
+                !IsNumericCandidateAllowed(code, text, tokens, token.StartIndex) ||
+                !IsLetterOnlyCandidateAllowed(code, text, tokens, token.StartIndex))
+            {
+                continue;
+            }
+
+            candidates.Add(new DiagnosticCodeCandidate(code, token.StartIndex));
+        }
+
+        foreach (Match match in SeparatedCodePattern().Matches(text))
+        {
+            var normalized = EquipmentDiagnosticCodeInputNormalizer.Normalize(match.Value);
+            if (TryCompactSeparatedCode(normalized, out var code) &&
+                !IsHint(code) &&
+                IsSeparatedCodeCandidateAllowed(text, tokens, match))
+            {
+                candidates.Add(new DiagnosticCodeCandidate(code, match.Index));
+            }
+        }
+
+        return candidates;
+    }
+
+    private static IReadOnlyList<TokenCandidate> ExtractTokens(string text) =>
+        TokenPattern()
+            .Matches(text)
+            .Select(match => new TokenCandidate(
+                match.Value,
+                EquipmentDiagnosticCodeInputNormalizer.Normalize(match.Value),
+                match.Index))
+            .ToArray();
+
+    private static bool TryNormalizeDiagnosticCodeToken(
+        TokenCandidate token,
+        out string code)
+    {
+        code = string.Empty;
+        if (TryCompactSeparatedCode(token.NormalizedValue, out var compact))
+        {
+            code = compact;
+            return true;
+        }
+
+        if (!LooksLikeCode(token.NormalizedValue) ||
+            IsNonAsciiLetterOnlyCode(token))
+        {
+            return false;
+        }
+
+        code = token.NormalizedValue;
+        return true;
+    }
+
+    private static bool IsNonAsciiLetterOnlyCode(TokenCandidate token) =>
+        token.NormalizedValue.Length == 2 &&
+        token.NormalizedValue.All(IsAsciiLetter) &&
+        !token.Value.All(IsAsciiLetter);
+
+    private static bool TryCompactSeparatedCode(
+        string token,
+        out string code)
+    {
+        code = string.Empty;
+        if (!SeparatedCodeShapePattern().IsMatch(token))
+        {
+            return false;
+        }
+
+        code = new string(token.Where(character => !IsSimpleCodeSeparator(character)).ToArray());
+        return code.Length == 2;
+    }
+
+    private static bool IsNumericCandidateAllowed(
+        string code,
+        string text,
+        IReadOnlyList<TokenCandidate> tokens,
+        int startIndex)
+    {
+        if (!code.All(char.IsDigit))
+        {
+            return true;
+        }
+
+        var trimmed = text.Trim();
+        if (string.Equals(trimmed, code, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        return tokens
+            .Where(token => token.StartIndex < startIndex)
+            .Any(token => IsAsciiWord(token.Value) &&
+                (!IsHint(token.NormalizedValue) ||
+                 DiagnosticRoutingHintExtractor.IsSeriesHintToken(token.NormalizedValue)));
+    }
+
+    private static bool IsLetterOnlyCandidateAllowed(
+        string code,
+        string text,
+        IReadOnlyList<TokenCandidate> tokens,
+        int startIndex)
+    {
+        if (code.Length != 2 || !code.All(IsAsciiLetter))
+        {
+            return true;
+        }
+
+        if (IsWholeMessageTokenCandidate(text, code))
+        {
+            return true;
+        }
+
+        if (!IsCandidateAtMessageEnd(text, startIndex + code.Length))
+        {
+            return false;
+        }
+
+        if (HasManufacturerOrSeriesContextBeforeCandidate(text, tokens, startIndex) ||
+            HasStrongDiagnosticContextBeforeCandidate(text, startIndex))
+        {
+            return true;
+        }
+
+        return HasWeakDiagnosticContextBeforeCandidate(text, startIndex);
+    }
+
+    private static bool IsSeparatedCodeCandidateAllowed(
+        string text,
+        IReadOnlyList<TokenCandidate> tokens,
+        Match match)
+    {
+        if (match.Value.Any(character => character is '-' or '.' or '_'))
+        {
+            return true;
+        }
+
+        if (IsWholeMessageSeparatedCandidate(text, match.Value))
+        {
+            return true;
+        }
+
+        if (!IsCandidateAtMessageEnd(text, match.Index + match.Length))
+        {
+            return false;
+        }
+
+        if (HasManufacturerOrSeriesContextBeforeCandidate(text, tokens, match.Index))
+        {
+            return true;
+        }
+
+        if (HasStrongDiagnosticContextBeforeCandidate(text, match.Index))
+        {
+            return true;
+        }
+
+        return HasWeakDiagnosticContextBeforeCandidate(text, match.Index);
+    }
+
+    private static bool IsWholeMessageSeparatedCandidate(
+        string text,
+        string candidate)
+    {
+        var trimmed = text.Trim()
+            .Trim('(', ')', '[', ']', '{', '}', '.', ',', ':', ';', '!', '?', '"', '\'');
+        return string.Equals(trimmed, candidate, StringComparison.Ordinal);
+    }
+
+    private static bool IsWholeMessageTokenCandidate(
+        string text,
+        string candidate)
+    {
+        var trimmed = text.Trim()
+            .Trim('(', ')', '[', ']', '{', '}', '.', ',', ':', ';', '!', '?', '"', '\'');
+        return string.Equals(trimmed, candidate, StringComparison.Ordinal);
+    }
+
+    private static bool HasManufacturerOrSeriesContextBeforeCandidate(
+        string text,
+        IReadOnlyList<TokenCandidate> tokens,
+        int candidateStartIndex)
+    {
+        if (DiagnosticRoutingHintExtractor.ExtractSeries(text[..candidateStartIndex]) is not null)
+        {
+            return true;
+        }
+
+        return tokens
+            .Where(token => token.StartIndex < candidateStartIndex)
+            .Any(token => string.Equals(token.Value, "Gree", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool HasStrongDiagnosticContextBeforeCandidate(
+        string text,
+        int candidateStartIndex) =>
+        StrongDiagnosticContextBeforeCandidatePattern().IsMatch(text[..candidateStartIndex]);
+
+    private static bool HasWeakDiagnosticContextBeforeCandidate(
+        string text,
+        int candidateStartIndex) =>
+        WeakDiagnosticContextBeforeCandidatePattern().IsMatch(text[..candidateStartIndex]);
+
+    private static bool IsCandidateAtMessageEnd(
+        string text,
+        int candidateEndIndex) =>
+        text[candidateEndIndex..].All(character =>
+            char.IsWhiteSpace(character) ||
+            character is '.' or ',' or ':' or ';' or '!' or '?' or ')' or ']' or '}');
 
     private static EquipmentDiagnosticBotEquipmentSide? FindEquipmentSide(string text)
     {
@@ -196,6 +425,12 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
     private static bool IsAsciiLetter(char value) =>
         value is >= 'A' and <= 'Z' or >= 'a' and <= 'z';
 
+    private static bool IsAsciiWord(string value) =>
+        value.Length > 0 && value.All(IsAsciiLetter);
+
+    private static bool IsSimpleCodeSeparator(char value) =>
+        value is '-' or '_' or '.' || char.IsWhiteSpace(value);
+
     private static bool IsHint(string token) =>
         OutdoorHints.Concat(IndoorHints).Concat(ChillerHints).Concat(ControllerHints)
             .Concat(KnowledgeHints)
@@ -214,4 +449,16 @@ public sealed partial class EquipmentDiagnosticTelegramMessageParser
 
     [GeneratedRegex(@"^[\p{L}][\p{L}\p{N}-]*$", RegexOptions.CultureInvariant)]
     private static partial Regex CodePattern();
+
+    [GeneratedRegex(@"(?<![\p{L}\p{N}])[\p{L}]\s*[-._\s]\s*[\p{L}\p{N}](?![\p{L}\p{N}])", RegexOptions.CultureInvariant)]
+    private static partial Regex SeparatedCodePattern();
+
+    [GeneratedRegex(@"^[A-Za-z]\s*[-._\s]\s*[A-Za-z0-9]$", RegexOptions.CultureInvariant)]
+    private static partial Regex SeparatedCodeShapePattern();
+
+    [GeneratedRegex(@"(?:^|[\s([{])(?:код|code|/diagnose)[\s:;,\-]*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex StrongDiagnosticContextBeforeCandidatePattern();
+
+    [GeneratedRegex(@"(?:^|[\s([{])(?:(?:ошибка|error|fault|показывает)|(?:на\s+(?:пульте|контроллере))|(?:контроллер\s+показывает))[\s:;,\-]*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    private static partial Regex WeakDiagnosticContextBeforeCandidatePattern();
 }

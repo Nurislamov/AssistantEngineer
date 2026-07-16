@@ -327,6 +327,28 @@ ED-24BOT.CORE1 — CLOSED / production PASS.
 
 Bot architecture audit and first behavior-preserving channel-neutral diagnostic core extraction are merged to master and deployed to production.
 
+### ED-24BOT.PARSE1
+
+ED-24BOT.PARSE1 — CLOSED locally / validation PASS.
+
+```text
+Telegram diagnostic input accepts Cyrillic visual equivalents for diagnostic-code characters.
+Diagnostic code case is preserved; no blanket uppercasing is applied.
+Explicit separators -, ., _ are supported for separated two-character diagnostic codes.
+Whitespace-separated two-character codes require restricted diagnostic context.
+Whitespace-separated context is split into strong and weak forms; every whitespace-separated candidate must end the message.
+Ordinary Russian phrases are protected against false-positive parsing from preposition/conjunction + digit pairs.
+Ambiguous letter/digit substitutions are not performed: O/0, I/1, L/1, S/5, B/8, Z/2, G/6 remain distinct.
+No migrations.
+No configuration changes.
+No knowledge JSON changes.
+Production deployment not performed in this stage.
+Focused validation: PASS, 261/261.
+dotnet restore .\AssistantEngineer.sln: PASS.
+dotnet build .\AssistantEngineer.sln --no-restore: PASS, 0 warnings, 0 errors.
+dotnet test .\AssistantEngineer.sln --no-build --logger "console;verbosity=minimal": PASS, 5987/5987.
+```
+
 Production context:
 
 ```text

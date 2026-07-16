@@ -64,6 +64,47 @@ public sealed class EquipmentDiagnosticTelegramConversationStateMachineTests
     }
 
     [Fact]
+    public async Task CyrillicUppercaseDiagnosticCodeFollowsSameConversationPathAsLatin()
+    {
+        var latin = CreateHarness([Summary("Gree", "A1", EquipmentCategory.VrfOutdoorUnit)]);
+        var cyrillic = CreateHarness([Summary("Gree", "A1", EquipmentCategory.VrfOutdoorUnit)]);
+
+        var latinResponse = await latin.Adapter.HandleAsync(Update("A1"));
+        var cyrillicResponse = await cyrillic.Adapter.HandleAsync(Update("А1"));
+        var cyrillicUser = await cyrillic.UserStore.GetByChatIdAsync(7);
+        var cyrillicSession = await cyrillic.SessionStore.GetByTelegramUserIdAsync(cyrillicUser!.Id);
+
+        Assert.Equal(latinResponse.Text, cyrillicResponse.Text);
+        Assert.Equal("A1", cyrillicSession?.CurrentCode);
+    }
+
+    [Fact]
+    public async Task LowercaseCyrillicDiagnosticCodePreservesCaseThroughConversation()
+    {
+        var harness = CreateHarness([Summary("Gree", "a1", EquipmentCategory.VrfOutdoorUnit)]);
+
+        var response = await harness.Adapter.HandleAsync(Update("а1"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("a1", response.Text, StringComparison.Ordinal);
+        Assert.Equal("a1", session?.CurrentCode);
+    }
+
+    [Fact]
+    public async Task SeparatedCyrillicElCodeReachesLookupAsLowercaseL3()
+    {
+        var harness = CreateHarness([Summary("Gree", "l3", EquipmentCategory.VrfOutdoorUnit)]);
+
+        var response = await harness.Adapter.HandleAsync(Update("л 3"));
+        var user = await harness.UserStore.GetByChatIdAsync(7);
+        var session = await harness.SessionStore.GetByTelegramUserIdAsync(user!.Id);
+
+        Assert.Contains("Для кода l3", response.Text, StringComparison.Ordinal);
+        Assert.Equal("l3", session?.CurrentCode);
+    }
+
+    [Fact]
     public async Task CaseOnlyCodeAmbiguityWithoutExactInputAsksForExactCode()
     {
         var harness = CreateHarness([
